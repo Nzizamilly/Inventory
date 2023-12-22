@@ -1,16 +1,17 @@
 import express from "express";
 import mysql from "mysql2";
+import cors from "cors";
 
 const app = express()
+app.use(cors());
+app.use(express.json());
 
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
     database: "inventory"
-})
-
-app.use(express.json())
+});
 
 app.post("/", (req,res) => {
    const q = "INSERT INTO employees(username,password,profile_picture,position,department,immediate_supervisor) VALUES (?)";
@@ -28,7 +29,7 @@ app.post("/", (req,res) => {
    });
 })
 
-app.get("/",(req,res) => {
+app.get("/employee",(req,res) => {
     const q = "SELECT * FROM employees";
     db.query(q,(err, data) => {
         if (err) return res.json(err);

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import axios from "axios";
 
 function Account() {
   const [emps,setEmps] = useState([]);
@@ -7,27 +8,28 @@ function Account() {
   useEffect(()=>{
     const fetchEmp = async () => {
       try {
-        const res = await axios.get("https://localhost:5500/");
+        const res = await axios.get("http://localhost:5500/employee");
         setEmps(res.data);
-      }catch (err){
-         console.log(err);
+        console.log("Emps: ", res.data)
+      }catch (error){
+         console.error("Problem", error);
       }
     };
     fetchEmp();
+    console.log("Emps: ", emps)
   },[]);
   return (
     <div className="account-container">
       {emps.map((emp) =>(
         <div key = {emp.id} className="account">
           <h1>{emp.username}</h1>
-          <img src = {emp.cover} alt ="" />
-          <p>{emp.username}</p>
-          <p>{emp.password}</p>
-          <p>{emp.profile_picture}</p>
-          <p>{emp.position}</p>
-          <p>{emp.department}</p>
-          <p>{emp.immediate_supervisor}</p>
-          <button><Link to={'/'}>Update</Link></button>
+          <img src = {emp.profile_picture} alt ="" />
+          <p>Username: {emp.username}</p>
+          <p>Password: {emp.password}</p>
+          <p>Position: {emp.position}</p>
+          <p>Department: {emp.department}</p>
+          <p>Immediate Supervisor: {emp.immediate_supervisor}</p>
+          <Link to={'/'}><button>Update</button></Link>
         </div>
 ))}
     </div>

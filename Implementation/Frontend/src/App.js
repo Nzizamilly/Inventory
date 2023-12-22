@@ -1,5 +1,6 @@
 import './style.css';
 import Login from './pages/login';
+import Home from './pages/home';
 import Terms from './pages/terms';
 import Navbar from './pages/navbar';
 import Request from './pages/request';
@@ -14,6 +15,7 @@ function App() {
       <Navbar />
         <Routes>
           <Route path='/' element={<Login/>}/>
+          <Route path='/home' element={<Home/>}/>
           <Route path='/account' element={<Account/>}/>
           <Route path='/notification' element={<Notification/>}/>
           <Route path='/terms' element={<Terms/>}/>
