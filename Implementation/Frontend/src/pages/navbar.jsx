@@ -5,7 +5,7 @@ function Navbar() {
   return (
     <div className="navbar">
       <ul className='ul1'>
-        <li className='li1'><Link>Log Out</Link></li>
+        <li className='li1'><Link to={'/'}>Log Out</Link></li>
         <li className='li1'><Link to={'/home'}>Home</Link></li>
       </ul>
       {/* <br /> */}

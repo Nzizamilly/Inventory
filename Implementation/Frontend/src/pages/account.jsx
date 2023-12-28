@@ -23,7 +23,7 @@ function Account() {
       {emps.map((emp) =>(
         <div key = {emp.id} className="account">
           <h1>{emp.username}</h1>
-          <img src = {emp.profile_picture} alt ="" />
+          <img src = {emp.profile_picture} id='profile_picture' alt ="" />
           <p>Username: {emp.username}</p>
           <p>Password: {emp.password}</p>
           <p>Position: {emp.position}</p>

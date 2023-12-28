@@ -140,12 +140,13 @@ button {
     color: white
 }
 
-img {
+#profile_picture {
     width: 200px;
     height: 200px;
-    object-fit: cover;
+    /* object-fit: cover; */
     background-color: aqua;
     border-radius: 850px;
+    display: flex;
 }
 
 Link {
@@ -153,6 +154,17 @@ Link {
 }
 
 input[type="text"] {
+    background-color: #000000;
+    color: white;
+    width: 66%;
+    height: 23%;
+    padding: 12px 0px;
+    padding-left: 12px;
+    border: none;
+    border-radius: 12px;
+    border-bottom: 2px rgb(23, 219, 170);
+}
+input[type="password"] {
     background-color: #000000;
     color: white;
     width: 66%;
@@ -251,34 +263,55 @@ li a:hover {
     height: 98px;
     border-radius: 15px;
     background-color: blue;
-    justify-content: center;
-    align-items: center;
     display: flex;
-    object-fit: fill;
+    align-items: center;
     margin-left: 245px;
     margin-top: 90px;
+    color: white;
+    padding: 23px;
   }
+  .img1{
+    margin-top: 8px;
+    width: 39%;
+    height: 95%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
   .icons1{
     width: 305px;
     height: 98px;
     border-radius: 15px;
     background-color: rgb(221, 182, 9);
+    display: flex;
+    align-items: center;
     margin-left: 15px;
+    padding: 23px;
+    color: white;
     margin-top: 90px;
   }
+ 
   .icons2{
     width: 305px;
     height: 98px;
     border-radius: 15px;
     background-color: rgb(218, 8, 36);
+    display: flex;
+    color: white;
+    align-items: center;
     margin-left: 15px;
+    padding: 23px;
     margin-top: 90px;
   };
-
-#sum{
-    width: 3px;
-    height: 12px;
-    display: flex;
+.login-container{
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(34, 41, 44);
     justify-content: center;
-    background-color: black;
+    display: flex;
+    align-items: center;
+}
+.login{
+
 }
