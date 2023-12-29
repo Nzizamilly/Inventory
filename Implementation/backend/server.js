@@ -40,7 +40,7 @@ app.put("/employee/:id", (req,res) => {
     ];
     db.query(q, [...values, empID], (err, data) => {
      if (err) {
-        console.errpr("Error updating: ", err);
+        console.error("Error updating: ", err);
         return res.status(500).json({error: "Internal Server Error"})
      }
      console.log("Employee Update Successfully", data);
@@ -55,6 +55,19 @@ app.get("/employee",(req,res) => {
         return res.json(data);
     });
 });
+
+app.post('/login', (req, res)=>{
+    const sql = "SELECT * FROM employees WHERE username = ? and password = ?";
+    db.query(sql, [req.body.username, req.body.password], (err, result) => {
+        if(err) return res.json({Message: "Error inside server"})
+        if(result.length > 0){
+            return res.json({Login: true})
+        } else {
+            return res.json({Login: false})
+        }
+    })
+})
+
 
 app.listen(5500, () => {
     console.log("Connected to backend")

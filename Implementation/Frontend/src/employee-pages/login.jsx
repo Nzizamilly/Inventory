@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Home from './home';
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios'
 
 function Login() {
     const loginContainer = {
@@ -26,13 +27,36 @@ function Login() {
         justifyContent: 'center',
         alignItems: 'center',
     }
+
+    const [values, setValues] = useState({
+        username: '',
+        password: ''
+    });
+    const navigate = useNavigate();
+    const handleInput = (event) => {
+        setValues(prev => ({...prev, [event.target.name]: [event.target.value] }))
+    };
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        axios.post("http://localhost:5500/login", values)
+        .then(res => {
+            if(res.data.Login){
+                navigate('/home')
+            }else {
+                alert("Not found")
+            }
+        })
+        .catch(err => console.log(err));
+    }
     return (
         <div style={loginContainer}>
             <div style={login}>
+               {/* <form onSubmit={handleSubmit}> */}
                 <h1>Login</h1>
-                <input placeholder='Username' type='text' name='username' />
-                <input placeholder='Password' type='text' name='password' />
-                <Link to={'/home'}><button>Send</button></Link>
+                <input placeholder='Username' type='text' name='username' onChange={handleInput} />
+                <input placeholder='Password' type='password' name='password' onChange={handleInput} />
+                <button onClick={handleSubmit}>Enter</button>
+            {/* </form> */}
             </div>
         </div>
     );

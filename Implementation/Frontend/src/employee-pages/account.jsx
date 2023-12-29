@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import Model from 'react-modal'
@@ -16,7 +16,7 @@ function Account() {
       width: '29%',
       marginLeft: '595px',
       // marginTop: '99px',
-      // height: '64vh',
+      height: '64vh',
       backgroundColor: 'rgb(56, 59, 61)',
       color: 'white',
       border: 'none',
@@ -37,13 +37,11 @@ function Account() {
       try {
         const res = await axios.get("http://localhost:5500/employee");
         setEmps(res.data);
-        // console.log("Emps: ", res.data)
       } catch (error) {
-        // console.error("Problem", error);
       }
     };
     fetchEmp();
-  }, [emps]);
+  }, []);
 
   const [update, setUpdate] = useState({
     username: '',
@@ -53,28 +51,43 @@ function Account() {
   });
 
   const location = useLocation();
+  // const EmpID = 1;
   const EmpID = location.pathname.split("/")[2];
+  console.log("This is EmpID", EmpID);
 
-  const handleChange = (e) => {
-    setUpdate((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (event) => {
+    setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   }
   const handleClick = async (event) => {
     event.preventDefault();
     try {
       console.log('update data:', update)
       await axios.put(`http://localhost:5500/employee/${EmpID}`, update);
+
       setEmps((prevEmps)=>{
+
         prevEmps.forEach((emp, index)=> {
+
           if (emp.id === EmpID) {
+
             prevEmps[index] = { ...emp, ...update};
+
           }
+
         });
+
         return [...prevEmps];
+
       });
+
       setVisible(false);
+
     } catch (err) {
+
       console.error(err);
+
     }
+
   };
 
   const [visible, setVisible] = useState(false);
@@ -82,7 +95,7 @@ function Account() {
 
   return (
     <div className="account-container">
-      {emps?.map((emp) => (
+      {emps.map((emp) => (
         <div key={emp.id} className="account">
           <h1>{emp.username}</h1>
           <img src={emp.profile_picture} id='profile_picture' alt="" />
@@ -98,7 +111,7 @@ function Account() {
             <input type='text' placeholder='Position' name = "position"onChange={handleChange} />
             <input type='text' placeholder='Department' name = "department"onChange={handleChange} />
             <input type='text' placeholder='Immediate Supervisor' name='immediate_supervisor' onChange={handleChange} />
-            <button onClick={handleClick}>Submit</button>
+            <button onClick={handleClick(emp.id)}>Submit</button>
           </Model>
         </div>
       ))}
