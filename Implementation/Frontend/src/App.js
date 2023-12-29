@@ -1,13 +1,16 @@
 import React from 'react';
 import './style.css';
+import Modal from 'react-modal'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './pages/login.jsx';
-import Home from './pages/home';
-import Terms from './pages/terms';
-import Navbar from './pages/navbar';
-import Request from './pages/request';
-import Account from './pages/account';
-import Notification from './pages/notification';
+import Login from './employee-pages/login.jsx';
+import Home from './employee-pages/home';
+import Terms from './employee-pages/terms';
+import Navbar from './employee-pages/navbar';
+import Request from './employee-pages/request';
+import Account from './employee-pages/account';
+import Notification from './employee-pages/notification';
+
+Modal.setAppElement('#root');
 
 function App() {
   return (

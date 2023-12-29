@@ -29,13 +29,32 @@ app.post("/", (req,res) => {
    });
 })
 
+app.put("/employee/:id", (req,res) => {
+    const empID = req.params.id;
+    const q = "UPDATE employees SET `username`= ?, `position`= ?, `department`= ?, `immediate_supervisor`= ? WHERE id = ?";
+    const values = [
+     req.body.username,
+     req.body.position,
+     req.body.department,
+     req.body.immediate_supervisor
+    ];
+    db.query(q, [...values, empID], (err, data) => {
+     if (err) {
+        console.errpr("Error updating: ", err);
+        return res.status(500).json({error: "Internal Server Error"})
+     }
+     console.log("Employee Update Successfully", data);
+     return res.json(data)
+    });
+ })
+
 app.get("/employee",(req,res) => {
     const q = "SELECT * FROM employees";
     db.query(q,(err, data) => {
         if (err) return res.json(err);
         return res.json(data);
-    })
-})
+    });
+});
 
 app.listen(5500, () => {
     console.log("Connected to backend")
