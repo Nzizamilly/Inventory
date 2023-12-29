@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Home from './home';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 
 function Login() {
@@ -36,6 +36,19 @@ function Login() {
     const handleInput = (event) => {
         setValues(prev => ({...prev, [event.target.name]: [event.target.value] }))
     };
+    axios.defaults.withCredentials = true;
+
+    useEffect(()=>{
+        axios.get('http://localhost:5500')
+        .then(res => {
+            if(res.data.valid) {
+                navigate('/home');
+            }else{
+                navigate('/')
+            }
+        })
+        .catch(err => console.log(err))
+    }, [])
     const handleSubmit = (event) => {
         event.preventDefault();
         axios.post("http://localhost:5500/login", values)
