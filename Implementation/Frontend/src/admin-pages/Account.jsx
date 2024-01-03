@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import Model from 'react-modal'
 
-function Account() {
+function AccountAdmin() {
 
   const modal = {
     overlay: {
@@ -102,4 +102,4 @@ function Account() {
   );
 }
 
-export default Account;
+export default AccountAdmin;

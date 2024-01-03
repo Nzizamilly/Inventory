@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Home from './home';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios'
 
 function Login() {
@@ -28,6 +28,9 @@ function Login() {
         alignItems: 'center',
     }
 
+    const username = useRef();
+    const password = useRef();
+
     const [values, setValues] = useState({
         username: '',
         password: ''
@@ -50,11 +53,20 @@ function Login() {
         .catch(err => console.log(err))
     }, [])
     const handleSubmit = (event) => {
-        event.preventDefault();
+        // event.preventDefault();
         axios.post("http://localhost:5500/login", values)
         .then(res => {
             if(res.data.Login){
-                navigate('/home')
+                localStorage.setItem("username", username.current.value);
+                localStorage.setItem("password", password.current.value);
+                localStorage.setItem("userID", res.data.id);
+                localStorage.setItem("roleID", res.data.roleID);
+                const userRole = res.data.roleID;
+                if (userRole === 3){
+                    navigate('/account-home');
+                }else{
+                    navigate('/home')
+                }
             }else {
                 alert("Not found")
             }
@@ -64,12 +76,10 @@ function Login() {
     return (
         <div style={loginContainer}>
             <div style={login}>
-               {/* <form onSubmit={handleSubmit}> */}
                 <h1>Login</h1>
-                <input placeholder='Username' type='text' name='username' onChange={handleInput} />
-                <input placeholder='Password' type='password' name='password' onChange={handleInput} />
+                <input placeholder='Username' type='text' name='username' onChange={handleInput} ref={username} />
+                <input placeholder='Password' type='password' name='password' onChange={handleInput} ref={password} />
                 <button onClick={handleSubmit}>Enter</button>
-            {/* </form> */}
             </div>
         </div>
     );

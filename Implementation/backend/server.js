@@ -58,12 +58,10 @@ app.get('/', (req,res)=>{
 
 app.put("/employee/:id", (req,res) => {
     const empID = req.params.id;
-    const q = "UPDATE employees SET `username`= ?, `position`= ?, `department`= ?, `immediate_supervisor`= ? WHERE id = ?";
+    const q = "UPDATE employees SET `username`= ?, `password`= ? WHERE id = ?";
     const values = [
      req.body.username,
-     req.body.position,
-     req.body.department,
-     req.body.immediate_supervisor
+     req.body.password,
     ];
     db.query(q, [...values, empID], (err, data) => {
      if (err) {
@@ -75,22 +73,46 @@ app.put("/employee/:id", (req,res) => {
     });
  })
 
-app.get("/employee",(req,res) => {
-    const q = "SELECT * FROM employees";
-    db.query(q,(err, data) => {
+app.get("/employee/:id", (req,res) => {
+    const empID = req.params.id;
+    const q = ` SELECT
+    employees.id,
+    employees.username,
+    employees.password,
+    employees.profile_picture,
+    employees.roleID,
+    employees.departmentID,
+    employees.status,
+    role.role_name,
+    department.department_name
+FROM
+    employees
+JOIN
+    role ON employees.roleID = role.id
+JOIN
+    department ON employees.departmentID = department.id
+WHERE
+    employees.id = ?;
+`
+    db.query(q, [empID],(err, data) => {
         if (err) return res.json(err);
         return res.json(data);
     });
 });
 
 app.post('/login', (req, res)=>{
-    const sql = "SELECT * FROM employees WHERE username = ? and password = ?";
+    const sql = "SELECT * FROM employees WHERE username = ? and password = ? ";
     db.query(sql, [req.body.username, req.body.password], (err, result) => {
         if(err) return res.json({Message: "Error inside server"})
         if(result.length > 0){
+            const userID = result[0].id;
+            const roleID = result[0].roleID;
+
             req.session.username = result[0].username;
-            console.log(req.session.username)
-            return res.json({Login: true, username: req.session.username})
+            req.session.user_id = userID;
+            req.session.role_id = roleID;
+            console.log(req.session.username);
+            return res.json({Login: true, username: req.session.username, id: req.session.user_id, roleID: req.session.role_id})
         } else {
             return res.json({Login: false})
         }
