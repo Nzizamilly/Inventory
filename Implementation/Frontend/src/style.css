@@ -164,6 +164,7 @@ input[type="text"] {
     border-radius: 12px;
     border-bottom: 2px rgb(23, 219, 170);
 }
+
 input[type="password"] {
     background-color: #000000;
     color: white;
@@ -222,12 +223,13 @@ li a:hover {
     list-style-type: none;
     width: 100%;
     /* display:flex ; */
-    height:7%;
+    height: 7%;
     margin: 0;
     /* padding: 32px; */
     overflow: hidden;
     background-color: rgb(19, 19, 24);
 }
+
 .li1 {
     /* padding: 32px; */
     float: right;
@@ -235,21 +237,22 @@ li a:hover {
     height: 82px;
     justify-content: center;
     background-color: black;
-    color:white;
-  }
-  .li1 a {
+    color: white;
+}
+
+.li1 a {
     /* display: block; */
     color: white;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
-  }
-  
-  .li1 a:hover {
-    background-color: #f5f4f4;
-  }
+}
 
-  .icon-container{
+.li1 a:hover {
+    background-color: #f5f4f4;
+}
+
+.icon-container {
     font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
@@ -257,8 +260,9 @@ li a:hover {
     /* justify-content: center; */
     display: flex;
     /* align-items: center; */
-  }
-  .icons{
+}
+
+.icons {
     width: 305px;
     height: 98px;
     border-radius: 15px;
@@ -269,8 +273,9 @@ li a:hover {
     margin-top: 90px;
     color: white;
     padding: 23px;
-  }
-  .img1{
+}
+
+.img1 {
     margin-top: 8px;
     width: 39%;
     height: 95%;
@@ -278,7 +283,8 @@ li a:hover {
     justify-content: center;
     align-content: center;
 }
-  .icons1{
+
+.icons1 {
     width: 305px;
     height: 98px;
     border-radius: 15px;
@@ -289,9 +295,9 @@ li a:hover {
     padding: 23px;
     color: white;
     margin-top: 90px;
-  }
- 
-  .icons2{
+}
+
+.icons2 {
     width: 305px;
     height: 98px;
     border-radius: 15px;
@@ -302,8 +308,11 @@ li a:hover {
     margin-left: 15px;
     padding: 23px;
     margin-top: 90px;
-  };
-.login-container{
+}
+
+;
+
+.login-container {
     font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
@@ -312,7 +321,8 @@ li a:hover {
     display: flex;
     align-items: center;
 }
-.update-container{
+
+.update-container {
     font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
@@ -322,7 +332,8 @@ li a:hover {
     opacity: 0.5;
     align-items: center;
 }
-.update{
+
+.update {
     width: 24%;
     height: 66vh;
     background-color: rgb(56, 59, 61);
@@ -337,4 +348,38 @@ li a:hover {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.uliAdmin {
+    list-style-type: none;
+    width: 100%;
+    /* display:flex ; */
+    height: 7%;
+    margin: 0;
+    /* padding: 32px; */
+    overflow: hidden;
+    background-color: rgb(6, 6, 236);
+}
+
+.li1Admin {
+    list-style-type: none;
+    width: 100%;
+    /* display:flex ; */
+    height: 7%;
+    margin: 0;
+    /* padding: 32px; */
+    overflow: hidden;
+    background-color: rgb(6, 6, 241);
+}
+
+.li1Admin a {
+    /* display: block; */
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.li1Admin a:hover {
+    background-color: #f5f4f4;
 }

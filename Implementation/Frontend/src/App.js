@@ -3,7 +3,7 @@ import './style.css';
 import Modal from 'react-modal'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './employee-pages/login.jsx';
-import Home from './employee-pages/home';
+import Home from './employee-pages/home.jsx';
 import Terms from './employee-pages/terms';
 import Navbar from './employee-pages/navbar';
 import Request from './employee-pages/request';
@@ -42,6 +42,7 @@ function App() {
         </Routes>
         <Navbar />
         <Routes>
+          <Route path="/" element={<Login />} />
           <Route path="/home-employee" element={<Home />} />
           <Route path="/account-employee" element={<Account />} />
           <Route path="/notification-employee" element={<Notification />} />

@@ -53,7 +53,6 @@ function Login() {
         .catch(err => console.log(err))
     }, [])
     const handleSubmit = (event) => {
-        // event.preventDefault();
         axios.post("http://localhost:5500/login", values)
         .then(res => {
             if(res.data.Login){
@@ -63,9 +62,9 @@ function Login() {
                 localStorage.setItem("roleID", res.data.roleID);
                 const userRole = res.data.roleID;
                 if (userRole === 3){
-                    navigate('/account-home');
-                }else{
-                    navigate('/home')
+                    navigate('/account-admin');
+                }else if(userRole === 2){
+                    navigate('/home-employee')
                 }
             }else {
                 alert("Not found")
