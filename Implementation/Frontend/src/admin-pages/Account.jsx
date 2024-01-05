@@ -33,6 +33,22 @@ function AccountAdmin() {
   const color ={
     color: 'green'
   }
+  const account = {
+    width: '299px',
+    height: '65%',
+    backgroundColor: 'rgb(206, 206, 236)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '12px',
+    color: 'black',
+    gap: '9px',
+    marginLeft: '300px',
+    display: 'flex',
+    padding: '12px 0px',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
   const [emps, setEmps] = useState([]);
   useEffect(() => {
     const fetchEmp = async () => {
@@ -79,9 +95,9 @@ function AccountAdmin() {
   // console.log('Is modal visible', visible);
 
   return (
-    <div className="account-container">
+    <div className='account-container-admin'>
       {emps.map((emp) => (
-        <div key={emp.id} className="account">
+        <div key={emp.id} style={account}>
           <h1>{emp.username}</h1>
           <img src={emp.profile_picture} id='profile_picture' alt="" />
           <p>Username: {emp.username}</p>
@@ -98,7 +114,7 @@ function AccountAdmin() {
           </Model>
         </div>
       ))}
-    </div>
+      </div>
   );
 }
 

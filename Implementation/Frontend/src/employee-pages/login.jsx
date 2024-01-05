@@ -62,7 +62,7 @@ function Login() {
                 localStorage.setItem("roleID", res.data.roleID);
                 const userRole = res.data.roleID;
                 if (userRole === 3){
-                    navigate('/account-admin');
+                    navigate('/home-admin');
                 }else if(userRole === 2){
                     navigate('/home-employee')
                 }

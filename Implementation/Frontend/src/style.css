@@ -258,7 +258,7 @@ li a:hover {
     height: 100vh;
     background-color: rgb(34, 41, 44);
     /* justify-content: center; */
-    display: flex;
+    display: inline-flex;
     /* align-items: center; */
 }
 
@@ -350,7 +350,7 @@ li a:hover {
     align-items: center;
 }
 
-.uliAdmin {
+.ul1Admin {
     list-style-type: none;
     width: 100%;
     /* display:flex ; */
@@ -358,23 +358,23 @@ li a:hover {
     margin: 0;
     /* padding: 32px; */
     overflow: hidden;
-    background-color: rgb(6, 6, 236);
+    background-color: rgb(206, 206, 236);
 }
 
 .li1Admin {
-    list-style-type: none;
-    width: 100%;
-    /* display:flex ; */
-    height: 7%;
-    margin: 0;
     /* padding: 32px; */
-    overflow: hidden;
-    background-color: rgb(6, 6, 241);
+    float: right;
+    width: 99px;
+    border-radius: 8px;
+    height: 85px;
+    justify-content: center;
+    background-color: rgb(206, 206, 236);
+    /* color: black; */
 }
 
 .li1Admin a {
     /* display: block; */
-    color: white;
+    color: black;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
@@ -382,4 +382,241 @@ li a:hover {
 
 .li1Admin a:hover {
     background-color: #f5f4f4;
+}
+.ul2Admin{
+    font-family: 'Arial', sans-serif;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 15%;
+    background-color: rgb(218, 218, 236);
+    position: fixed;
+    /* color: rgb(22, 21, 21); */
+    height: 100%;
+    overflow: auto;
+}
+
+.liAdmin a {
+    display: block;
+    color: rgb(5, 5, 5);
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 12px;
+}
+
+.liAdmin a:hover {
+    background-color: rgb(14, 13, 13);
+    color: rgb(240, 230, 230);
+}
+.icon-container-admin{
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(163, 187, 197);
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    /* align-content: stretch; */
+}
+.icons-admin{
+    width: 220px;
+    height: 98px;
+    border-radius: 15px;
+    background-color: blue;
+    display: flex;
+    align-items: center;
+    margin-left: 215px;
+    margin-top: 90px;
+    color: black;
+    padding: 23px;
+}
+.icons1-admin{
+    width: 220px;
+    height: 98px;
+    border-radius: 15px;
+    background-color: rgb(206, 206, 236);
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+    padding: 7px;
+    color: black;
+    margin-top: 90px;
+}
+.icons2-admin{
+    width: 220px;
+    height: 98px;
+    border-radius: 15px;
+    background-color: rgb(206, 206, 236);
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+    padding: 8px;
+    color: rgb(17, 16, 16);
+    margin-top: 90px
+}
+.icons3-admin{
+    width: 220px;
+    height: 98px;
+    border-radius: 15px;
+    background-color: rgb(206, 206, 236);
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+    padding: 8px;
+    color: black;
+    margin-top: 90px
+}
+.icons4-admin{
+    width: 220px;
+    height: 98px;
+    border-radius: 15px;
+    background-color: rgb(206, 206, 236);
+    display: flex;
+    align-items: center;
+    margin-left: 120px;
+    padding: 8px;
+    color: black;
+    /* margin-top: 90px */
+}
+.icons5-admin{
+    width: 294px;
+    height: 98px;
+    border-radius: 15px;
+    background-color: rgb(206, 206, 236);
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+    padding: 2px;
+    color: black;
+    /* margin-top: px */
+}
+.icons6-admin{
+    width: 290px;
+    height: 98px;
+    border-radius: 15px;
+    background-color: rgb(206, 206, 236);
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+    padding: 8px;
+    color: black;
+    /* margin-top: 90px */
+}
+.account-container-admin{
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    background-color: rgb(163, 187, 197);
+};
+#two.account{
+    width: 299px;
+    height: 65;
+    background-color: rgb(206, 206, 236);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    gap: 9px;
+    /* margin-top: 100px; */
+    margin-left: 300px;
+    display: flex;
+    padding: 12px 0px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.items-container{
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(163, 187, 197);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    gap: 91px;
+    flex-wrap: wrap;
+};
+.item{
+    width: 20%;
+    height: 98%;
+    border-radius: 15px;
+    background-color: black;
+   
+}
+.employee-container{
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(163, 187, 197);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    gap: 51px;
+    flex-wrap: wrap;
+}
+.employee{
+    width: 290px;
+    height: 298px;
+    border-radius: 15px;
+    background-color: rgb(206, 206, 236);
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+    margin-left: 15px;
+    padding: 8px;
+    gap:4px;
+    color: black; 
+}
+
+.category-container, .notification-container-admin{
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(163, 187, 197);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    gap: 51px;
+    flex-wrap: wrap;
+}
+.category{
+    width: 290px;
+    height: 98px;
+    border-radius: 15px;
+    background-color: rgb(206, 206, 236);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 15px;
+    padding: 8px;
+    color: black;
+};
+.notification-admin{
+    width: 23%;
+    height: 8%;
+    text-align: center;
+    border: none;
+    display:flex;
+    flex-direction:column;
+    margin-left: 300px;
+    border-radius: 15px;
+    padding: 12px 0px;
+    color: black;
+    background-color: white
+}
+.buttonStyle{
+    background-color: rgb(163, 187, 197) ;
+    border-radius: 45px;
+    width: 28px;
+    height: 53px;
+    
+}
+.buttonStyle2{
+    background-color: black ;
+    border-radius: 15px;
+    width: 68px;
+    text-align: center;
+    height: 53px;
 }

@@ -81,7 +81,7 @@ function Account() {
   return (
     <div className="account-container">
       {emps.map((emp) => (
-        <div key={emp.id} className="account">
+        <div key={emp.id} className="account" id='one'>
           <h1>{emp.username}</h1>
           <img src={emp.profile_picture} id='profile_picture' alt="" />
           <p>Username: {emp.username}</p>

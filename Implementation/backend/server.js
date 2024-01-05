@@ -32,6 +32,14 @@ const db = mysql.createConnection({
     database: "inventory"
 });
 
+db.connect((err) => {
+    if (err) {
+      console.error('Error connecting to the database: ', err);
+      return;
+    }
+    console.log('Connected to the database');
+  });
+
 app.post("/", (req,res) => {
    const q = "INSERT INTO employees(username,password,profile_picture,position,department,immediate_supervisor) VALUES (?)";
    const values = [
@@ -119,6 +127,42 @@ app.post('/login', (req, res)=>{
     })
 })
 
+app.get('/category', (req, res) => {
+    const sql = 'SELECT * FROM category';
+    db.query(sql, (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+      res.json(results);
+    });
+  });
+  app.get('/employees', (req, res) => {
+    const sql = 'SELECT employees.id, employees.username, employees.password, employees.profile_picture, employees.roleID, employees.departmentID, employees.status, role.role_name, department.department_name FROM employees JOIN role ON employees.roleID = role.id JOIN department ON employees.departmentID = department.id';
+    db.query(sql, (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+      res.json(results);
+    });
+  });
+
+  app.get('/items', (req, res) => {
+    const categoryId = req.query.category;
+    if(!categoryId){
+        res.status(400).json({ error: 'Category ID is required' });
+        return;
+    }
+    const sql = 'SELECT * FROM item WHERE categoryID = ?';
+    db.query(sql, [categoryId], (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+      res.json(results);
+    });
+  });
 
 app.listen(5500, () => {
     console.log("Connected to backend")

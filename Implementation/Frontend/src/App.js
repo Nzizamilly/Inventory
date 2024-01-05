@@ -18,6 +18,7 @@ import AccountAdmin from './admin-pages/Account.jsx';
 import NavbarAdmin from './admin-pages/navbarAdmin.jsx';
 import TermsAdmin from './admin-pages/terms.jsx';
 import TransactionAdmin from './admin-pages/transactions.jsx';
+import HomeAdmin from './admin-pages/home.jsx';
 
 Modal.setAppElement('#root');
 
@@ -39,6 +40,7 @@ function App() {
           <Route path="/employees-admin" element={<EmployeesAdmin />} />
           <Route path="/terms-admin" element={<TermsAdmin />} />
           <Route path="/transaction-admin" element={<TransactionAdmin />} />
+          <Route path="/home-admin" element={<HomeAdmin />} />
         </Routes>
         <Navbar />
         <Routes>
