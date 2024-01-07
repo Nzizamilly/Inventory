@@ -102,7 +102,7 @@ function AccountAdmin() {
           <img src={emp.profile_picture} id='profile_picture' alt="" />
           <p>Username: {emp.username}</p>
           <p>Password: {emp.password}</p>
-          <p>Position: {emp.role_name}</p>
+          <p>Role: {emp.role_name}</p>
           <p>Department: {emp.department_name}</p>
           <p>Status:  <span style={color}>{emp.status}</span></p>
           <button onClick={() => setVisible(true)}>Update</button>

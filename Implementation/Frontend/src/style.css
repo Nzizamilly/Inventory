@@ -383,7 +383,8 @@ li a:hover {
 .li1Admin a:hover {
     background-color: #f5f4f4;
 }
-.ul2Admin{
+
+.ul2Admin {
     font-family: 'Arial', sans-serif;
     list-style-type: none;
     margin: 0;
@@ -408,7 +409,8 @@ li a:hover {
     background-color: rgb(14, 13, 13);
     color: rgb(240, 230, 230);
 }
-.icon-container-admin{
+
+.icon-container-admin {
     font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
@@ -418,11 +420,12 @@ li a:hover {
     flex-wrap: wrap;
     /* align-content: stretch; */
 }
-.icons-admin{
+
+.icons-admin {
     width: 220px;
     height: 98px;
     border-radius: 15px;
-    background-color: blue;
+    background-color: rgb(51, 156, 156);
     display: flex;
     align-items: center;
     margin-left: 215px;
@@ -430,7 +433,8 @@ li a:hover {
     color: black;
     padding: 23px;
 }
-.icons1-admin{
+
+.icons1-admin {
     width: 220px;
     height: 98px;
     border-radius: 15px;
@@ -442,7 +446,8 @@ li a:hover {
     color: black;
     margin-top: 90px;
 }
-.icons2-admin{
+
+.icons2-admin {
     width: 220px;
     height: 98px;
     border-radius: 15px;
@@ -450,11 +455,13 @@ li a:hover {
     display: flex;
     align-items: center;
     margin-left: 15px;
+    gap: 12px;
     padding: 8px;
     color: rgb(17, 16, 16);
     margin-top: 90px
 }
-.icons3-admin{
+
+.icons3-admin {
     width: 220px;
     height: 98px;
     border-radius: 15px;
@@ -466,7 +473,8 @@ li a:hover {
     color: black;
     margin-top: 90px
 }
-.icons4-admin{
+
+.icons4-admin {
     width: 220px;
     height: 98px;
     border-radius: 15px;
@@ -478,7 +486,8 @@ li a:hover {
     color: black;
     /* margin-top: 90px */
 }
-.icons5-admin{
+
+.icons5-admin {
     width: 294px;
     height: 98px;
     border-radius: 15px;
@@ -490,7 +499,8 @@ li a:hover {
     color: black;
     /* margin-top: px */
 }
-.icons6-admin{
+
+.icons6-admin {
     width: 290px;
     height: 98px;
     border-radius: 15px;
@@ -502,7 +512,8 @@ li a:hover {
     color: black;
     /* margin-top: 90px */
 }
-.account-container-admin{
+
+.account-container-admin {
     font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
@@ -510,8 +521,11 @@ li a:hover {
     display: flex;
     align-items: center;
     background-color: rgb(163, 187, 197);
-};
-#two.account{
+}
+
+;
+
+#two.account {
     width: 299px;
     height: 65;
     background-color: rgb(206, 206, 236);
@@ -527,7 +541,8 @@ li a:hover {
     justify-content: center;
     align-items: center;
 }
-.items-container{
+
+.items-container {
     font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
@@ -537,15 +552,19 @@ li a:hover {
     display: flex;
     gap: 91px;
     flex-wrap: wrap;
-};
-.item{
+}
+
+;
+
+.item {
     width: 20%;
     height: 98%;
     border-radius: 15px;
     background-color: black;
-   
+
 }
-.employee-container{
+
+.employee-container {
     font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
@@ -556,21 +575,23 @@ li a:hover {
     gap: 51px;
     flex-wrap: wrap;
 }
-.employee{
+
+.employee {
     width: 290px;
     height: 298px;
     border-radius: 15px;
     background-color: rgb(206, 206, 236);
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     align-items: center;
     margin-left: 15px;
     padding: 8px;
-    gap:4px;
-    color: black; 
+    gap: 4px;
+    color: black;
 }
 
-.category-container, .notification-container-admin{
+.category-container,
+.notification-container-admin {
     font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
@@ -581,7 +602,8 @@ li a:hover {
     gap: 51px;
     flex-wrap: wrap;
 }
-.category{
+
+.category {
     width: 290px;
     height: 98px;
     border-radius: 15px;
@@ -592,31 +614,67 @@ li a:hover {
     margin-left: 15px;
     padding: 8px;
     color: black;
-};
-.notification-admin{
+}
+
+;
+
+.notification-admin {
     width: 23%;
     height: 8%;
     text-align: center;
     border: none;
-    display:flex;
-    flex-direction:column;
+    display: flex;
+    flex-direction: column;
     margin-left: 300px;
     border-radius: 15px;
     padding: 12px 0px;
     color: black;
     background-color: white
 }
-.buttonStyle{
-    background-color: rgb(163, 187, 197) ;
+
+.buttonStyle {
+    background-color: rgb(163, 187, 197);
     border-radius: 45px;
     width: 28px;
     height: 53px;
-    
+
 }
-.buttonStyle2{
-    background-color: black ;
+
+.buttonStyle2 {
+    background-color: black;
     border-radius: 15px;
     width: 68px;
     text-align: center;
     height: 53px;
+}
+
+.add-btn{
+    width: 90px;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    text-align: center;
+    height: 90px;
+    gap:9px;
+    margin-top: 2px;
+    margin-left: 205px;
+    border-radius: 18px;
+    background-color: rgb(41, 48, 51);
+    /* padding-left: 26px; */
+    flex-direction:column;
+}
+
+.addItem-btn{
+    width: 30px;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    text-align: center;
+    height: 26px;
+    gap:9px;
+    margin-top: 2px;
+    border-radius: 18px;
+    background-color: rgb(230, 245, 236);
+    /* padding-left: 26px; */
+    flex-direction:column;
 }

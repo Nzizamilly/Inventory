@@ -13,20 +13,88 @@ import { useNavigate } from 'react-router-dom';
 
 function Home() {
     const [name, setName] = useState('');
+    const [categoryCount, setCategoryCount] = useState(null);
+    const [itemCount, setItemCount] = useState(null);
+    const [employeeCount, setEmployeeCount] = useState(null);
+    const [requestCount, setRequestCount] = useState(null);
+    const [supplierCount, setSupplierCount] = useState(null);
+
     const navigate = useNavigate();
 
     axios.defaults.withCredentials = true;
-    useEffect(()=>{
+
+    useEffect(() => {
         axios.get('http://localhost:5500')
-        .then(res => {
-            if(res.data.valid) {
-                setName(res.data.username);
-            }else{
-                navigate('/')
-            }
-        })
-        .catch(err => console.log(err))
+            .then(res => {
+                if (res.data.valid) {
+                    setName(res.data.username);
+                } else {
+                    navigate('/')
+                }
+            })
+            .catch(err => console.log(err))
+    }, []);
+
+    useEffect(() => {
+        axios.get('http://localhost:5500/number-category')
+            .then(res => {
+                setCategoryCount(res.data.categoryCount);
+
+            })
+            .catch(err => {
+                console.error('Error fetching category count:', err);
+
+            })
     }, [])
+    useEffect(() => {
+        axios.get('http://localhost:5500/number-item')
+            .then(res => {
+                setItemCount(res.data.itemCount);
+
+            })
+            .catch(err => {
+                console.error('Error fetching category count:', err);
+
+            })
+    }, [])
+
+    useEffect(() => {
+        axios.get('http://localhost:5500/number-employee')
+            .then(res => {
+                setEmployeeCount(res.data.employeeCount);
+
+            })
+            .catch(err => {
+                console.error('Error fetching category count:', err);
+
+            })
+    }, [])
+
+    useEffect(() => {
+        axios.get('http://localhost:5500/number-request')
+            .then(res => {
+                setRequestCount(res.data.requestCount);
+
+            })
+            .catch(err => {
+                console.error('Error fetching category count:', err);
+
+            })
+    }, [])
+
+    useEffect(() => {
+        axios.get('http://localhost:5500/number-supplier')
+            .then(res => {
+                setSupplierCount(res.data.supplierCount);
+
+            })
+            .catch(err => {
+                console.error('Error fetching category count:', err);
+
+            })
+    }, [])
+
+
     return (
         <div className="icon-container-admin">
             <div className="icons-admin">
@@ -35,19 +103,19 @@ function Home() {
             </div>
             <div className="icons1-admin">
                 <img className='img1' src={Category} alt='img2' />
-                <p>Category: 32</p>
+                <p>Category: {categoryCount}</p>
             </div>
             <div className="icons2-admin">
                 <img className='img1' src={Items} alt='img3' />
-                <p> Items: 2</p>
+                <p> Items: {itemCount}</p>
             </div>
             <div className="icons3-admin">
                 <img className='img1' src={Employees} alt='img3' />
-                <p>Employees: 2</p>
+                <p>Employees: {employeeCount}</p>
             </div>
-             <div className="icons4-admin">
+            <div className="icons4-admin">
                 <img className='img1' src={Request} alt='img3' />
-                <p>Requests: 2</p>
+                <p>Requests: {requestCount}</p>
             </div>
             <div className="icons5-admin">
                 <img className='img1' src={Transaction} alt='img3' />
@@ -55,7 +123,7 @@ function Home() {
             </div>
             <div className="icons6-admin">
                 <img className='img1' src={Supplier} alt='img3' />
-                <p>Suppliers: 2</p>
+                <p>Suppliers: {supplierCount}</p>
             </div>
         </div>
     );

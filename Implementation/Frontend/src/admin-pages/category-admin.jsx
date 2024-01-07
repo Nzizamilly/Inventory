@@ -22,7 +22,7 @@ function CategoryAdmin() {
       {/* <h1 className='header1'>Categories</h1> */}
       {categories.map((category) =>(
       <div key={category.id} className="category">
-        <h2>{category.name}</h2>
+        <h2>{category.category_name}</h2>
         <br />
         <br />
         <p>{category.description}</p>
