@@ -23,6 +23,7 @@ function ItemsAdmin() {
       fontFamily: 'Your Custom Font, sans-serif',
       fontSize: '16px',
       fontWeight: 'bold',
+      border: 'none',
       lineHeight: '1.5',
       display: 'flex',
       justifyContent: 'center',
