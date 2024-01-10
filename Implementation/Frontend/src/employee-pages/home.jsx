@@ -11,6 +11,7 @@ function Home() {
     const navigate = useNavigate();
 
     axios.defaults.withCredentials = true;
+    
     useEffect(()=>{
         axios.get('http://localhost:5500')
         .then(res => {

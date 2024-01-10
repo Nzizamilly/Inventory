@@ -678,3 +678,16 @@ li a:hover {
     /* padding-left: 26px; */
     flex-direction:column;
 }
+
+.bigger{
+    width: 42%;
+    height: 45%;
+    background-color: rgb(151, 183, 197);
+    text-align:center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 43px;
+    border-radius: 15px;
+    gap: 12px;
+}

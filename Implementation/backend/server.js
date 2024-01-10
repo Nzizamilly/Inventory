@@ -1,4 +1,4 @@
-const express = require("express")
+const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
 const session = require("express-session");
@@ -10,15 +10,15 @@ const http = require("http");
 const app = express();
 const server = http.createServer(app);
 
+app.use(express.json());
+app.use(cookieParser());
+app.use(bodyParser.json());
+
 app.use(cors({
   origin: ["http://localhost:3000"],
   methods: ["POST", "GET", "PUT"],
   credentials: true
 }));
-
-app.use(express.json());
-app.use(cookieParser());
-app.use(bodyParser.json());
 
 app.use(session({
   secret: 'secret',
@@ -28,22 +28,22 @@ app.use(session({
     secure: false,
     maxAge: 1000 * 60 * 60 * 24
   }
-}))
+}));
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: "localhost",
   user: "root",
   password: "",
-  database: "inventory"
+  database: "inventory",
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error('Error connecting to the database: ', err);
-    return;
-  }
-  console.log('Connected to the database');
-});
+// db.connect((err) => {
+//   if (err) {
+//     console.error('Error connecting to the database: ', err);
+//     return;
+//   }
+//   console.log('Connected to the database');
+// });
 
 //-----------------Socket---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -64,15 +64,16 @@ io.on("connection", (socket) => {
 
   io.on("connect_error", (err) => {
     console.error("Socket.io error", err);
-  })
+  });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected")
+    console.log("User disconnected");
   });
-})
-
+});
 
 //-----------------Socket---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Add your routes and other configurations below this line
 
 app.post("/employee", (req, res) => {
   console.log("Post request received");
@@ -121,59 +122,45 @@ app.post("/add-employee", (req, res) => {
   });
 });
 
-app.post('/add-item', (req, res) => {
+app.post('/add-items', (req, res) => {
   const supplierCheckQuery = 'SELECT id FROM supplier WHERE first_name = ?';
-  const categoryCheckQuery = 'SELECT id FROM category WHERE category_name = ?';
+  const categoryId = req.body.category;
 
-  // Assuming req.body.supplier and req.body.category are provided by the client
-  db.query(supplierCheckQuery, [req.body.supplier], (supplierError, supplierResult) => {
+  console.log("Category", categoryId);
+
+  db.query(supplierCheckQuery, [req.body.supplier], (supplierError, supplierResults) => {
     if (supplierError) {
       console.error('Error checking supplier:', supplierError);
       return res.status(500).json({ error: 'Internal Server Error' });
     }
 
-    db.query(categoryCheckQuery, [req.body.category], (categoryError, categoryResult) => {
-      if (categoryError) {
-        console.error('Error checking category:', categoryError);
+    if (supplierResults.length === 0) {
+      return res.status(400).json({ error: 'Invalid supplier.' });
+    }
+
+    const supplierId = supplierResults[0].id;
+
+    console.log("Supplier", supplierId);
+
+    const insertQuery =
+      'INSERT INTO item(name, supplierID, categoryID) VALUES (?, ?, ?)';
+
+    const insertValues = [
+      req.body.name || null,
+      supplierId,
+      categoryId || null,
+    ];
+
+    db.query(insertQuery, insertValues, (insertError, result) => {
+      if (insertError) {
+        console.error('Error adding item:', insertError);
         return res.status(500).json({ error: 'Internal Server Error' });
       }
 
-      if (!supplierResult.length) {
-        return res.status(400).json({ error: 'Invalid supplier or category.' });
-      }
-
-      const insertQuery =
-        'INSERT INTO item(name, state_of_item, depreciation_rate, supplierID, categoryID) VALUES (?, ?, ?, ?, ?)';
-      const insertValues = [
-        req.body.name,
-        req.body.state_of_item,
-        req.body.depreciation_rate,
-        supplierResult[0].id,
-        categoryResult[0].id,
-      ];
-      
-      db.query(insertQuery, insertValues, (insertError, insertResult) => {
-        if (insertError) {
-          console.error('Error inserting item:', insertError);
-          return res.status(500).json({ error: 'Internal Server Error' });
-        }
-
-        res.status(201).json({ message: 'Item added successfully' });
-      });
+      res.status(201).json({ message: 'Item added successfully' });
     });
   });
 });
-
-
-
-app.get('/', (req, res) => {
-  if (req.session.username) {
-    return res.json({ valid: true, username: req.session.username });
-  }
-  else {
-    return res.json({ valid: false })
-  }
-})
 
 app.put("/employee/:id", (req, res) => {
   const empID = req.params.id;
@@ -295,16 +282,31 @@ app.get('/items', (req, res) => {
 
 app.get('/number-category', (req, res) => {
   const sql = "SELECT COUNT(*) AS category_count FROM category";
+
   db.query(sql, (error, result) => {
     if (error) {
       console.error("Error querying the database:", error);
       return res.status(500).send("Internal Server Error");
-    } else {
+    }
+
+    // Check if result is not empty
+    if (result && result.length > 0) {
       // Send the result back to the client
       res.json({ categoryCount: result[0].category_count });
+    } else {
+      res.status(500).send("Internal Server Error: No data returned from the database query");
     }
   });
 });
+
+app.get('/', (req, res) => {
+  if (req.session.username) {
+    return res.json({ valid: true, username: req.session.username });
+  }
+  else {
+    return res.json({ valid: false })
+  }
+})
 
 app.get('/number-item', (req, res) => {
   const sql = "SELECT COUNT(*) AS item_count FROM item";
@@ -357,6 +359,113 @@ app.get('/number-supplier', (req, res) => {
     }
   });
 });
+
+app.post('/supplier', (req,res)=> {
+  const q = 'INSERT INTO supplier (first_name, second_name, address, phone, email, status) VALUES (?)';
+  const values = [
+    req.body.first_name,
+    req.body.second_name,
+    req.body.address,
+    req.body.phone,
+    req.body.email,
+    req.body.status
+  ]
+  db.query(q, [values], (err,data)=>{
+    if(err){
+    console.error("Error inserting", err);
+    return res.status(500).json({ error: "Internal Server Error"})
+    }else{
+      console.log("Supplier Number added well", data);
+      return res.json(data)
+    }
+  })
+})
+
+app.get('/supplier', (req,res)=>{
+  const q = "SELECT * FROM supplier";
+  db.query(q, (error, result)=>{
+    if (error){
+      console.error("Error querying the database:", error);
+      return res.status(500).send("Internal Server Error");
+    }else{
+      res.json(result)
+    }
+  })
+})
+
+// Assuming itemID is passed as a parameter, and serialNumber is sent in the request body
+app.post('/add-serial-number', (req, res) => {
+  const itemID = req.body.itemID;
+  console.log("ItemID is: ", itemID);
+  const q = "INSERT INTO serial_number (serial_number, state_of_item, depreciation_rate, itemID) VALUES (?)";
+  const values = [
+    req.body.serial_number,
+    req.body.state_of_item,
+    req.body.depreciation_rate,
+    req.body.itemID,
+  ]
+  db.query(q, [values], (err, data) => {
+    if (err) {
+      console.error("Error inserting", err);
+      return res.status(500).json({ error: "Internal Server Error" })
+    }
+    console.log("Serial number added well", data)
+    return res.json(data)
+  });
+
+});
+
+// app.get('/serial-number/:itemID', (req, res) => {
+//   const itemID = req.params.itemID;
+
+//   const q1 = `
+//     SELECT
+//       item.name AS itemName
+//     FROM
+//       serial_number
+//     JOIN
+//       item ON serial_number.itemId = item.id
+//     WHERE
+//       serial_number.itemId = ?;
+//   `;
+
+//   const q2 = `
+//     SELECT
+//       serial_number,
+//       state_of_item,
+//       date
+//     FROM
+//       serial_number
+//     WHERE
+//       itemId = ?;
+//   `;
+
+//   db.query(q1, [itemID], (err, result1) => {
+//     if (err) {
+//       console.error('Error fetching item name:', err);
+//       res.status(500).json({ error: 'Internal Server Error' });
+//       return;
+//     }
+//     const itemName = result1[0].itemName;
+
+//     db.query(q2, [itemID], (err, result2) => {
+//       if (err) {
+//         console.error('Error fetching serial numbers:', err);
+//         res.status(500).json({ error: 'Internal Server Error' });
+//         return;
+//       }
+
+//       const serialNumbers = result2;
+
+//       res.json({
+//         itemName: itemName,
+//         serialNumbers: serialNumbers,
+//         totalSerialCount: serialNumbers.length,
+//       });
+//     });
+//   });
+// });
+
 
 app.get('/item')
 
