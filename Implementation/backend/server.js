@@ -58,18 +58,20 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("A user connected", socket.id);
 
-  socket.on("send_message", (msg) => {
-    console.log("Here is the message", msg);
-  });
-
-  io.on("connect_error", (err) => {
-    console.error("Socket.io error", err);
+  socket.on("send_message", (messageData) => {
+    console.log("Here is the message", messageData.name);
+    console.log("Here is the message", messageData.amount);
+    console.log("Here is the message", messageData.description);
   });
 
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });
 });
+
+ server.listen(5001, () => {
+  console.log("Socket server is running on http://localhost:5001")
+ })
 
 //-----------------Socket---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -366,7 +368,7 @@ app.post('/category', (req, res) => {
     req.body.category_name,
     req.body.description
   ]
-  db.query(q, [values], (er, data) => {
+  db.query(q, [values], (err, data) => {
     if (err) {
       console.error("Error Inserting", err);
       return res.status(500).json({ error: "internal server error" })
@@ -398,8 +400,6 @@ app.post('/supplier', (req, res) => {
   })
 })
 
-
-
 app.get('/supplier', (req, res) => {
   const q = "SELECT * FROM supplier";
   db.query(q, (error, result) => {
@@ -413,15 +413,15 @@ app.get('/supplier', (req, res) => {
 })
 
 // Assuming itemID is passed as a parameter, and serialNumber is sent in the request body
-app.post('/add-serial-number', (req, res) => {
-  const itemID = req.body.itemID;
+app.post('/add-serial-number/:takeItemID', (req, res) => {
+  const itemID = req.params.takeItemID;
   console.log("ItemID is: ", itemID);
   const q = "INSERT INTO serial_number (serial_number, state_of_item, depreciation_rate, itemID) VALUES (?)";
   const values = [
     req.body.serial_number,
     req.body.state_of_item,
     req.body.depreciation_rate,
-    req.body.itemID,
+    itemID,
   ]
   db.query(q, [values], (err, data) => {
     if (err) {
@@ -533,6 +533,59 @@ app.get('/get-name-serial-number/:itemID', (req, res) => {
     return res.json(result);
   })
 })
+
+app.put('/update-item/:id', (req, res) => {
+  const id = req.params.id;
+  const newItemName = req.body.newItemName;
+  const newSupplierName = req.body.newSupplierName;
+  const newCategoryName = req.body.newCategoryName;
+
+  // Step 1: Retrieve supplierID
+  db.query('SELECT id FROM supplier WHERE first_name = ?', [newSupplierName], (err1, supplierResult) => {
+    if (err1) {
+      console.error('Error retrieving supplierID:', err1);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    if (supplierResult.length === 0) {
+      // Supplier not found
+      console.error('Supplier not found.');
+      return res.status(404).json({ error: 'Supplier not found' });
+    }
+
+    const supplierID = supplierResult[0].id;
+
+    // Step 2: Retrieve categoryID
+    db.query('SELECT id FROM category WHERE category_name = ?', [newCategoryName], (err2, categoryResult) => {
+      if (err2) {
+        console.error('Error retrieving categoryID:', err2);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      if (categoryResult.length === 0) {
+        // Category not found
+        console.error('Category not found.');
+        return res.status(404).json({ error: 'Category not found' });
+      }
+
+      const categoryID = categoryResult[0].id;
+
+      // Step 3: Update item table
+      const updateQuery = 'UPDATE item SET name = ?, supplierID = ?, categoryID = ? WHERE id = ?';
+      const updateValues = [newItemName, supplierID, categoryID, id];
+
+      db.query(updateQuery, updateValues, (err3) => {
+        if (err3) {
+          console.error('Error updating item:', err3);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        res.json({ message: 'Item updated successfully' });
+      });
+    });
+  });
+});
+
 
 app.get('/item')
 

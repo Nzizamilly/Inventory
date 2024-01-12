@@ -3,8 +3,12 @@ import React from 'react';
 import Approve from '../images/approve.png'
 import Deny from '../images/deny.png'
 import'../style.css'
+// import io from 'socket.io-client'
 
 function NotificationAdmin() {
+
+  // const socket = io.connect("http://localhost:5001");
+  // const s
   
     const buttonStyle = {
       backgroundColor: 'cyan',
@@ -35,6 +39,5 @@ function NotificationAdmin() {
     </div>
   );
 }
-
 
 export default NotificationAdmin;

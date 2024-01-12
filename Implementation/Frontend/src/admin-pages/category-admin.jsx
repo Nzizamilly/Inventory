@@ -41,20 +41,20 @@ function CategoryAdmin() {
 
   const [addVisible, setAddVisible] = useState(false);
 
-  const [category, setCategory] = useState ({
+  const [category, setCategory] = useState({
     category_name: '',
     description: ''
   })
 
   const handleMake = async (event) => {
-      try {
-        await axios.post(`http://localhost:5500/category`, category);
-        console.log("Category added successfully")
-        setAddVisible(false);
-      } catch {
-        console.log('Error')
-      }
+    try {
+      await axios.post(`http://localhost:5500/category`, category);
+      console.log("Category added successfully")
+      setAddVisible(false);
+    } catch {
+      console.log('Error')
     }
+  }
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -74,7 +74,7 @@ function CategoryAdmin() {
     <div className="category-container">
       <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Supplier</p></button>
       <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
-        <h1>Add Supplier</h1>
+        <h1>Add Category</h1>
         <input type='text' placeholder='Category Name' name='category_name' onChange={handleChange2} />
         <input type='text' placeholder='Description' name='description' onChange={handleChange2} />
         <button onClick={handleMake}>Submit</button>
