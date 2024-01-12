@@ -360,7 +360,24 @@ app.get('/number-supplier', (req, res) => {
   });
 });
 
-app.post('/supplier', (req,res)=> {
+app.post('/category', (req, res) => {
+  const q = 'INSERT INTO category (category_name, description) VALUES (?)';
+  const values = [
+    req.body.category_name,
+    req.body.description
+  ]
+  db.query(q, [values], (er, data) => {
+    if (err) {
+      console.error("Error Inserting", err);
+      return res.status(500).json({ error: "internal server error" })
+    } else {
+      console.log("Supplier added well", data);
+      return res.json(data)
+    }
+  })
+})
+
+app.post('/supplier', (req, res) => {
   const q = 'INSERT INTO supplier (first_name, second_name, address, phone, email, status) VALUES (?)';
   const values = [
     req.body.first_name,
@@ -370,24 +387,26 @@ app.post('/supplier', (req,res)=> {
     req.body.email,
     req.body.status
   ]
-  db.query(q, [values], (err,data)=>{
-    if(err){
-    console.error("Error inserting", err);
-    return res.status(500).json({ error: "Internal Server Error"})
-    }else{
+  db.query(q, [values], (err, data) => {
+    if (err) {
+      console.error("Error inserting", err);
+      return res.status(500).json({ error: "Internal Server Error" })
+    } else {
       console.log("Supplier Number added well", data);
       return res.json(data)
     }
   })
 })
 
-app.get('/supplier', (req,res)=>{
+
+
+app.get('/supplier', (req, res) => {
   const q = "SELECT * FROM supplier";
-  db.query(q, (error, result)=>{
-    if (error){
+  db.query(q, (error, result) => {
+    if (error) {
       console.error("Error querying the database:", error);
       return res.status(500).send("Internal Server Error");
-    }else{
+    } else {
       res.json(result)
     }
   })
@@ -415,57 +434,105 @@ app.post('/add-serial-number', (req, res) => {
 
 });
 
-// app.get('/serial-number/:itemID', (req, res) => {
-//   const itemID = req.params.itemID;
+app.get('/serial-number/:itemID', (req, res) => {
+  const itemID = req.params.itemID;
 
-//   const q1 = `
-//     SELECT
-//       item.name AS itemName
-//     FROM
-//       serial_number
-//     JOIN
-//       item ON serial_number.itemId = item.id
-//     WHERE
-//       serial_number.itemId = ?;
-//   `;
+  const q1 = `
+    SELECT
+      item.name AS itemName
+    FROM
+      serial_number
+    JOIN
+      item ON serial_number.itemId = item.id
+    WHERE
+      serial_number.itemId = ?;
+  `;
 
-//   const q2 = `
-//     SELECT
-//       serial_number,
-//       state_of_item,
-//       date
-//     FROM
-//       serial_number
-//     WHERE
-//       itemId = ?;
-//   `;
+  const q2 = `
+    SELECT
+      serial_number,
+      state_of_item,
+      date
+    FROM
+      serial_number
+    WHERE
+      itemId = ?;
+  `;
 
-//   db.query(q1, [itemID], (err, result1) => {
-//     if (err) {
-//       console.error('Error fetching item name:', err);
-//       res.status(500).json({ error: 'Internal Server Error' });
-//       return;
-//     }
-//     const itemName = result1[0].itemName;
+  db.query(q1, [itemID], (err, result1) => {
+    if (err) {
+      console.error('Error fetching item name:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
 
-//     db.query(q2, [itemID], (err, result2) => {
-//       if (err) {
-//         console.error('Error fetching serial numbers:', err);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//         return;
-//       }
+    // Check if result1 has rows before accessing them
+    if (result1 && result1.length > 0) {
+      const itemName = result1[0].itemName;
 
-//       const serialNumbers = result2;
+      db.query(q2, [itemID], (err, result2) => {
+        if (err) {
+          console.error('Error fetching serial numbers:', err);
+          res.status(500).json({ error: 'Internal Server Error' });
+          return;
+        }
 
-//       res.json({
-//         itemName: itemName,
-//         serialNumbers: serialNumbers,
-//         totalSerialCount: serialNumbers.length,
-//       });
-//     });
-//   });
-// });
+        const serialNumbers = result2;
 
+        res.json({
+          itemName: { itemName },
+          serialNumbers: { serialNumbers },
+          totalSerialCount: serialNumbers.length,
+        });
+      });
+    } else {
+      // Handle the case where result1 is empty
+      res.status(404).json({ error: 'Item not found' });
+    }
+  });
+});
+
+app.get('/get-serial-number/:itemID', (req, res) => {
+  const itemID = req.params.itemID;
+  const q = 'SELECT * FROM serial_number WHERE itemID = ?';
+  const values = [
+    itemID
+  ];
+  db.query(q, [values], (err, result) => {
+    if (err) {
+      console.error('Error fetching item : ', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    return res.json(result)
+  })
+})
+
+app.get('/get-name-serial-number/:itemID', (req, res) => {
+  const itemID = req.params.itemID;
+  const q = `
+  SELECT
+    serial_number.*,
+    item.name AS itemName
+  FROM
+    serial_number
+  JOIN
+    item ON serial_number.itemID = item.id
+  WHERE
+    serial_number.itemID = ?;
+`;
+  const values = [
+    itemID
+  ]
+  db.query(q, [values], (err, result) => {
+    if (err) {
+      console.error('Error fetching item: ', err);
+      res.status(500).json({ error: 'Internal Server Error'});
+      return;
+    }
+    return res.json(result);
+  })
+})
 
 app.get('/item')
 

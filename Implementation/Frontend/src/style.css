@@ -691,3 +691,26 @@ li a:hover {
     border-radius: 15px;
     gap: 12px;
 }
+
+.terms-admin{
+    width: 83%;
+    text-align: left;
+    height: 49%;
+    background-color: rgb(206, 206, 236);
+    color: rgb(29, 27, 27);
+    border: none;
+    border-radius: 12px;
+    gap: 15px;
+    font-family: 'Arial', sans-serif;
+    margin-top: -178px;
+    margin-left: 220px;
+    display: flex;
+    padding: 12px 0px;
+    padding-left: 12px;
+    flex-direction: column;
+};
+
+.th1{
+    width: 23px;
+    background-color: blue;
+}

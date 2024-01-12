@@ -11,8 +11,8 @@ function Request() {
     });
 
     socket.emit("send_message", { message: "Hello" })
-    
-    socket.on("disconnect", ()=>{
+
+    socket.on("disconnect", () => {
       console.log("Disconnected from socket server")
     })
 
@@ -24,7 +24,7 @@ function Request() {
         <input placeholder='Item name' type='text' name='name' />
         <input placeholder='Amount' type='text' name='amount' />
         <textarea name='description'>Description</textarea>
-        <Link to={'/'}><button onClick={sendMessage}>Send</button></Link>
+        <button onClick={sendMessage}>Send</button>
       </form>
     </div>
   );

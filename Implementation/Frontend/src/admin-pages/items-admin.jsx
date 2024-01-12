@@ -49,11 +49,10 @@ function ItemsAdmin() {
   const [isSimpleModalOpen, setIsSimpleModalOpen] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [isSerialModalOpen, setIsSerialModalOpen] = useState(false);
-  // const [serialNumber, setSerialNumber] = useState('');
   const [selectedItemID, setSelectedItemID] = useState(null);
-  const [isInfoModalOpen, setIsInfoModalOpen ] = useState(false);
-  const [getItems, setGetItems] = useState([])
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [takenItemId, setTakenItemId] = useState('');
+  const [loadingInfo, setLoadingInfo] = useState(false)
 
 
   const openSerialModal = (itemId) => {
@@ -61,9 +60,23 @@ function ItemsAdmin() {
     setIsSerialModalOpen(true, itemId);
   };
 
-  const openInfoModal = (itemId) => {
-    setSelectedItemID(itemId);
-    setIsInfoModalOpen(true);
+  const openInfoModal = async (itemId) => {
+    try {
+      setSelectedItemID(itemId);
+      setLoadingInfo(true);
+      fetchNumberOfItems(itemId);
+      fetchNumberOfItemss(itemId);
+      fetchNom(itemId);
+      // setIsInfoModalOpen(true);
+      // setLoadingInfo(false)
+    } catch (error) {
+      console.error('Error fetching data: ', error);
+      setLoadingInfo(false);
+    }
+    finally {
+      setIsInfoModalOpen(true);
+      setLoadingInfo(false)
+    }
   }
 
   const closeInfoModal = () => {
@@ -139,12 +152,10 @@ function ItemsAdmin() {
     }
   };
 
-  // const [serialNumberCount, setSerialNumberCount] = useState('')
 
   const handleAddSerialNumberClick = async (selectedItemID) => {
     console.log("ItemID", selectedItemID);
     const takeItemID = selectedItemID;
-    console.log("This has taken ItemID", takeItemID);
     setTakenItemId(takeItemID);
     setSerialNumber(takeItemID);
     setIsSerialModalOpen(true);
@@ -159,21 +170,92 @@ function ItemsAdmin() {
       console.error('Error adding serial number', error);
     }
   };
-  const fetchNumberOfItems = async (selectedItemID) => {
-    console.log("ItemID: ", selectedItemID)
+  const [itemName, setItemName] = useState('');
+  const [serialNumbers, setSerialNumbers] = useState([]);
+  const [totalSerialCount, setTotalSerialCount] = useState(0);
+
+  const fetchNumberOfItems = async (itemID) => {
     try {
-      const response = await axios.get(`http://localhost:5500/serial-number/${selectedItemID}`);
-      setGetItems(response.data);
-    }catch (error){
-      console.error('Error retrieving the items', error);
+      setLoadingInfo(true);
+      const response = await axios.get(`http://localhost:5500/serial-number/${itemID}`);
+      const result = await response.data;
+      console.log('Fetched data:', result);
+      setItemName(result.itemName);
+      setSerialNumbers(result.serialNumbers);
+      setTotalSerialCount(result.totalSerialCount);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoadingInfo(false);
     }
   };
+
+  const [getEm, setGetEm] = useState([]);
+
+  const fetchNumberOfItemss = async (itemID) => {
+    try {
+      const response = await axios.get(`http://localhost:5500/get-serial-number/${itemID}`);
+      const result = await response.data;
+      setGetEm(result);
+    } catch (error) {
+      console.error('Error fetching data: ', error)
+    }
+  }
+
+  const [getNom, setGetNom] = useState([]);
+
+  const fetchNom = async (itemID) => {
+    try {
+      const response = await axios.get(`http://localhost:5500/get-name-serial-number/${itemID}`);
+      const result = await response.data;
+  
+      if (result.length > 0) {
+        const itemNameFromResponse = result[0].itemName;
+        setGetNom(itemNameFromResponse);
+      } else {
+        // Handle the case where no item name is found
+        setGetNom("Item Name Not Found");
+      }
+    } catch (error) {
+      console.error('Error fetching Nom: ', error);
+    }
+  };
+  
+
+  // const fetchNumberOfItems = async ({itemID}) => {
+  //  const [data, setData] = useState(null);
+  //  const [loading, setLoading] = useState(true);
+
+  //  useEffect(()=>{
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch(`/serial-number/${itemID}`);
+  //       const result = await response.json();
+  //       setData(result);
+  //       setLoading(false);
+  //     }catch(error){
+  //       console.error('Error fetching data:', error)
+  //     }
+  //   };
+  //   fetchData();
+  //  }, [itemID]);
+
+  //   if (!data){
+  //     return <p>Error loading Data</p>
+  //   }
+
+  //  if (loading){
+  //   return <p>Loading....</p>;
+  //  }
+  // }
+
+  // const {itemName, serialNumbers, totalSerialCount } = data
+
 
   const handleCategoryClick = (categoryId,) => {
     setSelectedCategory(categoryId);
     fetchItemsByCategory(categoryId);
     setIsModalOpen(true);
-    // fetchNumberOfItems(itemId)
   };
 
   const closeModal = () => {
@@ -191,14 +273,17 @@ function ItemsAdmin() {
   });
 
   const handleSerialNumber = (event) => {
-    setSerialNumber((prev)=> ({...prev, [event.target.name]: event.target.value}));
+    setSerialNumber((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   }
+
+  console.log('serialNumbers:', serialNumbers, totalSerialCount, itemName);
+
 
   return (
     <div className='items-container'>
       <div class='item'>
         {categories.map(category => (
-          <button key={category.id} onClick={() => handleCategoryClick(category.id, )} className='buttonStyle2'>{category.category_name}</button>
+          <button key={category.id} onClick={() => handleCategoryClick(category.id,)} className='buttonStyle2'>{category.category_name}</button>
         ))}
 
         <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
@@ -208,7 +293,6 @@ function ItemsAdmin() {
               <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>State of item</th>
                 <th>Supplier</th>
                 <th>Category</th>
                 <th>Date Entered</th>
@@ -222,14 +306,13 @@ function ItemsAdmin() {
                 <tr key={item.id}>
                   <td> {item.id}</td>
                   <td> {item.name} </td>
-                  <td> {item.state_of_item} </td>
                   <td> {item.first_name} </td>
                   <td> {item.category_name} </td>
                   <td>{formatDate(item.createdAt)}</td>
                   <td><button className='addItem-btn'><img src={Update} style={svgStyle} /></button></td>
                   <td><button className='addItem-btn'><img src={Delete} style={svgStyle} /></button></td>
-                  <td><button className='addItem-btn' onClick={() => handleAddSerialNumberClick(item.id)}><img src={Addy} style={svgStyle} /></button></td>
-                  {/* <td><button className='addItem-btn' onClick={() => openSerialModal(item.id)}><img src={Addy} style={svgStyle} /></button></td> */}
+                  {/* <td><button className='addItem-btn' onClick={() => handleAddSerialNumberClick(item.id)}><img src={Addy} style={svgStyle} /></button></td> */}
+                  <td><button className='addItem-btn' onClick={() => openSerialModal(item.id)}><img src={Addy} style={svgStyle} /></button></td>
                   <td><button className='addItem-btn' onClick={() => openInfoModal(item.id)}><img src={Info} style={svgStyle} /></button></td>
                 </tr>
               ))}
@@ -255,26 +338,28 @@ function ItemsAdmin() {
           <button onClick={() => handleAddSerialNumberClick(takenItemId)}>Add </button>
           {/* <button onClick={() => handleAddSerialNumberClick(selectedCategory)}>Add </button> */}
         </Modal>
+
         <Modal isOpen={isInfoModalOpen} onRequestClose={closeInfoModal} style={modalStyles}>
-          <h1></h1>
+          <h1>{getNom.itemName}: {totalSerialCount}</h1>
           <table>
             <thead>
-              <tr>
+              <tr className='th1'>
                 <th>Serial Number</th>
                 <th>State of item</th>
+                <th>Depreciation Rate</th>
                 <th>Date</th>
                 <th>Update</th>
-                <the>Delete</the>
+                <th>Delete</th>
               </tr>
             </thead>
             <tbody>
-              {getItems.map((itemy)=>(
-                <tr key={itemy.id}>
-                  <h1>{itemy.itemName}: {itemy.totalSerialCount}</h1>
-                  <td>{itemy.serial_number}</td>
-                  <td>{itemy.state_of_item}</td>
-                  <td>{itemy.date}</td>
-                  </tr>
+              {getEm.map((getem) => (
+                <tr key={getem.id}>
+                  <td>{getem.serial_number}</td>
+                  <td>{getem.state_of_item}</td>
+                  <td>{getem.depreciation_rate}</td>
+                  <td>{formatDate(getem.date)}</td>
+                </tr>
               ))}
             </tbody>
           </table>
