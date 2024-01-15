@@ -59,9 +59,8 @@ io.on("connection", (socket) => {
   console.log("A user connected", socket.id);
 
   socket.on("send_message", (messageData) => {
-    console.log("Here is the message", messageData.name);
-    console.log("Here is the message", messageData.amount);
-    console.log("Here is the message", messageData.description);
+    io.emit("sentBack", messageData );
+    console.log("From employee: ", messageData);
   });
 
   socket.on("disconnect", () => {
@@ -69,9 +68,9 @@ io.on("connection", (socket) => {
   });
 });
 
- server.listen(5001, () => {
-  console.log("Socket server is running on http://localhost:5001")
- })
+server.listen(5001, () => {
+  console.log("Socket server is running on http://localhost:5001");
+});
 
 //-----------------Socket---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
