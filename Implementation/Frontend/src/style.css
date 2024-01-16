@@ -552,16 +552,15 @@ li a:hover {
     display: flex;
     gap: 91px;
     flex-wrap: wrap;
-}
+};
 
-;
-
-.item {
-    width: 20%;
+.items{
+    width: 70%;
     height: 98%;
     border-radius: 15px;
     background-color: black;
-
+    gap: 91px;
+    padding: 34px
 }
 
 .employee-container {

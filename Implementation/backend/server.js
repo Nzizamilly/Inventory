@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 app.use(cors({
   origin: ["http://localhost:3000"],
-  methods: ["POST", "GET", "PUT"],
+  methods: ["POST", "GET", "PUT", "DELETE"],
   credentials: true
 }));
 
@@ -59,8 +59,18 @@ io.on("connection", (socket) => {
   console.log("A user connected", socket.id);
 
   socket.on("send_message", (messageData) => {
-    io.emit("sentBack", messageData );
+    io.emit("sentBack", messageData);
     console.log("From employee: ", messageData);
+  });
+
+  socket.on("Approved", (notifications, newstatus) => {
+    console.log("Data response from the admin: ", notifications, newstatus)
+    io.emit("Approved", notifications, newstatus);
+  });
+
+  socket.on("Denied", (notifications, newStatus) => {
+    console.log("Data response from Admin: ", notifications, newStatus);
+    io.emit("Denied", notifications, newStatus);
   });
 
   socket.on("disconnect", () => {
@@ -526,7 +536,7 @@ app.get('/get-name-serial-number/:itemID', (req, res) => {
   db.query(q, [values], (err, result) => {
     if (err) {
       console.error('Error fetching item: ', err);
-      res.status(500).json({ error: 'Internal Server Error'});
+      res.status(500).json({ error: 'Internal Server Error' });
       return;
     }
     return res.json(result);
@@ -584,6 +594,158 @@ app.put('/update-item/:id', (req, res) => {
     });
   });
 });
+
+// const getEmployeeID = (employeeName, callback) => {
+//   const query = `SELECT id FROM employees WHERE username = ?`;
+
+//   db.query(query, [employeeName], (error, results) => {
+//     if (error) {
+//       console.error(error);
+//       callback(error, null);
+//     } else {
+//       const employeeID = results.length > 0 ? results[0].employeeID : null;
+//       callback(null, employeeID);
+//     }
+//   });
+// };
+
+// Function to get itemID based on itemName
+// const getItemID = (itemName, callback) => {
+//   const query = `SELECT id FROM item WHERE name = ?`;
+
+//   db.query(query, [itemName], (error, results) => {
+//     if (error) {
+//       console.error(error);
+//       callback(error, null);
+//     } else {
+//       const itemID = results.length > 0 ? results[0].itemID : null;
+//       callback(null, itemID);
+//     }
+//   });
+// };
+
+// // Endpoint for storing notifications
+// app.post('/request', (req, res) => {
+//   try {
+//     const getEmployee_ID = (employeeName) => {
+//       const sql = ` SELECT id FROM employees WHERE username = ? `;
+//       db.query(sql, [employeeName], (error, result) => {
+//         if (error) {
+//           console.error(error)
+//         } else {
+//           return result;
+//         }
+//       })
+//     }
+//     const { amount, description, employeeName, itemName } = req.body;
+
+//   const gotEmployee_ID = getEmployee_ID(employeeName);
+
+//     // Get employeeID based on employeeName
+//     getEmployeeID(employeeName, (errEmployee, employeeID) => {
+//       if (errEmployee || !employeeID) {
+//         return res.status(400).json({ error: 'Invalid employeeName' });
+//       }
+
+//       // Get itemID based on itemName
+//       getItemID(itemName, (errItem, itemID) => {
+//         if (errItem || !itemID) {
+//           return res.status(400).json({ error: 'Invalid itemName' });
+//         }
+
+//         // Insert into the 'request_employee' table with foreign keys
+//         const query = `INSERT INTO request_employee (amount, description, employeeID, itemID) VALUES (?, ?, ?, ?)`;
+
+//         db.query(query, [amount, description, getEmployee_ID, itemID], (error, results) => {
+//           if (error) {
+//             console.error(error);
+//             res.status(500).json({ error: 'Internal Server Error' });
+//           } else {
+//             console.log("Notification stored in the database");
+//             res.status(200).json({ message: 'Notification stored in the database' });
+//           }
+//         });
+//       });
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
+
+app.post('/request', async (req, res) => {
+  const getEmployeeID = (employeeName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM employees WHERE username = ?`;
+      db.query(sql, [employeeName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const employeeID = result.length > 0 ? result[0].id : null;
+          console.log("Employee ID", employeeID);
+          resolve(employeeID);
+        }
+      });
+    });
+  };
+
+  const getItemID = (itemName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM item WHERE name = ?`;
+      db.query(sql, [itemName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const itemID = result.length > 0 ? result[0].id : null;
+          console.log("Item ID", itemID);
+          resolve(itemID);
+        }
+      });
+    });
+  };
+
+  try {
+    const gotEmployeeName = req.body.employeeName;
+    const employeeID = await getEmployeeID(gotEmployeeName);
+    console.log("Employee ID: ", employeeID);
+
+    const gotItemName = req.body.itemName;
+    const itemID = await getItemID(gotItemName);
+    console.log("Item ID: ", itemID);
+
+    const q =
+      "INSERT INTO request_employee (amount, description, employeeID, itemID) VALUES (?, ?, ?, ?)";
+    const values = [req.body.amount, req.body.description, employeeID, itemID];
+
+    db.query(q, values, (err, data) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+      } else {
+        console.log(data);
+        res.status(200).send("Request successfully inserted");
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.delete('/delete-item/:itemID', (req,res) => {
+  const itemID = req.params.itemID;
+  const q = `DELETE FROM item WHERE id = ?`;
+  db.query(q, [itemID], (err, result) => {
+   if(err) {
+    console.error("Error", err);
+   }else{
+    console.log("Result :", result);
+    return result;
+   }
+  })
+})
 
 
 app.get('/item')

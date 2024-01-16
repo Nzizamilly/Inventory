@@ -24,13 +24,13 @@ function Request() {
 
     console.log('name', name)
     const messageData = {
-      name: get,
+      employeeName: get,
       itemName,
       amount,
       description
     };
 
-   ;
+   console.log("name", messageData.employeeName);
 
     socket.emit("send_message", messageData);
 

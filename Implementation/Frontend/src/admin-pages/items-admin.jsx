@@ -34,6 +34,28 @@ function ItemsAdmin() {
     },
   }
 
+  const itemstyle = {
+    content: {
+      top: '50%',
+      width: '70%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      borderRadius: '12px',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      fontFamily: 'Your Custom Font, sans-serif',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      border: 'none',
+      lineHeight: '1.5',
+      display: 'flex',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      alignItems: 'center'
+    },
+  }
+
   const svgStyle = {
     // backgroundColor: 'green',
     width: '30px',
@@ -261,6 +283,16 @@ function ItemsAdmin() {
     setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   }
 
+  const handleDelete = async (itemID) => {
+   try {
+    const response = await axios.delete(`http://localhost:5500/delete-item/${itemID}`)
+    alert("Item Deleted Successfully");
+    console.log(response);
+   } catch (error) {
+     console.error('Error Deleting Item: ', error);
+   };
+  }
+
    const handleUpdateClick = async (itemID) => {
     try {
       const response = await axios.put(`http://localhost:5500/update-item/${itemID}`, update);
@@ -273,7 +305,7 @@ function ItemsAdmin() {
   };
   return (
     <div className='items-container'>
-      <div class='item'>
+      <div style={itemstyle}>
         {categories.map(category => (
           <button key={category.id} onClick={() => handleCategoryClick(category.id)} className='buttonStyle2'>{category.category_name}</button>
         ))}
@@ -301,8 +333,8 @@ function ItemsAdmin() {
                   <td> {item.first_name} </td>
                   <td> {item.category_name} </td>
                   <td>{formatDate(item.createdAt)}</td>
-                  <td><button className='addItem-btn' onClick={() => openUpdateModal(item.id)}><img src={Update} style={svgStyle} /></button></td>
-                  <td><button className='addItem-btn'><img src={Delete} style={svgStyle} /></button></td>
+                  <td><button className='addItem-btn' onClick={() => openUpdateModal(item.id)} ><img src={Update} style={svgStyle} /></button></td>
+                  <td><button className='addItem-btn' onClick={() => handleDelete(item.id)} ><img src={Delete} style={svgStyle} /></button></td>
                   {/* <td><button className='addItem-btn' onClick={() => handleAddSerialNumberClick(item.id)}><img src={Addy} style={svgStyle} /></button></td> */}
                   <td><button className='addItem-btn' onClick={() => openSerialModal(item.id)}><img src={Addy} style={svgStyle} /></button></td>
                   <td><button className='addItem-btn' onClick={() => openInfoModal(item.id)}><img src={Info} style={svgStyle} /></button></td>
@@ -311,7 +343,6 @@ function ItemsAdmin() {
             </tbody>
           </table>
         </Modal>
-
         <Modal isOpen={isUpdateModalOpen} onRequestClose={closeUpdateModal} style={modalStyles}>
           <h1>Update Items</h1>
           <input placeholder='Name' name='newItemName' type='text' onChange={handleUpdateInput} />
@@ -323,7 +354,6 @@ function ItemsAdmin() {
           <button onClick={() => handleUpdateClick(takenItemId)}>Add </button>
 
         </Modal>
-
         <Modal isOpen={isSimpleModalOpen} onRequestClose={closeSimpleModal} style={modalStyles}>
           <h1>Create A New Item</h1>
           <input placeholder='Name' name='name' type='text' value={newItem.name} onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} />
@@ -347,8 +377,6 @@ function ItemsAdmin() {
           <h1>
             {getNom.length > 0 ? <span>{getNom[0].itemName}</span> : "Item Name Not Found"}: {totalSerialCount}
           </h1>
-
-
           <table>
             <thead>
               <tr className='th1'>
@@ -373,6 +401,7 @@ function ItemsAdmin() {
             </tbody>
           </table>
         </Modal>
+      
       </div>
     </div >
   );

@@ -31,11 +31,11 @@ function Home() {
             </div>
             <div className="icons1">
                 <img className='img1' src={Request} alt='img2' />
-                <p>Requests: 32</p>
+                <p>Requests: ---</p>
             </div>
             <div className="icons2">
                 <img className='img1' src={Notification} alt='img3' />
-                <p>Notifications: 2</p>
+                <p>Notifications: ---</p>
             </div>
         </div>
     );
