@@ -30,6 +30,18 @@ function SupplierAdmin() {
     },
   }
 
+  const employeeContainer = {
+    fontFamily: 'Arial, sans-serif',
+    width: '100%',
+    height: '100vh',
+    backgroundColor: 'rgb(163, 187, 197)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    gap: '51px',
+    flexWrap: 'wrap'
+  }
+
   const color = {
     color: 'green'
   }
@@ -89,6 +101,7 @@ function SupplierAdmin() {
 
   const [visible, setVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
+  
   const [supp, setSupp] = useState({
     first_name: '',
     second_name: '',
@@ -111,8 +124,9 @@ function SupplierAdmin() {
   }
 
   return (
-    <div className='employee-container'>
+    <div style={employeeContainer}>
       <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Supplier</p></button>
+
       <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
         <h1>Add Supplier</h1>
         <input type='text' placeholder='First Name' name='first_name' onChange={handleChange2} />
@@ -123,6 +137,7 @@ function SupplierAdmin() {
         <input type='text' placeholder='Status' name='status' onChange={handleChange2} />
         <button onClick={handleMake}>Submit</button>
       </Model>
+
       {suppliers.map((supplier) => (
         <div key={supplier.id} className="employee">
           <div className="bigger">

@@ -5,6 +5,8 @@ import Model from 'react-modal'
 
 function Account() {
 
+  axios.defaults.withCredentials = true;
+
   const modal = {
     overlay: {
       backgroundColor: 'rgba(34, 41, 44, 0.8)',
@@ -51,8 +53,6 @@ function Account() {
   });
 
   const location = useLocation();
-
-  // console.log("This is EmpID", EmpID);
 
   const handleChange = (event) => {
     setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));

@@ -15,8 +15,10 @@ function NotificationAdmin() {
 
     socket.on("sentBack", (messageData) => {
       if (Array.isArray(messageData)) {
+        console.log("Name: ", messageData.employeeName)
         setNotifications(messageData);
       } else if (typeof messageData === 'object') {
+        console.log("Name: ", messageData.employeeName)
         setNotifications([messageData]);
       } else {
         console.error("Received unexpected messageData:", messageData);
@@ -33,18 +35,39 @@ function NotificationAdmin() {
   });
 
   const buttonStyle = {
-    backgroundColor: 'cyan',
-    color: 'white',
-    padding: '5px 12px',
-    borderRadius: '45px',
+    backgroundColor: 'white',
+    // color: 'white',
+    // padding: '0px 0px',
+    // borderRadius: '45px',
+    // marginTop: '0px'
   };
 
   const svgStyle = {
-    width: '30px',
-    height: '30px',
+    width: '27px',
+    height: '27px',
     borderRadius: '14px',
-    marginTop: '2px'
+    // marginTop: '2px'
   };
+
+const sumStyle = {
+  marginTop: '24px',
+  marginLeft: '2px'
+}  
+
+  const notificationAdmin = {
+    width: '44%',
+    height: '11%',
+    textAlign: 'center',
+    gap: '6px',
+    border: 'none',
+    display: 'flex',
+    flexDirection: ' row',
+    marginLeft: '300px',
+    borderRadius: '15px',
+    padding: '7px',
+    color: 'black',
+    backgroundColor: 'white'
+  }
 
   const handleApprove = async (notifications) => {
     try {
@@ -71,8 +94,8 @@ function NotificationAdmin() {
   return (
     <div className="notification-container-admin">
       {notifications.map((notification) => (
-        <div key={notification.id} className='notification-admin'>
-          {notification.name} Requested: {notification.itemName}  Amount: {notification.amount} Description: {notification.description} Date: 12/12/2023
+        <div key={notification.id} style={notificationAdmin}>
+          <p style = {sumStyle}> {notification.employeeName} Requested: {notification.itemName}  Amount: {notification.amount} Description: {notification.description} Date: 12/12/2023</p>
           <button className='buttonStyle' onClick={() => handleApprove(notification)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
           <button className='buttonStyle' onClick={() => handleDeny(notification)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
         </div>

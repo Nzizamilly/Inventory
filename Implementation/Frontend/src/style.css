@@ -141,7 +141,7 @@ button {
 }
 
 #profile_picture {
-    width: 200px;
+    width: 111px;
     height: 200px;
     /* object-fit: cover; */
     background-color: aqua;
@@ -548,20 +548,20 @@ li a:hover {
     height: 100vh;
     background-color: rgb(163, 187, 197);
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
     display: flex;
     gap: 91px;
     flex-wrap: wrap;
 };
 
-.items{
+/* .items{
     width: 70%;
     height: 98%;
     border-radius: 15px;
     background-color: black;
     gap: 91px;
     padding: 34px
-}
+} */
 
 .employee-container {
     font-family: 'Arial', sans-serif;
@@ -623,7 +623,7 @@ li a:hover {
     text-align: center;
     border: none;
     display: flex;
-    flex-direction: column;
+    flex-direction:row;
     margin-left: 300px;
     border-radius: 15px;
     padding: 12px 0px;
@@ -642,7 +642,7 @@ li a:hover {
 .buttonStyle2 {
     background-color: black;
     border-radius: 15px;
-    width: 68px;
+    width: 98px;
     text-align: center;
     height: 53px;
 }

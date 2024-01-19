@@ -36,6 +36,7 @@ function Login() {
         password: ''
     });
     const navigate = useNavigate();
+    
     const handleInput = (event) => {
         setValues(prev => ({...prev, [event.target.name]: [event.target.value] }))
     };

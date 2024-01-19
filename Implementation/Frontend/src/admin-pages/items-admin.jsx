@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import '../style.css';
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal'
@@ -8,8 +7,10 @@ import Update from '../images/update.svg'
 import Delete from '../images/delete.svg'
 import Addy from '../images/addy.svg'
 import Info from '../images/info.svg'
+import DataTable from 'react-data-table-component';
 
 function ItemsAdmin() {
+
 
   const modalStyles = {
     content: {
@@ -35,25 +36,14 @@ function ItemsAdmin() {
   }
 
   const itemstyle = {
-    content: {
-      top: '50%',
-      width: '70%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      borderRadius: '12px',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-      fontFamily: 'Your Custom Font, sans-serif',
-      fontSize: '16px',
-      fontWeight: 'bold',
-      border: 'none',
-      lineHeight: '1.5',
-      display: 'flex',
-      justifyContent: 'center',
-      flexDirection: 'column',
-      alignItems: 'center'
-    },
+    // top: '20%',
+    // backgroundColor: 'black',
+    width: '70%',
+    left: '50%',
+    marginTop: '63px',
+    gap: '18px',
+    display: 'flex',
+    padding: '12px 12px'
   }
 
   const svgStyle = {
@@ -77,8 +67,14 @@ function ItemsAdmin() {
   const [loadingInfo, setLoadingInfo] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [takeUpdateId, setTakeUpdateID] = useState(null);
-
-
+  const [itemName, setItemName] = useState('');
+  const [serialNumbers, setSerialNumbers] = useState([]);
+  const [totalSerialCount, setTotalSerialCount] = useState(0);
+  const [getEm, setGetEm] = useState([]);
+  const [getNom, setGetNom] = useState([]);
+  const [records, setRecords] = useState(getEm);
+  const [isUpdateSerial, setIsUpdateSerial ] = useState(false);
+  const [getUpdateSerialID, setGetUpdateSerialID] = useState('');
 
   const openSerialModal = (itemId) => {
     setSelectedItemID(itemId);
@@ -91,9 +87,19 @@ function ItemsAdmin() {
     setIsUpdateModalOpen(true);
     handleUpdateClick(itemID)
   }
-
+  
   const closeUpdateModal = () => {
     setIsUpdateModalOpen(false);
+  }
+
+  const openUpdateSerial = (row) => {
+    setIsUpdateSerial(true);
+    handleSerialUpdate(row);
+    setGetUpdateSerialID(row)
+  }
+
+  const closeUpdateSerialModal = () => {
+    setIsUpdateSerial(false);
   }
 
   const openInfoModal = async (itemId) => {
@@ -166,6 +172,10 @@ function ItemsAdmin() {
     }
   };
 
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -207,9 +217,7 @@ function ItemsAdmin() {
       console.error('Error adding serial number', error);
     }
   };
-  const [itemName, setItemName] = useState('');
-  const [serialNumbers, setSerialNumbers] = useState([]);
-  const [totalSerialCount, setTotalSerialCount] = useState(0);
+
 
   const fetchNumberOfItems = async (itemID) => {
     try {
@@ -227,7 +235,6 @@ function ItemsAdmin() {
     }
   };
 
-  const [getEm, setGetEm] = useState([]);
 
   const fetchNumberOfItemss = async (itemID) => {
     try {
@@ -238,8 +245,6 @@ function ItemsAdmin() {
       console.error('Error fetching data: ', error)
     }
   }
-
-  const [getNom, setGetNom] = useState([]);
 
   const fetchNom = async (itemID) => {
     try {
@@ -260,10 +265,7 @@ function ItemsAdmin() {
   const closeModal = () => {
     setIsModalOpen(false);
   }
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
+
   const [serialNumber, setSerialNumber] = useState({
     serial_number: '',
     state_of_item: '',
@@ -284,16 +286,16 @@ function ItemsAdmin() {
   }
 
   const handleDelete = async (itemID) => {
-   try {
-    const response = await axios.delete(`http://localhost:5500/delete-item/${itemID}`)
-    alert("Item Deleted Successfully");
-    console.log(response);
-   } catch (error) {
-     console.error('Error Deleting Item: ', error);
-   };
-  }
+    try {
+      const response = await axios.delete(`http://localhost:5500/delete-item/${itemID}`)
+      alert("Item Deleted Successfully");
+      console.log(response);
+    } catch (error) {
+      console.error('Error Deleting Item: ', error);
+    };
+  };
 
-   const handleUpdateClick = async (itemID) => {
+  const handleUpdateClick = async (itemID) => {
     try {
       const response = await axios.put(`http://localhost:5500/update-item/${itemID}`, update);
       alert("Updated successfully")
@@ -303,6 +305,89 @@ function ItemsAdmin() {
       console.error('Error fetching items: ', error);
     }
   };
+
+  const columns = [
+
+    {
+      name: 'Serial Number',
+      selector: row => row.serial_number
+    },
+    {
+      name: 'State of Item',
+      selector: row => row.state_of_item
+
+    },
+    {
+      name: 'Depreciation Rate',
+      selector: row => row.depreciation_rate
+    },
+    {
+      name: 'Date',
+      selector: row => formatDate(row.date)
+
+    },
+    {
+      name: 'Update',
+      cell: row => (
+        <button className='addItem-btn' onClick={() => openUpdateSerial(row.id)}><img src={Update} style={svgStyle} /></button>
+      )
+
+    },
+    {
+      name: 'Delete',
+      cell: row => (
+        <button className='addItem-btn' onClick={() => handleSerialDelete(row)}><img src={Delete} style={svgStyle} /></button>
+      )
+
+    },
+
+
+  ];
+
+  const [serialUpdateData, setSerialUpdateData] = useState({
+    serial_number: '',
+    state_of_item: '',
+    depreciation_rate: '',
+
+  })
+
+  const handleSerialUpdateInput = (event) => {
+    setSerialUpdateData((prev) => ({ ...prev, [event.target.name]: event.target.value }));
+  }
+
+  const handleSerialUpdate = async (getUpdateSerialID) => {
+      console.log("ID: ", getUpdateSerialID);
+      try {
+      const response = await axios.put(`http://localhost:5500/update-serial-item/${getUpdateSerialID}`, serialUpdateData);
+      alert("Updated successfully");
+      console.log(response);
+      closeUpdateSerialModal();
+    } catch (error) {
+      console.error('Error fetching updating: ', error);
+    }
+
+  }
+
+  const handleSerialDelete = async (row) => {
+    try {
+      const response = await axios.delete(`http://localhost:5500/delete-serial-item/${row.id}`);
+      alert("Deleted successfully");
+      console.log(response);
+    } catch (error) {
+      console.error('Error fetching items: ', error);
+    }
+  }
+
+  function handleFilter(event) {
+    const newData = getEm.filter(row => {
+      return row.serial_number.toLowerCase().includes(event.target.value.toLowerCase())
+    })
+    setRecords(newData);
+  }
+
+  useEffect(() => {
+    setRecords(getEm);
+  }, [getEm]);
   return (
     <div className='items-container'>
       <div style={itemstyle}>
@@ -335,7 +420,6 @@ function ItemsAdmin() {
                   <td>{formatDate(item.createdAt)}</td>
                   <td><button className='addItem-btn' onClick={() => openUpdateModal(item.id)} ><img src={Update} style={svgStyle} /></button></td>
                   <td><button className='addItem-btn' onClick={() => handleDelete(item.id)} ><img src={Delete} style={svgStyle} /></button></td>
-                  {/* <td><button className='addItem-btn' onClick={() => handleAddSerialNumberClick(item.id)}><img src={Addy} style={svgStyle} /></button></td> */}
                   <td><button className='addItem-btn' onClick={() => openSerialModal(item.id)}><img src={Addy} style={svgStyle} /></button></td>
                   <td><button className='addItem-btn' onClick={() => openInfoModal(item.id)}><img src={Info} style={svgStyle} /></button></td>
                 </tr>
@@ -377,9 +461,9 @@ function ItemsAdmin() {
           <h1>
             {getNom.length > 0 ? <span>{getNom[0].itemName}</span> : "Item Name Not Found"}: {totalSerialCount}
           </h1>
-          <table>
-            <thead>
-              <tr className='th1'>
+          {/* <table> */}
+          {/* <thead>
+              <tr>
                 <th>Serial Number</th>
                 <th>State of item</th>
                 <th>Depreciation Rate</th>
@@ -387,21 +471,41 @@ function ItemsAdmin() {
                 <th>Update</th>
                 <th>Delete</th>
               </tr>
-            </thead>
-            <tbody>
-              {getEm.map((getem) => (
-                <tr key={getem.id}>
-                  {/* <td>{}</td> */}
-                  <td>{getem.serial_number}</td>
-                  <td>{getem.state_of_item}</td>
-                  <td>{getem.depreciation_rate}</td>
-                  <td>{formatDate(getem.date)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            </thead> */}
+          {/* <tbody> */}
+          {/* {getEm.map((getem) => ( */}
+          {/* // <tr key={getem.id}> */}
+                //   {/* <td>{}</td> */}
+          {/* //   <td>{getem.serial_number}</td>
+                //   <td>{getem.state_of_item}</td>
+                //   <td>{getem.depreciation_rate}</td>
+                //   <td>{formatDate(getem.date)}</td>
+                //   <td><button className='addItem-btn' ><img src={Update} style={svgStyle} /></button></td>
+                //   <td><button className='addItem-btn' ><img src={Delete} style={svgStyle} /></button></td> */}
+          {/* // </tr> */}
+          {/* ))} */}
+          {/* </tbody> */}
+          {/* </table> */}
+          <input type='text' placeholder='Search By Serial Number' onChange={handleFilter} />
+          <br />
+          <DataTable
+            columns={columns}
+            data={records}
+            fixedHeader
+            pagination
+          ></DataTable>
         </Modal>
-      
+        <Modal isOpen={isUpdateSerial} onRequestClose={closeUpdateSerialModal} style={modalStyles}>{handleSerialUpdateInput}
+          <h1>Update</h1>
+          <input type='text' placeholder='Serial Number' name='serial_number' onChange={handleSerialUpdateInput}/>
+          <br />
+          <input type='text' placeholder='State Of Item' name='state_of_item' onChange={handleSerialUpdateInput}/>
+          <br />
+          <input type='text' placeholder='Depreciation Rate' name='depreciation_rate' onChange={handleSerialUpdateInput}/>
+          <br />
+          <button onClick={() => handleSerialUpdate(getUpdateSerialID)}>Update</button>
+        </Modal>
+
       </div>
     </div >
   );

@@ -175,12 +175,44 @@ app.post('/add-items', (req, res) => {
 
 app.put("/employee/:id", (req, res) => {
   const empID = req.params.id;
-  const q = "UPDATE employees SET `username`= ?, `password`= ? role = ? department = ? status = ? WHERE id = ?";
+  const roleName = req.body.roleName;
+  const departmentName = req.body.departmentName;
+  
+  function getRoleId(role){
+    const q = 'SELECT role_name FROM role WHERE id = ?'
+    const value = [ role ];
+    db.query(q, value, (error, result) => {
+     if(error){
+      console.error("Error: ", error);
+     }else{
+      console.log("Done", result);
+      return result;
+     }
+    })
+  }
+
+  function getDepartmentId(department){
+    const q = 'SELECT department_name FROM department WHERE id = ?'
+    const value = [ department ];
+    db.query(q, value, (error, result) => {
+     if(error){
+      console.error("Error: ", error);
+     }else{
+      console.log("Done", result);
+      return result;
+     }
+    })
+  }
+ 
+  const departmentID = getDepartmentId(departmentName);
+  const roleID = getRoleId(roleName);
+
+  const q = "UPDATE employees SET `username`= ?, `password`= ?, roleID = ?, departmentID = ?, status = ? WHERE id = ?";
   const values = [
     req.body.username,
     req.body.password,
-    req.body.role,
-    req.body.department,
+    roleID,
+    departmentID,
     req.body.status,
   ];
   db.query(q, [...values, empID], (err, data) => {
@@ -747,6 +779,71 @@ app.delete('/delete-item/:itemID', (req,res) => {
   })
 })
 
+app.put('/update-serial-item/:id', (req,res) => {
+  const id = req.params.id;
+  console.log("ID: ", id);
+  const q = `UPDATE serial_number SET serial_number = ?, state_of_item = ?, depreciation_rate = ? WHERE id = ?`;
+  const values = [
+    req.body.serial_number,
+    req.body.state_of_item,
+    req.body.depreciation_rate,
+    id
+  ];
+
+  db.query(q, values, (error, result) => {
+    if (error) {
+      console.error("Error :", error);
+    }else{
+      console.log("Done right")
+      return result
+    }
+  })
+
+})
+
+app.delete('/delete-serial-item/:id', (req,res) => {
+  const id = req.params.id;
+  const q = `DELETE FROM serial_number WHERE id = ?`;
+  db.query(q, [id], (error, result) => {
+    if(error) {
+      console.error("Error", error);
+    }else{
+      console.log("Done well", result)
+      return result;
+    }
+  })
+})
+
+app.put('/deactivate-employee/:id', (req ,res) => {
+  const id = req.params.id;
+  const q = `UPDATE employees SET status = ? WHERE id = ?`;
+  const values = [
+    req.body.inactive,
+    id
+  ]
+  db.query(q, values, (error, result) => {
+    if(error){
+      console.error("Error", error);
+    }else{
+      console.log("Done did: ", result);
+      return result;
+    }
+  });
+});
+
+app.delete('/delete-employee/:id', (req,res) => {
+  const id = req.params.id;
+  const q = `DELETE FROM employees WHERE id = ?`;
+
+  db.query(q, id, (error, result) => {
+    if (error) {
+      console.error("Error ", error)
+    }else{
+      console.log("Done", result)
+      return result
+    }
+  })
+})
 
 app.get('/item')
 
