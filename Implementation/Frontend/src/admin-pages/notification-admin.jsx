@@ -14,12 +14,12 @@ function NotificationAdmin() {
     console.log("Connected to the server");
 
     socket.on("sentBack", (messageData) => {
+      console.log("Receiving messageData: ", messageData);
+
       if (Array.isArray(messageData)) {
-        console.log("Name: ", messageData.employeeName)
-        setNotifications(messageData);
+        setNotifications((prevNotifications) => [...prevNotifications, ...messageData]);
       } else if (typeof messageData === 'object') {
-        console.log("Name: ", messageData.employeeName)
-        setNotifications([messageData]);
+        setNotifications((prevNotifications) => [...prevNotifications, messageData]);
       } else {
         console.error("Received unexpected messageData:", messageData);
       }
@@ -33,6 +33,7 @@ function NotificationAdmin() {
   socket.on("disconnect", () => {
     console.log("Disconnected from the server");
   });
+
 
   const buttonStyle = {
     backgroundColor: 'white',
@@ -49,10 +50,10 @@ function NotificationAdmin() {
     // marginTop: '2px'
   };
 
-const sumStyle = {
-  marginTop: '24px',
-  marginLeft: '2px'
-}  
+  const sumStyle = {
+    marginTop: '24px',
+    marginLeft: '2px'
+  }
 
   const notificationAdmin = {
     width: '44%',
@@ -95,7 +96,7 @@ const sumStyle = {
     <div className="notification-container-admin">
       {notifications.map((notification) => (
         <div key={notification.id} style={notificationAdmin}>
-          <p style = {sumStyle}> {notification.employeeName} Requested: {notification.itemName}  Amount: {notification.amount} Description: {notification.description} Date: 12/12/2023</p>
+          <p style={sumStyle}> {notification.employeeName} Requested: {notification.itemName}  From: {notification.categoryName} Amount: {notification.count} Description: {notification.description} Date: {notification.date}</p>
           <button className='buttonStyle' onClick={() => handleApprove(notification)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
           <button className='buttonStyle' onClick={() => handleDeny(notification)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
         </div>

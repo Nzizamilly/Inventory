@@ -4,9 +4,6 @@ import React from 'react';
 function NavbarAdmin() {
   const navigate = useNavigate();
   const handleLogout = () => {
-    // Perform any necessary logout actions, e.g., clearing session data
-    // Redirect to the login page or another appropriate page after logout
-    // For now, let's assume you just clear local storage and redirect to the home page
     localStorage.clear();
     navigate('/');
   };

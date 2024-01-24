@@ -56,11 +56,15 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("A user connected", socket.id);
-
+  // console.log("A user connected", socket.id);
+  let lastProcessedTime = 0;
   socket.on("send_message", (messageData) => {
-    io.emit("sentBack", messageData);
-    console.log("From employee: ", messageData);
+    const currentTime = Date.now();
+    if (currentTime - lastProcessedTime > 1000) {
+      console.log("From employee: ", messageData);
+      io.emit("sentBack", messageData);
+      lastProcessedTime = currentTime;
+    }
   });
 
   socket.on("Approved", (notifications, newstatus) => {
@@ -74,7 +78,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected");
+    // console.log("User disconnected");
   });
 });
 
@@ -177,33 +181,33 @@ app.put("/employee/:id", (req, res) => {
   const empID = req.params.id;
   const roleName = req.body.roleName;
   const departmentName = req.body.departmentName;
-  
-  function getRoleId(role){
+
+  function getRoleId(role) {
     const q = 'SELECT role_name FROM role WHERE id = ?'
-    const value = [ role ];
+    const value = [role];
     db.query(q, value, (error, result) => {
-     if(error){
-      console.error("Error: ", error);
-     }else{
-      console.log("Done", result);
-      return result;
-     }
+      if (error) {
+        console.error("Error: ", error);
+      } else {
+        console.log("Done", result);
+        return result;
+      }
     })
   }
 
-  function getDepartmentId(department){
+  function getDepartmentId(department) {
     const q = 'SELECT department_name FROM department WHERE id = ?'
-    const value = [ department ];
+    const value = [department];
     db.query(q, value, (error, result) => {
-     if(error){
-      console.error("Error: ", error);
-     }else{
-      console.log("Done", result);
-      return result;
-     }
+      if (error) {
+        console.error("Error: ", error);
+      } else {
+        console.log("Done", result);
+        return result;
+      }
     })
   }
- 
+
   const departmentID = getDepartmentId(departmentName);
   const roleID = getRoleId(roleName);
 
@@ -766,20 +770,20 @@ app.post('/request', async (req, res) => {
   }
 });
 
-app.delete('/delete-item/:itemID', (req,res) => {
+app.delete('/delete-item/:itemID', (req, res) => {
   const itemID = req.params.itemID;
   const q = `DELETE FROM item WHERE id = ?`;
   db.query(q, [itemID], (err, result) => {
-   if(err) {
-    console.error("Error", err);
-   }else{
-    console.log("Result :", result);
-    return result;
-   }
+    if (err) {
+      console.error("Error", err);
+    } else {
+      console.log("Result :", result);
+      return result;
+    }
   })
 })
 
-app.put('/update-serial-item/:id', (req,res) => {
+app.put('/update-serial-item/:id', (req, res) => {
   const id = req.params.id;
   console.log("ID: ", id);
   const q = `UPDATE serial_number SET serial_number = ?, state_of_item = ?, depreciation_rate = ? WHERE id = ?`;
@@ -793,7 +797,7 @@ app.put('/update-serial-item/:id', (req,res) => {
   db.query(q, values, (error, result) => {
     if (error) {
       console.error("Error :", error);
-    }else{
+    } else {
       console.log("Done right")
       return result
     }
@@ -801,20 +805,20 @@ app.put('/update-serial-item/:id', (req,res) => {
 
 })
 
-app.delete('/delete-serial-item/:id', (req,res) => {
+app.delete('/delete-serial-item/:id', (req, res) => {
   const id = req.params.id;
   const q = `DELETE FROM serial_number WHERE id = ?`;
   db.query(q, [id], (error, result) => {
-    if(error) {
+    if (error) {
       console.error("Error", error);
-    }else{
+    } else {
       console.log("Done well", result)
       return result;
     }
   })
 })
 
-app.put('/deactivate-employee/:id', (req ,res) => {
+app.put('/deactivate-employee/:id', (req, res) => {
   const id = req.params.id;
   const q = `UPDATE employees SET status = ? WHERE id = ?`;
   const values = [
@@ -822,30 +826,55 @@ app.put('/deactivate-employee/:id', (req ,res) => {
     id
   ]
   db.query(q, values, (error, result) => {
-    if(error){
+    if (error) {
       console.error("Error", error);
-    }else{
+    } else {
       console.log("Done did: ", result);
       return result;
     }
   });
 });
 
-app.delete('/delete-employee/:id', (req,res) => {
+app.delete('/delete-employee/:id', (req, res) => {
   const id = req.params.id;
   const q = `DELETE FROM employees WHERE id = ?`;
 
   db.query(q, id, (error, result) => {
     if (error) {
       console.error("Error ", error)
-    }else{
+    } else {
       console.log("Done", result)
       return result
     }
   })
 })
 
-app.get('/item')
+app.get('/items/:categoryID', (req, res) => {
+  const categoryID = req.params.categoryID;
+  console.log("CategoryID: ", categoryID);
+  const q = 'SELECT * FROM item WHERE categoryID = ?';
+  db.query(q, categoryID, (error, result) => {
+    if (error) {
+      console.error("Error: ", error);
+    } else {
+      return res.json(result);
+    }
+  })
+})
+
+app.get('/get-total-number/:id', (req, res) => {
+  const id = req.params.id;
+  console.log('ID: ', id);
+  const q = `SELECT * FROM serial_number WHERE itemID = ?`;
+  db.query(q, id, (error, result) => {
+    if (error) {
+      console.error("Error: ", error);
+    } else {
+      res.json({ totalCount: result.length });
+    }
+  })
+
+})
 
 app.listen(5500, () => {
   console.log("Connected to backend")

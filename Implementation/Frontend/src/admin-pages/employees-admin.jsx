@@ -35,9 +35,6 @@ function EmployeesAdmin() {
       alignItems: 'center',
     },
   }
-
-
-
   const employeeContainer = {
     fontFamily: 'Arial, sans-serif',
     width: '100%',
@@ -76,7 +73,6 @@ function EmployeesAdmin() {
   });
   const [visible, setVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
-  const EmpID = localStorage.getItem("userID");
   const location = useLocation();
   const [switchStates, setSwitchStates] = useState({});
   const [employee, setEmployee] = useState({
@@ -87,6 +83,7 @@ function EmployeesAdmin() {
     profile_pricture: '',
     status: ''
   })
+  const EmpID = localStorage.getItem("userID");
 
   useEffect(() => {
     const fetchEmp = async () => {

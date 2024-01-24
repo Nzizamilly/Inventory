@@ -15,7 +15,7 @@ function ItemsAdmin() {
   const modalStyles = {
     content: {
       top: '50%',
-      width: '70%',
+      width: '90%',
       left: '50%',
       right: 'auto',
       bottom: 'auto',
@@ -36,12 +36,10 @@ function ItemsAdmin() {
   }
 
   const itemstyle = {
-    // top: '20%',
-    // backgroundColor: 'black',
     width: '70%',
     left: '50%',
-    marginTop: '63px',
     gap: '18px',
+    marginBottom: '990px',
     display: 'flex',
     padding: '12px 12px'
   }
@@ -73,8 +71,10 @@ function ItemsAdmin() {
   const [getEm, setGetEm] = useState([]);
   const [getNom, setGetNom] = useState([]);
   const [records, setRecords] = useState(getEm);
-  const [isUpdateSerial, setIsUpdateSerial ] = useState(false);
+  const [isUpdateSerial, setIsUpdateSerial] = useState(false);
   const [getUpdateSerialID, setGetUpdateSerialID] = useState('');
+  const [filteredCategories, setFilteredCategories] = useState(categories);
+  const [searchInput, setSeachInput] = useState('');
 
   const openSerialModal = (itemId) => {
     setSelectedItemID(itemId);
@@ -87,7 +87,7 @@ function ItemsAdmin() {
     setIsUpdateModalOpen(true);
     handleUpdateClick(itemID)
   }
-  
+
   const closeUpdateModal = () => {
     setIsUpdateModalOpen(false);
   }
@@ -344,6 +344,55 @@ function ItemsAdmin() {
 
   ];
 
+  const one = [
+    {
+      name: 'ID',
+      selector: row => row.id
+    },
+    {
+      name: 'Name',
+      selector: row => row.name
+    },
+    {
+      name: 'Supplier',
+      selector: row => row.first_name
+    },
+    {
+      name: 'Date',
+      selector: row => formatDate(row.createdAt)
+    }, 
+    {
+      name: 'New Sub-Category',
+      selector: row => (
+        <button className='addItem-btn' onClick={() => openSimpleModal()}><img src={AddItem} style={svgStyle} /></button>
+      )
+    },
+    {
+      name: 'Edit',
+      selector: row => (
+        <button className='addItem-btn' onClick={() => openUpdateModal(row.id)}><img src={Update} style={svgStyle} /></button>
+      )
+    },
+    {
+      name: 'Delete',
+      selector: row => (
+        <button className='addItem-btn' onClick={() => handleDelete(row.id)}><img src={Delete} style={svgStyle} /></button>
+      ),
+    },
+    {
+      name: 'Add Item',
+      selector: row => (
+        <button className='addItem-btn' onClick={() => openSerialModal(row.id)}><img src={Addy} style={svgStyle} /></button>
+      )
+    },
+    {
+      name: 'View',
+      selector: row => (
+        <button className='addItem-btn' onClick={() => openInfoModal(row.id)}><img src={Info} style={svgStyle} /></button>
+      )
+    },
+  ];
+
   const [serialUpdateData, setSerialUpdateData] = useState({
     serial_number: '',
     state_of_item: '',
@@ -356,8 +405,8 @@ function ItemsAdmin() {
   }
 
   const handleSerialUpdate = async (getUpdateSerialID) => {
-      console.log("ID: ", getUpdateSerialID);
-      try {
+    console.log("ID: ", getUpdateSerialID);
+    try {
       const response = await axios.put(`http://localhost:5500/update-serial-item/${getUpdateSerialID}`, serialUpdateData);
       alert("Updated successfully");
       console.log(response);
@@ -388,44 +437,39 @@ function ItemsAdmin() {
   useEffect(() => {
     setRecords(getEm);
   }, [getEm]);
+
+  const handleSearch = (event) => {
+    const searchTerm = event.target.value.toLowerCase();
+    setSeachInput(searchTerm);
+
+    const filtered = categories.filter((category) => 
+    category.category_name.toLowerCase() .includes(searchTerm)
+    );
+    setFilteredCategories(filtered);
+  };
+
   return (
     <div className='items-container'>
+      <input id='searchInput' type='text' placeholder = 'Search by Category...' onChange={handleSearch} value={searchInput}/>
+      <div>
+      {filteredCategories.map((category) => (
+        <button key={category.id}
+        onClick={() => handleCategoryClick(category.id)}>{category.name}
+        </button>
+        ))}
+      </div>
+      {/* <br /> */}
       <div style={itemstyle}>
         {categories.map(category => (
           <button key={category.id} onClick={() => handleCategoryClick(category.id)} className='buttonStyle2'>{category.category_name}</button>
         ))}
-
         <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
-          <h1>Items for category: {selectedCategory}</h1>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Supplier</th>
-                <th>Category</th>
-                <th>Date Entered</th>
-                <th>Edit </th>
-                <th>Delete </th>
-                <th><button className='addItem-btn' onClick={openSimpleModal}><img src={AddItem} style={svgStyle} /></button></th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td> {item.id}</td>
-                  <td> {item.name} </td>
-                  <td> {item.first_name} </td>
-                  <td> {item.category_name} </td>
-                  <td>{formatDate(item.createdAt)}</td>
-                  <td><button className='addItem-btn' onClick={() => openUpdateModal(item.id)} ><img src={Update} style={svgStyle} /></button></td>
-                  <td><button className='addItem-btn' onClick={() => handleDelete(item.id)} ><img src={Delete} style={svgStyle} /></button></td>
-                  <td><button className='addItem-btn' onClick={() => openSerialModal(item.id)}><img src={Addy} style={svgStyle} /></button></td>
-                  <td><button className='addItem-btn' onClick={() => openInfoModal(item.id)}><img src={Info} style={svgStyle} /></button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <h1>Items for category: {selectedCategory}</h1>       
+          <DataTable
+            columns={one}
+            data={items}
+            pagination
+          ></DataTable>
         </Modal>
         <Modal isOpen={isUpdateModalOpen} onRequestClose={closeUpdateModal} style={modalStyles}>
           <h1>Update Items</h1>
@@ -459,49 +503,23 @@ function ItemsAdmin() {
         </Modal>
         <Modal isOpen={isInfoModalOpen} onRequestClose={closeInfoModal} style={modalStyles}>
           <h1>
-            {getNom.length > 0 ? <span>{getNom[0].itemName}</span> : "Item Name Not Found"}: {totalSerialCount}
+            {getNom.length > 0 ? <span>{getNom[0].itemName}</span> : "Loading..."}: {totalSerialCount}
           </h1>
-          {/* <table> */}
-          {/* <thead>
-              <tr>
-                <th>Serial Number</th>
-                <th>State of item</th>
-                <th>Depreciation Rate</th>
-                <th>Date</th>
-                <th>Update</th>
-                <th>Delete</th>
-              </tr>
-            </thead> */}
-          {/* <tbody> */}
-          {/* {getEm.map((getem) => ( */}
-          {/* // <tr key={getem.id}> */}
-                //   {/* <td>{}</td> */}
-          {/* //   <td>{getem.serial_number}</td>
-                //   <td>{getem.state_of_item}</td>
-                //   <td>{getem.depreciation_rate}</td>
-                //   <td>{formatDate(getem.date)}</td>
-                //   <td><button className='addItem-btn' ><img src={Update} style={svgStyle} /></button></td>
-                //   <td><button className='addItem-btn' ><img src={Delete} style={svgStyle} /></button></td> */}
-          {/* // </tr> */}
-          {/* ))} */}
-          {/* </tbody> */}
-          {/* </table> */}
           <input type='text' placeholder='Search By Serial Number' onChange={handleFilter} />
           <br />
           <DataTable
             columns={columns}
             data={records}
-            fixedHeader
             pagination
           ></DataTable>
         </Modal>
         <Modal isOpen={isUpdateSerial} onRequestClose={closeUpdateSerialModal} style={modalStyles}>{handleSerialUpdateInput}
           <h1>Update</h1>
-          <input type='text' placeholder='Serial Number' name='serial_number' onChange={handleSerialUpdateInput}/>
+          <input type='text' placeholder='Serial Number' name='serial_number' onChange={handleSerialUpdateInput} />
           <br />
-          <input type='text' placeholder='State Of Item' name='state_of_item' onChange={handleSerialUpdateInput}/>
+          <input type='text' placeholder='State Of Item' name='state_of_item' onChange={handleSerialUpdateInput} />
           <br />
-          <input type='text' placeholder='Depreciation Rate' name='depreciation_rate' onChange={handleSerialUpdateInput}/>
+          <input type='text' placeholder='Depreciation Rate' name='depreciation_rate' onChange={handleSerialUpdateInput} />
           <br />
           <button onClick={() => handleSerialUpdate(getUpdateSerialID)}>Update</button>
         </Modal>

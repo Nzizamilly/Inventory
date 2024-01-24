@@ -6,7 +6,7 @@ import Login from './employee-pages/login.jsx';
 import Home from './employee-pages/home.jsx';
 import Terms from './employee-pages/terms';
 import Navbar from './employee-pages/navbar';
-import Request from './employee-pages/request';
+import Request from './employee-pages/request.jsx';
 import Account from './employee-pages/account';
 import Notification from './employee-pages/notification';
 import CategoryAdmin from './admin-pages/category-admin.jsx';

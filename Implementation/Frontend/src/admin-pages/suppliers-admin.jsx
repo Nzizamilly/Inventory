@@ -82,6 +82,7 @@ function SupplierAdmin() {
     setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
   const EmpID = localStorage.getItem("userID");
+  
   // const handleUpdate = async (event) => {
   //   try {
   //     await axios.put(`http://localhost:5500/employee/${EmpID}`, update);
