@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
 import Approve from '../images/approve.png';
@@ -13,17 +13,29 @@ function NotificationAdmin() {
   socket.on("connect", () => {
     console.log("Connected to the server");
 
-    socket.on("sentBack", (messageData) => {
-      console.log("Receiving messageData: ", messageData);
+    // socket.on("sentBack", (messageData) => {
+    //   console.log("Receiving messageData: ", messageData);
+    //   const messageId = `message-${messageData.id}`;
+    //   const allMessages = document.getElementById(messageId);
 
-      if (Array.isArray(messageData)) {
-        setNotifications((prevNotifications) => [...prevNotifications, ...messageData]);
-      } else if (typeof messageData === 'object') {
-        setNotifications((prevNotifications) => [...prevNotifications, messageData]);
-      } else {
-        console.error("Received unexpected messageData:", messageData);
-      }
-    });
+    //   if(allMessages){
+    //     const p = document.createElement("p");
+    //     p.innerText = messageData;
+    //     allMessages.appendChild(p);
+    //   }else{
+    //     const newDiv = document.createElement("div");
+    //     newDiv.id = messageId;
+
+    //     const p = document.createElement("p");
+    //     p.innerText = messageData;
+    //     newDiv.appendChild(p);
+
+    //     const notificationContainer = document.querySelector(".notification-coontainer-admin");
+    //     notificationContainer.appendChild(newDiv);
+    //   }
+    // });
+
+
 
     socket.on("statusUpdate", (newStatus) => {
       setStatus(newStatus);
@@ -91,14 +103,25 @@ function NotificationAdmin() {
       console.log('Error');
     }
   }
-
+  useEffect(() => {
+    socket.on("sentBack", (messageData) => {
+      console.log(messageData);
+      if (Array.isArray(messageData)) {
+        setNotifications((prevNotifications) => [...prevNotifications, ...messageData]);
+      } else if (typeof messageData === 'object') {
+        setNotifications((prevNotifications) => [...prevNotifications, messageData]);
+      } else {
+        console.error("Received unexpected messageData:", messageData);
+      }
+    })
+  }, [socket])
   return (
     <div className="notification-container-admin">
       {notifications.map((notification) => (
         <div key={notification.id} style={notificationAdmin}>
           <p style={sumStyle}> {notification.employeeName} Requested: {notification.itemName}  From: {notification.categoryName} Amount: {notification.count} Description: {notification.description} Date: {notification.date}</p>
-          <button className='buttonStyle' onClick={() => handleApprove(notification)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
-          <button className='buttonStyle' onClick={() => handleDeny(notification)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
+          <button className='buttonStyle' onClick={() => handleApprove(notification.id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
+          <button className='buttonStyle' onClick={() => handleDeny(notification.id)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
         </div>
       ))}
     </div>

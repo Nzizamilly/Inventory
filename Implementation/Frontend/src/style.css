@@ -600,9 +600,36 @@ li a:hover {
     justify-content: center;
     align-items: center;
     display: flex;
-    gap: 51px;
+    /* gap: 51px; */
     flex-wrap: wrap;
     overflow: auto;
+}
+
+.transaction-container-admin{
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(163, 187, 197);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    /* gap: 51px; */
+    flex-wrap: wrap;
+    overflow: auto;
+}
+
+.transaction-admin{
+    width: 23%;
+    height: 8%;
+    text-align: center;
+    border: none;
+    display: flex;
+    flex-direction:row;
+    margin-left: 300px;
+    border-radius: 15px;
+    padding: 12px 0px;
+    color: black;
+    background-color: white
 }
 
 .category {
@@ -616,9 +643,7 @@ li a:hover {
     margin-left: 15px;
     padding: 8px;
     color: black;
-}
-
-;
+};
 
 .notification-admin {
     width: 23%;
@@ -679,6 +704,30 @@ li a:hover {
     background-color: rgb(230, 245, 236);
     /* padding-left: 26px; */
     flex-direction:column;
+}
+
+.status-btn{
+    width: 40px;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    text-align: center;
+    color: orange;
+    height: 26px;
+    gap:9px;
+    margin-top: 2px;
+    border-radius: 18px;
+    flex-direction:column;
+}
+
+.green-btn{
+    background-color: green;
+    color: rgb(83, 150, 83)
+}
+
+.red-btn{
+    background-color: rgb(252, 3, 3);
+    color: red
 }
 
 .bigger{

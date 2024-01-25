@@ -51,6 +51,9 @@ function ItemsAdmin() {
     borderRadius: '14px',
     // marginTop: '2px'
   }
+  const inano = {
+    color: 'black'
+  }
 
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -75,6 +78,8 @@ function ItemsAdmin() {
   const [getUpdateSerialID, setGetUpdateSerialID] = useState('');
   const [filteredCategories, setFilteredCategories] = useState(categories);
   const [searchInput, setSeachInput] = useState('');
+  const [status, setStatus] = useState('');
+  
 
   const openSerialModal = (itemId) => {
     setSelectedItemID(itemId);
@@ -211,6 +216,7 @@ function ItemsAdmin() {
         ...serialNumber,
         itemID: takeItemID
       });
+      console.log("Check...", serialNumber)
       await axios.post(`http://localhost:5500/add-serial-number/${takeItemID}`, serialNumber);
       closeSerialModal();
     } catch (error) {
@@ -266,16 +272,20 @@ function ItemsAdmin() {
     setIsModalOpen(false);
   }
 
+  const statusInCreation = 'In';
+
+
   const [serialNumber, setSerialNumber] = useState({
     serial_number: '',
     state_of_item: '',
     depreciation_rate: '',
-    itemID: ''
+    itemID: '',
   });
 
   const handleSerialNumber = (event) => {
     setSerialNumber((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
+ 
   const [update, setUpdate] = useState({
     newItemName: '',
     newSupplierName: '',
@@ -338,11 +348,50 @@ function ItemsAdmin() {
       cell: row => (
         <button className='addItem-btn' onClick={() => handleSerialDelete(row)}><img src={Delete} style={svgStyle} /></button>
       )
-
     },
-
-
+    {
+      name: 'Take Out or In',
+      cell: row => (
+        <button className={`status-btn ${row.status === 'In' ? 'green-btn' : 'red-btn'}`} onClick={() => handleSerialStatus(row.id, row.status)} style={inano}>{row.status}</button>
+      )
+    }
   ];
+
+  const handleSerialStatus = async (row, status) => {
+
+    if (status === 'Out') {
+      const status = 'In';
+
+      try {
+        console.log("Status: ", status);
+        console.log("ID: ", row);
+        const response = await axios.put(`http://localhost:5500/update-serial-status/${row}/${status}`);
+        console.log(response)
+      } catch (error) {
+        console.error("Error", error);
+      }
+    } else if (status === 'In') {
+      const status = 'Out';
+      try {
+        const taker = await getUserInput("Enter The employee Taking the item...")
+        console.log("Status: ", status);
+        console.log("ID: ", row);
+        console.log("Taker: ", taker);
+        const response = await axios.put(`http://localhost:5500/update-serial-status/${row}/${status}/${taker}`);
+        console.log(response)
+      } catch (error) {
+        console.error("Error", error);
+      }
+    }
+
+  }
+
+ const  getUserInput = (promptText) => {
+  return new Promise((resolve) => {
+    const userInput = window.prompt(promptText, "");
+    resolve(userInput);
+  });
+ }
 
   const one = [
     {
@@ -360,7 +409,7 @@ function ItemsAdmin() {
     {
       name: 'Date',
       selector: row => formatDate(row.createdAt)
-    }, 
+    },
     {
       name: 'New Sub-Category',
       selector: row => (
@@ -442,20 +491,20 @@ function ItemsAdmin() {
     const searchTerm = event.target.value.toLowerCase();
     setSeachInput(searchTerm);
 
-    const filtered = categories.filter((category) => 
-    category.category_name.toLowerCase() .includes(searchTerm)
+    const filtered = categories.filter((category) =>
+      category.category_name.toLowerCase().includes(searchTerm)
     );
     setFilteredCategories(filtered);
   };
 
   return (
     <div className='items-container'>
-      <input id='searchInput' type='text' placeholder = 'Search by Category...' onChange={handleSearch} value={searchInput}/>
+      <input id='searchInput' type='text' placeholder='Search by Category...' onChange={handleSearch} value={searchInput} />
       <div>
-      {filteredCategories.map((category) => (
-        <button key={category.id}
-        onClick={() => handleCategoryClick(category.id)}>{category.name}
-        </button>
+        {filteredCategories.map((category) => (
+          <button key={category.id}
+            onClick={() => handleCategoryClick(category.id)}>{category.name}
+          </button>
         ))}
       </div>
       {/* <br /> */}
@@ -464,7 +513,7 @@ function ItemsAdmin() {
           <button key={category.id} onClick={() => handleCategoryClick(category.id)} className='buttonStyle2'>{category.category_name}</button>
         ))}
         <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
-          <h1>Items for category: {selectedCategory}</h1>       
+          <h1>Items for category: {selectedCategory}</h1>
           <DataTable
             columns={one}
             data={items}
@@ -523,6 +572,7 @@ function ItemsAdmin() {
           <br />
           <button onClick={() => handleSerialUpdate(getUpdateSerialID)}>Update</button>
         </Modal>
+        
 
       </div>
     </div >

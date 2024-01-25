@@ -57,14 +57,10 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   // console.log("A user connected", socket.id);
-  let lastProcessedTime = 0;
   socket.on("send_message", (messageData) => {
-    const currentTime = Date.now();
-    if (currentTime - lastProcessedTime > 1000) {
-      console.log("From employee: ", messageData);
-      io.emit("sentBack", messageData);
-      lastProcessedTime = currentTime;
-    }
+    console.log("From employee: ", messageData);
+    // const message = `${messageData.employeeName} requested ${messageData.itemName} from ${messageData.categoryName}, amount ${messageData.count} description ${messageData.description} date: ${messageData.date}.`
+    io.emit("sentBack", messageData);
   });
 
   socket.on("Approved", (notifications, newstatus) => {
@@ -460,13 +456,15 @@ app.get('/supplier', (req, res) => {
 // Assuming itemID is passed as a parameter, and serialNumber is sent in the request body
 app.post('/add-serial-number/:takeItemID', (req, res) => {
   const itemID = req.params.takeItemID;
-  console.log("ItemID is: ", itemID);
-  const q = "INSERT INTO serial_number (serial_number, state_of_item, depreciation_rate, itemID) VALUES (?)";
+  const status = 'In';
+  console.log("Status is: ", status);
+  const q = "INSERT INTO serial_number (serial_number, state_of_item, depreciation_rate, itemID, status) VALUES (?)";
   const values = [
     req.body.serial_number,
     req.body.state_of_item,
     req.body.depreciation_rate,
     itemID,
+    status
   ]
   db.query(q, [values], (err, data) => {
     if (err) {
@@ -813,7 +811,7 @@ app.delete('/delete-serial-item/:id', (req, res) => {
       console.error("Error", error);
     } else {
       console.log("Done well", result)
-      return result;
+      // return result;
     }
   })
 })
@@ -862,6 +860,17 @@ app.get('/items/:categoryID', (req, res) => {
   })
 })
 
+app.get('/serial-number', (req, res) => {
+  const q = 'SELECT * FROM serial_number';
+  db.query(q, categoryID, (error, result) => {
+    if (error) {
+      console.error("Error: ", error);
+    } else {
+      return res.json(result);
+    }
+  })
+})
+
 app.get('/get-total-number/:id', (req, res) => {
   const id = req.params.id;
   console.log('ID: ', id);
@@ -874,6 +883,95 @@ app.get('/get-total-number/:id', (req, res) => {
     }
   })
 
+})
+
+app.put('/update-serial-status/:id/:status', (req, res) => {
+  const id = req.params.id
+  const status = req.params.status
+  console.log("Status: ", status);
+  console.log("ID: ", id);
+  const q = `UPDATE serial_number set status = ? WHERE id = ?`;
+  const values = [status, id]
+  db.query(q, values, (error, result) => {
+    if (error) {
+      console.error("Error", error);
+    } else {
+      return result;
+    }
+  })
+})
+
+app.put('/update-serial-status/:id/:status/:taker', async (req, res) => {
+  const id = req.params.id
+  const status = req.params.status
+  const taker = req.params.taker
+  console.log("Status: ", status);
+  console.log("ID: ", id);
+  console.log("Taker Name: ", taker);
+
+  const getEmployeeID = (id) => {
+    return new Promise((resolve, reject) => {
+      const q = `SELECT id FROM employees WHERE username = ?`;
+      const value = [id];
+
+      db.query(q, value, (error, result) => {
+        if (error) {
+          console.error("error", error);
+          reject(error);
+        } else {
+          console.log("Result", result);
+          resolve(result);
+        }
+      });
+    });
+  };
+
+  try {
+    const result = await getEmployeeID(taker);
+    const takerID = result[0].id;
+    console.log("Taker ID: ", takerID);
+
+    const updateQuery = `UPDATE serial_number SET status = ?, taker = ? WHERE id = ?`;
+    const updateValues = [status, takerID, id];
+
+    db.query(updateQuery, updateValues, (error, updateResult) => {
+      if (error) {
+        console.error("Error", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      } else {
+        console.log("Update Result", updateResult);
+        res.status(200).json({ message: "Update successful" });
+      }
+    });
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+// app.get('/get-serial-status/:id'
+
+app.get('/monthly-report', (req, res) => {
+  const query = `
+  SELECT
+  DATE_FORMAT(serial_number.date, '%m-%Y') AS month,
+  item.name AS item_name,
+  SUM(CASE WHEN serial_number.status = 'In' THEN 1 ELSE 0 END) AS amount_entered,
+  SUM(CASE WHEN serial_number.status = 'Out' THEN 1 ELSE 0 END) AS amount_went_out,
+  employees.username AS taker_name
+FROM serial_number
+JOIN item ON serial_number.itemID = item.id
+LEFT JOIN employees ON serial_number.taker = employees.id
+GROUP BY month, item_name, taker_name;
+
+  `;
+
+  db.query(query, (error, result) => {
+    if(error){
+      console.error("Error", error);
+    }else{
+      res.json(result);
+    }
+  })
 })
 
 app.listen(5500, () => {
