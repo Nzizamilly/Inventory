@@ -2,32 +2,68 @@ import React, { useState, useEffect } from 'react';
 import '../style.css';
 import DataTable from 'react-data-table-component';
 import axios from 'axios';
+import Modal from 'react-modal'
 
 
 function TransactionsAdmin() {
 
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false)
+
+  const openItemTransaction = () => {
+    setIsItemModalOpen(true);
+  }
+
+  const closeItemModal = () => {
+    setIsItemModalOpen(false)
+  }
+
   const buttonStyle = {
-    backgroundColor: 'cyan',
+    backgroundColor: 'black',
     color: 'white',
+    width: '109%',
+    height: '23px',
     padding: '5px 12px',
     borderRadius: '45px',
   };
-  const svgStyle = {
-    // backgroundColor: 'green',
-    width: '30px',
-    height: '30px',
-    borderRadius: '14px',
-    marginTop: '2px'
-  }
-  const svgStyleCross = {
-    backgroundColor: 'red',
-    width: '40px',
-    height: '30px',
-    borderRadius: '14px',
-    marginTop: '1px'
+  // const svgStyle = {
+  //   // backgroundColor: 'green',
+  //   width: '30px',
+  //   height: '30px',
+  //   borderRadius: '14px',
+  //   marginTop: '2px'
+  // }
+  // const svgStyleCross = {
+  //   backgroundColor: 'red',
+  //   width: '40px',
+  //   height: '30px',
+  //   borderRadius: '14px',
+  //   marginTop: '1px'
+  // }
+  const modalStyles = {
+    content: {
+      top: '50%',
+      width: '90%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      borderRadius: '12px',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      opacity: 0.9,
+      fontFamily: 'Your Custom Font, sans-serif',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      border: 'none',
+      lineHeight: '1.5',
+      display: 'flex',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      alignItems: 'center'
+    },
   }
 
   const [report, setReport] = useState([]);
+  const [records, setRecords] = useState(report);
 
   useEffect(() => {
     const fetchMonthlyReport = async () => {
@@ -52,7 +88,7 @@ function TransactionsAdmin() {
       selector: row => row.item_name
     },
     {
-      name: 'Entered',
+      name: 'Item Entered',
       selector: row => row.amount_entered
     }, {
       name: 'Went Out',
@@ -61,16 +97,37 @@ function TransactionsAdmin() {
       name: 'Taker',
       selector: row => row.taker_name
     },
+    {
+      name: 'Current Balance',
+      selector: row => row.total_items_in
+    },
   ]
+
+  const handleFilter = (event) => {
+    const newData = report.filter(row => {
+      return row.item_name.toLowerCase().includes(event.target.value.toLowerCase())
+    })
+    setRecords(newData)
+  }
+
+  useEffect(()=>{
+    setRecords(report);
+  },[report])
 
   return (
     <div className="transaction-container-admin">
       <div>
-       <DataTable
-       columns={columns}
-       data={report}
-       pagination
-       ></DataTable>
+        <div>
+          <button className='buttonStyle' onClick={openItemTransaction}>Open Item Transactions</button>
+        </div>
+        <Modal style={modalStyles} isOpen={isItemModalOpen} onRequestClose={closeItemModal}>
+          <input type='text' placeholder='Search By Item Name' onChange={handleFilter} />
+          <DataTable
+            columns={columns}
+            data={records}
+            pagination
+          ></DataTable>
+        </Modal>
       </div>
     </div>
   );

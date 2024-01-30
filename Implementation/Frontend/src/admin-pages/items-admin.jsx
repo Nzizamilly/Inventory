@@ -272,8 +272,6 @@ function ItemsAdmin() {
     setIsModalOpen(false);
   }
 
-  const statusInCreation = 'In';
-
 
   const [serialNumber, setSerialNumber] = useState({
     serial_number: '',

@@ -778,4 +778,29 @@ li a:hover {
     margin-left: 1020px;
     margin-top: 60px
 }
+.buttonStyle{
+    background-color: black;
+    color: white;
+    width: 109%;
+    height: 23px;
+    padding: 5px 12px;
+    border-radius: 45px,
+}
+
+.buttonStyle:hover{
+    background-color: rgb(22, 28, 32);
+}
+
+.dept-container-admin{
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(163, 187, 197);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    /* gap: 51px; */
+    flex-wrap: wrap;
+    overflow: auto;
+}
 

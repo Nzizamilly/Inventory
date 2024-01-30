@@ -1,5 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
-import Home from './home';
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios'
 
@@ -28,6 +27,9 @@ function Login() {
         alignItems: 'center',
     }
 
+    const [isLoading, setIsLoading] = useState(true);
+    const [userData, setUserData] = useState(null);
+
     const username = useRef();
     const password = useRef();
 
@@ -38,21 +40,24 @@ function Login() {
     const navigate = useNavigate();
     
     const handleInput = (event) => {
-        setValues(prev => ({...prev, [event.target.name]: [event.target.value] }))
+        setValues(prev => ({...prev, [event.target.name]: event.target.value }))
     };
     axios.defaults.withCredentials = true;
 
-    useEffect(()=>{
-        axios.get('http://localhost:5500')
-        .then(res => {
-            if(res.data.valid) {
-                navigate('/home');
-            }else{
-                navigate('/')
-            }
-        })
-        .catch(err => console.log(err))
-    }, [])
+    
+  
+    // useEffect(()=>{
+    //     axios.get('http://localhost:5500')
+    //     .then(res => {
+    //         if(res.data.valid) {
+    //             navigate('/home');
+    //         }else{
+    //             navigate('/')
+    //         }
+    //     })
+    //     .catch(err => console.log(err))
+    // }, [])
+    
     const handleSubmit = (event) => {
         axios.post("http://localhost:5500/login", values)
         .then(res => {

@@ -177,7 +177,7 @@ function EmployeesAdmin() {
         <input type='text' placeholder='Username' name='username' onChange={handleChange2} />
         <input type='text' placeholder='Password' name='password' onChange={handleChange2} />
         <input type='text' placeholder='Role' name='role' onChange={handleChange2} />
-        <input type='text' placeholder='department' name='department' onChange={handleChange2} />
+        <input type='text' placeholder='Department' name='department' onChange={handleChange2} />
         <input type='text' placeholder='Status' name='status' onChange={handleChange2} />
         <button onClick={handleMake}>Submit</button>
       </Model>
