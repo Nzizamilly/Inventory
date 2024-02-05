@@ -5,6 +5,7 @@ import Model from 'react-modal'
 import Switch from 'react-switch'
 import Add from '../images/add.svg'
 import '../style.css'
+import NavbarAdmin from './navbarAdmin';
 import Update from '../images/update.svg'
 import Delete from '../images/delete.svg'
 import Deactivate from '../images/deactivate.svg'
@@ -152,10 +153,10 @@ function EmployeesAdmin() {
   const handleMake = async (event) => {
     try {
       await axios.post(`http://localhost:5500/add-employee`, employee);
-      console.log("Employee added successfully")
+      window.alert("Employee added successfully");
       setAddVisible(false);
-    } catch {
-      console.log('Error')
+    } catch(error) {
+      console.log('Error', error)
     }
   }
 
@@ -170,6 +171,8 @@ function EmployeesAdmin() {
   }
 
   return (
+    <div>
+      <NavbarAdmin></NavbarAdmin>
     <div style={employeeContainer}>
       <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Employee</p></button>
       <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
@@ -206,6 +209,7 @@ function EmployeesAdmin() {
           </Model>
         </div>
       ))}
+    </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import Approve from '../images/approve.png';
 import Deny from '../images/deny.png';
+import NavbarAdmin from './navbarAdmin';
 
 function NotificationAdmin() {
   const [notifications, setNotifications] = useState([]);
@@ -68,14 +69,16 @@ function NotificationAdmin() {
   }
 
   const notificationAdmin = {
-    width: '44%',
-    height: '11%',
+    // width: '14%',
+    // height: '11%',
     textAlign: 'center',
     gap: '6px',
     border: 'none',
     display: 'flex',
     flexDirection: ' row',
-    marginLeft: '300px',
+    // marginLeft: '300px',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: '15px',
     padding: '7px',
     color: 'black',
@@ -116,14 +119,16 @@ function NotificationAdmin() {
     })
   }, [socket])
   return (
-    <div className="notification-container-admin">
-      {notifications.map((notification) => (
-        <div key={notification.id} style={notificationAdmin}>
-          <p style={sumStyle}> {notification.employeeName} Requested: {notification.itemName}  From: {notification.categoryName} Amount: {notification.count} Description: {notification.description} Date: {notification.date}</p>
-          <button className='buttonStyle' onClick={() => handleApprove(notification.id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
-          <button className='buttonStyle' onClick={() => handleDeny(notification.id)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
-        </div>
-      ))}
+    <div> <NavbarAdmin></NavbarAdmin>
+      <div className="notification-container-admin">
+        {notifications.map((notification) => (
+          <div key={notification.id} style={notificationAdmin}>
+            <p style={sumStyle}> {notification.employeeName} Requested: {notification.itemName}  From: {notification.categoryName} Amount: {notification.count} Description: {notification.description} Date: {notification.date}</p>
+            <button className='buttonStyle' onClick={() => handleApprove(notification)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
+            <button className='buttonStyle' onClick={() => handleDeny(notification.id)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

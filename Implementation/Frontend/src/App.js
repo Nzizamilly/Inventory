@@ -18,6 +18,9 @@ import TermsAdmin from './admin-pages/terms.jsx';
 import TransactionAdmin from './admin-pages/transactions.jsx';
 import HomeAdmin from './admin-pages/home.jsx';
 import Departments_Roles from './admin-pages/department&roles.jsx';
+import NavbarSuperVisor from './supervisor-pages/NavbarSuperVisor.jsx'
+import SupervisorNotifier from './supervisor-pages/SuperVisorNotifier.jsx';
+import NoPage from './employee-pages/NoPage.jsx';
 
 Modal.setAppElement('#root');
 
@@ -25,9 +28,20 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
+
+
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route index path="/" element={<Login />} />
+          <Route path="*" element={<NoPage />} />
         </Routes>
+
+{/* 
+        <NavbarSuperVisor />
+        <Routes>
+          <Route path="/notifier-supervisor" element={<SupervisorNotifier />} />
+        </Routes> */}
+
+
         <NavbarAdmin />
         <Routes>
           <Route path="/notification-admin" element={<NotificationAdmin />} />
@@ -41,13 +55,37 @@ function App() {
           <Route path="/home-admin" element={<HomeAdmin />} />
           <Route path="/departments-and-roles-admin" element={<Departments_Roles />} />
         </Routes>
+
+
         <Navbar />
         <Routes>
-          <Route path="/" element={<Login />} />
+          {/* <Route index path="/" element={<Login />} /> */}
           <Route path="/home-employee" element={<Home />} />
           <Route path="/notification-employee" element={<Notification />} />
           <Route path="/terms-employee" element={<Terms />} />
           <Route path="/request-employee" element={<Request />} />
+        </Routes>
+
+      </BrowserRouter>
+      <BrowserRouter>
+        {/* <NavbarAdmin />
+        <Routes>
+          <Route path="/notification-admin" element={<NotificationAdmin />} />
+          <Route path="/items-admin" element={<ItemsAdmin />} />
+          <Route path="/supplier-admin" element={<SupplierAdmin />} />
+          <Route path="/category-admin" element={<CategoryAdmin />} />
+          <Route path="/items-admin" element={<ItemsAdmin />} />
+          <Route path="/employees-admin" element={<EmployeesAdmin />} />
+          <Route path="/terms-admin" element={<TermsAdmin />} />
+          <Route path="/transaction-admin" element={<TransactionAdmin />} />
+          <Route path="/home-admin" element={<HomeAdmin />} />
+          <Route path="/departments-and-roles-admin" element={<Departments_Roles />} />
+        </Routes> */}
+
+        
+<NavbarSuperVisor />
+        <Routes>
+          <Route path="/notifier-supervisor" element={<SupervisorNotifier />} />
         </Routes>
 
       </BrowserRouter>

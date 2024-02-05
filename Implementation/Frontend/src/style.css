@@ -3,8 +3,6 @@
     box-sizing: border-box;
 }
 
-;
-
 .App {
     height: 100vh;
     /* padding: 0 100px; */
@@ -531,7 +529,9 @@ li a:hover {
     display: flex;
     align-items: center;
     background-color: rgb(163, 187, 197);
-};
+}
+
+;
 
 #two.account {
     width: 299px;
@@ -561,7 +561,9 @@ li a:hover {
     display: flex;
     /* gap: 91px; */
     flex-wrap: wrap;
-};
+}
+
+;
 
 
 .employee-container {
@@ -605,7 +607,7 @@ li a:hover {
     overflow: auto;
 }
 
-.transaction-container-admin{
+.transaction-container-admin {
     font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
@@ -618,13 +620,13 @@ li a:hover {
     overflow: auto;
 }
 
-.transaction-admin{
+.transaction-admin {
     width: 23%;
     height: 8%;
     text-align: center;
     border: none;
     display: flex;
-    flex-direction:row;
+    flex-direction: row;
     margin-left: 300px;
     border-radius: 15px;
     padding: 12px 0px;
@@ -643,7 +645,9 @@ li a:hover {
     margin-left: 15px;
     padding: 8px;
     color: black;
-};
+}
+
+;
 
 .notification-admin {
     width: 23%;
@@ -651,20 +655,12 @@ li a:hover {
     text-align: center;
     border: none;
     display: flex;
-    flex-direction:row;
+    flex-direction: row;
     margin-left: 300px;
     border-radius: 15px;
     padding: 12px 0px;
     color: black;
     background-color: white
-}
-
-.buttonStyle {
-    background-color: rgb(163, 187, 197);
-    border-radius: 45px;
-    width: 28px;
-    height: 53px;
-
 }
 
 .buttonStyle2 {
@@ -675,66 +671,66 @@ li a:hover {
     height: 53px;
 }
 
-.add-btn{
+.add-btn {
     width: 90px;
     display: flex;
-    justify-content:center;
+    justify-content: center;
     align-items: center;
     text-align: center;
     height: 90px;
-    gap:9px;
+    gap: 9px;
     margin-top: 2px;
     margin-left: 205px;
     border-radius: 18px;
     background-color: rgb(41, 48, 51);
     /* padding-left: 26px; */
-    flex-direction:column;
+    flex-direction: column;
 }
 
-.addItem-btn{
+.addItem-btn {
     width: 30px;
     display: flex;
-    justify-content:center;
+    justify-content: center;
     align-items: center;
     text-align: center;
     height: 26px;
-    gap:9px;
+    gap: 9px;
     margin-top: 2px;
     border-radius: 18px;
     background-color: rgb(230, 245, 236);
     /* padding-left: 26px; */
-    flex-direction:column;
+    flex-direction: column;
 }
 
-.status-btn{
+.status-btn {
     width: 40px;
     display: flex;
-    justify-content:center;
+    justify-content: center;
     align-items: center;
     text-align: center;
     color: orange;
     height: 26px;
-    gap:9px;
+    gap: 9px;
     margin-top: 2px;
     border-radius: 18px;
-    flex-direction:column;
+    flex-direction: column;
 }
 
-.green-btn{
+.green-btn {
     background-color: green;
     color: rgb(83, 150, 83)
 }
 
-.red-btn{
+.red-btn {
     background-color: rgb(252, 3, 3);
     color: red
 }
 
-.bigger{
+.bigger {
     width: 42%;
     height: 45%;
     background-color: rgb(151, 183, 197);
-    text-align:center;
+    text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -743,7 +739,7 @@ li a:hover {
     gap: 12px;
 }
 
-.terms-admin{
+.terms-admin {
     width: 83%;
     text-align: left;
     height: 49%;
@@ -759,9 +755,11 @@ li a:hover {
     padding: 12px 0px;
     padding-left: 12px;
     flex-direction: column;
-};
+}
 
-.th1{
+;
+
+.th1 {
     width: 23px;
     background-color: blue;
 }
@@ -774,12 +772,13 @@ li a:hover {
     display: flex;
     float: right;
     justify-content: center;
-    align-items : center;
+    align-items: center;
     margin-left: 1020px;
     margin-top: 60px
 }
-.buttonStyle{
-    background-color: black;
+
+.buttonStyle {
+    background-color: rgb(20, 19, 19);
     color: white;
     width: 109%;
     height: 23px;
@@ -787,15 +786,126 @@ li a:hover {
     border-radius: 45px,
 }
 
-.buttonStyle:hover{
+.buttonStyle3 {
+    background-color: rgb(253, 251, 251);
+    color: white;
+    width: 3%;
+    margin-top: 15px;
+    height: 23px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 45px,
+}
+
+.buttonStyle:hover {
     background-color: rgb(22, 28, 32);
 }
 
-.dept-container-admin{
+.dept-container-admin {
     font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
     background-color: rgb(163, 187, 197);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    overflow: auto;
+}
+
+.No {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: Black;
+    width: 100%;
+    height: 100vh;
+    color: rgb(12, 193, 199);
+    font-weight: 100px;
+    font-family: 'Arial', sans-serif;
+}
+
+.home-supervisor-container {
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(13, 15, 39);
+    justify-content: center;
+    display: flex;
+    color: white;
+    align-items: center;
+    overflow: auto;
+}
+
+.home-supervisor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+
+.notification-supervisor-container {
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(50, 38, 100);
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    overflow: auto;
+}
+
+.ulsupervisor {
+    list-style-type: none;
+    width: 100%;
+    height: 5.5%;
+    display: flex;
+    flex-direction: inline;
+    margin: 0;
+    justify-content: right;
+    overflow: hidden;
+    background-color: rgb(33, 116, 141);
+}
+
+.lisupervisor a {
+    color: rgb(250, 243, 243);
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.lisupervisor a:hover {
+    background-color: #f5f4f4;
+}
+
+.ul2supervisor {
+    font-family: 'Arial', sans-serif;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 13%;
+    background-color: rgb(33, 116, 141);
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+}
+
+.lisupervisor a:hover {
+    background-color: rgb(14, 13, 13);
+    color: rgb(240, 230, 230);
+}
+
+.notification-supervisor {
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(17, 21, 37);
     justify-content: center;
     align-items: center;
     display: flex;
@@ -804,3 +914,193 @@ li a:hover {
     overflow: auto;
 }
 
+.request-supervisor-container {
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(17, 21, 37);
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    overflow: auto;
+}
+
+.request-supervisor {
+    width: 44%;
+    height: 66vh;
+    background-color: rgb(35, 42, 68);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    gap: 23px;
+    margin-left: 300px;
+    display: flex;
+    padding: 12px 0px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.transaction-container-supervisor {
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(17, 21, 37);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    /* gap: 51px; */
+    flex-wrap: wrap;
+    overflow: auto;
+}
+
+.notification-container-supervisor {
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(17, 21, 37);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    /* gap: 51px; */
+    flex-wrap: wrap;
+    overflow: auto;
+}
+
+.terms-supervisor {
+    width: 83%;
+    text-align: left;
+    height: 49%;
+    background-color: rgb(56, 97, 124);
+    color: rgb(240, 239, 239);
+    border: none;
+    border-radius: 12px;
+    gap: 15px;
+    font-family: 'Arial', sans-serif;
+    margin-top: -178px;
+    margin-left: 220px;
+    display: flex;
+    padding: 12px 0px;
+    padding-left: 12px;
+    flex-direction: column;
+}
+
+.home-hr-container {
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(130, 142, 161);
+    justify-content: center;
+    display: flex;
+    color: black;
+    align-items: center;
+    overflow: auto;
+}
+
+.home-hr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.ulhr {
+    list-style-type: none;
+    width: 100%;
+    height: 5.5%;
+    display: flex;
+    flex-direction: inline;
+    margin: 0;
+    justify-content: right;
+    overflow: hidden;
+    background-color: rgb(130, 142, 161);
+}
+.notification-hr{
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(130, 142, 161);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    /* gap: 51px; */
+    flex-wrap: wrap;
+    overflow: auto;
+}
+.ul2hr{
+    font-family: 'Arial', sans-serif;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 13%;
+    background-color: rgb(130, 142, 161);
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+}
+.request-hr-container{
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(130, 142, 161);
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    overflow: auto;
+}
+.request-hr{
+    width: 44%;
+    height: 66vh;
+    background-color: rgb(101, 131, 184);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    gap: 23px;
+    margin-left: 300px;
+    display: flex;
+    padding: 12px 0px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.transaction-container-hr{
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(130, 142, 161);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    /* gap: 51px; */
+    flex-wrap: wrap;
+    overflow: auto;
+}
+.terms-container-hr{
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(130, 142, 161);
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    /* gap: 51px; */
+    flex-wrap: wrap;
+    overflow: auto;
+}
+.terms-hr{
+    width: 83%;
+    text-align: left;
+    height: 49%;
+    background-color: rgb(101, 131, 184);
+    color: rgb(240, 239, 239);
+    border: none;
+    border-radius: 12px;
+    gap: 15px;
+    font-family: 'Arial', sans-serif;
+    margin-top: -178px;
+    margin-left: 220px;
+    display: flex;
+    padding: 12px 0px;
+    padding-left: 12px;
+    flex-direction: column;
+}

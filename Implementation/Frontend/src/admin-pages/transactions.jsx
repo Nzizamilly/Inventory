@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import '../style.css';
 import DataTable from 'react-data-table-component';
+import NavbarAdmin from './navbarAdmin';
+import '../style.css';
 import axios from 'axios';
 import Modal from 'react-modal'
 
@@ -113,8 +114,12 @@ function TransactionsAdmin() {
   useEffect(()=>{
     setRecords(report);
   },[report])
-
+const handlePrint = () => {
+  window.print();
+}
   return (
+    <div>
+      <NavbarAdmin></NavbarAdmin>
     <div className="transaction-container-admin">
       <div>
         <div>
@@ -122,6 +127,8 @@ function TransactionsAdmin() {
         </div>
         <Modal style={modalStyles} isOpen={isItemModalOpen} onRequestClose={closeItemModal}>
           <input type='text' placeholder='Search By Item Name' onChange={handleFilter} />
+          <br />
+          <button onClick={handlePrint}>Print</button>
           <DataTable
             columns={columns}
             data={records}
@@ -129,6 +136,7 @@ function TransactionsAdmin() {
           ></DataTable>
         </Modal>
       </div>
+    </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal'
 
-function Navbar() {
+function NavbarSuperVisor() {
   const navigate = useNavigate();
 
   const [data, setData] = useState([]);
@@ -16,7 +16,7 @@ function Navbar() {
       right: 'auto',
       gap: '12px',
       borderRadius: '12px',
-      height: '25%',
+      height: '23%',
       marginRight: '-50%',
       transform: 'translate(-50%, -50%)',
       opacity: 0.9,
@@ -72,13 +72,13 @@ function Navbar() {
     <div className="navbar">
       <ul className='ul1'>
         <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
-        <li className='li1'><Link to={'/home-employee'}>Home</Link></li>
+        <li className='li1'><Link to={'/home-supervisor'}>Home</Link></li>
       </ul>
       <ul>
-      <li><Link to={'/account-employee'} onMouseOver={openModal}>Account</Link></li>
-        <li><Link to={'/request-employee'}>Request</Link></li>
-        <li><Link to={'/notification-employee'}>Notification</Link></li>
-        <li><Link to={'/terms-employee'}>Terms and Conditions</Link></li>
+      <li><Link to={'/account-supervisor'} onMouseOver={openModal}>Account</Link></li>
+        <li><Link to={'/request-supervisor'}>Request</Link></li>
+        <li><Link to={'/notification-supervisor'}>Notification</Link></li>
+        <li><Link to={'/terms-supervisor'}>Terms and Conditions</Link></li>
       </ul>
       <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
         {data && (
@@ -94,4 +94,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default NavbarSuperVisor;

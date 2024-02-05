@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import io from 'socket.io-client';
+import Navbar from './navbar';
 
 function Notification() {
   const [notification, setNotification] = useState([]);
@@ -30,11 +31,14 @@ function Notification() {
   };
 
   return (
+    <div>
+      <Navbar></Navbar>
     <div className="notification-container">
       <div className="notification" style={notificationStyle}>
         <span>
           Admin {status ? 'Approved' : 'Denied'}: {notification.length > 0 ? `${notification[0].itemName} ${notification[0].amount}` : 'No notification'} Date: 12/12/2023
         </span>
+      </div>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import NavbarAdmin from './navbarAdmin';
 import axios from 'axios'
 import Add from '../images/add.svg'
 import Model from 'react-modal'
@@ -71,6 +72,8 @@ function CategoryAdmin() {
     setCategory((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
   return (
+    <div>
+      <NavbarAdmin></NavbarAdmin>
     <div className="category-container">
       <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Supplier</p></button>
       <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
@@ -87,6 +90,7 @@ function CategoryAdmin() {
           <p>{category.description}</p>
         </div>
       ))}
+    </div>
     </div>
   );
 }

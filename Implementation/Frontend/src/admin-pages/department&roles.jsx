@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import Modal from 'react-modal'
-import axios from 'axios';
 import DataTable from 'react-data-table-component';
+import Modal from 'react-modal'
+import NavbarAdmin from './navbarAdmin';
 import Addy from '../images/addItem.svg'
 import Info from '../images/info.svg'
+import axios from 'axios';
 
 function Departments_Roles() {
 
@@ -212,6 +213,8 @@ function Departments_Roles() {
     ]
 
     return (
+        <div>
+            <NavbarAdmin></NavbarAdmin>
         <div className="dept-container-admin" >
             <button style={AddButton} onClick={openAddModal}>Add Department</button>
             <Modal isOpen={isAddModalOpen} onRequestClose={closeAddModal} style={modal}>
@@ -245,6 +248,7 @@ function Departments_Roles() {
                 </DataTable>
 
             </Modal>
+        </div>
         </div>
     );
 }

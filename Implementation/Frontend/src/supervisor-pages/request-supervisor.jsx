@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
-import Navbar from './navbar';
+import NavbarHome from './NavbarHome';
 import axios from 'axios';
 import { Multiselect } from 'multiselect-react-dropdown'
 
-function Request() {
+function RequestSupervisor() {
 
   const [itemName, setItemName] = useState('');
   const [categoryName, setCategoryName] = useState('');
@@ -97,7 +97,7 @@ function Request() {
     setAmount((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
   
-  const sendMessage = async () => {
+  const sendMessage = () => {
 
     const get = localStorage.getItem('username');
     const itemName = item.name
@@ -120,15 +120,8 @@ function Request() {
     if (backCount.totalCount < messageData.count) {
       window.alert("Amount requested is not available", Error);
     } else {
-      socket.emit("send_message", messageData);
-      try{
-        const response = await axios.post('http://localhost:5500/add-request-employee-supervisor', messageData);
-        console.log("Response", response);
-      }catch(error){
-        console.error("Error Occurred Unexpectedly", error)
-
-      }
-      window.alert("Request sent....");
+      socket.emit("message_from_supervisor_straight_to_HR", messageData);
+      window.alert("Request sent To HR For Appproval....");
     }
     socket.on("disconnect", () => {
       console.log("Disconnected from socket server")
@@ -155,9 +148,9 @@ function Request() {
   
   return (
     <div>
-      <Navbar></Navbar>
-      <div className='request-container'>
-        <div className='request'>
+      <NavbarHome></NavbarHome>
+      <div className='request-supervisor-container'>
+        <div className='request-supervisor'>
 
           <select style={Select} onChange={handleCategoryChange} value={selectedCategory}>
             <option value='' disabled>Select Category</option>
@@ -178,4 +171,4 @@ function Request() {
   );
 };
 
-export default Request;
+export default RequestSupervisor;

@@ -71,6 +71,10 @@ function Login() {
                     navigate('/home-admin');
                 }else if(userRole === 2){
                     navigate('/home-employee')
+                }else if(userRole === 5){
+                    navigate('/home-supervisor')
+                }else if(userRole === 6){
+                    navigate('home-hr')
                 }
             }else {
                 alert("Not found")

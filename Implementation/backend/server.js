@@ -59,13 +59,16 @@ io.on("connection", (socket) => {
   // console.log("A user connected", socket.id);
   socket.on("send_message", (messageData) => {
     console.log("From employee: ", messageData);
-    // const message = `${messageData.employeeName} requested ${messageData.itemName} from ${messageData.categoryName}, amount ${messageData.count} description ${messageData.description} date: ${messageData.date}.`
-    io.emit("sentBack", messageData);
+    io.emit("sentBack", [messageData]);
   });
 
-  socket.on("Approved", (notifications, newstatus) => {
+  socket.on("message_from_supervisor_straight_to_HR", (messageData) => {
+    io.emit("message_from_supervisor_straight_to_HR", ([messageData]))
+  })
+
+  socket.on("Approved_By_Supervisor", (notifications, newstatus) => {
     console.log("Data response from the admin: ", notifications, newstatus)
-    io.emit("Approved", notifications, newstatus);
+    io.emit("Approved_By_Supervisor", notifications, newstatus);
   });
 
   socket.on("Denied", (notifications, newStatus) => {
@@ -281,6 +284,7 @@ app.get('/category', (req, res) => {
     res.json(results);
   });
 });
+
 app.get('/employees', (req, res) => {
   const sql = 'SELECT employees.id, employees.username, employees.password, employees.profile_picture, employees.roleID, employees.departmentID, employees.status, role.role_name, department.department_name FROM employees JOIN role ON employees.roleID = role.id JOIN department ON employees.departmentID = department.id';
   db.query(sql, (err, results) => {
@@ -343,6 +347,7 @@ app.get('/number-category', (req, res) => {
 });
 
 app.get('/', (req, res) => {
+  // console.log("Session", req.session.username);
   if (req.session.username) {
     return res.json({ valid: true, username: req.session.username });
   }
@@ -453,12 +458,12 @@ app.get('/supplier', (req, res) => {
   })
 })
 
-// Assuming itemID is passed as a parameter, and serialNumber is sent in the request body
 app.post('/add-serial-number/:takeItemID', (req, res) => {
+  34
   const itemID = req.params.takeItemID;
   const status = 'In';
   console.log("Status is: ", status);
-  const q = "INSERT INTO serial_number (serial_number, state_of_item, depreciation_rate, itemID, status) VALUES (?)";
+  const q = "INSERT INTO serial_number (serial_number, state_of_item, depreciation_rate, itemID, status, taker, quantity ) VALUES (?,?,?,?,?,NULL,1)";
   const values = [
     req.body.serial_number,
     req.body.state_of_item,
@@ -466,7 +471,7 @@ app.post('/add-serial-number/:takeItemID', (req, res) => {
     itemID,
     status
   ]
-  db.query(q, [values], (err, data) => {
+  db.query(q, values, (err, data) => {
     if (err) {
       console.error("Error inserting", err);
       return res.status(500).json({ error: "Internal Server Error" })
@@ -629,144 +634,6 @@ app.put('/update-item/:id', (req, res) => {
   });
 });
 
-// const getEmployeeID = (employeeName, callback) => {
-//   const query = `SELECT id FROM employees WHERE username = ?`;
-
-//   db.query(query, [employeeName], (error, results) => {
-//     if (error) {
-//       console.error(error);
-//       callback(error, null);
-//     } else {
-//       const employeeID = results.length > 0 ? results[0].employeeID : null;
-//       callback(null, employeeID);
-//     }
-//   });
-// };
-
-// Function to get itemID based on itemName
-// const getItemID = (itemName, callback) => {
-//   const query = `SELECT id FROM item WHERE name = ?`;
-
-//   db.query(query, [itemName], (error, results) => {
-//     if (error) {
-//       console.error(error);
-//       callback(error, null);
-//     } else {
-//       const itemID = results.length > 0 ? results[0].itemID : null;
-//       callback(null, itemID);
-//     }
-//   });
-// };
-
-// // Endpoint for storing notifications
-// app.post('/request', (req, res) => {
-//   try {
-//     const getEmployee_ID = (employeeName) => {
-//       const sql = ` SELECT id FROM employees WHERE username = ? `;
-//       db.query(sql, [employeeName], (error, result) => {
-//         if (error) {
-//           console.error(error)
-//         } else {
-//           return result;
-//         }
-//       })
-//     }
-//     const { amount, description, employeeName, itemName } = req.body;
-
-//   const gotEmployee_ID = getEmployee_ID(employeeName);
-
-//     // Get employeeID based on employeeName
-//     getEmployeeID(employeeName, (errEmployee, employeeID) => {
-//       if (errEmployee || !employeeID) {
-//         return res.status(400).json({ error: 'Invalid employeeName' });
-//       }
-
-//       // Get itemID based on itemName
-//       getItemID(itemName, (errItem, itemID) => {
-//         if (errItem || !itemID) {
-//           return res.status(400).json({ error: 'Invalid itemName' });
-//         }
-
-//         // Insert into the 'request_employee' table with foreign keys
-//         const query = `INSERT INTO request_employee (amount, description, employeeID, itemID) VALUES (?, ?, ?, ?)`;
-
-//         db.query(query, [amount, description, getEmployee_ID, itemID], (error, results) => {
-//           if (error) {
-//             console.error(error);
-//             res.status(500).json({ error: 'Internal Server Error' });
-//           } else {
-//             console.log("Notification stored in the database");
-//             res.status(200).json({ message: 'Notification stored in the database' });
-//           }
-//         });
-//       });
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// });
-
-app.post('/request', async (req, res) => {
-  const getEmployeeID = (employeeName) => {
-    return new Promise((resolve, reject) => {
-      const sql = `SELECT id FROM employees WHERE username = ?`;
-      db.query(sql, [employeeName], (error, result) => {
-        if (error) {
-          console.error(error);
-          reject(error);
-        } else {
-          const employeeID = result.length > 0 ? result[0].id : null;
-          console.log("Employee ID", employeeID);
-          resolve(employeeID);
-        }
-      });
-    });
-  };
-
-  const getItemID = (itemName) => {
-    return new Promise((resolve, reject) => {
-      const sql = `SELECT id FROM item WHERE name = ?`;
-      db.query(sql, [itemName], (error, result) => {
-        if (error) {
-          console.error(error);
-          reject(error);
-        } else {
-          const itemID = result.length > 0 ? result[0].id : null;
-          console.log("Item ID", itemID);
-          resolve(itemID);
-        }
-      });
-    });
-  };
-
-  try {
-    const gotEmployeeName = req.body.employeeName;
-    const employeeID = await getEmployeeID(gotEmployeeName);
-    console.log("Employee ID: ", employeeID);
-
-    const gotItemName = req.body.itemName;
-    const itemID = await getItemID(gotItemName);
-    console.log("Item ID: ", itemID);
-
-    const q =
-      "INSERT INTO request_employee (amount, description, employeeID, itemID) VALUES (?, ?, ?, ?)";
-    const values = [req.body.amount, req.body.description, employeeID, itemID];
-
-    db.query(q, values, (err, data) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send("Internal Server Error");
-      } else {
-        console.log(data);
-        res.status(200).send("Request successfully inserted");
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-});
 
 app.delete('/delete-item/:itemID', (req, res) => {
   const itemID = req.params.itemID;
@@ -931,18 +798,22 @@ app.put('/update-serial-status/:id/:status/:taker', async (req, res) => {
     const takerID = result[0].id;
     console.log("Taker ID: ", takerID);
 
-    const updateQuery = `UPDATE serial_number SET status = ?, taker = ? WHERE id = ?`;
-    const updateValues = [status, takerID, id];
+    if (takerID !== null) {
+      const updateQuery = `UPDATE serial_number SET status = ?, taker = ?, quantity = GREATEST(quantity - 1, 0) WHERE id = ?`;
+      const updateValues = [status, takerID, id];
 
-    db.query(updateQuery, updateValues, (error, updateResult) => {
-      if (error) {
-        console.error("Error", error);
-        res.status(500).json({ error: "Internal Server Error" });
-      } else {
-        console.log("Update Result", updateResult);
-        res.status(200).json({ message: "Update successful" });
-      }
-    });
+      db.query(updateQuery, updateValues, (error, updateResult) => {
+        if (error) {
+          console.error("Error", error);
+          res.status(500).json({ error: "Internal Server Error" });
+        } else {
+          console.log("Update Result", updateResult);
+          res.status(200).json({ message: "Update successful" });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Taker not found" });
+    }
   } catch (error) {
     console.error("Error", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -953,25 +824,308 @@ app.put('/update-serial-status/:id/:status/:taker', async (req, res) => {
 app.get('/monthly-report', (req, res) => {
   const query = `
   SELECT
-  DATE_FORMAT(serial_number.date, '%m-%Y') AS month,
+  DATE_FORMAT(serial_number.date, '%d-%m-%Y') AS month,
   item.name AS item_name,
   SUM(CASE WHEN serial_number.status = 'In' THEN 1 ELSE 0 END) AS amount_entered,
   SUM(CASE WHEN serial_number.status = 'Out' THEN 1 ELSE 0 END) AS amount_went_out,
-  employees.username AS taker_name
+  employees.username AS taker_name,
+  (SELECT COUNT(*) FROM serial_number s WHERE s.status = 'In' AND s.itemID = item.id) AS total_items_in
 FROM serial_number
 JOIN item ON serial_number.itemID = item.id
 LEFT JOIN employees ON serial_number.taker = employees.id
-GROUP BY month, item_name, taker_name;
+GROUP BY month, item_name, taker_name, item.id
+ORDER BY serial_number.date DESC;
+
+
+
 
   `;
-
   db.query(query, (error, result) => {
-    if(error){
+    if (error) {
       console.error("Error", error);
-    }else{
+    } else {
       res.json(result);
     }
   })
+})
+
+app.post('/add-department', (req, res) => {
+  const q = 'INSERT INTO department(department_name, status) VALUES (?,?)';
+  const values = [
+    req.body.department_name,
+    req.body.status
+  ]
+  db.query(q, values, (error, result) => {
+    if (error) {
+      console.error("Error", error);
+    } else {
+      console.log("Done Well");
+      return result;
+    }
+  })
+})
+
+app.post('/add-role/:deptID', async (req, res) => {
+  try {
+    const gotDepartmentName = req.params.deptID;
+    console.log("DeptID", gotDepartmentName);
+    const q = "INSERT INTO role(role_name, departmentID, status) VALUES(?, ?, ?)";
+    const values = [req.body.role_name, gotDepartmentName, req.body.status];
+    db.query(q, values, (err, data) => {
+      if (err) {
+        console.error("Error", err);
+      } else {
+        // console.log(data);
+        res.status(200).send("Role successfully inserted");
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+})
+
+app.get('/get-department', (req, res) => {
+  const q = 'SELECT * FROM department;';
+  db.query(q, (error, result) => {
+    if (error) {
+      console.error("Error", error);
+    } else {
+      // console.log("Data", result);
+      return res.json(result)
+    }
+  })
+})
+
+app.get('/employee', (req, res) => {
+  const q = 'SELECT * FROM employees';
+  db.query(q, (error, result) => {
+    if (error) {
+      console.error("Error", error);
+    } else {
+      console.log(result)
+    }
+  })
+});
+
+app.get('/get-role/:deptID', (req, res) => {
+  const deptID = req.params.deptID;
+  const q = `SELECT * FROM role WHERE departmentID = ?`;
+  db.query(q, deptID, (error, result) => {
+    if (error) {
+      console.error("error", error);
+    }
+    return res.json(result);
+  })
+})
+
+app.post('/add-request-employee-supervisor', async (req, res) => {
+  const getEmployeeID = (employeeName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM employees WHERE username = ?`;
+      db.query(sql, [employeeName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const employeeID = result.length > 0 ? result[0].id : null;
+          console.log("Employee ID", employeeID);
+          resolve(employeeID);
+        }
+      });
+    });
+  };
+
+  const getItemID = (itemName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM item WHERE name = ?`;
+      db.query(sql, [itemName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const itemID = result.length > 0 ? result[0].id : null;
+          console.log("Item ID", itemID);
+          resolve(itemID);
+        }
+      });
+    });
+  };
+
+  const getCategoryID = (categoryName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM category WHERE category_name = ?`;
+      db.query(sql, [categoryName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const categoryName = result.length > 0 ? result[0].id : null;
+          console.log("Item ID", categoryName);
+          resolve(categoryName);
+        }
+      });
+    });
+  }
+
+  try {
+    const gotEmployeeName = req.body.employeeName;
+    const employeeID = await getEmployeeID(gotEmployeeName);
+    console.log("Employee ID: ", employeeID);
+
+    const gotItemName = req.body.itemName;
+    const itemID = await getItemID(gotItemName);
+    console.log("Item ID: ", itemID);
+
+    const gotCategoryName = req.body.categoryName;
+    const categoryID = await getCategoryID(gotCategoryName);
+    console.log("Category ID: ", categoryID);
+
+    const status = 'Pending'
+
+    const q =
+      "INSERT INTO employee_supervisor_request (categoryID,	itemID,	employeeID,	description,	date_of_request,	status,	amount	) VALUES (?, ?, ?, ?, ?, ?, ? )";
+    const values = [categoryID, itemID, employeeID, req.body.description, req.body.date, status, req.body.count];
+
+    db.query(q, values, (err, data) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+      } else {
+        console.log(data);
+        res.status(200).send("Request successfully inserted");
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get('/get-request-employee-supervisor', async (req, res) => {
+
+  try {
+
+    const q =
+      `SELECT
+      e.username,
+      c.category_name,
+      i.name AS itemName,
+      esr.description,
+      esr.date_of_request AS date,
+      esr.status,
+      esr.amount
+  FROM
+      employee_supervisor_request esr
+  JOIN
+      employees e ON esr.employeeID = e.id
+  JOIN
+      category c ON esr.categoryID = c.id
+  JOIN
+      item i ON esr.itemID = i.id;
+  ;
+  `;
+
+    db.query(q, (err, data) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+      } else {
+        console.log("data", data);
+        return res.json(data);
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+})
+
+app.post('/add-request-supervisor-hr/:supervisorID', async (req,res)=>{ 
+
+  const getEmployeeID = (employeeName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM employees WHERE username = ?`;
+      db.query(sql, [employeeName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const employeeID = result.length > 0 ? result[0].id : null;
+          console.log("Employee ID", employeeID);
+          resolve(employeeID);
+        }
+      });
+    });
+  };
+
+  const getItemID = (itemName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM item WHERE name = ?`;
+      db.query(sql, [itemName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const itemID = result.length > 0 ? result[0].id : null;
+          console.log("Item ID", itemID);
+          resolve(itemID);
+        }
+      });
+    });
+  };
+
+  const getCategoryID = (categoryName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM category WHERE category_name = ?`;
+      db.query(sql, [categoryName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const categoryName = result.length > 0 ? result[0].id : null;
+          console.log("Item ID", categoryName);
+          resolve(categoryName);
+        }
+      });
+    });
+  }
+
+  try {
+    const gotEmployeeName = req.body[0].employeeName;
+    const employeeID = await getEmployeeID(gotEmployeeName);
+    console.log("Employee ID: ", employeeID);
+
+    const gotItemName = req.body[0].itemName;
+    const itemID = await getItemID(gotItemName);
+    console.log("Item ID: ", itemID);
+
+    const gotCategoryName = req.body[0].categoryName;
+    const categoryID = await getCategoryID(gotCategoryName);
+    console.log("Category ID: ", categoryID);
+
+    const status = 'Pending'
+
+    const supervisorID = req.params.supervisorID;
+
+    const q =
+    "INSERT INTO supervisor_hr_request (supervisorID,	employeeID,	itemID,	categoryID,	description, date_approved,	amount,	status	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
+    const values = [supervisorID, employeeID, itemID, categoryID, req.body[0].description, req.body[0].date, req.body[0].count, status];
+    console.log("Values: ", values);
+
+    db.query(q, values, (err, data) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+      } else {
+        console.log(data);
+        res.status(200).send("Request successfully inserted");
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 })
 
 app.listen(5500, () => {

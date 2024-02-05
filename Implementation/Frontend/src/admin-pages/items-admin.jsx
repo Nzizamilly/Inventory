@@ -7,6 +7,7 @@ import Update from '../images/update.svg'
 import Delete from '../images/delete.svg'
 import Addy from '../images/addy.svg'
 import Info from '../images/info.svg'
+import NavbarAdmin from './navbarAdmin';
 import DataTable from 'react-data-table-component';
 
 function ItemsAdmin() {
@@ -496,6 +497,8 @@ function ItemsAdmin() {
   };
 
   return (
+    <div>
+      <NavbarAdmin></NavbarAdmin>
     <div className='items-container'>
       <input id='searchInput' type='text' placeholder='Search by Category...' onChange={handleSearch} value={searchInput} />
       <div>
@@ -574,6 +577,7 @@ function ItemsAdmin() {
 
       </div>
     </div >
+    </div>
   );
 }
 

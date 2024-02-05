@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
 import React from 'react';
+import NavbarAdmin from './navbarAdmin';
 
 function TermsAdmin() {
   return (
+    <div>
+      <NavbarAdmin></NavbarAdmin>
     <div className="notification-container-admin">
       <div className="terms-admin">
         <h1>Terms</h1>
@@ -12,6 +15,7 @@ function TermsAdmin() {
         <p>To bear the cost in-case the material is stolen, damaged or unproperly working due to reasons no related to what the material is meant for and not related to work.</p>
         <p>To return the material in-case it is not used.</p>
       </div>
+    </div>
     </div>
   );
 }

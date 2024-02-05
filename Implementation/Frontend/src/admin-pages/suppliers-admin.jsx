@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
+import NavbarAdmin from './navbarAdmin';
 import Model from 'react-modal'
 import Add from '../images/add.svg'
 
@@ -125,6 +126,8 @@ function SupplierAdmin() {
   }
 
   return (
+    <div>
+      <NavbarAdmin></NavbarAdmin>
     <div style={employeeContainer}>
       <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Supplier</p></button>
 
@@ -163,6 +166,7 @@ function SupplierAdmin() {
           </Model>
         </div>
       ))}
+    </div>
     </div>
   );
 }

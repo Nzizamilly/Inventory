@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import User from '../images/user.svg';
+import Navbar from './navbar';
 import Request from '../images/request.svg';
 import Notification from '../images/notification.svg';
 import axios from 'axios';
@@ -11,19 +12,21 @@ function Home() {
     const navigate = useNavigate();
 
     axios.defaults.withCredentials = true;
-    
-    useEffect(()=>{
+
+    useEffect(() => {
         axios.get('http://localhost:5500')
-        .then(res => {
-            if(res.data.valid) {
-                setName(res.data.username);
-            }else{
-                navigate('/')
-            }
-        })
-        .catch(err => console.log(err))
+            .then(res => {
+                if (res.data.valid) {
+                    setName(res.data.username);
+                } else {
+                    navigate('/')
+                }
+            })
+            .catch(err => console.log(err))
     }, [])
     return (
+        <div>
+        <Navbar></Navbar> 
         <div className="icon-container">
             <div className="icons">
                 <img className='img1' src={User} alt='img1' />
@@ -37,6 +40,7 @@ function Home() {
                 <img className='img1' src={Notification} alt='img3' />
                 <p>Notifications: ---</p>
             </div>
+        </div>
         </div>
     );
 }

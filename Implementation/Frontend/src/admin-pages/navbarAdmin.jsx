@@ -70,7 +70,7 @@ function NavbarAdmin() {
   }, []);
 
   return (
-    <div className="navbarAdmin">
+    <div >
       <ul className='ul1Admin'>
         <li className='li1Admin' onClick={handleLogout}><Link to={'/'}>Log Out</Link></li>
         <li className='li1Admin'><Link to={'/home-admin'}>Home</Link></li>
