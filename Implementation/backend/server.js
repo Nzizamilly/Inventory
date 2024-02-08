@@ -57,14 +57,30 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   // console.log("A user connected", socket.id);
-  socket.on("send_message", (messageData) => {
-    console.log("From employee: ", messageData);
-    io.emit("sentBack", [messageData]);
+  socket.on("Employee_Message_Supervisor(1)", (messageData) => {
+    console.log("From employee: to supervisor", messageData);
+    io.emit("Employee_Message_Supervisor(2)", [messageData]);
   });
 
-  socket.on("message_from_supervisor_straight_to_HR", (messageData) => {
-    io.emit("message_from_supervisor_straight_to_HR", ([messageData]))
+  socket.on("Supervisor_Message_HR(1)", (messageData, supervisorName) => {
+    console.log("From supervisor: to HR", messageData, supervisorName);
+    io.emit("Supervisor_Message_HR(2)", messageData, supervisorName)
   })
+
+  // socket.on("Supervisor_Message_HR(1)", (messageData) => {
+  //   io.emit("Supervisor_Message_HR(2)", ([messageData]))
+  // })
+
+  socket.on("HR_Message_Stock(1)", (messageData) => {
+    console.log("From HR: to stockManager", messageData);
+    io.emit("HR_Message_Stock(2)", messageData)
+  })
+
+  socket.on("Stock_Message_Employee(1)", (messageData) => {
+    console.log("From HR: to stockManager", messageData);
+    io.emit("Stock_Message_Employee(2)", ([messageData]))
+  })
+
 
   socket.on("Approved_By_Supervisor", (notifications, newstatus) => {
     console.log("Data response from the admin: ", notifications, newstatus)
@@ -929,7 +945,7 @@ app.post('/add-request-employee-supervisor', async (req, res) => {
           reject(error);
         } else {
           const employeeID = result.length > 0 ? result[0].id : null;
-          console.log("Employee ID", employeeID);
+          // console.log("Employee ID", employeeID);
           resolve(employeeID);
         }
       });
@@ -945,7 +961,7 @@ app.post('/add-request-employee-supervisor', async (req, res) => {
           reject(error);
         } else {
           const itemID = result.length > 0 ? result[0].id : null;
-          console.log("Item ID", itemID);
+          // console.log("Item ID", itemID);
           resolve(itemID);
         }
       });
@@ -961,7 +977,7 @@ app.post('/add-request-employee-supervisor', async (req, res) => {
           reject(error);
         } else {
           const categoryName = result.length > 0 ? result[0].id : null;
-          console.log("Item ID", categoryName);
+          // console.log("Item ID", categoryName);
           resolve(categoryName);
         }
       });
@@ -971,15 +987,15 @@ app.post('/add-request-employee-supervisor', async (req, res) => {
   try {
     const gotEmployeeName = req.body.employeeName;
     const employeeID = await getEmployeeID(gotEmployeeName);
-    console.log("Employee ID: ", employeeID);
+    // console.log("Employee ID: ", employeeID);
 
     const gotItemName = req.body.itemName;
     const itemID = await getItemID(gotItemName);
-    console.log("Item ID: ", itemID);
+    // console.log("Item ID: ", itemID);
 
     const gotCategoryName = req.body.categoryName;
     const categoryID = await getCategoryID(gotCategoryName);
-    console.log("Category ID: ", categoryID);
+    // console.log("Category ID: ", categoryID);
 
     const status = 'Pending'
 
@@ -992,8 +1008,10 @@ app.post('/add-request-employee-supervisor', async (req, res) => {
         console.error(err);
         res.status(500).send("Internal Server Error");
       } else {
-        console.log(data);
-        res.status(200).send("Request successfully inserted");
+        id = data.insertId;
+        // console.log("This is the id ", id);
+        return id;
+        // res.status(200).send("Request successfully inserted");
       }
     });
   } catch (error) {
@@ -1109,7 +1127,7 @@ app.post('/add-request-supervisor-hr/:supervisorID', async (req,res)=>{
     const supervisorID = req.params.supervisorID;
 
     const q =
-    "INSERT INTO supervisor_hr_request (supervisorID,	employeeID,	itemID,	categoryID,	description, date_approved,	amount,	status	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
+    "INSERT INTO supervisor_hr_request (supervisorID,	employeeID,	itemID,	categoryID,	description, date_approved,	amount,	status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
     const values = [supervisorID, employeeID, itemID, categoryID, req.body[0].description, req.body[0].date, req.body[0].count, status];
     console.log("Values: ", values);
 
@@ -1127,6 +1145,164 @@ app.post('/add-request-supervisor-hr/:supervisorID', async (req,res)=>{
     res.status(500).send("Internal Server Error");
   }
 })
+
+// app.post('/add-request-hr-stock', (req,res)=>{
+
+//   const getEmployeeID = (employeeName) => {
+//     return new Promise((resolve, reject) => {
+//       const sql = `SELECT id FROM employees WHERE username = ?`;
+//       db.query(sql, [employeeName], (error, result) => {
+//         if (error) {
+//           console.error(error);
+//           reject(error);
+//         } else {
+//           const employeeID = result.length > 0 ? result[0].id : null;
+//           console.log("Employee ID", employeeID);
+//           resolve(employeeID);
+//         }
+//       });
+//     });
+//   };
+
+//   const getItemID = (itemName) => {
+//     return new Promise((resolve, reject) => {
+//       const sql = `SELECT id FROM item WHERE name = ?`;
+//       db.query(sql, [itemName], (error, result) => {
+//         if (error) {
+//           console.error(error);
+//           reject(error);
+//         } else {
+//           const itemID = result.length > 0 ? result[0].id : null;
+//           console.log("Item ID", itemID);
+//           resolve(itemID);
+//         }
+//       });
+//     });
+//   };
+
+//   const getCategoryID = (categoryName) => {
+//     return new Promise((resolve, reject) => {
+//       const sql = `SELECT id FROM category WHERE category_name = ?`;
+//       db.query(sql, [categoryName], (error, result) => {
+//         if (error) {
+//           console.error(error);
+//           reject(error);
+//         } else {
+//           const categoryName = result.length > 0 ? result[0].id : null;
+//           console.log("Item ID", categoryName);
+//           resolve(categoryName);
+//         }
+//       });
+//     });
+//   }
+
+//   const getSupervisorID = (supervisorName) => {
+//     return new Promise((resolve, reject) => {
+//       const sql = `SELECT id FROM employees WHERE username = ?`;
+//       db.query(sql, [supervisorName], (error, result) => {
+//         if (error) {
+//           console.error(error);
+//           reject(error);
+//         } else {
+//           const supervisorID = result.length > 0 ? result[0].id : null;
+//           console.log("Supervisor ID", supervisorID);
+//           resolve(supervisorID);
+//         }
+//       });
+//     });
+//   }
+
+//   try {
+//     const gotEmployeeName = req.body[0].employeeName;
+//     const employeeID = await getEmployeeID(gotEmployeeName);
+//     console.log("Employee ID: ", employeeID);
+
+//     const gotItemName = req.body[0].itemName;
+//     const itemID = await getItemID(gotItemName);
+//     console.log("Item ID: ", itemID);
+
+//     const gotCategoryName = req.body[0].categoryName;
+//     const categoryID = await getCategoryID(gotCategoryName);
+//     console.log("Category ID: ", categoryID);
+
+//     const status = 'Pending'
+
+//     const supervisorID = req.params.supervisorID;
+
+//     const q =
+//     "INSERT INTO supervisor_hr_request (supervisorID,	employeeID,	itemID,	categoryID,	description, date_approved,	amount,	status	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
+//     const values = [supervisorID, employeeID, itemID, categoryID, req.body[0].description, req.body[0].date, req.body[0].count, status];
+//     console.log("Values: ", values);
+
+//     db.query(q, values, (err, data) => {
+//       if (err) {
+//         console.error(err);
+//         res.status(500).send("Internal Server Error");
+//       } else {
+//         console.log(data);
+//         res.status(200).send("Request successfully inserted");
+//       }
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Internal Server Error");
+//   }
+
+// })
+
+app.put('/approve-by-supervisor/:index', (req, res) => {
+  const id = req.params.index;
+  const approve = "Approved";
+  const values = [ approve, id ];
+  const update1 = "UPDATE employee_supervisor_request set status = ? WHERE id = ?";
+
+  db.query(update1, values, (error, result)=>{
+    if(error){
+      console.error("Error", error)
+    }else{
+      console.log("Approved Well !!!");
+      return result;
+    }
+  })
+})
+
+app.put('/deny-by-supervisor/:index', (req, res) => {
+  const id = req.params.index;
+  const approve = "Denied";
+  const values = [ approve, id ];
+  const update1 = "UPDATE employee_supervisor_request set status = ? WHERE id = ?";
+
+  db.query(update1, values, (error, result)=>{
+    if(error){
+      console.error("Error", error)
+    }else{
+      console.log("Denied Well !!!");
+      return result;
+    }
+  })
+})
+
+app.get('/get-number', (req, res) => {
+  const sql = "SELECT id FROM employee_supervisor_request ORDER BY id DESC LIMIT 1";
+  db.query(sql, (error, result) => {
+    if (error) {
+      console.error("Error", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    } else {
+      // Check if there is any result
+      if (result.length > 0) {
+        const latestId = result[0].id;
+
+        // console.log("Latest ID in employee_supervisor_request table:", latestId);
+        return res.json({ latestId });
+      } else {
+        return res.json({ latestId: null }); // Or handle the case where there is no result
+      }
+    }
+  });
+});
+
+
 
 app.listen(5500, () => {
   console.log("Connected to backend")

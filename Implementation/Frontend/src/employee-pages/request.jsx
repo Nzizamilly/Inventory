@@ -16,10 +16,10 @@ function Request() {
   const [backCount, setBackCount] = useState('');
   const [item, setItem] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedItem, setSelectedItem] = useState('');
-  const [ItemNameTrial , setItemNameTrial] = useState('');
+  const [ItemNameTrial, setItemNameTrial] = useState('');
   const [someName, setSomeName] = useState({});
   const [options, setOptions] = useState([]);
+  // const [idTaker, setIdTaker] = useState('');
 
 
   const Select = {
@@ -96,14 +96,25 @@ function Request() {
   const handleAmount = (event) => {
     setAmount((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
-  
+
   const sendMessage = async () => {
 
     const get = localStorage.getItem('username');
     const itemName = item.name
     const categoryName = category.category_name;
     const date = Date.now();
+
+    const response = await axios.get('http://localhost:5500/get-number');
+    // console.log("DATA FROM GET ENDPOINT: ,", response.data.latestId + 1);
+    // setIdTaker(response.data.latestId);
+    // setLatestId(response.data.latestId);
+
+    const  idTaker = response.data.latestId + 1;
+    
+    // console.log("IDTAKER cyane", idTaker);
+
     const messageData = {
+      id: idTaker,
       employeeName: get,
       categoryName: category[0].category_name,
       itemName: someName.name,
@@ -120,13 +131,14 @@ function Request() {
     if (backCount.totalCount < messageData.count) {
       window.alert("Amount requested is not available", Error);
     } else {
-      socket.emit("send_message", messageData);
-      try{
+      socket.emit("Employee_Message_Supervisor(1)", messageData);
+      try {
         const response = await axios.post('http://localhost:5500/add-request-employee-supervisor', messageData);
+        messageData.id = id;
+        const id = response.id;
         console.log("Response", response);
-      }catch(error){
+      } catch (error) {
         console.error("Error Occurred Unexpectedly", error)
-
       }
       window.alert("Request sent....");
     }
@@ -150,9 +162,9 @@ function Request() {
   };
 
   const handleSelectedItemName = (selectedList, selectedItem) => {
-    setItemNameTrial(selectedList.map(item=> setSomeName(item)))
+    setItemNameTrial(selectedList.map(item => setSomeName(item)))
   }
-  
+
   return (
     <div>
       <Navbar></Navbar>
@@ -166,7 +178,7 @@ function Request() {
             ))}
           </select>
 
-          <Multiselect  options={options} displayValue='name' onSelect={handleSelectedItemName}/>
+          <Multiselect options={options} displayValue='name' onSelect={handleSelectedItemName} />
 
           <input placeholder='Amount Desired ...' type='text' name='amount' onChange={handleAmount} />
 

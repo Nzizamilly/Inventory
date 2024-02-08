@@ -85,29 +85,30 @@ function NotificationAdmin() {
     backgroundColor: 'white'
   }
 
-  const handleApprove = async (notifications) => {
-    try {
-      await axios.post(`http://localhost:5500/request`, notifications);
-      console.log("Request approved");
-      const newStatus = true;
-      socket.emit("Approved", notifications, newStatus);
-    } catch {
-      console.log('Error');
-    }
-  }
+  // const handleApprove = async (notifications) => {
+  //   try {
+  //     // await axios.post(`http://localhost:5500/request`, notifications);
+  //     // console.log("Request approved");
+  //     // const newStatus = true;
+  //     socket.emit("Approved", notifications, newStatus);
+  //   } catch {
+  //     console.log('Error');
+  //   }
+  // }
 
-  const handleDeny = async (notifications) => {
-    try {
-      const newStatus = false;
-      // Update the status locally before emitting the event
-      setStatus(newStatus);
-      socket.emit("Denied", notifications, newStatus);
-    } catch {
-      console.log('Error');
-    }
-  }
+  // const handleDeny = async (notifications) => {
+  //   try {
+  //     const newStatus = false;
+  //     // Update the status locally before emitting the event
+  //     setStatus(newStatus);
+  //     socket.emit("Denied", notifications, newStatus);
+  //   } catch {
+  //     console.log('Error');
+  //   }
+  // }
+
   useEffect(() => {
-    socket.on("sentBack", (messageData) => {
+    socket.on("HR_Message_Stock(2)", (messageData) => {
       console.log(messageData);
       if (Array.isArray(messageData)) {
         setNotifications((prevNotifications) => [...prevNotifications, ...messageData]);
@@ -123,9 +124,10 @@ function NotificationAdmin() {
       <div className="notification-container-admin">
         {notifications.map((notification) => (
           <div key={notification.id} style={notificationAdmin}>
-            <p style={sumStyle}> {notification.employeeName} Requested: {notification.itemName}  From: {notification.categoryName} Amount: {notification.count} Description: {notification.description} Date: {notification.date}</p>
-            <button className='buttonStyle' onClick={() => handleApprove(notification)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
-            <button className='buttonStyle' onClick={() => handleDeny(notification.id)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
+            <span style={sumStyle}> HR Approved request from {notification[0].employeeName} through {notification[0].supervisor} of {notification[0].itemName} in {notification[0].categoryName}, amount {notification[0].count} description {notification[0].description}, date {notification[0].date}</span>
+            {/* <p style={sumStyle}> {notification.employeeName} Requested: {notification.itemName}  From: {notification.categoryName} Amount: {notification.count} Description: {notification.description} Date: {notification.date}</p> */}
+            {/* <button className='buttonStyle' onClick={() => handleApprove(notification)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
+            <button className='buttonStyle' onClick={() => handleDeny(notification.id)}><img src={Deny} style={svgStyle} alt="Deny" /></button> */}
           </div>
         ))}
       </div>

@@ -64,29 +64,39 @@ function NotificationSupervisor() {
     backgroundColor: 'white'
   }
 
-  const handleApprove = async (notifications) => {
+  const handleApprove = async (notifications, index) => {
     try {
-      console.log("Notifications :", notifications);
+      console.log("Notifications id :", index);
       const supervisorID = localStorage.getItem("userID");
+
+      const supervisorName = localStorage.getItem("username");
+      const supervisorNameObj = { supervisorName: supervisorName, }
+
+      socket.emit("Supervisor_Message_HR(1)", notifications, supervisorName);
+
       await axios.post(`http://localhost:5500/add-request-supervisor-hr/${supervisorID}`, notifications);
-      const newStatus = true;
-      window.alert("Request Sent to HR for Second-tier Approve")
-      socket.emit("Approved_By_Supervisor", notifications, newStatus);
+      window.alert("Request Sent to HR for Second-tier Approval");
+
+      // await axios.put(`http://localhost:5500/approve-by-supervisor/${index}`)
+
+
     } catch (error) {
       console.error('Error', error);
     }
   }
 
-  const handleDeny = async (notifications) => {
+  const handleDeny = async (index) => {
+    console.log("Notifications id :", index);
     try {
-      const newStatus = false;
-      // Update the status locally before emitting the event
-      setStatus(newStatus);
-      socket.emit("Denied", notifications, newStatus);
-    } catch {
-      console.log('Error');
+      const updatedNotifications = notifications.filter((_, i) => i !== index);
+      setNotifications(updatedNotifications);
+      await axios.put(`http://localhost:5500/deny-by-supervisor/${index}`);
+      console.log("Denied for ID", index);
+    } catch (error) {
+      console.log('Error', error);
     }
   }
+
   // useEffect(() => {
   //   socket.on("sentBack", (messageData) => {
   //     console.log(messageData);
@@ -101,7 +111,7 @@ function NotificationSupervisor() {
   // }, [socket])
 
   useEffect(() => {
-    socket.on("sentBack", (messageData) => {
+    socket.on("Employee_Message_Supervisor(2)", (messageData) => {
       setNotifications([...notifications, messageData]);
     });
 
@@ -126,8 +136,8 @@ function NotificationSupervisor() {
     <div>
       <NavbarHome></NavbarHome>
       <div className="notification-supervisor ">
-        {notifications.map((notification, index) => {
-          console.log("Data in the div", notification);
+        {notifications.map((notification) => {
+          console.log("ID Per Notification ", notification[0].id);
           const employeeName = notification[0].employeeName;
           const itemName = notification[0].itemName;
           const categoryName = notification[0].categoryName;
@@ -135,15 +145,13 @@ function NotificationSupervisor() {
           const date = notification[0].date;
           const count = notification[0].count;
           return (
-            <div style={notificationAdmin} key={index}>
-              <span key={index} style={sumStyle}> {employeeName} Requested: {itemName}  From: {categoryName}  Amount: {count}  Description: {description} Date: {date}</span>
-              <button className='buttonStyle3' onClick={() => handleApprove(notification)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
-              <button className='buttonStyle3' onClick={() => handleDeny(notification.id)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
+            <div style={notificationAdmin} key={notification[0].id}>
+              <span key={notification[0].id} style={sumStyle}> {employeeName} Requested: {itemName}  From: {categoryName}  Amount: {count}  Description: {description} Date: {date}</span>
+              <button className='buttonStyle3' onClick={() => handleApprove(notification, notification[0].id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
+              <button className='buttonStyle3' onClick={() => handleDeny(notification[0].id)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
             </div>
           )
         })}
-
-
         {/* {notifications.map((notification, index) => {
           console.log("Data in the div", notification);
           const itemName = notification.itemName;
