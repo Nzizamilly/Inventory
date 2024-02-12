@@ -8,6 +8,7 @@ import NavbarAdmin from './navbarAdmin';
 function NotificationAdmin() {
   const [notifications, setNotifications] = useState([]);
   const [status, setStatus] = useState('');
+  const [supervisor, setSupervisor] = useState('');
 
   const socket = io.connect("http://localhost:5001");
 
@@ -107,32 +108,44 @@ function NotificationAdmin() {
   //   }
   // }
 
+  // useEffect(() => {
+  //   socket.on("HR_Message_Stock(2)", (messageData, updatedNotification) => {
+  //     console.log(messageData);
+  //     if (Array.isArray(messageData, updatedNotification)) {
+  //       setNotifications((prevNotifications) => [...prevNotifications, ...messageData]);
+  //       setSupervisor(updatedNotification);
+  //     } else if (typeof messageData === 'object') {
+  //       setNotifications((prevNotifications) => [...prevNotifications, messageData]);
+  //     } else {
+  //       console.error("Received unexpected messageData:", messageData);
+  //     }
+  //   })
+  // }, [socket]);
+
   useEffect(() => {
-    socket.on("HR_Message_Stock(2)", (messageData) => {
-      console.log(messageData);
-      if (Array.isArray(messageData)) {
-        setNotifications((prevNotifications) => [...prevNotifications, ...messageData]);
-      } else if (typeof messageData === 'object') {
-        setNotifications((prevNotifications) => [...prevNotifications, messageData]);
-      } else {
-        console.error("Received unexpected messageData:", messageData);
-      }
-    })
-  }, [socket])
+    socket.on("HR_Message_Stock(2)", (messageData, supervisorName) => {
+        setSupervisor(supervisorName);
+        setNotifications([...notifications, { ...messageData, supervisor: supervisorName }]);
+    });
+
+}, [socket, notifications]);
+
   return (
     <div> <NavbarAdmin></NavbarAdmin>
       <div className="notification-container-admin">
-        {notifications.map((notification) => (
-          <div key={notification.id} style={notificationAdmin}>
-            <span style={sumStyle}> HR Approved request from {notification[0].employeeName} through {notification[0].supervisor} of {notification[0].itemName} in {notification[0].categoryName}, amount {notification[0].count} description {notification[0].description}, date {notification[0].date}</span>
+        {notifications.map((notification) => {
+          console.log("Data: ", supervisor);
+          return (
+            <div key={notification.id} style={notificationAdmin}>
+            <span style={sumStyle}> HR Approved request from {notification[0].employeeName} through {supervisor} of {notification[0].itemName} in {notification[0].categoryName}, amount {notification[0].count} description {notification[0].description}, date {notification[0].date}</span>
             {/* <p style={sumStyle}> {notification.employeeName} Requested: {notification.itemName}  From: {notification.categoryName} Amount: {notification.count} Description: {notification.description} Date: {notification.date}</p> */}
             {/* <button className='buttonStyle' onClick={() => handleApprove(notification)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
             <button className='buttonStyle' onClick={() => handleDeny(notification.id)}><img src={Deny} style={svgStyle} alt="Deny" /></button> */}
           </div>
-        ))}
+            )
+        })}
       </div>
     </div>
   );
 }
-
 export default NotificationAdmin;

@@ -65,19 +65,21 @@ function NotificationHR() {
     }
 
     const handleApprove = async (notifications, index) => {
-        socket.emit("HR_Message_Stock(1)", notifications);
+        const updatedNotification = supervisor;
+        socket.emit("HR_Message_Stock(1)", notifications, updatedNotification);
+        socket.emit("Approved_By_Either(1)", notifications);
         try {
             console.log("Index: ", index);
             await axios.put(`http://localhost:5500/approve-by-supervisor/${index}`);
             window.alert("Sent to Stock-Manager for Deliverance");
-        } catch {
-            console.log('Error');
+        } catch(error) {
+            console.error('Error', error);
         }
     }
 
-    const handleDeny = async (index) => {
+    const handleDeny = async (index, notification) => {
         console.log("Notifications id :", index);
-    
+        socket.emit("Denied_By_Either(1)", notification);
         try {
           const updatedNotifications = notifications.filter((_, i) => i !== index);
           setNotifications(updatedNotifications);
@@ -125,7 +127,7 @@ function NotificationHR() {
                             <span key={notification[0].id} style={sumStyle}>Supervisor {supervisor} Approved request from {employeeName} of {itemName} amount {count} in {categoryName} category, description {description} date {date} </span>
                             {/* <span key={index} style={sumStyle}> {employeeName} Requested: {itemName}  From: {categoryName} Amount: {count} Description: {description} Date: {date}</span> */}
                             <button className='buttonStyle3' onClick={() => handleApprove(notification, notification[0].id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
-                            <button className='buttonStyle3' onClick={() => handleDeny(notification[0].id)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
+                            <button className='buttonStyle3' onClick={() => handleDeny(notification[0].id, notification)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
                         </div>
                     )
                 })}

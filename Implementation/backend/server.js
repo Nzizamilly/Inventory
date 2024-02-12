@@ -71,9 +71,9 @@ io.on("connection", (socket) => {
   //   io.emit("Supervisor_Message_HR(2)", ([messageData]))
   // })
 
-  socket.on("HR_Message_Stock(1)", (messageData) => {
-    console.log("From HR: to stockManager", messageData);
-    io.emit("HR_Message_Stock(2)", messageData)
+  socket.on("HR_Message_Stock(1)", (messageData, updatedNotification) => {
+    console.log("From HR: to stockManager", messageData, updatedNotification);
+    io.emit("HR_Message_Stock(2)", messageData, updatedNotification)
   })
 
   socket.on("Stock_Message_Employee(1)", (messageData) => {
@@ -81,10 +81,15 @@ io.on("connection", (socket) => {
     io.emit("Stock_Message_Employee(2)", ([messageData]))
   })
 
+  socket.on("Denied_By_Either(1)", (messageData) => {
+    console.log("Denied Request Info", messageData);
+    io.emit("Denied_By_Either(2)", messageData);
+  })
 
-  socket.on("Approved_By_Supervisor", (notifications, newstatus) => {
-    console.log("Data response from the admin: ", notifications, newstatus)
-    io.emit("Approved_By_Supervisor", notifications, newstatus);
+
+  socket.on("Approved_By_Either(1)", (MessageData) => {
+    console.log("Data response from the admin: ", MessageData)
+    io.emit("Approved_By_Either(2)", MessageData);
   });
 
   socket.on("Denied", (notifications, newStatus) => {
@@ -1059,7 +1064,7 @@ app.get('/get-request-employee-supervisor', async (req, res) => {
   }
 })
 
-app.post('/add-request-supervisor-hr/:supervisorID', async (req,res)=>{ 
+app.post('/add-request-supervisor-hr/:supervisorID', async (req, res) => {
 
   const getEmployeeID = (employeeName) => {
     return new Promise((resolve, reject) => {
@@ -1127,7 +1132,7 @@ app.post('/add-request-supervisor-hr/:supervisorID', async (req,res)=>{
     const supervisorID = req.params.supervisorID;
 
     const q =
-    "INSERT INTO supervisor_hr_request (supervisorID,	employeeID,	itemID,	categoryID,	description, date_approved,	amount,	status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
+      "INSERT INTO supervisor_hr_request (supervisorID,	employeeID,	itemID,	categoryID,	description, date_approved,	amount,	status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
     const values = [supervisorID, employeeID, itemID, categoryID, req.body[0].description, req.body[0].date, req.body[0].count, status];
     console.log("Values: ", values);
 
@@ -1253,13 +1258,13 @@ app.post('/add-request-supervisor-hr/:supervisorID', async (req,res)=>{
 app.put('/approve-by-supervisor/:index', (req, res) => {
   const id = req.params.index;
   const approve = "Approved";
-  const values = [ approve, id ];
+  const values = [approve, id];
   const update1 = "UPDATE employee_supervisor_request set status = ? WHERE id = ?";
 
-  db.query(update1, values, (error, result)=>{
-    if(error){
+  db.query(update1, values, (error, result) => {
+    if (error) {
       console.error("Error", error)
-    }else{
+    } else {
       console.log("Approved Well !!!");
       return result;
     }
@@ -1269,13 +1274,13 @@ app.put('/approve-by-supervisor/:index', (req, res) => {
 app.put('/deny-by-supervisor/:index', (req, res) => {
   const id = req.params.index;
   const approve = "Denied";
-  const values = [ approve, id ];
+  const values = [approve, id];
   const update1 = "UPDATE employee_supervisor_request set status = ? WHERE id = ?";
 
-  db.query(update1, values, (error, result)=>{
-    if(error){
+  db.query(update1, values, (error, result) => {
+    if (error) {
       console.error("Error", error)
-    }else{
+    } else {
       console.log("Denied Well !!!");
       return result;
     }
@@ -1301,6 +1306,33 @@ app.get('/get-number', (req, res) => {
     }
   });
 });
+
+app.get('/get-all-requests/:id', (req, res) => {
+
+  const id = req.params.id;
+  const sql = `SELECT item.name, category.category_name, employee_supervisor_request.date_of_request, employee_supervisor_request.id,employee_supervisor_request.status
+  FROM employee_supervisor_request
+  JOIN item ON employee_supervisor_request.itemID = item.id
+  JOIN category ON employee_supervisor_request.categoryID = category.id
+  WHERE employee_supervisor_request.employeeID = ?;
+  `;
+  db.query(sql, id, (error, result) => {
+    if(error){
+    console.error("Error", error);
+    }else{
+      const response = result;
+    return res.json(response);
+    }
+})
+})
+
+app.delete('/delete', (req, res) => {
+  const sql = "DELETE * FROM employee_supervisor_request WHERE employeeID = 6";
+  db.query(sql, (error ,result) =>{
+    if (result) console.log("Done", result)
+  })
+})
+
 
 
 

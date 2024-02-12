@@ -50,12 +50,14 @@ function NotificationSupervisor() {
   }
 
   const notificationAdmin = {
-    width: '64%',
+    width: '54%',
     height: '11%',
     textAlign: 'center',
     gap: '6px',
     border: 'none',
     display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     flexDirection: ' row',
     marginLeft: '300px',
     borderRadius: '15px',
@@ -71,6 +73,7 @@ function NotificationSupervisor() {
 
       const supervisorName = localStorage.getItem("username");
       const supervisorNameObj = { supervisorName: supervisorName, }
+      
 
       socket.emit("Supervisor_Message_HR(1)", notifications, supervisorName);
 
@@ -85,8 +88,10 @@ function NotificationSupervisor() {
     }
   }
 
-  const handleDeny = async (index) => {
+  const handleDeny = async (index, notification) => {
     console.log("Notifications id :", index);
+    const status = 'Denied';
+    socket.emit("Denied_By_Either(1)", notification);
     try {
       const updatedNotifications = notifications.filter((_, i) => i !== index);
       setNotifications(updatedNotifications);
@@ -135,7 +140,7 @@ function NotificationSupervisor() {
 
     <div>
       <NavbarHome></NavbarHome>
-      <div className="notification-supervisor ">
+      <div className="notification-supervisor">
         {notifications.map((notification) => {
           console.log("ID Per Notification ", notification[0].id);
           const employeeName = notification[0].employeeName;
@@ -148,7 +153,7 @@ function NotificationSupervisor() {
             <div style={notificationAdmin} key={notification[0].id}>
               <span key={notification[0].id} style={sumStyle}> {employeeName} Requested: {itemName}  From: {categoryName}  Amount: {count}  Description: {description} Date: {date}</span>
               <button className='buttonStyle3' onClick={() => handleApprove(notification, notification[0].id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
-              <button className='buttonStyle3' onClick={() => handleDeny(notification[0].id)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
+              <button className='buttonStyle3' onClick={() => handleDeny(notification[0].id, notification)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
             </div>
           )
         })}

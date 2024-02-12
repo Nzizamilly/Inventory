@@ -37,15 +37,30 @@ function EmployeesAdmin() {
     },
   }
   const employeeContainer = {
-    fontFamily: 'Arial, sans-serif',
+
     width: '100%',
+    fontFamily: 'Arial, sans-serif',
     height: '100vh',
     backgroundColor: 'rgb(163, 187, 197)',
     justifyContent: 'center',
-    alignItems: 'center',
+    // justifyContent: 'flex-start',
     display: 'flex',
-    gap: '51px',
-    flexWrap: 'wrap'
+    gap: '23px',
+    paddingTop: '74px',
+    flexDirection: 'row',
+    overflow: 'auto',
+    flexWrap: 'wrap',
+    alignItems: 'center'
+
+    // fontFamily: 'Arial, sans-serif',
+    // width: '100%',
+    // height: '100vh',
+    // backgroundColor: 'rgb(163, 187, 197)',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // display: 'flex',
+    // gap: '51px',
+    // flexWrap: 'wrap'
   }
 
   const ThemBs = {
