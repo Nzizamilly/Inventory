@@ -117,7 +117,7 @@ function Departments_Roles() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        width: 'auto'
+        width: '17%'
     }
 
     const handleInput = (event) => {
@@ -217,9 +217,12 @@ function Departments_Roles() {
             <NavbarAdmin></NavbarAdmin>
         <div className="dept-container-admin" >
             <button style={AddButton} onClick={openAddModal}>Add Department</button>
-            <Modal isOpen={isAddModalOpen} onRequestClose={closeAddModal} style={modal}>
+            <Modal isOpen={isAddModalOpen} onRequestClose={closeAddModal} style={modalStyles}>
+                <h1>Create A Department</h1>
                 <input placeholder='Department Name' type='text' name='department_name' onChange={handleInput} />
+                <br />
                 <input placeholder='Status' type='text' name='status' onChange={handleInput} />
+                <br />
                 <button onClick={addDepartment}>Add</button>
             </Modal>
             <br />

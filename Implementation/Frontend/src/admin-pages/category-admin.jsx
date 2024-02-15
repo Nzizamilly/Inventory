@@ -75,7 +75,7 @@ function CategoryAdmin() {
     <div>
       <NavbarAdmin></NavbarAdmin>
     <div className="category-container">
-      <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Supplier</p></button>
+      <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Category</p></button>
       <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
         <h1>Add Category</h1>
         <input type='text' placeholder='Category Name' name='category_name' onChange={handleChange2} />

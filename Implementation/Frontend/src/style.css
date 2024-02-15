@@ -793,8 +793,8 @@ li a:hover {
     background-color: rgb(253, 251, 251);
     color: white;
     width: 3%;
-    margin-top: 15px;
     height: 23px;
+    margin-top: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -913,7 +913,7 @@ li a:hover {
     align-items: center;
     padding-top: 74px;
     display: flex;
-    /* gap: 51px; */
+    gap: 51px;
     flex-wrap: wrap;
     overflow: auto;
 }
@@ -1026,8 +1026,9 @@ li a:hover {
     background-color: rgb(130, 142, 161);
     justify-content: center;
     align-items: center;
+    padding-top: 74px;
     display: flex;
-    /* gap: 51px; */
+    gap: 51px;
     flex-wrap: wrap;
     overflow: auto;
 }

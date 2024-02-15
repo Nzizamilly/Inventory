@@ -57,13 +57,180 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   // console.log("A user connected", socket.id);
-  socket.on("Employee_Message_Supervisor(1)", (messageData) => {
+  socket.on("Employee_Message_Supervisor(1)", async (messageData) => {
+
     console.log("From employee: to supervisor", messageData);
-    io.emit("Employee_Message_Supervisor(2)", [messageData]);
+    const getEmployeeID = (employeeName) => {
+      return new Promise((resolve, reject) => {
+        const sql = `SELECT id FROM employees WHERE username = ?`;
+        db.query(sql, [employeeName], (error, result) => {
+          if (error) {
+            console.error(error);
+            reject(error);
+          } else {
+            const employeeID = result.length > 0 ? result[0].id : null;
+            // console.log("Employee ID", employeeID);
+            resolve(employeeID);
+          }
+        });
+      });
+    };
+
+    const getItemID = (itemName) => {
+      return new Promise((resolve, reject) => {
+        const sql = `SELECT id FROM item WHERE name = ?`;
+        db.query(sql, [itemName], (error, result) => {
+          if (error) {
+            console.error(error);
+            reject(error);
+          } else {
+            const itemID = result.length > 0 ? result[0].id : null;
+            // console.log("Item ID", itemID);
+            resolve(itemID);
+          }
+        });
+      });
+    };
+
+    const getCategoryID = (categoryName) => {
+      return new Promise((resolve, reject) => {
+        const sql = `SELECT id FROM category WHERE category_name = ?`;
+        db.query(sql, [categoryName], (error, result) => {
+          if (error) {
+            console.error(error);
+            reject(error);
+          } else {
+            const categoryName = result.length > 0 ? result[0].id : null;
+            // console.log("Item ID", categoryName);
+            resolve(categoryName);
+          }
+        });
+      });
+    }
+
+    try {
+      const gotEmployeeName = messageData.employeeName;
+      const employeeID = await getEmployeeID(gotEmployeeName);
+      // console.log("Employee ID: ", employeeID);
+
+      const gotItemName = messageData.itemName;
+      const itemID = await getItemID(gotItemName);
+      // console.log("Item ID: ", itemID);
+
+      const gotCategoryName = messageData.categoryName;
+      const categoryID = await getCategoryID(gotCategoryName);
+      // console.log("Category ID: ", categoryID);
+
+      const status = 'Pending'
+
+      const q =
+        "INSERT INTO employee_supervisor_request (categoryID,	itemID,	employeeID,	description,	date_of_request,	status,	amount	) VALUES (?, ?, ?, ?, ?, ?, ? )";
+      const values = [categoryID, itemID, employeeID, messageData.description, messageData.date, status, messageData.count];
+
+      db.query(q, values, (err, data) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("Internal Server Error");
+        } else {
+          id = data.insertId;
+          // return id;
+
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+
+    // io.emit("Employee_Message_Supervisor(2)", [messageData]);
   });
+
+
+
+
+  app.get('/get-notification', (req, res) => {
+    const sql = `SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount, employee_supervisor_request.description, employee_supervisor_request.date_of_request, employee_supervisor_request.id
+    FROM employee_supervisor_request
+    JOIN employees ON employee_supervisor_request.employeeID = employees.id
+    JOIN category ON employee_supervisor_request.categoryID = category.id
+    JOIN item ON employee_supervisor_request.itemID = item.id
+    ORDER BY employee_supervisor_request.id DESC;
+    `;
+
+    db.query(sql, (error, result) => {
+      if (error) {
+        console.error("Error", error);
+      } else {
+        return res.json(result);
+      }
+    })
+  })
+
+
+  app.get('/get-notifications', (req, res) => {
+    const sql = `SELECT 
+    employees.username AS employee_username, 
+    supervisor.username AS supervisor_username,
+    supervisor_hr_request.amount, 
+    supervisor_hr_request.description, 
+    supervisor_hr_request.date_approved, 
+    supervisor_hr_request.id, 
+    supervisor_hr_request.supervisorID,
+    category.category_name,
+    item.name
+FROM 
+    supervisor_hr_request
+JOIN 
+    employees ON supervisor_hr_request.employeeID = employees.id
+JOIN 
+    employees AS supervisor ON supervisor_hr_request.supervisorID = supervisor.id
+JOIN 
+    category ON supervisor_hr_request.categoryID = category.id
+JOIN 
+    item ON supervisor_hr_request.itemID = item.id
+ORDER BY 
+    supervisor_hr_request.id DESC;
+ `
+    db.query(sql, (error, result) => {
+      if (error) {
+        console.error("Error", error);
+      } else {
+        // console.log("ZATA: ", result);
+        return res.json(result);
+        // return res.json(result);
+      }
+    })
+  })
+
+  socket.on('get-some', () => {
+
+    try {
+      const sql = `SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount, employee_supervisor_request.description, employee_supervisor_request.date_of_request, employee_supervisor_request.id, employee_supervisor_request.status 
+      FROM employee_supervisor_request
+      JOIN employees ON employee_supervisor_request.employeeID = employees.id
+      JOIN category ON employee_supervisor_request.categoryID = category.id
+      JOIN item ON employee_supervisor_request.itemID = item.id
+      ORDER BY employee_supervisor_request.id DESC;
+      `;
+
+      db.query(sql, (error, result) => {
+        if (error) {
+          console.error("Error", error);
+        } else {
+          console.log("Result: ", result);
+          socket.emit("give-some", result);
+        }
+
+      })
+    } catch (error) {
+      console.error("Error ", error)
+    }
+  })
+
 
   socket.on("Supervisor_Message_HR(1)", (messageData, supervisorName) => {
     console.log("From supervisor: to HR", messageData, supervisorName);
+    console.log("TYPE OF message", typeof messageData);
     io.emit("Supervisor_Message_HR(2)", messageData, supervisorName)
   })
 
@@ -941,88 +1108,88 @@ app.get('/get-role/:deptID', (req, res) => {
 })
 
 app.post('/add-request-employee-supervisor', async (req, res) => {
-  const getEmployeeID = (employeeName) => {
-    return new Promise((resolve, reject) => {
-      const sql = `SELECT id FROM employees WHERE username = ?`;
-      db.query(sql, [employeeName], (error, result) => {
-        if (error) {
-          console.error(error);
-          reject(error);
-        } else {
-          const employeeID = result.length > 0 ? result[0].id : null;
-          // console.log("Employee ID", employeeID);
-          resolve(employeeID);
-        }
-      });
-    });
-  };
+  // const getEmployeeID = (employeeName) => {
+  //   return new Promise((resolve, reject) => {
+  //     const sql = `SELECT id FROM employees WHERE username = ?`;
+  //     db.query(sql, [employeeName], (error, result) => {
+  //       if (error) {
+  //         console.error(error);
+  //         reject(error);
+  //       } else {
+  //         const employeeID = result.length > 0 ? result[0].id : null;
+  //         // console.log("Employee ID", employeeID);
+  //         resolve(employeeID);
+  //       }
+  //     });
+  //   });
+  // };
 
-  const getItemID = (itemName) => {
-    return new Promise((resolve, reject) => {
-      const sql = `SELECT id FROM item WHERE name = ?`;
-      db.query(sql, [itemName], (error, result) => {
-        if (error) {
-          console.error(error);
-          reject(error);
-        } else {
-          const itemID = result.length > 0 ? result[0].id : null;
-          // console.log("Item ID", itemID);
-          resolve(itemID);
-        }
-      });
-    });
-  };
+  // const getItemID = (itemName) => {
+  //   return new Promise((resolve, reject) => {
+  //     const sql = `SELECT id FROM item WHERE name = ?`;
+  //     db.query(sql, [itemName], (error, result) => {
+  //       if (error) {
+  //         console.error(error);
+  //         reject(error);
+  //       } else {
+  //         const itemID = result.length > 0 ? result[0].id : null;
+  //         // console.log("Item ID", itemID);
+  //         resolve(itemID);
+  //       }
+  //     });
+  //   });
+  // };
 
-  const getCategoryID = (categoryName) => {
-    return new Promise((resolve, reject) => {
-      const sql = `SELECT id FROM category WHERE category_name = ?`;
-      db.query(sql, [categoryName], (error, result) => {
-        if (error) {
-          console.error(error);
-          reject(error);
-        } else {
-          const categoryName = result.length > 0 ? result[0].id : null;
-          // console.log("Item ID", categoryName);
-          resolve(categoryName);
-        }
-      });
-    });
-  }
+  // const getCategoryID = (categoryName) => {
+  //   return new Promise((resolve, reject) => {
+  //     const sql = `SELECT id FROM category WHERE category_name = ?`;
+  //     db.query(sql, [categoryName], (error, result) => {
+  //       if (error) {
+  //         console.error(error);
+  //         reject(error);
+  //       } else {
+  //         const categoryName = result.length > 0 ? result[0].id : null;
+  //         // console.log("Item ID", categoryName);
+  //         resolve(categoryName);
+  //       }
+  //     });
+  //   });
+  // }
 
-  try {
-    const gotEmployeeName = req.body.employeeName;
-    const employeeID = await getEmployeeID(gotEmployeeName);
-    // console.log("Employee ID: ", employeeID);
+  // try {
+  //   const gotEmployeeName = req.body.employeeName;
+  //   const employeeID = await getEmployeeID(gotEmployeeName);
+  //   // console.log("Employee ID: ", employeeID);
 
-    const gotItemName = req.body.itemName;
-    const itemID = await getItemID(gotItemName);
-    // console.log("Item ID: ", itemID);
+  //   const gotItemName = req.body.itemName;
+  //   const itemID = await getItemID(gotItemName);
+  //   // console.log("Item ID: ", itemID);
 
-    const gotCategoryName = req.body.categoryName;
-    const categoryID = await getCategoryID(gotCategoryName);
-    // console.log("Category ID: ", categoryID);
+  //   const gotCategoryName = req.body.categoryName;
+  //   const categoryID = await getCategoryID(gotCategoryName);
+  //   // console.log("Category ID: ", categoryID);
 
-    const status = 'Pending'
+  //   const status = 'Pending'
 
-    const q =
-      "INSERT INTO employee_supervisor_request (categoryID,	itemID,	employeeID,	description,	date_of_request,	status,	amount	) VALUES (?, ?, ?, ?, ?, ?, ? )";
-    const values = [categoryID, itemID, employeeID, req.body.description, req.body.date, status, req.body.count];
+  //   const q =
+  //     "INSERT INTO employee_supervisor_request (categoryID,	itemID,	employeeID,	description,	date_of_request,	status,	amount	) VALUES (?, ?, ?, ?, ?, ?, ? )";
+  //   const values = [categoryID, itemID, employeeID, req.body.description, req.body.date, status, req.body.count];
 
-    db.query(q, values, (err, data) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send("Internal Server Error");
-      } else {
-        id = data.insertId;
-        // console.log("This is the id ", id);
-        return id;
-        // res.status(200).send("Request successfully inserted");
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
+  //   db.query(q, values, (err, data) => {
+  //     if (err) {
+  //       console.error(err);
+  //       res.status(500).send("Internal Server Error");
+  //     } else {
+  //       id = data.insertId;
+  //       // console.log("This is the id ", id);
+  //       return id;
+  //       // res.status(200).send("Request successfully inserted");
+  //     }
+  //   });
+  // } catch (error) {
+  //   console.error(error);
+  //   res.status(500).send("Internal Server Error");
+  // }
 });
 
 app.get('/get-request-employee-supervisor', async (req, res) => {
@@ -1115,15 +1282,15 @@ app.post('/add-request-supervisor-hr/:supervisorID', async (req, res) => {
   }
 
   try {
-    const gotEmployeeName = req.body[0].employeeName;
+    const gotEmployeeName = req.body.username;
     const employeeID = await getEmployeeID(gotEmployeeName);
     console.log("Employee ID: ", employeeID);
 
-    const gotItemName = req.body[0].itemName;
+    const gotItemName = req.body.name;
     const itemID = await getItemID(gotItemName);
     console.log("Item ID: ", itemID);
 
-    const gotCategoryName = req.body[0].categoryName;
+    const gotCategoryName = req.body.category_name;
     const categoryID = await getCategoryID(gotCategoryName);
     console.log("Category ID: ", categoryID);
 
@@ -1133,7 +1300,7 @@ app.post('/add-request-supervisor-hr/:supervisorID', async (req, res) => {
 
     const q =
       "INSERT INTO supervisor_hr_request (supervisorID,	employeeID,	itemID,	categoryID,	description, date_approved,	amount,	status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
-    const values = [supervisorID, employeeID, itemID, categoryID, req.body[0].description, req.body[0].date, req.body[0].count, status];
+    const values = [supervisorID, employeeID, itemID, categoryID, req.body.description, req.body.date_of_request, req.body.amount, status];
     console.log("Values: ", values);
 
     db.query(q, values, (err, data) => {
@@ -1141,7 +1308,7 @@ app.post('/add-request-supervisor-hr/:supervisorID', async (req, res) => {
         console.error(err);
         res.status(500).send("Internal Server Error");
       } else {
-        console.log(data);
+        // console.log(data);
         res.status(200).send("Request successfully inserted");
       }
     });
@@ -1317,24 +1484,125 @@ app.get('/get-all-requests/:id', (req, res) => {
   WHERE employee_supervisor_request.employeeID = ?;
   `;
   db.query(sql, id, (error, result) => {
-    if(error){
-    console.error("Error", error);
-    }else{
+    if (error) {
+      console.error("Error", error);
+    } else {
       const response = result;
-    return res.json(response);
+      return res.json(response);
     }
-})
+  })
 })
 
 app.delete('/delete', (req, res) => {
   const sql = "DELETE * FROM employee_supervisor_request WHERE employeeID = 6";
-  db.query(sql, (error ,result) =>{
+  db.query(sql, (error, result) => {
     if (result) console.log("Done", result)
   })
 })
 
+app.get('/get-supervisor-name/:supervisorID', (req, res) => {
+  const supervisorID = req.params.supervisorID;
+  const sql = 'SELECT name FROM employees WHERE id = ?'
+  db.query(sql, [supervisorID], (error, result) => {
+    if (error) {
+      console.error("Error", error);
+    } else {
+      return res.json(result);
+    }
+  })
+});
 
+app.post('/post-by-hr', (req, res) => {
+  console.log("Endppoint hit~~~!!!");
+  const getEmployeeID = (employeeName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM employees WHERE username = ?`;
+      db.query(sql, [employeeName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const employeeID = result.length > 0 ? result[0].id : null;
+          // console.log("Employee ID", employeeID);
+          resolve(employeeID);
+        }
+      });
+    });
+  };
 
+  const getItemID = (itemName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM item WHERE name = ?`;
+      db.query(sql, [itemName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const itemID = result.length > 0 ? result[0].id : null;
+          // console.log("Item ID", itemID);
+          resolve(itemID);
+        }
+      });
+    });
+  };
+
+  const getCategoryID = (categoryName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM category WHERE category_name = ?`;
+      db.query(sql, [categoryName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const categoryName = result.length > 0 ? result[0].id : null;
+          // console.log("Item ID", categoryName);
+          resolve(categoryName);
+        }
+      });
+    });
+  };
+
+  const getSupervisorID = (supervisorName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM employees WHERE username = ?`;
+      db.query(sql, [supervisorName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const supervisorID = result.length > 0 ? result[0].id : null;
+          resolve(supervisorID);
+        }
+      });
+    });
+  };
+
+  const employeeName = req.body.employee_username;
+  const itemName = req.body.name;
+  const categoryName = req.body.category_name;
+  const supervisorName = req.body.supervisor_username;
+  const id = req.body.id;
+  const description = req.body.description;
+  const date = req.body.date;
+  const amount = req.body.amount;
+
+  const employee = getEmployeeID(employeeName);
+  const item = getItemID(itemName);
+  const category = getCategoryID(categoryName);
+  const supervisor = getSupervisorID(supervisorName);
+
+  const sql = `INSERT INTO  hr_admin_request (id,	categoryID,	itemID,	amount,	supervisorID,	description, employeeID) VALUES (?, ?, ?, ?, ?, ?, ? ,? )`;
+
+  const values = [ id, category, item, amount, supervisor, description, employee ];
+
+  db.query(sql, values, (error, result) => {
+    if (error){
+      console.error("ERROR" ,error);
+    }else{
+      console.log(result);
+    }
+  })
+})
 
 app.listen(5500, () => {
   console.log("Connected to backend")

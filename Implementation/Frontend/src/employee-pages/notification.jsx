@@ -41,7 +41,7 @@ function Notification() {
       setNotifications(response.data)
     }
     fetchData();
-  }, [])
+  }, [notifications])
 
   // console.log("Data: ", notifications);
 
@@ -96,7 +96,7 @@ function Notification() {
             }
           }
           const style = {
-            width: '34%',
+            width: '37%',
             height: '8%',
             textAlign: 'center',
             border: 'none',
@@ -110,9 +110,11 @@ function Notification() {
             color: 'white',
           }
 
+          console.log("Data in the div:  ", notification)
+
           return (
             <div  style={style} key={id}>
-              <span >Your request of {itemName} from {categoryName} requested on {date} category was {status}</span>
+              <span >Your request of {itemName} from {categoryName} requested on {date} is {status}</span>
             </div>
           );
         })}

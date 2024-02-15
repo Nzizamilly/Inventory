@@ -47,6 +47,7 @@ function Home() {
 
             })
     }, [])
+    
     useEffect(() => {
         axios.get('http://localhost:5500/number-item')
             .then(res => {
@@ -122,7 +123,7 @@ function Home() {
                     </div>
                     <div className="icons5-admin">
                         <img className='img1' src={Transaction} alt='img3' />
-                        <p>Transactions: 2</p>
+                        <p>Transactions: ---</p>
                     </div>
                     <div className="icons6-admin">
                         <img className='img1' src={Supplier} alt='img3' />

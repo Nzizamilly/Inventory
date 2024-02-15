@@ -131,6 +131,7 @@ function Request() {
     if (backCount.totalCount < messageData.count) {
       window.alert("Amount requested is not available", Error);
     } else {
+      window.alert("Request sent....");
       socket.emit("Employee_Message_Supervisor(1)", messageData);
       try {
         const response = await axios.post('http://localhost:5500/add-request-employee-supervisor', messageData);
@@ -140,7 +141,6 @@ function Request() {
       } catch (error) {
         console.error("Error Occurred Unexpectedly", error)
       }
-      window.alert("Request sent....");
     }
     socket.on("disconnect", () => {
       console.log("Disconnected from socket server")

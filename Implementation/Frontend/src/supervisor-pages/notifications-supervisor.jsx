@@ -27,7 +27,6 @@ function NotificationSupervisor() {
     console.log("Disconnected from the server");
   });
 
-
   const buttonStyle = {
     backgroundColor: 'black',
     color: 'white',
@@ -50,18 +49,18 @@ function NotificationSupervisor() {
   }
 
   const notificationAdmin = {
-    width: '54%',
+    width: '52%',
     height: '11%',
-    textAlign: 'center',
+    // textAlign: 'center',
     gap: '6px',
     border: 'none',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: ' row',
-    marginLeft: '300px',
+    marginLeft: '295px',
     borderRadius: '15px',
-    padding: '7px',
+    // padding: '7px',
     color: 'black',
     backgroundColor: 'white'
   }
@@ -72,8 +71,6 @@ function NotificationSupervisor() {
       const supervisorID = localStorage.getItem("userID");
 
       const supervisorName = localStorage.getItem("username");
-      const supervisorNameObj = { supervisorName: supervisorName, }
-      
 
       socket.emit("Supervisor_Message_HR(1)", notifications, supervisorName);
 
@@ -81,7 +78,6 @@ function NotificationSupervisor() {
       window.alert("Request Sent to HR for Second-tier Approval");
 
       // await axios.put(`http://localhost:5500/approve-by-supervisor/${index}`)
-
 
     } catch (error) {
       console.error('Error', error);
@@ -102,61 +98,77 @@ function NotificationSupervisor() {
     }
   }
 
-  // useEffect(() => {
-  //   socket.on("sentBack", (messageData) => {
-  //     console.log(messageData);
-  //     if (Array.isArray(messageData)) {
-  //       setNotifications((prevNotifications) => [...prevNotifications, ...messageData]);
-  //     } else if (typeof messageData === 'object') {
-  //       setNotifications((prevNotifications) => [...prevNotifications, messageData]);
-  //     } else {
-  //       console.error("Received unexpected messageData:", messageData);
-  //     }
-  //   })
-  // }, [socket])
+  // useEffect(()=>{
+
+  //     socket.emit("get-some");
+  //     socket.on("give-some", (messageData) => {
+  //       // if (messageData.status !== 'Denied') {
+  //         setNotifications((prevNotifications) => [...prevNotifications, messageData]);
+  //       // }
+  //     });
+
+
+  // }, [notifications])
+
 
   useEffect(() => {
-    socket.on("Employee_Message_Supervisor(2)", (messageData) => {
-      setNotifications([...notifications, messageData]);
-    });
+    const fetch = async () => {
+        const response = await axios.get("http://localhost:5500/get-notification");
+        const result = response.data;
+        console.log("DATA FROM ENDPOINT: ", result);
+        setNotifications(result);
+    };
+    fetch();
+}, [notifications])
 
-    // const fetchSum = async() => {
-    //   try {
-    //     const response = await axios.get('http://localhost:5500/get-request-employee-supervisor');
-    //     setNotifications(response.data);
+  // useEffect(() => {
+  //   const handleNotification = (messageData) => {
+  //     setNotifications((prevNotifications) => [...prevNotifications, ...messageData]);
+  //   };
 
-    //   } catch (error) {
-    //     console.error("Error", error)
-    //   }
-    // }
-    // fetchSum();
+  //   socket.on("Employee_Message_Supervisor(2)", handleNotification);
 
-  }, [socket, notifications])
+  //   return () => {
+  //     // Cleanup the event listener when the component unmounts
+  //     socket.off("Employee_Message_Supervisor(2)", handleNotification);
+  //   };
+  // }, [ setNotifications]);
 
-  console.log("BO OR AR", notifications);
-
+  console.log("type in Upper logger", typeof notifications);
 
   return (
 
     <div>
       <NavbarHome></NavbarHome>
       <div className="notification-supervisor">
-        {notifications.map((notification) => {
-          console.log("ID Per Notification ", notification[0].id);
-          const employeeName = notification[0].employeeName;
-          const itemName = notification[0].itemName;
-          const categoryName = notification[0].categoryName;
-          const description = notification[0].description;
-          const date = notification[0].date;
-          const count = notification[0].count;
+        {notifications.map((notification, index) => {
+          console.log("type: ", typeof notification);
+
+          const employeeName = notification.username;
+          const itemName = notification.name;
+          const categoryName = notification.category_name;
+          const description = notification.description;
+          const date = notification.date_of_request;
+          const count = notification.amount;
+          const id = notification.id
+          const uniqueKey = `${id}_${index}`;
+          // const employeeName = notification.username;
+
+          // const itemName = notification.name;
+          // const categoryName = notification.category_name;
+          // const description = notification.description;
+          // const date = notification.date_of_request;
+          // const count = notification.amount;
+          // const id = notification.id;
           return (
-            <div style={notificationAdmin} key={notification[0].id}>
-              <span key={notification[0].id} style={sumStyle}> {employeeName} Requested: {itemName}  From: {categoryName}  Amount: {count}  Description: {description} Date: {date}</span>
-              <button className='buttonStyle3' onClick={() => handleApprove(notification, notification[0].id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
-              <button className='buttonStyle3' onClick={() => handleDeny(notification[0].id, notification)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
+            <div style={notificationAdmin} key={id}>
+              <span style={sumStyle}> {employeeName} Requested: {itemName}  From: {categoryName}  Amount: {count}  Description: {description} Date: {date} </span>
+              <button className='buttonStyle3' onClick={() => handleApprove(notification, id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
+              <button className='buttonStyle3' onClick={() => handleDeny(id, notification)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
             </div>
           )
         })}
+
         {/* {notifications.map((notification, index) => {
           console.log("Data in the div", notification);
           const itemName = notification.itemName;
