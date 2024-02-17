@@ -84,22 +84,7 @@ function SupplierAdmin() {
   };
   const EmpID = localStorage.getItem("userID");
   
-  // const handleUpdate = async (event) => {
-  //   try {
-  //     await axios.put(`http://localhost:5500/employee/${EmpID}`, update);
-  //     setEmps((prevEmps) => {
-  //       prevEmps.forEach((emp, index) => {
-  //         if (emp.id === EmpID) {
-  //           prevEmps[index] = { ...emp, ...update };
-  //         }
-  //       });
-  //       return [...prevEmps];
-  //     });
-  //     setVisible(false);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
+  
 
   const [visible, setVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
@@ -124,10 +109,24 @@ function SupplierAdmin() {
       console.log('Error')
     }
   }
+  const kain = {
+    marginLeft: '20px',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: 'rgb(163, 187, 197)',
+    paddingTop: '70px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    color: 'black'
+  }
+
 
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
+      <div style={kain}>
+        <h1>Add A New Supplier</h1>
+      </div>
     <div style={employeeContainer}>
       <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Supplier</p></button>
 

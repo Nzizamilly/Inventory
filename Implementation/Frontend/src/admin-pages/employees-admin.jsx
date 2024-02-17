@@ -80,14 +80,10 @@ function EmployeesAdmin() {
   const location = useLocation();
   const [switchStates, setSwitchStates] = useState({});
   const [department, setDepartment] = useState([]);
-  const [employee, setEmployee] = useState({
-    username: '',
-    password: '',
-    roleName: '',
-    departmentName: '',
-    profile_pricture: '',
-    status: ''
-  })
+  const [role, setRole] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedRole, setSelectedRole] = useState('');
+  
   const EmpID = localStorage.getItem("userID");
 
   useEffect(() => {
@@ -99,7 +95,7 @@ function EmployeesAdmin() {
       }
     };
     fetchEmp();
-  }, []);
+  }, [emps]);
 
 
   const handleSwitchChange = async (checked, empID) => {
@@ -154,15 +150,7 @@ function EmployeesAdmin() {
   const handleChange2 = (event) => {
     setEmployee((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
-  const handleMake = async (event) => {
-    try {
-      await axios.post(`http://localhost:5500/add-employee`, employee);
-      window.alert("Employee added successfully");
-      setAddVisible(false);
-    } catch (error) {
-      console.log('Error', error)
-    }
-  }
+
 
   const handleDelete = async (empID) => {
     try {
@@ -184,51 +172,123 @@ function EmployeesAdmin() {
     display: 'flex',
     gap: '12px',
     flexWrap: 'wrap',
-    // paddingTop: '105px'
   }
 
   const kain = {
     marginLeft: '20px',
     fontFamily: 'Arial, sans-serif',
     backgroundColor: 'rgb(163, 187, 197)',
-    paddingTop: '70px', 
-    // height: '95px',
-    display : 'flex',
+    paddingTop: '70px',
+    display: 'flex',
     justifyContent: 'center',
     alignContent: 'center',
     color: 'black'
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     const getDept = async () => {
 
       const response = await axios.get("http://localhost:5500/get-department/");
       setDepartment(response.data);
     }
     getDept()
-  },[])
+  }, []);
+
+  const handleDepartmentChange = (event) => {
+    const selectedValue = event.target.value;
+    console.log("TYPE OF SELECTED VALUE DOWN for Department", typeof selectedValue);
+    setSelectedDepartment(selectedValue);
+  }
+  const Select = {
+    width: '65%',
+    height: '28%',
+    color: 'black',
+    border: 'none',
+    backgroundColor: 'black',
+    color: 'white',
+    borderRadius: '21px'
+  };
+
+  useEffect(() => {
+    const fetchRole = async (selectedDepartment) => {
+      const response = await axios.get(`http://localhost:5500/get-role/${selectedDepartment}`);
+      setRole(response.data);
+      console.log("DATA: ", response.data)
+    }
+    if (selectedDepartment) {
+      fetchRole(selectedDepartment);
+    }
+  }, [selectedDepartment])
+
+  const handleRoleChange = (event) => {
+    const selectedValue = event.target.value;
+    console.log("TYPE OF SELECTED VALUE DOWN for role", typeof selectedValue);
+    setSelectedRole(selectedValue);
+  }
+  const OptionColor = {
+    width: '39%',
+    height: '25%',
+    display: 'flex',
+    gap: '12px',
+    color: 'white',
+    backgroundColor: 'black',
+    border: 'none',
+    borderRadius: '14px'
+  }
+ 
+
+  const [employee, setEmployee] = useState({
+    username: '',
+    password: '',
+    departmentName : '',
+    roleName: '',
+  })
+  useEffect(() => {
+    setEmployee(prevEmployee => ({
+      ...prevEmployee,
+      departmentName: selectedDepartment,
+      roleName: selectedRole,
+    }));
+  }, [selectedDepartment, selectedRole]);
+
+
+  const handleMake = async (event) => {
+    try {
+      console.log("Passing Data: ", employee)
+      await axios.post(`http://localhost:5500/employee`, employee);
+      window.alert("Employee added successfully");
+      setAddVisible(false);
+    } catch (error) {
+      console.log('Error', error)
+    }
+  }
 
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div style={kain}>
-      <h1>Add A New Employee</h1>
+        <h1>Add A New Employee</h1>
       </div>
       <div style={some}>
         <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Employee</p></button>
         <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
-        <h2>Adding a new Employee</h2>
+          <h2>Adding a new Employee</h2>
           <input type='text' placeholder='Username' name='username' onChange={handleChange2} />
           <input type='text' placeholder='Password' name='password' onChange={handleChange2} />
-          {/* <input type='text' placeholder='Department' name='department' onChange={handleChange2} /> */}
-          <select>
-            <option>
-              
-            </option>
 
+          <select onChange={handleDepartmentChange} value={selectedDepartment} style={Select}>
+            <option value='' disabled>Select Department</option>
+            {department.map(departments => (
+              <option key={departments.id} value={departments.id}>{departments.department_name}</option>
+            ))}
           </select>
-          <input type='text' placeholder='Role' name='role' onChange={handleChange2} />
-          <input type='text' placeholder='Status' name='status' onChange={handleChange2} />
+
+          <select onChange={handleRoleChange} value={selectedRole} style={Select}>
+            <option value='' disabled>Select Role</option>
+            {role.map(roles => (
+              <option key={roles.id} value={roles.id} style={OptionColor}>{roles.role_name}</option>
+            ))}
+          </select>
           <button onClick={handleMake}>Submit</button>
         </Model>
         {emps.map((emp) => (

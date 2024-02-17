@@ -24,9 +24,26 @@ function Home() {
             })
             .catch(err => console.log(err))
     }, [])
+    const kain = {
+        marginLeft: '20px',
+        fontFamily: 'Arial, sans-serif',
+        backgroundColor: 'rgb(34, 41, 44)',
+        paddingTop: '70px',
+        width: '10%',
+        display: 'flex',
+        marginLeft: '220px',
+        color: 'rgb(219, 215, 215)'
+    }
+    const start = {
+        width: '100%',
+        height: '100vh',
+        backgroundColor: 'rgb(34, 41, 44)'
+    }
     return (
-        <div>
+        <div style={start}>
         <Navbar></Navbar> 
+        <div>
+        <h1 style={kain}>Dashboard</h1>
         <div className="icon-container">
             <div className="icons">
                 <img className='img1' src={User} alt='img1' />
@@ -40,6 +57,7 @@ function Home() {
                 <img className='img1' src={Notification} alt='img3' />
                 <p>Notifications: ---</p>
             </div>
+        </div>
         </div>
         </div>
     );

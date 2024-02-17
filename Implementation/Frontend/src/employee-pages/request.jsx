@@ -164,13 +164,24 @@ function Request() {
   const handleSelectedItemName = (selectedList, selectedItem) => {
     setItemNameTrial(selectedList.map(item => setSomeName(item)))
   }
-
+  const kain = {
+    marginLeft: '20px',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: 'rgb(34, 41, 44)',
+    paddingTop: '70px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    color: 'rgb(219, 215, 215)'
+  } 
   return (
     <div>
       <Navbar></Navbar>
+      <div style={kain}>
+                <h1>Add A New Department & Role</h1>
+            </div>
       <div className='request-container'>
         <div className='request'>
-
           <select style={Select} onChange={handleCategoryChange} value={selectedCategory}>
             <option value='' disabled>Select Category</option>
             {category.map(categories => (

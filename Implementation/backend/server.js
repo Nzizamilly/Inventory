@@ -278,91 +278,70 @@ server.listen(5001, () => {
 // Add your routes and other configurations below this line
 
 app.post("/employee", (req, res) => {
-  console.log("Post request received");
+  const department = req.body.departmentName;
+  const role = req.body.roleName;
+
+  const departmentID =  parseInt(department, 10);
+  const roleID =  parseInt(role, 10);
+
+  console.log("Department ID", department);
+  console.log("role ID", role);
+  const status = 'ACTIVE';
+
+  const query = "INSERT INTO employees (username, password, roleID, departmentID, status) VALUES (?, ?, ?, ?, ?)";
+
+  const values = [ 
+    req.body.username,
+    req.body.password,
+    roleID,
+    departmentID,
+    status
+  ];
+
+  db.query(query, values, (error, result)=>{
+    if(error){
+      console.error("Error: ". error);
+    }else{
+      console.log(result)
+    }
+
+  })
 })
 
 app.post("/add-employee", (req, res) => {
-  const roleCheckQuery = "SELECT id FROM role WHERE role_name = ?";
-  const departmentCheckQuery = "SELECT id FROM department WHERE department_name = ?";
-
-  // Assuming req.body.role and req.body.department are provided by the client
-  db.query(roleCheckQuery, [req.body.role], (roleError, roleResult) => {
-    if (roleError) {
-      console.error('Error checking role:', roleError);
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
-
-    db.query(departmentCheckQuery, [req.body.department], (deptError, deptResult) => {
-      if (deptError) {
-        console.error('Error checking department:', deptError);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-
-      if (!roleResult.length || !deptResult.length) {
-        return res.status(400).json({ error: 'Invalid role or department.' });
-      }
-
-      const q =
-        "INSERT INTO employees(username, password, roleID, departmentID, status) VALUES (?, ?, ?, ?, ?)";
-      const values = [
-        req.body.username,
-        req.body.password,
-        roleResult[0].id,
-        deptResult[0].id,
-        req.body.status
-      ];
-
-      db.query(q, values, (insertError, insertResult) => {
-        if (insertError) {
-          console.error('Error inserting employee:', insertError);
-          return res.status(500).json({ error: 'Internal Server Error' });
-        }
-
-        res.status(201).json({ message: 'Employee added successfully' });
-      });
-    });
-  });
+ 
 });
 
 app.post('/add-items', (req, res) => {
-  const supplierCheckQuery = 'SELECT id FROM supplier WHERE first_name = ?';
   const categoryId = req.body.category;
 
   console.log("Category", categoryId);
 
-  db.query(supplierCheckQuery, [req.body.supplier], (supplierError, supplierResults) => {
-    if (supplierError) {
-      console.error('Error checking supplier:', supplierError);
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
+    const supplierId = req.body.supplier;
 
-    if (supplierResults.length === 0) {
-      return res.status(400).json({ error: 'Invalid supplier.' });
-    }
-
-    const supplierId = supplierResults[0].id;
+    const intValue = parseInt(supplierId, 10);
 
     console.log("Supplier", supplierId);
 
-    const insertQuery =
-      'INSERT INTO item(name, supplierID, categoryID) VALUES (?, ?, ?)';
+    const insertQuery = 'INSERT INTO item (name, supplierID, categoryID) VALUES (?, ?, ?)';
 
     const insertValues = [
       req.body.name || null,
-      supplierId,
+      intValue ,
       categoryId || null,
     ];
 
-    db.query(insertQuery, insertValues, (insertError, result) => {
+    console.log("VALUES: ", insertValues)
+
+    db.query( insertQuery, insertValues, (insertError, result) => {
       if (insertError) {
         console.error('Error adding item:', insertError);
         return res.status(500).json({ error: 'Internal Server Error' });
       }
-
       res.status(201).json({ message: 'Item added successfully' });
     });
   });
-});
+
 
 app.put("/employee/:id", (req, res) => {
   const empID = req.params.id;
@@ -891,13 +870,9 @@ app.put('/deactivate-employee/:id', (req, res) => {
 app.delete('/delete-employee/:id', (req, res) => {
   const id = req.params.id;
   const q = `DELETE FROM employees WHERE id = ?`;
-
-  db.query(q, id, (error, result) => {
+  db.query(q, id, (error) => {
     if (error) {
       console.error("Error ", error)
-    } else {
-      console.log("Done", result)
-      return result
     }
   })
 })

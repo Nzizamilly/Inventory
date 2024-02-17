@@ -71,9 +71,22 @@ function CategoryAdmin() {
   const handleChange2 = (event) => {
     setCategory((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
+  const kain = {
+    marginLeft: '20px',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: 'rgb(163, 187, 197)',
+    paddingTop: '70px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    color: 'black'
+  }
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
+      <div style={kain}>
+        <h1>Add A New Category</h1>
+      </div>
     <div className="category-container">
       <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Category</p></button>
       <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>

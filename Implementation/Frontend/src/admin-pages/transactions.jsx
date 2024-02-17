@@ -26,20 +26,7 @@ function TransactionsAdmin() {
     padding: '5px 12px',
     borderRadius: '45px',
   };
-  // const svgStyle = {
-  //   // backgroundColor: 'green',
-  //   width: '30px',
-  //   height: '30px',
-  //   borderRadius: '14px',
-  //   marginTop: '2px'
-  // }
-  // const svgStyleCross = {
-  //   backgroundColor: 'red',
-  //   width: '40px',
-  //   height: '30px',
-  //   borderRadius: '14px',
-  //   marginTop: '1px'
-  // }
+
   const modalStyles = {
     content: {
       top: '50%',
@@ -117,9 +104,22 @@ function TransactionsAdmin() {
 const handlePrint = () => {
   window.print();
 }
+const kain = {
+  marginLeft: '20px',
+  fontFamily: 'Arial, sans-serif',
+  backgroundColor: 'rgb(163, 187, 197)',
+  paddingTop: '70px',
+  display: 'flex',
+  justifyContent: 'center',
+  alignContent: 'center',
+  color: 'black'
+}
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
+      <div style={kain}>
+        <h1>Transactions Tab</h1>
+      </div>
     <div className="transaction-container-admin">
       <div>
         <div>

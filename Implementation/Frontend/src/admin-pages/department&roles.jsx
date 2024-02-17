@@ -197,61 +197,72 @@ function Departments_Roles() {
                 <button className='addItem-btn' onClick={() => openRoleViewModal(row)}><img src={Info} style={svgStyle} /></button>
             )
         }
-
     ];
 
     const Roles = [
         {
-        name: 'Role Name',
-        selector: row => row.role_name 
+            name: 'Role Name',
+            selector: row => row.role_name
         },
         {
-        name: 'Status',
-        selector: row => row.status
+            name: 'Status',
+            selector: row => row.status
         }
-
     ]
+    const kain = {
+        marginLeft: '20px',
+        fontFamily: 'Arial, sans-serif',
+        backgroundColor: 'rgb(163, 187, 197)',
+        paddingTop: '70px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignContent: 'center',
+        color: 'black'
+      }
 
     return (
         <div>
             <NavbarAdmin></NavbarAdmin>
-        <div className="dept-container-admin" >
-            <button style={AddButton} onClick={openAddModal}>Add Department</button>
-            <Modal isOpen={isAddModalOpen} onRequestClose={closeAddModal} style={modalStyles}>
-                <h1>Create A Department</h1>
-                <input placeholder='Department Name' type='text' name='department_name' onChange={handleInput} />
+            <div style={kain}>
+                <h1>Add A New Department & Role</h1>
+            </div>
+            <div className="dept-container-admin" >
+                <button style={AddButton} onClick={openAddModal}>Add Department</button>
+                <Modal isOpen={isAddModalOpen} onRequestClose={closeAddModal} style={modalStyles}>
+                    <h1>Create A Department</h1>
+                    <input placeholder='Department Name' type='text' name='department_name' onChange={handleInput} />
+                    <br />
+                    <input placeholder='Status' type='text' name='status' onChange={handleInput} />
+                    <br />
+                    <button onClick={addDepartment}>Add</button>
+                </Modal>
                 <br />
-                <input placeholder='Status' type='text' name='status' onChange={handleInput} />
-                <br />
-                <button onClick={addDepartment}>Add</button>
-            </Modal>
-            <br />
-            <button style={AddButton} onClick={openDepartmentView}>View Departments</button>
-            <Modal isOpen={isDepartmentViewOpen} onRequestClose={closeDepartmentView} style={modalStyles}>
-                <DataTable
-                    columns={columns}
-                    data={gotDepartment}
-                ></DataTable>
-            </Modal>
-            <Modal isOpen={isAddRoleModalOpen} onRequestClose={closeAddRoleModal} style={modalStyles}>
-                <h1>Add A Role</h1>
-                <input type='text' name='role_name' placeholder='Role Name' onChange={handleRoleInput} />
-                <br />
-                <input type='text' name='status' placeholder='Status' onChange={handleRoleInput} />
-                <br />
-                <button onClick={() => handleAddRole(takenDeptID)}>Submit</button>
-            </Modal>
-            <Modal isOpen={isRoleViewModalOpen} onRequestClose={closeRoleViewModal}>
+                <button style={AddButton} onClick={openDepartmentView}>View Departments</button>
+                <Modal isOpen={isDepartmentViewOpen} onRequestClose={closeDepartmentView} style={modalStyles}>
+                    <DataTable
+                        columns={columns}
+                        data={gotDepartment}
+                    ></DataTable>
+                </Modal>
+                <Modal isOpen={isAddRoleModalOpen} onRequestClose={closeAddRoleModal} style={modalStyles}>
+                    <h1>Add A Role</h1>
+                    <input type='text' name='role_name' placeholder='Role Name' onChange={handleRoleInput} />
+                    <br />
+                    <input type='text' name='status' placeholder='Status' onChange={handleRoleInput} />
+                    <br />
+                    <button onClick={() => handleAddRole(takenDeptID)}>Submit</button>
+                </Modal>
+                <Modal isOpen={isRoleViewModalOpen} onRequestClose={closeRoleViewModal}>
 
-                <DataTable
-                    columns={Roles}
-                    data={viewRole}
-                    pagination
-                >
-                </DataTable>
+                    <DataTable
+                        columns={Roles}
+                        data={viewRole}
+                        pagination
+                    >
+                    </DataTable>
 
-            </Modal>
-        </div>
+                </Modal>
+            </div>
         </div>
     );
 }
