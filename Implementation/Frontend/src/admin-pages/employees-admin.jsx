@@ -37,13 +37,11 @@ function EmployeesAdmin() {
     },
   }
   const employeeContainer = {
-
     width: '100%',
     fontFamily: 'Arial, sans-serif',
     height: '100vh',
     backgroundColor: 'rgb(163, 187, 197)',
     justifyContent: 'center',
-    // justifyContent: 'flex-start',
     display: 'flex',
     gap: '23px',
     paddingTop: '74px',
@@ -51,16 +49,6 @@ function EmployeesAdmin() {
     overflow: 'auto',
     flexWrap: 'wrap',
     alignItems: 'center'
-
-    // fontFamily: 'Arial, sans-serif',
-    // width: '100%',
-    // height: '100vh',
-    // backgroundColor: 'rgb(163, 187, 197)',
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    // display: 'flex',
-    // gap: '51px',
-    // flexWrap: 'wrap'
   }
 
   const ThemBs = {
@@ -131,8 +119,8 @@ function EmployeesAdmin() {
 
       setEmps((prevEmps) => {
         return prevEmps.map((emp) => {
-          if (emp.id === empID){
-            return {...emp, status};
+          if (emp.id === empID) {
+            return { ...emp, status };
           }
           return emp;
         });
@@ -170,61 +158,89 @@ function EmployeesAdmin() {
       await axios.post(`http://localhost:5500/add-employee`, employee);
       window.alert("Employee added successfully");
       setAddVisible(false);
-    } catch(error) {
+    } catch (error) {
       console.log('Error', error)
     }
   }
 
   const handleDelete = async (empID) => {
-    try{
-     await axios.delete(`http://localhost:5500/delete-employee/${empID}`);
-     console.log("Employee Deleted safely");
-     window.alert("Done");
-    }catch{
+    try {
+      await axios.delete(`http://localhost:5500/delete-employee/${empID}`);
+      console.log("Employee Deleted safely");
+      window.alert("Done");
+    } catch {
       console.error("No");
     }
+  }
+
+  const some = {
+    fontFamily: 'Arial, sans-serif',
+    width: '100%',
+    height: '100vh',
+    backgroundColor: 'rgb(163, 187, 197)',
+    justifyContent: 'center',
+    overflow: 'auto',
+    display: 'flex',
+    gap: '12px',
+    flexWrap: 'wrap',
+    // paddingTop: '105px'
+  }
+
+  const kain = {
+    marginLeft: '20px',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: 'rgb(163, 187, 197)',
+    paddingTop: '70px', 
+    // height: '95px',
+    display : 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    color: 'black'
   }
 
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
-    <div style={employeeContainer}>
-      <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Employee</p></button>
-      <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
-        <h1>Add Employee</h1>
-        <input type='text' placeholder='Username' name='username' onChange={handleChange2} />
-        <input type='text' placeholder='Password' name='password' onChange={handleChange2} />
-        <input type='text' placeholder='Role' name='role' onChange={handleChange2} />
-        <input type='text' placeholder='Department' name='department' onChange={handleChange2} />
-        <input type='text' placeholder='Status' name='status' onChange={handleChange2} />
-        <button onClick={handleMake}>Submit</button>
-      </Model>
-      {emps.map((emp) => (
-        <div key={emp.id} className="employee">
-          <h1>{emp.username}</h1>
-          <img src={emp.profile_picture} id='profile_picture' alt="" />
-          <p>Username: {emp.username}</p>
-          <p>Password: {emp.password}</p>
-          <p>Position: {emp.role_name}</p>
-          <p>Department: {emp.department_name}</p>
-          <p>Status:  <span style={{ color: emp.status === 'INACTIVE' ? 'red' : 'green' }}>{emp.status}</span></p>
-          <div style={ThemBs}>
-            <button className='addItem-btn' onClick={() => setVisible(true)}><img src={Update} style={svgStyle} /></button>
-            <button className='addItem-btn' onClick={()=>handleDelete(emp.id)} ><img src={Delete} style={svgStyle} /></button>
-            <Switch onChange={(checked) => handleSwitchChange(checked, emp.id)} checked={switchStates[emp.id] || false} />
+      <div style={kain}>
+      <h1>Add Employee</h1>
+      </div>
+      <div style={some}>
+        <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Employee</p></button>
+        <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
+        <h2>Adding a new Employee</h2>
+          <input type='text' placeholder='Username' name='username' onChange={handleChange2} />
+          <input type='text' placeholder='Password' name='password' onChange={handleChange2} />
+          <input type='text' placeholder='Department' name='department' onChange={handleChange2} />
+          <input type='text' placeholder='Role' name='role' onChange={handleChange2} />
+          <input type='text' placeholder='Status' name='status' onChange={handleChange2} />
+          <button onClick={handleMake}>Submit</button>
+        </Model>
+        {emps.map((emp) => (
+          <div key={emp.id} className="employee">
+            <h1>{emp.username}</h1>
+            <img src={emp.profile_picture} id='profile_picture' alt="" />
+            <p>Username: {emp.username}</p>
+            <p>Password: {emp.password}</p>
+            <p>Position: {emp.role_name}</p>
+            <p>Department: {emp.department_name}</p>
+            <p>Status:  <span style={{ color: emp.status === 'INACTIVE' ? 'red' : 'green' }}>{emp.status}</span></p>
+            <div style={ThemBs}>
+              <button className='addItem-btn' onClick={() => setVisible(true)}><img src={Update} style={svgStyle} /></button>
+              <button className='addItem-btn' onClick={() => handleDelete(emp.id)} ><img src={Delete} style={svgStyle} /></button>
+              <Switch onChange={(checked) => handleSwitchChange(checked, emp.id)} checked={switchStates[emp.id] || false} />
+            </div>
+            <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
+              <h1>Update</h1>
+              <input type='text' placeholder='Username' name="username" onChange={handleChange} />
+              <input type='text' placeholder='Password' name="password" onChange={handleChange} />
+              <input type='text' placeholder='Role' name="roleName" onChange={handleChange} />
+              <input type='text' placeholder='Department' name="departmentName" onChange={handleChange} />
+              <input type='text' placeholder='Status' name="status" onChange={handleChange} />
+              <button onClick={() => handleUpdate(emp.id)}>Submit</button>
+            </Model>
           </div>
-          <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
-            <h1>Update</h1>
-            <input type='text' placeholder='Username' name="username" onChange={handleChange} />
-            <input type='text' placeholder='Password' name="password" onChange={handleChange} />
-            <input type='text' placeholder='Role' name="roleName" onChange={handleChange} />
-            <input type='text' placeholder='Department' name="departmentName" onChange={handleChange} />
-            <input type='text' placeholder='Status' name="status" onChange={handleChange} />
-            <button onClick={() => handleUpdate(emp.id)}>Submit</button>
-          </Model>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -507,6 +507,8 @@ function ItemsAdmin() {
     alignItems: 'center'
   }
 
+  
+
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
