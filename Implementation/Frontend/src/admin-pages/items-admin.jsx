@@ -9,6 +9,7 @@ import Addy from '../images/addy.svg'
 import Info from '../images/info.svg'
 import NavbarAdmin from './navbarAdmin';
 import DataTable from 'react-data-table-component';
+import Multiselect from 'multiselect-react-dropdown';
 
 function ItemsAdmin() {
 
@@ -79,7 +80,9 @@ function ItemsAdmin() {
   const [getUpdateSerialID, setGetUpdateSerialID] = useState('');
   const [filteredCategories, setFilteredCategories] = useState(categories);
   const [searchInput, setSeachInput] = useState('');
-  const [status, setStatus] = useState('');
+  const [someCategoryName, setSomeCategoryName] = useState('')
+  const [supplier, setSupplier] = useState([]);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
 
 
   const openSerialModal = (itemId) => {
@@ -146,30 +149,40 @@ function ItemsAdmin() {
       name: '',
       state_of_item: '',
       depreciation_rate: '',
-      supplier: '',
+      supplier: selectedSupplier,
       // category: '',
     })
   }
 
   const [newItem, setNewItem] = useState({
     name: '',
-    supplier: '',
-    serial_number: ''
-    // category: ''
+    supplier: selectedSupplier,
+    category: selectedCategory
   });
+
+  const newItemObj = {
+    name: newItem.name,
+    supplier: selectedSupplier,
+    category: selectedCategory
+  }
+
+  // category: ''
+  console.log("Selected Supplier ID", selectedSupplier)
 
   const handleAddSimpleItemClick = async () => {
     try {
       console.log(newItem);
+      console.log("Type of category", typeof newItemObj.category);
+      console.log("Type of supplier", typeof newItemObj.supplier);
       const categoryId = selectedCategory;
       // Assuming newItem is an object with properties like name, state_of_item, depreciation_rate, etc.
-      await axios.post('http://localhost:5500/add-items', {
-        name: newItem.name,
-        state_of_item: newItem.state_of_item,
-        depreciation_rate: newItem.depreciation_rate,
-        supplier: newItem.supplier,
-        category: categoryId,
-      });
+      // await axios.post('http://localhost:5500/add-items', {
+      //   name: newItem.name,
+      //   supplier: selectedSupplier,
+      //   category: categoryId,
+      // });
+      await axios.post('http://localhost:5500/add-items', newItemObj);
+
 
       fetchItemsByCategory(categoryId);
       closeSimpleModal();
@@ -263,8 +276,9 @@ function ItemsAdmin() {
     }
   }
 
-  const handleCategoryClick = (categoryId,) => {
+  const handleCategoryClick = (categoryId, category_name) => {
     setSelectedCategory(categoryId);
+    setSomeCategoryName(category_name)
     fetchItemsByCategory(categoryId);
     setIsModalOpen(true);
   };
@@ -410,12 +424,6 @@ function ItemsAdmin() {
       selector: row => formatDate(row.createdAt)
     },
     {
-      name: 'New Sub-Category',
-      selector: row => (
-        <button className='addItem-btn' onClick={() => openSimpleModal()}><img src={AddItem} style={svgStyle} /></button>
-      )
-    },
-    {
       name: 'Edit',
       selector: row => (
         <button className='addItem-btn' onClick={() => openUpdateModal(row.id)}><img src={Update} style={svgStyle} /></button>
@@ -496,6 +504,51 @@ function ItemsAdmin() {
     setFilteredCategories(filtered);
   };
 
+  const display = {
+    display: 'flex',
+    flexDirection: 'inline',
+    width: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '12px'
+    // backgroundColor: 'blue'
+
+  }
+
+  useEffect(() => {
+    const supplierG = async () => {
+      const response = await axios.get("http://localhost:5500/supplier");
+      const result = response.data;
+      console.log("ALL SUPPLIER'S DATA ", result);
+      setSupplier(result);
+    }
+
+    supplierG();
+  }, [])
+  const handleSupplierChange = (event) => {
+    const selectedValue = event.target.value;
+    console.log("TYPE OF SELECTED VALUE DOWN", typeof selectedValue);
+    setSelectedSupplier(selectedValue)
+  }
+
+  const Select = {
+    width: '43%',
+    height: '18%',
+    color: 'black',
+    border: 'none',
+    borderRadius: '21px'
+  };
+
+  const OptionColor = {
+    width: '39%',
+    height: '25%',
+    display: 'flex',
+    gap: '12px',
+    color: 'white',
+    backgroundColor: 'black',
+    border: 'none',
+    borderRadius: '14px'
+  }
   const Dash = {
     // width: '20%',
     color: 'black',
@@ -505,17 +558,15 @@ function ItemsAdmin() {
     gap: '745px',
     justifyContent: 'center',
     alignItems: 'center'
+
   }
-
-  
-
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div className='items-container'>
         <div style={Dash}>
           <h1>Items</h1>
-          <input type='text' placeholder='Search by Category...' onChange={handleSearch} value={searchInput} />
+          <input  type='text' placeholder='Search by Category...' onChange={handleSearch} value={searchInput} />
         </div>
         <div>
           {filteredCategories.map((category) => (
@@ -527,10 +578,13 @@ function ItemsAdmin() {
         {/* <br /> */}
         <div style={itemstyle}>
           {categories.map(category => (
-            <button key={category.id} onClick={() => handleCategoryClick(category.id)} className='buttonStyle2'>{category.category_name}</button>
+            <button key={category.id} onClick={() => handleCategoryClick(category.id, category.category_name)} className='buttonStyle2'>{category.category_name}</button>
           ))}
           <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
-            <h1>Items for category: {selectedCategory}</h1>
+            <div style={display}>
+              <h1>Items for {someCategoryName}</h1>
+              <button className='addItem-btn' onClick={() => openSimpleModal()}><img src={AddItem} style={svgStyle} /></button>
+            </div>
             <DataTable
               columns={one}
               data={items}
@@ -552,7 +606,13 @@ function ItemsAdmin() {
             <h1>Create A New Item</h1>
             <input placeholder='Name' name='name' type='text' value={newItem.name} onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} />
             <br />
-            <input placeholder='Supplier' name='supplier' type='text' value={newItem.supplier} onChange={(e) => setNewItem({ ...newItem, supplier: e.target.value })} />
+            {/* <input placeholder='Supplier' name='supplier' type='text' value={newItem.supplier} onChange={(e) => setNewItem({ ...newItem, supplier: e.target.value })} /> */}
+            <select onChange={handleSupplierChange} value={selectedSupplier} style={Select}>
+              <option value='' disabled>Select Supplier </option>
+              {supplier.map(suppliers => (
+                <option key={suppliers.id} value={suppliers.id} style={OptionColor}>{suppliers.first_name}</option>
+              ))}
+            </select>
             <br />
             <button onClick={handleAddSimpleItemClick}>Send</button>
           </Modal>

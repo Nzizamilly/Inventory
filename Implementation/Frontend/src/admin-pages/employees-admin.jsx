@@ -79,6 +79,7 @@ function EmployeesAdmin() {
   const [addVisible, setAddVisible] = useState(false);
   const location = useLocation();
   const [switchStates, setSwitchStates] = useState({});
+  const [department, setDepartment] = useState([]);
   const [employee, setEmployee] = useState({
     username: '',
     password: '',
@@ -198,11 +199,20 @@ function EmployeesAdmin() {
     color: 'black'
   }
 
+  useEffect(()=>{
+    const getDept = async () => {
+
+      const response = await axios.get("http://localhost:5500/get-department/");
+      setDepartment(response.data);
+    }
+    getDept()
+  },[])
+
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div style={kain}>
-      <h1>Add Employee</h1>
+      <h1>Add A New Employee</h1>
       </div>
       <div style={some}>
         <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Employee</p></button>
@@ -210,7 +220,13 @@ function EmployeesAdmin() {
         <h2>Adding a new Employee</h2>
           <input type='text' placeholder='Username' name='username' onChange={handleChange2} />
           <input type='text' placeholder='Password' name='password' onChange={handleChange2} />
-          <input type='text' placeholder='Department' name='department' onChange={handleChange2} />
+          {/* <input type='text' placeholder='Department' name='department' onChange={handleChange2} /> */}
+          <select>
+            <option>
+              
+            </option>
+
+          </select>
           <input type='text' placeholder='Role' name='role' onChange={handleChange2} />
           <input type='text' placeholder='Status' name='status' onChange={handleChange2} />
           <button onClick={handleMake}>Submit</button>
