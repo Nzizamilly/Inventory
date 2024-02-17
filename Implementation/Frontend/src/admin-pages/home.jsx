@@ -96,11 +96,22 @@ function Home() {
             })
     }, [])
 
+    const Dash = {
+        width: '100%',
+        color: 'black',
+        marginLeft: '235px',
+        display: 'flex',
+        marginTop: '55px'
 
+    }
+
+
+    
     return (
         <div>
             <NavbarAdmin></NavbarAdmin>
                 <div className="icon-container-admin">
+                <h1 style={Dash}>Dashboard</h1>
                     <div className="icons-admin">
                         <img className='img1' src={User} alt='img1' />
                         <p>Account: {name}</p>

@@ -80,7 +80,7 @@ function ItemsAdmin() {
   const [filteredCategories, setFilteredCategories] = useState(categories);
   const [searchInput, setSeachInput] = useState('');
   const [status, setStatus] = useState('');
-  
+
 
   const openSerialModal = (itemId) => {
     setSelectedItemID(itemId);
@@ -284,7 +284,7 @@ function ItemsAdmin() {
   const handleSerialNumber = (event) => {
     setSerialNumber((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
- 
+
   const [update, setUpdate] = useState({
     newItemName: '',
     newSupplierName: '',
@@ -385,12 +385,12 @@ function ItemsAdmin() {
 
   }
 
- const  getUserInput = (promptText) => {
-  return new Promise((resolve) => {
-    const userInput = window.prompt(promptText, "");
-    resolve(userInput);
-  });
- }
+  const getUserInput = (promptText) => {
+    return new Promise((resolve) => {
+      const userInput = window.prompt(promptText, "");
+      resolve(userInput);
+    });
+  }
 
   const one = [
     {
@@ -496,87 +496,101 @@ function ItemsAdmin() {
     setFilteredCategories(filtered);
   };
 
+  const Dash = {
+    // width: '20%',
+    color: 'black',
+    marginLeft: '235px',
+    display: 'flex',
+    marginTop: '55px',
+    gap: '745px',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
-    <div className='items-container'>
-      <input id='searchInput' type='text' placeholder='Search by Category...' onChange={handleSearch} value={searchInput} />
-      <div>
-        {filteredCategories.map((category) => (
-          <button key={category.id}
-            onClick={() => handleCategoryClick(category.id)}>{category.name}
-          </button>
-        ))}
-      </div>
-      {/* <br /> */}
-      <div style={itemstyle}>
-        {categories.map(category => (
-          <button key={category.id} onClick={() => handleCategoryClick(category.id)} className='buttonStyle2'>{category.category_name}</button>
-        ))}
-        <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
-          <h1>Items for category: {selectedCategory}</h1>
-          <DataTable
-            columns={one}
-            data={items}
-            pagination
-          ></DataTable>
-        </Modal>
-        <Modal isOpen={isUpdateModalOpen} onRequestClose={closeUpdateModal} style={modalStyles}>
-          <h1>Update Items</h1>
-          <input placeholder='Name' name='newItemName' type='text' onChange={handleUpdateInput} />
-          <br />
-          <input placeholder='Supplier' name='newSupplierName' type='text' onChange={handleUpdateInput} />
-          <br />
-          <input placeholder='Category' name='newCategoryName' type='text' onChange={handleUpdateInput} />
-          <br />
-          <button onClick={() => handleUpdateClick(takenItemId)}>Add </button>
+      <div className='items-container'>
+        <div style={Dash}>
+          <h1>Items</h1>
+          <input type='text' placeholder='Search by Category...' onChange={handleSearch} value={searchInput} />
+        </div>
+        <div>
+          {filteredCategories.map((category) => (
+            <button key={category.id}
+              onClick={() => handleCategoryClick(category.id)}>{category.name}
+            </button>
+          ))}
+        </div>
+        {/* <br /> */}
+        <div style={itemstyle}>
+          {categories.map(category => (
+            <button key={category.id} onClick={() => handleCategoryClick(category.id)} className='buttonStyle2'>{category.category_name}</button>
+          ))}
+          <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
+            <h1>Items for category: {selectedCategory}</h1>
+            <DataTable
+              columns={one}
+              data={items}
+              pagination
+            ></DataTable>
+          </Modal>
+          <Modal isOpen={isUpdateModalOpen} onRequestClose={closeUpdateModal} style={modalStyles}>
+            <h1>Update Items</h1>
+            <input placeholder='Name' name='newItemName' type='text' onChange={handleUpdateInput} />
+            <br />
+            <input placeholder='Supplier' name='newSupplierName' type='text' onChange={handleUpdateInput} />
+            <br />
+            <input placeholder='Category' name='newCategoryName' type='text' onChange={handleUpdateInput} />
+            <br />
+            <button onClick={() => handleUpdateClick(takenItemId)}>Add </button>
 
-        </Modal>
-        <Modal isOpen={isSimpleModalOpen} onRequestClose={closeSimpleModal} style={modalStyles}>
-          <h1>Create A New Item</h1>
-          <input placeholder='Name' name='name' type='text' value={newItem.name} onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} />
-          <br />
-          <input placeholder='Supplier' name='supplier' type='text' value={newItem.supplier} onChange={(e) => setNewItem({ ...newItem, supplier: e.target.value })} />
-          <br />
-          <button onClick={handleAddSimpleItemClick}>Send</button>
-        </Modal>
-        <Modal isOpen={isSerialModalOpen} onRequestClose={closeSerialModal} style={modalStyles}>
-          <h1>Add Serial Number</h1>
-          <input placeholder='Add Serial Number' name='serial_number' type='text' onChange={handleSerialNumber} />
-          <br />
-          <input placeholder='State Of Item' name='state_of_item' type='text' onChange={handleSerialNumber} />
-          <br />
-          <input placeholder='Depreciation Rate' name='depreciation_rate' type='text' onChange={handleSerialNumber} />
-          <br />
-          <button onClick={() => handleAddSerialNumberClick(takenItemId)}>Add </button>
-          {/* <button onClick={() => handleAddSerialNumberClick(selectedCategory)}>Add </button> */}
-        </Modal>
-        <Modal isOpen={isInfoModalOpen} onRequestClose={closeInfoModal} style={modalStyles}>
-          <h1>
-            {getNom.length > 0 ? <span>{getNom[0].itemName}</span> : "Loading..."}: {totalSerialCount}
-          </h1>
-          <input type='text' placeholder='Search By Serial Number' onChange={handleFilter} />
-          <br />
-          <DataTable
-            columns={columns}
-            data={records}
-            pagination
-          ></DataTable>
-        </Modal>
-        <Modal isOpen={isUpdateSerial} onRequestClose={closeUpdateSerialModal} style={modalStyles}>{handleSerialUpdateInput}
-          <h1>Update</h1>
-          <input type='text' placeholder='Serial Number' name='serial_number' onChange={handleSerialUpdateInput} />
-          <br />
-          <input type='text' placeholder='State Of Item' name='state_of_item' onChange={handleSerialUpdateInput} />
-          <br />
-          <input type='text' placeholder='Depreciation Rate' name='depreciation_rate' onChange={handleSerialUpdateInput} />
-          <br />
-          <button onClick={() => handleSerialUpdate(getUpdateSerialID)}>Update</button>
-        </Modal>
-        
+          </Modal>
+          <Modal isOpen={isSimpleModalOpen} onRequestClose={closeSimpleModal} style={modalStyles}>
+            <h1>Create A New Item</h1>
+            <input placeholder='Name' name='name' type='text' value={newItem.name} onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} />
+            <br />
+            <input placeholder='Supplier' name='supplier' type='text' value={newItem.supplier} onChange={(e) => setNewItem({ ...newItem, supplier: e.target.value })} />
+            <br />
+            <button onClick={handleAddSimpleItemClick}>Send</button>
+          </Modal>
+          <Modal isOpen={isSerialModalOpen} onRequestClose={closeSerialModal} style={modalStyles}>
+            <h1>Add Serial Number</h1>
+            <input placeholder='Add Serial Number' name='serial_number' type='text' onChange={handleSerialNumber} />
+            <br />
+            <input placeholder='State Of Item' name='state_of_item' type='text' onChange={handleSerialNumber} />
+            <br />
+            <input placeholder='Depreciation Rate' name='depreciation_rate' type='text' onChange={handleSerialNumber} />
+            <br />
+            <button onClick={() => handleAddSerialNumberClick(takenItemId)}>Add </button>
+            {/* <button onClick={() => handleAddSerialNumberClick(selectedCategory)}>Add </button> */}
+          </Modal>
+          <Modal isOpen={isInfoModalOpen} onRequestClose={closeInfoModal} style={modalStyles}>
+            <h1>
+              {getNom.length > 0 ? <span>{getNom[0].itemName}</span> : "Loading..."}: {totalSerialCount}
+            </h1>
+            <input type='text' placeholder='Search By Serial Number' onChange={handleFilter} />
+            <br />
+            <DataTable
+              columns={columns}
+              data={records}
+              pagination
+            ></DataTable>
+          </Modal>
+          <Modal isOpen={isUpdateSerial} onRequestClose={closeUpdateSerialModal} style={modalStyles}>{handleSerialUpdateInput}
+            <h1>Update</h1>
+            <input type='text' placeholder='Serial Number' name='serial_number' onChange={handleSerialUpdateInput} />
+            <br />
+            <input type='text' placeholder='State Of Item' name='state_of_item' onChange={handleSerialUpdateInput} />
+            <br />
+            <input type='text' placeholder='Depreciation Rate' name='depreciation_rate' onChange={handleSerialUpdateInput} />
+            <br />
+            <button onClick={() => handleSerialUpdate(getUpdateSerialID)}>Update</button>
+          </Modal>
 
-      </div>
-    </div >
+
+        </div>
+      </div >
     </div>
   );
 }
