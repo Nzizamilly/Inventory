@@ -104,9 +104,22 @@ function TransactionsHR() {
     const handlePrint = () => {
         window.print();
     }
+    const kain = {
+        marginLeft: '20px',
+        fontFamily: 'Arial, sans-serif',
+        backgroundColor: 'rgb(130, 142, 161)',
+        paddingTop: '70px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignContent: 'center',
+        color: 'white'
+    }
     return (
         <div>
             <NavbarMain></NavbarMain>
+            <div style={kain}>
+                <h1>Transactions Tab</h1>
+            </div>
             <div className="transaction-container-hr">
                 <div>
                     <div>

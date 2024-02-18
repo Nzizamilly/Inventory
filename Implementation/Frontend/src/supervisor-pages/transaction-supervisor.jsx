@@ -104,9 +104,22 @@ function TransactionsSupervisor() {
     const handlePrint = () => {
         window.print();
     }
+    const kain = {
+        marginLeft: '20px',
+        fontFamily: 'Arial, sans-serif',
+        backgroundColor: 'rgb(17, 21, 37)',
+        paddingTop: '70px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignContent: 'center',
+        color: 'white'
+    }
     return (
         <div>
             <NavbarHome></NavbarHome>
+            <div style={kain}>
+                <h1>Transactions Tab</h1>
+            </div>
             <div className="transaction-container-supervisor">
                 <div>
                     <div>

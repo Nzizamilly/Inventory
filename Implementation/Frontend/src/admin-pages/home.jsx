@@ -47,7 +47,7 @@ function Home() {
 
             })
     }, [])
-    
+
     useEffect(() => {
         axios.get('http://localhost:5500/number-item')
             .then(res => {
@@ -99,48 +99,45 @@ function Home() {
     const Dash = {
         width: '100%',
         color: 'black',
+        height: '1px',
         marginLeft: '235px',
         display: 'flex',
         marginTop: '55px'
-
     }
-
-
-    
     return (
         <div>
             <NavbarAdmin></NavbarAdmin>
-                <div className="icon-container-admin">
+            <div className="icon-container-admin">
                 <h1 style={Dash}>Dashboard</h1>
-                    <div className="icons-admin">
-                        <img className='img1' src={User} alt='img1' />
-                        <p>Account: {name}</p>
-                    </div>
-                    <div className="icons1-admin">
-                        <img className='img1' src={Category} alt='img2' />
-                        <p>Category: {categoryCount}</p>
-                    </div>
-                    <div className="icons2-admin">
-                        <img className='img1' src={Items} alt='img3' />
-                        <p> Items: {itemCount}</p>
-                    </div>
-                    <div className="icons3-admin">
-                        <img className='img1' src={Employees} alt='img3' />
-                        <p>Employees: {employeeCount}</p>
-                    </div>
-                    <div className="icons4-admin">
-                        <img className='img1' src={Request} alt='img3' />
-                        <p>Requests: {requestCount}</p>
-                    </div>
-                    <div className="icons5-admin">
-                        <img className='img1' src={Transaction} alt='img3' />
-                        <p>Transactions: ---</p>
-                    </div>
-                    <div className="icons6-admin">
-                        <img className='img1' src={Supplier} alt='img3' />
-                        <p>Suppliers: {supplierCount}</p>
-                    </div>
+                <div className="icons-admin">
+                    <img className='img1' src={User} alt='img1' />
+                    <p>Account: {name}</p>
                 </div>
+                <div className="icons1-admin">
+                    <img className='img1' src={Category} alt='img2' />
+                    <p>Category: {categoryCount}</p>
+                </div>
+                <div className="icons2-admin">
+                    <img className='img1' src={Items} alt='img3' />
+                    <p> Items: {itemCount}</p>
+                </div>
+                <div className="icons3-admin">
+                    <img className='img1' src={Employees} alt='img3' />
+                    <p>Employees: {employeeCount}</p>
+                </div>
+                <div className="icons4-admin">
+                    <img className='img1' src={Request} alt='img3' />
+                    <p>Requests: {requestCount}</p>
+                </div>
+                <div className="icons5-admin">
+                    <img className='img1' src={Transaction} alt='img3' />
+                    <p>Transactions: ---</p>
+                </div>
+                <div className="icons6-admin">
+                    <img className='img1' src={Supplier} alt='img3' />
+                    <p>Suppliers: {supplierCount}</p>
+                </div>
+            </div>
         </div>
     );
 }

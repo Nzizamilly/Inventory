@@ -145,10 +145,24 @@ function RequestHr() {
   const handleSelectedItemName = (selectedList, selectedItem) => {
     setItemNameTrial(selectedList.map(item=> setSomeName(item)))
   }
+
+  const kain = {
+    marginLeft: '20px',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: 'rgb(130, 142, 161)',
+    paddingTop: '70px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    color: 'white'
+  }
   
   return (
     <div>
       <NavbarMain></NavbarMain>
+      <div style={kain}>
+        <h1>Requisition</h1>
+      </div>
       <div className='request-hr-container'>
         <div className='request-hr'>
 

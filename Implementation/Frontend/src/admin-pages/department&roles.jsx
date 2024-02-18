@@ -188,15 +188,15 @@ function Departments_Roles() {
         {
             name: 'Add Role',
             cell: row => (
-                <button className='addItem-btn' onClick={() => openAddRoleModal(row)}><img src={Addy} style={svgStyle} /></button>
+                <button className='addItem-btn' onClick={() => openAddRoleModal(row)}><img src={Addy} style={svgStyle}/></button>
             )
         },
         {
             name: 'View Role',
             cell: row => (
-                <button className='addItem-btn' onClick={() => openRoleViewModal(row)}><img src={Info} style={svgStyle} /></button>
+                <button className='addItem-btn' onClick={() => openRoleViewModal(row)}><img src={Info} style={svgStyle}/></button>
             )
-        }
+        },
     ];
 
     const Roles = [
@@ -260,7 +260,6 @@ function Departments_Roles() {
                         pagination
                     >
                     </DataTable>
-
                 </Modal>
             </div>
         </div>

@@ -17,7 +17,7 @@ function RequestSupervisor() {
   const [item, setItem] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedItem, setSelectedItem] = useState('');
-  const [ItemNameTrial , setItemNameTrial] = useState('');
+  const [ItemNameTrial, setItemNameTrial] = useState('');
   const [someName, setSomeName] = useState({});
   const [options, setOptions] = useState([]);
 
@@ -96,7 +96,7 @@ function RequestSupervisor() {
   const handleAmount = (event) => {
     setAmount((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
-  
+
   const sendMessage = () => {
 
     const get = localStorage.getItem('username');
@@ -143,12 +143,25 @@ function RequestSupervisor() {
   };
 
   const handleSelectedItemName = (selectedList, selectedItem) => {
-    setItemNameTrial(selectedList.map(item=> setSomeName(item)))
+    setItemNameTrial(selectedList.map(item => setSomeName(item)))
   }
-  
+  const kain = {
+    marginLeft: '20px',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: 'rgb(17, 21, 37)',
+    paddingTop: '70px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    color: 'white'
+  }
+
   return (
     <div>
       <NavbarHome></NavbarHome>
+      <div style={kain}>
+        <h1>Requisition</h1>
+      </div>
       <div className='request-supervisor-container'>
         <div className='request-supervisor'>
 
@@ -159,7 +172,7 @@ function RequestSupervisor() {
             ))}
           </select>
 
-          <Multiselect  options={options} displayValue='name' onSelect={handleSelectedItemName}/>
+          <Multiselect options={options} displayValue='name' onSelect={handleSelectedItemName} />
 
           <input placeholder='Amount Desired ...' type='text' name='amount' onChange={handleAmount} />
 

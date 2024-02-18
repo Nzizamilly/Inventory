@@ -262,13 +262,20 @@ function EmployeesAdmin() {
       console.log('Error', error)
     }
   }
+const Kaine = {
+  width : '100%',
+  height: '100vh',
+  backgroundColor: 'rgb(163, 187, 197)'
 
+}
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
+      <div style={Kaine}>
       <div style={kain}>
         <h1>Add A New Employee</h1>
       </div>
+      <br />
       <div style={some}>
         <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Employee</p></button>
         <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
@@ -317,6 +324,7 @@ function EmployeesAdmin() {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }
