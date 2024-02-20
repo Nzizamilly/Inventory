@@ -178,7 +178,7 @@ function Request() {
     <div>
       <Navbar></Navbar>
       <div style={kain}>
-                <h1>Add A New Department & Role</h1>
+                <h1>Requisition Tab</h1>
             </div>
       <div className='request-container'>
         <div className='request'>

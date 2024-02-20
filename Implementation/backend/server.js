@@ -1407,7 +1407,6 @@ app.put('/approve-by-supervisor/:index', (req, res) => {
     if (error) {
       console.error("Error", error)
     } else {
-      console.log("Approved Well !!!");
       return result;
     }
   })
@@ -1487,8 +1486,10 @@ app.get('/get-supervisor-name/:supervisorID', (req, res) => {
   })
 });
 
-app.post('/post-by-hr', (req, res) => {
+app.post('/post-by-hr', async (req, res) => {
+
   console.log("Endppoint hit~~~!!!");
+
   const getEmployeeID = (employeeName) => {
     return new Promise((resolve, reject) => {
       const sql = `SELECT id FROM employees WHERE username = ?`;
@@ -1498,7 +1499,6 @@ app.post('/post-by-hr', (req, res) => {
           reject(error);
         } else {
           const employeeID = result.length > 0 ? result[0].id : null;
-          // console.log("Employee ID", employeeID);
           resolve(employeeID);
         }
       });
@@ -1514,7 +1514,6 @@ app.post('/post-by-hr', (req, res) => {
           reject(error);
         } else {
           const itemID = result.length > 0 ? result[0].id : null;
-          // console.log("Item ID", itemID);
           resolve(itemID);
         }
       });
@@ -1530,7 +1529,6 @@ app.post('/post-by-hr', (req, res) => {
           reject(error);
         } else {
           const categoryName = result.length > 0 ? result[0].id : null;
-          // console.log("Item ID", categoryName);
           resolve(categoryName);
         }
       });
@@ -1552,21 +1550,20 @@ app.post('/post-by-hr', (req, res) => {
     });
   };
 
-  const employeeName = req.body.employee_username;
-  const itemName = req.body.name;
-  const categoryName = req.body.category_name;
-  const supervisorName = req.body.supervisor_username;
   const id = req.body.id;
-  const description = req.body.description;
-  const date = req.body.date;
+  const itemName = req.body.name;
   const amount = req.body.amount;
+  const description = req.body.description;
+  const categoryName = req.body.category_name;
+  const employeeName = req.body.employee_username;
+  const supervisorName = req.body.supervisor_username;
 
-  const employee = getEmployeeID(employeeName);
-  const item = getItemID(itemName);
-  const category = getCategoryID(categoryName);
-  const supervisor = getSupervisorID(supervisorName);
+  const employee = await getEmployeeID(employeeName);
+  const item = await getItemID(itemName);
+  const category = await getCategoryID(categoryName);
+  const supervisor = await getSupervisorID(supervisorName);
 
-  const sql = `INSERT INTO  hr_admin_request (id,	categoryID,	itemID,	amount,	supervisorID,	description, employeeID) VALUES (?, ?, ?, ?, ?, ?, ? ,? )`;
+  const sql = `INSERT INTO hr_admin_request (id,categoryID,itemID,amount,supervisorID,description,employeeID) VALUES (?, ?, ?, ?, ?, ?, ? )`;
 
   const values = [ id, category, item, amount, supervisor, description, employee ];
 
@@ -1574,7 +1571,7 @@ app.post('/post-by-hr', (req, res) => {
     if (error){
       console.error("ERROR" ,error);
     }else{
-      console.log(result);
+      console.log(result)
     }
   })
 })

@@ -73,18 +73,6 @@ function Home() {
     }, [])
 
     useEffect(() => {
-        axios.get('http://localhost:5500/number-request')
-            .then(res => {
-                setRequestCount(res.data.requestCount);
-
-            })
-            .catch(err => {
-                console.error('Error fetching category count:', err);
-
-            })
-    }, [])
-
-    useEffect(() => {
         axios.get('http://localhost:5500/number-supplier')
             .then(res => {
                 setSupplierCount(res.data.supplierCount);
@@ -127,7 +115,7 @@ function Home() {
                 </div>
                 <div className="icons4-admin">
                     <img className='img1' src={Request} alt='img3' />
-                    <p>Requests: {requestCount}</p>
+                    <p>Requests: ---</p>
                 </div>
                 <div className="icons5-admin">
                     <img className='img1' src={Transaction} alt='img3' />

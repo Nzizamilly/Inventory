@@ -4,97 +4,91 @@
 }
 
 .App {
-    height: 100vh;
-    /* padding: 0 100px; */
     margin: 0px;
-    display: flex;
-    /* align-items: center;
-    justify-content: center;
-    text-align: center; */
+    height: 100vh;
+    display: flex;    
 }
 
 .account-container {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(34, 41, 44);
-    justify-content: center;
     display: flex;
     overflow: auto;
     align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(34, 41, 44);
 }
 
 .account {
-    width: 299px;
-    height: 65;
-    background-color: rgb(56, 59, 61);
-    color: rgb(219, 215, 215);
-    border: none;
-    border-radius: 12px;
     gap: 9px;
-    /* margin-top: 100px; */
-    margin-left: 300px;
+    height: 65;
+    width: 299px;
+    border: none;
     display: flex;
     padding: 12px 0px;
+    margin-left: 300px;
+    border-radius: 12px;
+    align-items: center;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    color: rgb(219, 215, 215);
+    background-color: rgb(56, 59, 61);
 }
 
 .request-container {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(34, 41, 44);
-    justify-content: center;
     display: flex;
-    align-items: center;
     overflow: auto;
-
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(34, 41, 44);
 }
 
 .request {
+    gap: 23px;
     width: 44%;
     height: 66vh;
-    background-color: rgb(56, 59, 61);
-    color: white;
     border: none;
-    border-radius: 12px;
-    gap: 23px;
-    margin-left: 100px;
     display: flex;
+    color: white;
     padding: 12px 0px;
+    margin-left: 100px;
+    align-items: center;
+    border-radius: 12px;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    background-color: rgb(56, 59, 61);
 }
 
 .notification-container {
-    width: 100%;
-    font-family: 'Arial', sans-serif;
-    height: 100vh;
-    background-color: rgb(34, 41, 44);
-    justify-content: flex-start;
-    display: flex;
     gap: 23px;
-    padding-top: 74px;
-    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    display: flex;
     overflow: auto;
+    padding-top: 74px;
     align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(34, 41, 44);
 }
 
 .notification {
     width: 23%;
     height: 8%;
-    text-align: center;
     border: none;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgb(50, 120, 177);
-    border-radius: 15px;
     padding: 12px 0px;
+    text-align: center;
+    align-items: center;
+    border-radius: 15px;
+    justify-content: center;
     color: rgb(241, 236, 236);
+    background-color: rgb(50, 120, 177);
 }
 
 .notification-success {
@@ -108,50 +102,47 @@
 .terms-container {
     width: 100%;
     height: 100vh;
-    background-color: rgb(34, 41, 44);
-    justify-content: flex-start;
     display: flex;
     overflow: auto;
     align-items: center;
+    justify-content: flex-start;
+    background-color: rgb(34, 41, 44);
 }
 
 .terms {
-    width: 83%;
-    text-align: left;
-    height: 49%;
-    background-color: rgb(56, 59, 61);
-    color: white;
-    border: none;
-    border-radius: 12px;
     gap: 15px;
-    font-family: 'Arial', sans-serif;
+    width: 83%;
+    height: 49%;
+    border: none;
+    display: flex;
+    color: white;
+    text-align: left;
+    padding: 12px 0px;
     margin-top: -178px;
     margin-left: 220px;
-    display: flex;
-    padding: 12px 0px;
     padding-left: 12px;
+    border-radius: 12px;
     flex-direction: column;
-    /* justify-content: center;
-    align-items: center; */
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(56, 59, 61);
 }
 
 button {
     width: 55px;
+    border: none;
+    color: white;
+    cursor: pointer;
     padding: 12px 0px;
     border-radius: 12px;
-    border: none;
-    cursor: pointer;
     background-color: black;
-    color: white
 }
 
 #profile_picture {
     width: 111px;
     height: 200px;
-    /* object-fit: cover; */
-    background-color: aqua;
-    border-radius: 850px;
     display: flex;
+    border-radius: 850px;
+    background-color: aqua;
 }
 
 Link {
@@ -159,96 +150,91 @@ Link {
 }
 
 input[type="text"] {
-    background-color: #000000;
-    color: white;
     width: 66%;
     height: 23%;
+    border: none;
+    color: white;
     padding: 12px 0px;
     padding-left: 12px;
-    border: none;
     border-radius: 12px;
+    background-color: #000000;
     border-bottom: 2px rgb(23, 219, 170);
 }
 
 input[type="password"] {
-    background-color: #000000;
-    color: white;
     width: 66%;
     height: 23%;
+    border: none;
+    color: white;
     padding: 12px 0px;
     padding-left: 12px;
-    border: none;
     border-radius: 12px;
+    background-color: #000000;
     border-bottom: 2px rgb(23, 219, 170);
 }
 
 textarea {
     width: 379px;
-    height: 250px;
-    color: white;
-    background-color: black;
-    padding: 10px;
-    font-size: 16px;
     border: none;
-    /* border-bottom: #37b4d3; */
-    border: 1px solid #ccc;
-    border-radius: 5px;
     resize: none;
+    height: 250px;
+    padding: 10px;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: black;
 }
 
 ul {
-    font-family: 'Arial', sans-serif;
-    list-style-type: none;
     margin: 0;
     padding: 0;
     width: 15%;
-    background-color: rgb(19, 19, 24);
-    position: fixed;
-    color: white;
     height: 100%;
     overflow: auto;
+    color: white;
+    position: fixed;
+    list-style-type: none;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(19, 19, 24);
 }
 
 li a {
     display: block;
     color: white;
     padding: 8px 16px;
-    text-decoration: none;
     border-radius: 12px;
+    text-decoration: none;
 }
 
 li a:hover {
-    background-color: white;
     color: black;
+    background-color: white;
 }
 
-/* Styles for ul1 */
 
 .ul1 {
-    list-style-type: none;
-    width: 100%;
-    /* display:flex ; */
-    height: 7%;
     margin: 0;
-    /* padding: 32px; */
+    height: 7%;
+    width: 100%;
     overflow: hidden;
+    list-style-type: none;
     background-color: rgb(19, 19, 24);
 }
 
 .li1 {
-    /* padding: 32px; */
     float: right;
     width: 99px;
     height: 82px;
-    justify-content: center;
-    background-color: black;
     color: white;
+    background-color: black;
+    justify-content: center;
 }
 
 .li1 a {
     color: white;
-    text-align: center;
     padding: 14px 16px;
+    text-align: center;
     text-decoration: none;
 }
 
@@ -257,128 +243,120 @@ li a:hover {
 }
 
 .icon-container {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(34, 41, 44);
     overflow: auto;
     display: inline-flex;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(34, 41, 44);
 }
 
 .icons {
     width: 305px;
     height: 98px;
-    border-radius: 15px;
-    background-color: blue;
     display: flex;
-    align-items: center;
-    margin-left: 245px;
-    margin-top: 90px;
     color: white;
     padding: 23px;
+    margin-top: 90px;
+    margin-left: 245px;
+    border-radius: 15px;
+    align-items: center;
+    background-color: blue;
 }
 
 .img1 {
-    margin-top: 8px;
     width: 39%;
     height: 95%;
     display: flex;
-    justify-content: center;
+    margin-top: 8px;
     align-content: center;
+    justify-content: center;
 }
 
 .icons1 {
     width: 305px;
     height: 98px;
-    border-radius: 15px;
-    background-color: rgb(221, 182, 9);
     display: flex;
-    align-items: center;
-    margin-left: 15px;
     padding: 23px;
     color: white;
     margin-top: 90px;
+    margin-left: 15px;
+    border-radius: 15px;
+    align-items: center;
+    background-color: rgb(221, 182, 9);
 }
 
 .icons2 {
     width: 305px;
     height: 98px;
-    border-radius: 15px;
-    background-color: rgb(218, 8, 36);
     display: flex;
-    color: white;
-    align-items: center;
-    margin-left: 15px;
     padding: 23px;
+    color: white;
     margin-top: 90px;
-}
-
-;
+    margin-left: 15px;
+    border-radius: 15px;
+    align-items: center;
+    background-color: rgb(218, 8, 36);
+};
 
 .login-container {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(34, 41, 44);
-    justify-content: center;
     display: flex;
     overflow: auto;
     align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(34, 41, 44);
 }
 
 .update-container {
-    font-family: 'Arial', sans-serif;
     width: 100%;
-    height: 100vh;
-    background-color: black;
-    justify-content: center;
-    display: flex;
     opacity: 0.5;
+    height: 100vh;
+    display: flex;
     overflow: auto;
     align-items: center;
+    justify-content: center;
+    background-color: black;
+    font-family: 'Arial', sans-serif;
 }
 
 .update {
+    gap: 23px;
     width: 24%;
     height: 66vh;
-    background-color: rgb(56, 59, 61);
-    color: white;
     border: none;
-    border-radius: 12px;
-    gap: 23px;
-    /* margin-top: 100px; */
-    margin-left: 300px;
     display: flex;
+    color: white;
     padding: 12px 0px;
+    margin-left: 300px;
+    border-radius: 12px;
+    align-items: center;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    background-color: rgb(56, 59, 61);
 }
 
 .ul1Admin {
-    list-style-type: none;
-    width: 100%;
-    /* display:flex ; */
-    height: 7%;
     margin: 0;
-    /* padding: 32px; */
+    height: 7%;
+    width: 100%;
     overflow: hidden;
+    list-style-type: none;
     background-color: rgb(206, 206, 236);
 }
 
 .li1Admin {
-    /* padding: 32px; */
-    float: right;
     width: 99px;
-    border-radius: 8px;
     height: 85px;
+    float: right;
+    border-radius: 8px;
     justify-content: center;
     background-color: rgb(206, 206, 236);
-    /* color: black; */
 }
 
 .li1Admin a {
-    /* display: block; */
     color: black;
     text-align: center;
     padding: 14px 16px;
@@ -390,258 +368,241 @@ li a:hover {
 }
 
 .ul2Admin {
-    font-family: 'Arial', sans-serif;
-    list-style-type: none;
     margin: 0;
     padding: 0;
     width: 15%;
-    background-color: rgb(218, 218, 236);
-    position: fixed;
-    /* color: rgb(22, 21, 21); */
     height: 100%;
     overflow: auto;
+    position: fixed;
+    list-style-type: none;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(218, 218, 236);
 }
 
 .liAdmin a {
     display: block;
-    color: rgb(5, 5, 5);
     padding: 8px 16px;
-    text-decoration: none;
     border-radius: 12px;
+    text-decoration: none;
+    color: rgb(5, 5, 5);
 }
 
 .liAdmin a:hover {
-    background-color: rgb(14, 13, 13);
     color: rgb(240, 230, 230);
+    background-color: rgb(14, 13, 13);
 }
 
 .icon-container-admin {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(163, 187, 197);
-    justify-content: center;
-    overflow: auto;
     display: flex;
+    overflow: auto;
     flex-wrap: wrap;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(163, 187, 197);
 }
 
 .icons-admin {
     width: 220px;
     height: 98px;
+    display: flex;
+    padding: 23px;
+    color: black;
+    margin-left: 215px;
+    align-items: center;
     border-radius: 15px;
     background-color: rgb(51, 156, 156);
-    display: flex;
-    align-items: center;
-    margin-left: 215px;
-    /* margin-top: 10px; */
-    color: black;
-    padding: 23px;
 }
 
 .icons1-admin {
     width: 220px;
     height: 98px;
-    border-radius: 15px;
-    background-color: rgb(206, 206, 236);
-    display: flex;
-    align-items: center;
-    margin-left: 15px;
     padding: 7px;
+    display: flex;
     color: black;
-    /* margin-top: 90px; */
+    margin-left: 15px;
+    border-radius: 15px;
+    align-items: center;
+    background-color: rgb(206, 206, 236);
 }
 
 .icons2-admin {
+    gap: 12px;
     width: 220px;
     height: 98px;
-    border-radius: 15px;
-    background-color: rgb(206, 206, 236);
-    display: flex;
-    align-items: center;
-    margin-left: 15px;
-    gap: 12px;
     padding: 8px;
+    display: flex;
+    margin-left: 15px;
+    border-radius: 15px;
+    align-items: center;
     color: rgb(17, 16, 16);
-    /* margin-top: 90px */
+    background-color: rgb(206, 206, 236);
 }
 
 .icons3-admin {
     width: 220px;
     height: 98px;
-    border-radius: 15px;
-    background-color: rgb(206, 206, 236);
-    display: flex;
-    align-items: center;
-    margin-left: 15px;
     padding: 8px;
+    display: flex;
     color: black;
-    /* margin-top: 90px */
+    margin-left: 15px;
+    border-radius: 15px;
+    align-items: center;
+    background-color: rgb(206, 206, 236);
 }
 
 .icons4-admin {
     width: 220px;
     height: 98px;
+    padding: 8px;
+    display: flex;
+    color: black;
+    margin-left: 120px;
+    align-items: center;
     border-radius: 15px;
     background-color: rgb(206, 206, 236);
-    display: flex;
-    align-items: center;
-    margin-left: 120px;
-    padding: 8px;
-    color: black;
-    /* margin-top: 90px */
 }
 
 .icons5-admin {
     width: 294px;
     height: 98px;
+    padding: 2px;
+    display: flex;
+    color: black;
+    margin-left: 15px;
+    align-items: center;
     border-radius: 15px;
     background-color: rgb(206, 206, 236);
-    display: flex;
-    align-items: center;
-    margin-left: 15px;
-    padding: 2px;
-    color: black;
-    /* margin-top: px */
 }
 
 .icons6-admin {
     width: 290px;
     height: 98px;
+    padding: 8px;
+    display: flex;
+    color: black;
+    margin-left: 15px;
+    align-items: center;
     border-radius: 15px;
     background-color: rgb(206, 206, 236);
-    display: flex;
-    align-items: center;
-    margin-left: 15px;
-    padding: 8px;
-    color: black;
-    /* margin-top: 90px */
 }
 
 .account-container-admin {
-    font-family: 'Arial', sans-serif;
-    overflow: auto;
     width: 100%;
     height: 100vh;
-    justify-content: center;
     display: flex;
+    overflow: auto;
     align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
     background-color: rgb(163, 187, 197);
-}
-
-;
+};
 
 #two.account {
-    width: 299px;
-    height: 65;
-    background-color: rgb(206, 206, 236);
-    color: white;
-    border: none;
-    border-radius: 12px;
     gap: 9px;
-    /* margin-top: 100px; */
-    margin-left: 300px;
+    height: 65;
+    width: 299px;
+    border: none;
     display: flex;
+    color: white;
     padding: 12px 0px;
+    margin-left: 300px;
+    border-radius: 12px;
+    align-items: center;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    background-color: rgb(206, 206, 236);
 }
 
 .items-container {
-    font-family: 'Arial', sans-serif;
     width: 100%;
-    overflow: auto;
     height: 100vh;
-    background-color: rgb(163, 187, 197);
-    justify-content: center;
-    /* align-items: center; */
     display: flex;
-    /* gap: 91px; */
+    overflow: auto;
     flex-wrap: wrap;
-}
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(163, 187, 197);
+};
 
-;
-
-/* rgb(163, 187, 197) */
 
 .employee-container {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(163, 187, 197);
-    justify-content: center;
-    align-items: center;
     display: flex;
-    /* gap: 51px; */
-    flex-wrap: wrap;
     overflow: auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(163, 187, 197);
 }
 
 .employee {
+    gap: 4px;
+    padding: 8px;
     width: 290px;
     height: 298px;
-    border-radius: 15px;
-    background-color: rgb(206, 206, 236);
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-left: 15px;
-    padding: 8px;
-    gap: 4px;
     color: black;
+    margin-left: 15px;
+    align-items: center;
+    border-radius: 15px;
+    flex-direction: column;
+    background-color: rgb(206, 206, 236);
 }
 
 .category-container,
 .notification-container-admin {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(163, 187, 197);
-    justify-content: center;
-    align-items: center;
     display: flex;
-    flex-wrap: wrap;
     overflow: auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(163, 187, 197);
 }
 
 .transaction-container-admin {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(163, 187, 197);
-    justify-content: center;
-    align-items: center;
     display: flex;
-    flex-wrap: wrap;
     overflow: auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(163, 187, 197);
 }
 
 .transaction-admin {
     width: 23%;
     height: 8%;
-    text-align: center;
     border: none;
     display: flex;
-    flex-direction: row;
+    color: black;
+    padding: 12px 0px;
+    text-align: center;
     margin-left: 300px;
     border-radius: 15px;
-    padding: 12px 0px;
-    color: black;
+    flex-direction: row;
     background-color: white
 }
 
 .category {
     width: 290px;
     height: 98px;
-    border-radius: 15px;
-    background-color: rgb(206, 206, 236);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-left: 15px;
     padding: 8px;
+    display: flex;
     color: black;
+    border-radius: 15px;
+    margin-left: 15px;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgb(206, 206, 236);
 }
 
 ;
@@ -649,112 +610,108 @@ li a:hover {
 .notification-admin {
     width: 23%;
     height: 8%;
-    text-align: center;
     border: none;
     display: flex;
-    flex-direction: row;
-    margin-left: 300px;
-    border-radius: 15px;
-    padding: 12px 0px;
     color: black;
+    padding: 12px 0px;
+    margin-left: 300px;
+    text-align: center;
+    border-radius: 15px;
+    flex-direction: row;
     background-color: white
 }
 
 .buttonStyle2 {
-    background-color: black;
-    border-radius: 15px;
     width: 98px;
-    text-align: center;
     height: 53px;
+    text-align: center;
+    border-radius: 15px;
+    background-color: black;
 }
 
 .add-btn {
-    width: 90px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    height: 90px;
     gap: 9px;
+    width: 90px;
+    height: 90px;
+    display: flex;
     margin-top: 2px;
     margin-left: 205px;
+    text-align: center;
+    align-items: center;
     border-radius: 18px;
-    background-color: rgb(41, 48, 51);
-    /* padding-left: 26px; */
     flex-direction: column;
+    justify-content: center;
+    background-color: rgb(41, 48, 51);
 }
 
 .addItem-btn {
-    width: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    height: 26px;
     gap: 9px;
+    width: 30px;
+    height: 26px;
+    display: flex;
     margin-top: 2px;
+    text-align: center;
+    align-items: center;
     border-radius: 18px;
-    background-color: rgb(230, 245, 236);
-    /* padding-left: 26px; */
     flex-direction: column;
+    justify-content: center;
+    background-color: rgb(230, 245, 236);
 }
 
 .status-btn {
-    width: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: orange;
-    height: 26px;
     gap: 9px;
+    width: 40px;
+    height: 26px;
+    display: flex;
     margin-top: 2px;
+    color: orange;
+    text-align: center;
     border-radius: 18px;
+    align-items: center;
     flex-direction: column;
+    justify-content: center;
 }
 
 .green-btn {
+    color: rgb(83, 150, 83);
     background-color: green;
-    color: rgb(83, 150, 83)
 }
 
 .red-btn {
+    color: red;
     background-color: rgb(252, 3, 3);
-    color: red
 }
 
 .bigger {
+    gap: 12px;
     width: 42%;
     height: 45%;
-    background-color: rgb(151, 183, 197);
-    text-align: center;
     display: flex;
-    justify-content: center;
-    align-items: center;
     font-size: 43px;
+    text-align: center;
     border-radius: 15px;
-    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(151, 183, 197);
 }
 
 .terms-admin {
-    width: 83%;
-    text-align: left;
-    height: 49%;
-    background-color: rgb(206, 206, 236);
-    color: rgb(29, 27, 27);
-    border: none;
-    border-radius: 12px;
     gap: 15px;
-    font-family: 'Arial', sans-serif;
-    margin-top: -178px;
-    margin-left: 220px;
+    width: 83%;
+    height: 49%;
+    border: none;
     display: flex;
+    text-align: left;
     padding: 12px 0px;
+    margin-left: 220px;
+    margin-top: -178px;
     padding-left: 12px;
+    border-radius: 12px;
     flex-direction: column;
-}
-
-;
+    color: rgb(29, 27, 27);
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(206, 206, 236);
+};
 
 .th1 {
     width: 23px;
@@ -762,38 +719,38 @@ li a:hover {
 }
 
 #searchInput {
-    background-color: white;
-    color: black;
     width: 14%;
     height: 5%;
-    display: flex;
     float: right;
-    justify-content: center;
+    display: flex;
+    color: black;
+    margin-top: 60px;
     align-items: center;
     margin-left: 1020px;
-    margin-top: 60px
+    justify-content: center;
+    background-color: white;
 }
 
 .buttonStyle {
-    background-color: rgb(20, 19, 19);
-    color: white;
     width: 109%;
     height: 23px;
+    color: white;
     padding: 5px 12px;
-    border-radius: 45px,
+    border-radius: 45px;
+    background-color: rgb(20, 19, 19);
 }
 
 .buttonStyle3 {
-    background-color: rgb(253, 251, 251);
-    color: white;
     width: 3%;
     height: 23px;
-    margin-top: 15px;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    color: white;
+    margin-top: 15px;
     padding: 5px 12px;
-    border-radius: 45px,
+    border-radius: 45px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(253, 251, 251);
 }
 
 .buttonStyle:hover {
@@ -801,80 +758,80 @@ li a:hover {
 }
 
 .dept-container-admin {
-    font-family: 'Arial', sans-serif;
+    gap: 12px;
     width: 100%;
     height: 100vh;
-    background-color: rgb(163, 187, 197);
-    justify-content: center;
-    align-items: center;
     display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
     overflow: auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(163, 187, 197);
 }
 
 .No {
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    background-color: Black;
     width: 100%;
     height: 100vh;
-    color: rgb(12, 193, 199);
+    display: flex;
+    text-align: center;
     font-weight: 100px;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    background-color: Black;
+    color: rgb(12, 193, 199);
     font-family: 'Arial', sans-serif;
 }
 
 .home-supervisor-container {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(13, 15, 39);
-    justify-content: center;
     display: flex;
+    overflow: auto;
     color: white;
     align-items: center;
-    overflow: auto;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(13, 15, 39);
 }
 
 .home-supervisor {
     display: flex;
-    justify-content: center;
-    align-items: center;
     text-align: center;
+    align-items: center;
+    justify-content: center;
 }
 
 
 .notification-supervisor-container {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(50, 38, 100);
-    justify-content: center;
     display: flex;
-    align-items: center;
     overflow: auto;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(50, 38, 100);
 }
 
 .ulsupervisor {
-    list-style-type: none;
+    margin: 0;
     width: 100%;
     height: 5.5%;
     display: flex;
-    flex-direction: inline;
-    margin: 0;
-    justify-content: right;
     overflow: hidden;
+    list-style-type: none;
+    flex-direction: inline;
+    justify-content: right;
     background-color: rgb(33, 116, 141);
 }
 
 .lisupervisor a {
-    color: rgb(250, 243, 243);
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
+    color: rgb(250, 243, 243);
 }
 
 .lisupervisor a:hover {
@@ -882,223 +839,227 @@ li a:hover {
 }
 
 .ul2supervisor {
-    font-family: 'Arial', sans-serif;
-    list-style-type: none;
     margin: 0;
-    padding: 0;
     width: 13%;
-    background-color: rgb(33, 116, 141);
-    position: fixed;
+    padding: 0;
     height: 100%;
     overflow: auto;
+    position: fixed;
+    list-style-type: none;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(33, 116, 141);
 }
 
 .lisupervisor a:hover {
-    background-color: rgb(14, 13, 13);
     color: rgb(240, 230, 230);
+    background-color: rgb(14, 13, 13);
 }
 
 .notification-supervisor {
-    font-family: 'Arial', sans-serif;
+    gap: 51px;
     width: 100%;
     height: 100vh;
-    background-color: rgb(17, 21, 37);
-    justify-content: center;
-    align-items: center;
-    padding-top: 74px;
     display: flex;
-    gap: 51px;
-    flex-wrap: wrap;
     overflow: auto;
+    flex-wrap: wrap;
+    padding-top: 74px;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(17, 21, 37);
 }
 
 .request-supervisor-container {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(17, 21, 37);
-    justify-content: center;
     display: flex;
-    align-items: center;
     overflow: auto;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(17, 21, 37);
 }
 
 .request-supervisor {
+    gap: 23px;
     width: 44%;
     height: 66vh;
-    background-color: rgb(35, 42, 68);
-    color: white;
     border: none;
-    border-radius: 12px;
-    gap: 23px;
-    margin-left: 100px;
     display: flex;
+    color: white;
     padding: 12px 0px;
+    margin-left: 100px;
+    border-radius: 12px;
+    align-items: center;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    background-color: rgb(35, 42, 68);
 }
 
 .transaction-container-supervisor {
-    font-family: 'Arial', sans-serif;
     width: 100%;
-    height: 100vh;
-    background-color: rgb(17, 21, 37);
-    justify-content: center;
-    align-items: center;
     display: flex;
-    flex-wrap: wrap;
+    height: 100vh;
     overflow: auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(17, 21, 37);
 }
 
 .notification-container-supervisor {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(17, 21, 37);
-    justify-content: center;
-    align-items: center;
     display: flex;
-    /* gap: 51px; */
-    flex-wrap: wrap;
     overflow: auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(17, 21, 37);
 }
 
 .terms-supervisor {
-    width: 83%;
-    text-align: left;
-    height: 49%;
-    background-color: rgb(56, 97, 124);
-    color: rgb(240, 239, 239);
-    border: none;
-    border-radius: 12px;
     gap: 15px;
-    font-family: 'Arial', sans-serif;
+    width: 83%;
+    height: 49%;
+    border: none;
+    display: flex;
+    text-align: left;
+    padding: 12px 0px;
     margin-top: -178px;
     margin-left: 220px;
-    display: flex;
-    padding: 12px 0px;
     padding-left: 12px;
+    border-radius: 12px;
     flex-direction: column;
+    color: rgb(240, 239, 239);
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(56, 97, 124);
 }
 
 .home-hr-container {
-    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100vh;
-    background-color: rgb(130, 142, 161);
-    justify-content: center;
     display: flex;
+    overflow: auto;
     color: black;
     align-items: center;
-    overflow: auto;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(130, 142, 161);
 }
 
 .home-hr {
     display: flex;
-    justify-content: center;
-    align-items: center;
     text-align: center;
+    align-items: center;
+    justify-content: center;
 }
 
 .ulhr {
-    list-style-type: none;
+    margin: 0;
     width: 100%;
     height: 5.5%;
     display: flex;
-    flex-direction: inline;
-    margin: 0;
-    justify-content: right;
     overflow: hidden;
+    list-style-type: none;
+    justify-content: right;
+    flex-direction: inline;
     background-color: rgb(130, 142, 161);
 }
-.notification-hr{
-    font-family: 'Arial', sans-serif;
+
+.notification-hr {
+    gap: 51px;
     width: 100%;
     height: 100vh;
-    background-color: rgb(130, 142, 161);
-    justify-content: center;
-    align-items: center;
-    padding-top: 74px;
     display: flex;
-    gap: 51px;
-    flex-wrap: wrap;
     overflow: auto;
-}
-.ul2hr{
+    flex-wrap: wrap;
+    padding-top: 74px;
+    align-items: center;
+    justify-content: center;
     font-family: 'Arial', sans-serif;
-    list-style-type: none;
+    background-color: rgb(130, 142, 161);
+}
+
+.ul2hr {
     margin: 0;
     padding: 0;
     width: 13%;
-    background-color: rgb(130, 142, 161);
-    position: fixed;
     height: 100%;
     overflow: auto;
-}
-.request-hr-container{
+    position: fixed;
+    list-style-type: none;
     font-family: 'Arial', sans-serif;
+    background-color: rgb(130, 142, 161);
+}
+
+.request-hr-container {
     width: 100%;
     height: 100vh;
-    background-color: rgb(130, 142, 161);
-    justify-content: center;
     display: flex;
-    align-items: center;
     overflow: auto;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(130, 142, 161);
 }
-.request-hr{
+
+.request-hr {
+    gap: 23px;
     width: 44%;
     height: 66vh;
-    background-color: rgb(101, 131, 184);
-    color: white;
     border: none;
-    border-radius: 12px;
-    gap: 23px;
-    margin-left: 100px;
     display: flex;
+    color: white;
     padding: 12px 0px;
+    margin-left: 100px;
+    border-radius: 12px;
+    align-items: center;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-}
-.transaction-container-hr{
-    font-family: 'Arial', sans-serif;
-    width: 100%;
-    height: 100vh;
-    background-color: rgb(130, 142, 161);
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    /* gap: 51px; */
-    flex-wrap: wrap;
-    overflow: auto;
-}
-.terms-container-hr{
-    font-family: 'Arial', sans-serif;
-    width: 100%;
-    height: 100vh;
-    background-color: rgb(130, 142, 161);
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    /* gap: 51px; */
-    flex-wrap: wrap;
-    overflow: auto;
-}
-.terms-hr{
-    width: 83%;
-    text-align: left;
-    height: 49%;
     background-color: rgb(101, 131, 184);
-    color: rgb(240, 239, 239);
-    border: none;
-    border-radius: 12px;
-    gap: 15px;
-    font-family: 'Arial', sans-serif;
-    margin-top: -178px;
-    margin-left: 220px;
+}
+
+.transaction-container-hr {
+    width: 100%;
+    height: 100vh;
     display: flex;
+    overflow: auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(130, 142, 161);
+}
+
+.terms-container-hr {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    overflow: auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(130, 142, 161);
+}
+
+.terms-hr {
+    gap: 15px;
+    width: 83%;
+    height: 49%;
+    border: none;
+    display: flex;
+    text-align: left;
     padding: 12px 0px;
     padding-left: 12px;
+    margin-top: -178px;
+    margin-left: 220px;
+    border-radius: 12px;
     flex-direction: column;
+    color: rgb(240, 239, 239);
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(101, 131, 184);
 }

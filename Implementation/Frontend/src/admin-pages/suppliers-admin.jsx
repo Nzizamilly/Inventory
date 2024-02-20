@@ -66,7 +66,7 @@ function SupplierAdmin() {
       }
     };
     fetchSupplier();
-  }, []);
+  }, [suppliers]);
 
   const [update, setUpdate] = useState({
     first_name: '',
@@ -133,7 +133,7 @@ function SupplierAdmin() {
       <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
         <h1>Add Supplier</h1>
         <input type='text' placeholder='First Name' name='first_name' onChange={handleChange2} />
-        <input type='text' placeholder='second_name' name='second_name' onChange={handleChange2} />
+        <input type='text' placeholder='Second name' name='second_name' onChange={handleChange2} />
         <input type='text' placeholder='Address' name='address' onChange={handleChange2} />
         <input type='text' placeholder='Phone' name='phone' onChange={handleChange2} />
         <input type='text' placeholder='Email' name='email' onChange={handleChange2} />

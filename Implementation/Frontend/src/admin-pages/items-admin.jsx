@@ -287,7 +287,6 @@ function ItemsAdmin() {
     setIsModalOpen(false);
   }
 
-
   const [serialNumber, setSerialNumber] = useState({
     serial_number: '',
     state_of_item: '',
@@ -511,8 +510,6 @@ function ItemsAdmin() {
     justifyContent: 'center',
     alignItems: 'center',
     gap: '12px'
-    // backgroundColor: 'blue'
-
   }
 
   useEffect(() => {
@@ -525,6 +522,7 @@ function ItemsAdmin() {
 
     supplierG();
   }, [])
+
   const handleSupplierChange = (event) => {
     const selectedValue = event.target.value;
     console.log("TYPE OF SELECTED VALUE DOWN", typeof selectedValue);
@@ -550,7 +548,6 @@ function ItemsAdmin() {
     borderRadius: '14px'
   }
   const Dash = {
-    // width: '20%',
     color: 'black',
     marginLeft: '235px',
     display: 'flex',
@@ -606,7 +603,6 @@ function ItemsAdmin() {
             <h1>Create A New Item</h1>
             <input placeholder='Name' name='name' type='text' value={newItem.name} onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} />
             <br />
-            {/* <input placeholder='Supplier' name='supplier' type='text' value={newItem.supplier} onChange={(e) => setNewItem({ ...newItem, supplier: e.target.value })} /> */}
             <select onChange={handleSupplierChange} value={selectedSupplier} style={Select}>
               <option value='' disabled>Select Supplier </option>
               {supplier.map(suppliers => (
@@ -625,7 +621,6 @@ function ItemsAdmin() {
             <input placeholder='Depreciation Rate' name='depreciation_rate' type='text' onChange={handleSerialNumber} />
             <br />
             <button onClick={() => handleAddSerialNumberClick(takenItemId)}>Add </button>
-            {/* <button onClick={() => handleAddSerialNumberClick(selectedCategory)}>Add </button> */}
           </Modal>
           <Modal isOpen={isInfoModalOpen} onRequestClose={closeInfoModal} style={modalStyles}>
             <h1>
@@ -649,8 +644,6 @@ function ItemsAdmin() {
             <br />
             <button onClick={() => handleSerialUpdate(getUpdateSerialID)}>Update</button>
           </Modal>
-
-
         </div>
       </div >
     </div>

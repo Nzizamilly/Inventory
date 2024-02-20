@@ -16,8 +16,6 @@ function NotificationSupervisor() {
   socket.on("connect", () => {
     console.log("Connected to the server");
 
-
-
     socket.on("statusUpdate", (newStatus) => {
       setStatus(newStatus);
     });
@@ -40,7 +38,6 @@ function NotificationSupervisor() {
     width: '27px',
     height: '27px',
     borderRadius: '14px',
-    // marginTop: '2px'
   };
 
   const sumStyle = {
@@ -51,7 +48,6 @@ function NotificationSupervisor() {
   const notificationAdmin = {
     width: '52%',
     height: '11%',
-    // textAlign: 'center',
     gap: '6px',
     border: 'none',
     display: 'flex',
@@ -60,7 +56,6 @@ function NotificationSupervisor() {
     flexDirection: ' row',
     marginLeft: '295px',
     borderRadius: '15px',
-    // padding: '7px',
     color: 'black',
     backgroundColor: 'white'
   }
@@ -113,10 +108,14 @@ function NotificationSupervisor() {
 
   useEffect(() => {
     const fetch = async () => {
+      try{
         const response = await axios.get("http://localhost:5500/get-notification");
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setNotifications(result);
+      }catch(error){
+        console.error(error);
+      }
     };
     fetch();
 }, [notifications])
