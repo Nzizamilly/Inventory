@@ -66,14 +66,14 @@ function NotificationHR() {
 
     const handleApprove = async (notifications, index) => {
         window.alert("Sent to Stock-Manager for Deliverance");
+        socket.emit("Take This", notifications);
 
         try {
+            console.log("Notifications to be passed: ", notifications);
 
-            console.log("Notifications to be passed: ", notifications)
+            const putResponse = await axios.post('http://localhost:5500/post-by-hr', notifications);
 
-            const postResponse = await axios.post('http://localhost:5500/post-by-hr', notifications);
 
-            const putResponse = await axios.put(`http://localhost:5500/approve-by-supervisor/${index}`);
 
         } catch (error) {
             console.error('Error', error);
@@ -126,7 +126,7 @@ function NotificationHR() {
                     const supervisor = notification.supervisor_username
                     return (
                         <div style={notificationAdmin} key={id}>
-                            <span key={id} style={sumStyle}>Supervisor {supervisor} Approved request from {employeeName} of {itemName} amount {count} in {categoryName} category, description {description} date {date} </span>
+                            <span key={id} style={sumStyle}>Supervisor {supervisor} Approved request from {employeeName} of {itemName} amount: {count} in {categoryName} category, description: {description} On {date} </span>
                             <button className='buttonStyle3' onClick={() => handleApprove(notification, id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
                             <button className='buttonStyle3' onClick={() => handleDeny(id, notification)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
                         </div>

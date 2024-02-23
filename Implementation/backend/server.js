@@ -234,10 +234,6 @@ ORDER BY
     io.emit("Supervisor_Message_HR(2)", messageData, supervisorName)
   })
 
-  // socket.on("Supervisor_Message_HR(1)", (messageData) => {
-  //   io.emit("Supervisor_Message_HR(2)", ([messageData]))
-  // })
-
   socket.on("HR_Message_Stock(1)", (messageData, updatedNotification) => {
     console.log("From HR: to stockManager", messageData, updatedNotification);
     io.emit("HR_Message_Stock(2)", messageData, updatedNotification)
@@ -264,8 +260,26 @@ ORDER BY
     io.emit("Denied", notifications, newStatus);
   });
 
+  socket.on("Take This", (messageData) => {
+    console.log("Data Came: ", messageData.id);
+
+    const id = messageData.id;
+
+    const status = "Approved"; 
+
+    const sql = `UPDATE employee_supervisor_request SET status = ? WHERE id = ?`;
+
+    db.query(sql, [status, id], (error, result) => {
+      if(error){
+        console.error("Error: ", error)
+      }else{
+        console.log("Status set Approved");
+      }
+    })
+    
+  })
+
   socket.on("disconnect", () => {
-    // console.log("User disconnected");
   });
 });
 

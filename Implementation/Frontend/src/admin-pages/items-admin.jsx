@@ -166,7 +166,6 @@ function ItemsAdmin() {
     category: selectedCategory
   }
 
-  // category: ''
   console.log("Selected Supplier ID", selectedSupplier)
 
   const handleAddSimpleItemClick = async () => {
@@ -175,12 +174,6 @@ function ItemsAdmin() {
       console.log("Type of category", typeof newItemObj.category);
       console.log("Type of supplier", typeof newItemObj.supplier);
       const categoryId = selectedCategory;
-      // Assuming newItem is an object with properties like name, state_of_item, depreciation_rate, etc.
-      // await axios.post('http://localhost:5500/add-items', {
-      //   name: newItem.name,
-      //   supplier: selectedSupplier,
-      //   category: categoryId,
-      // });
       await axios.post('http://localhost:5500/add-items', newItemObj);
 
 
@@ -509,7 +502,7 @@ function ItemsAdmin() {
     width: '50%',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: '12px'
+    gap: '92px'
   }
 
   useEffect(() => {
@@ -580,6 +573,7 @@ function ItemsAdmin() {
           <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
             <div style={display}>
               <h1>Items for {someCategoryName}</h1>
+             
               <button className='addItem-btn' onClick={() => openSimpleModal()}><img src={AddItem} style={svgStyle} /></button>
             </div>
             <DataTable

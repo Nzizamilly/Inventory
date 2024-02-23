@@ -147,7 +147,6 @@ function SupplierAdmin() {
           <p>{supplier.first_name && supplier.first_name.charAt(0).toUpperCase()}</p>
           </div>
           <p>First Name: {supplier.first_name}</p>
-          <p>Second Name: {supplier.second_name}</p>
           <p>Address: {supplier.address}</p>
           <p>Phone: {supplier.phone}</p>
           <p>Email: {supplier.email}</p>
