@@ -10,6 +10,7 @@ import Info from '../images/info.svg'
 import NavbarAdmin from './navbarAdmin';
 import DataTable from 'react-data-table-component';
 import Multiselect from 'multiselect-react-dropdown';
+import { Socket } from 'socket.io-client';
 
 function ItemsAdmin() {
 
@@ -83,7 +84,26 @@ function ItemsAdmin() {
   const [someCategoryName, setSomeCategoryName] = useState('')
   const [supplier, setSupplier] = useState([]);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(null);
+  const [confirm, setConfirmed] = useState(null);
+  const [forDown, setForDown] = useState(null);
 
+  const openComfirmModal = () => {
+    setIsConfirmModalOpen(true);
+  };
+
+  const closeConfirmModal = () => {
+    setIsConfirmModalOpen(false);
+  };
+
+  const openWarningModal = () => {
+    setIsWarningModalOpen(true);
+  };
+
+  const closeWarningModal = () => {
+    setIsWarningModalOpen(false)
+  };
 
   const openSerialModal = (itemId) => {
     setSelectedItemID(itemId);
@@ -166,7 +186,7 @@ function ItemsAdmin() {
     category: selectedCategory
   }
 
-  console.log("Selected Supplier ID", selectedSupplier)
+  // console.log("Selected Supplier ID", selectedSupplier)
 
   const handleAddSimpleItemClick = async () => {
     try {
@@ -300,14 +320,52 @@ function ItemsAdmin() {
     setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   }
 
+  const HandleConfirm = async (itemID) => {
+    // Set the confirmed state to true
+    setConfirmed(true);
+    setForDown(itemID);
+    console.log("ITEMID :", itemID);
+  
+    if (confirm) {
+      try {
+        // Make an asynchronous HTTP DELETE request
+        const response = await axios.delete(`http://localhost:5500/delete-item/${itemID}`);
+        
+        // Display a success message
+        alert("Item Deleted Successfully");
+  
+        // Log the response to the console
+        console.log(response);
+      } catch (error) {
+        // Handle errors, e.g., display an error message
+        console.error('Error deleting item: ', error);
+      } finally {
+        // Reset the confirmed state, assuming you want to reset it after the operation
+        setConfirmed(null);
+  
+        // Assuming closeConfirmModal is a function to close the confirmation modal
+        closeConfirmModal();
+      }
+    }
+  };
+  
+  
+
   const handleDelete = async (itemID) => {
-    try {
-      const response = await axios.delete(`http://localhost:5500/delete-item/${itemID}`)
-      alert("Item Deleted Successfully");
-      console.log(response);
-    } catch (error) {
-      console.error('Error Deleting Item: ', error);
-    };
+    openComfirmModal();
+    HandleConfirm(itemID)
+    // if (confirm === true){
+    //   console.log("Yes its confirmed");
+    //   // try {
+    //     const response = await axios.delete(`http://localhost:5500/delete-item/${itemID}`)
+    //     alert("Item Deleted Successfully");
+    //     console.log(response);
+    //   // } catch (error) {
+    //     // console.error('Error Deleting Item: ', error);
+    //   // };
+    // }else if(confirm === ''){
+    //   console.log("You need to confirm");
+    // }
   };
 
   const handleUpdateClick = async (itemID) => {
@@ -467,9 +525,15 @@ function ItemsAdmin() {
 
   const handleSerialDelete = async (row) => {
     try {
-      const response = await axios.delete(`http://localhost:5500/delete-serial-item/${row.id}`);
-      alert("Deleted successfully");
-      console.log(response);
+      if (row.status === "Out") {
+        // window.alert("Can not detele an item which is out");
+        openWarningModal();
+      } else {
+        const response = await axios.delete(`http://localhost:5500/delete-serial-item/${row.id}`);
+        // alert("Deleted successfully");
+        console.log("Response from deletion ", response.data);
+      }
+
     } catch (error) {
       console.error('Error fetching items: ', error);
     }
@@ -509,7 +573,7 @@ function ItemsAdmin() {
     const supplierG = async () => {
       const response = await axios.get("http://localhost:5500/supplier");
       const result = response.data;
-      console.log("ALL SUPPLIER'S DATA ", result);
+      // console.log("ALL SUPPLIER'S DATA ", result);
       setSupplier(result);
     }
 
@@ -540,6 +604,7 @@ function ItemsAdmin() {
     border: 'none',
     borderRadius: '14px'
   }
+
   const Dash = {
     color: 'black',
     marginLeft: '235px',
@@ -548,15 +613,36 @@ function ItemsAdmin() {
     gap: '745px',
     justifyContent: 'center',
     alignItems: 'center'
-
   }
+
+  const kindaStyle = {
+    content: {
+      width: '30%',
+      height: '13%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      border: 'none',
+      borderRadius: '12px',
+      backgroundColor: 'rgb(153, 235, 240)',
+      marginLeft: '580px',
+      marginTop: '320px'
+    },
+    overlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0.0)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+  }
+ 
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div className='items-container'>
         <div style={Dash}>
           <h1>Items</h1>
-          <input  type='text' placeholder='Search by Category...' onChange={handleSearch} value={searchInput} />
+          <input type='text' placeholder='Search by Category...' onChange={handleSearch} value={searchInput} />
         </div>
         <div>
           {filteredCategories.map((category) => (
@@ -573,7 +659,6 @@ function ItemsAdmin() {
           <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
             <div style={display}>
               <h1>Items for {someCategoryName}</h1>
-             
               <button className='addItem-btn' onClick={() => openSimpleModal()}><img src={AddItem} style={svgStyle} /></button>
             </div>
             <DataTable
@@ -637,6 +722,15 @@ function ItemsAdmin() {
             <input type='text' placeholder='Depreciation Rate' name='depreciation_rate' onChange={handleSerialUpdateInput} />
             <br />
             <button onClick={() => handleSerialUpdate(getUpdateSerialID)}>Update</button>
+          </Modal>
+          <Modal style={kindaStyle} isOpen={isWarningModalOpen} onRequestClose={closeWarningModal}>
+            <p>Admin Can't Delete an Item Which is out</p>
+          </Modal>
+          <Modal isOpen={isConfirmModalOpen} onRequestClose={closeConfirmModal} style={kindaStyle}>
+            <span>Are You Sure You Want To Delete this Item</span>
+            <br />
+            <button onClick={()=>HandleConfirm(forDown)}>Yes</button>
+
           </Modal>
         </div>
       </div >

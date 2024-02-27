@@ -104,7 +104,7 @@ function EmployeesAdmin() {
       [empID]: checked,
     }));
 
-    const status = checked ? 'ACTIVE' : 'INACTIVE';
+    const status = checked ? 'ACTIVE' : 'DE-ACTIVATED';
 
     try {
       console.log("Emp ID: ", empID);
@@ -303,13 +303,14 @@ const Kaine = {
             <h1>{emp.username}</h1>
             <img src={emp.profile_picture} id='profile_picture' alt="" />
             <p>Username: {emp.username}</p>
-            <p>Password: {emp.password}</p>
+            {/* <p>Password: {emp.password}</p> */}
+            <p>Password: *******</p>
             <p>Position: {emp.role_name}</p>
             <p>Department: {emp.department_name}</p>
-            <p>Status:  <span style={{ color: emp.status === 'INACTIVE' ? 'red' : 'green' }}>{emp.status}</span></p>
+            <p>Status:  <span style={{ color: emp.status === 'DE-ACTIVATED' ? 'red' : 'green' }}>{emp.status}</span></p>
             <div style={ThemBs}>
               <button className='addItem-btn' onClick={() => setVisible(true)}><img src={Update} style={svgStyle} /></button>
-              <button className='addItem-btn' onClick={() => handleDelete(emp.id)} ><img src={Delete} style={svgStyle} /></button>
+              {/* <button className='addItem-btn' onClick={() => handleDelete(emp.id)} ><img src={Delete} style={svgStyle} /></button> */}
               <Switch onChange={(checked) => handleSwitchChange(checked, emp.id)} checked={switchStates[emp.id] || false} />
             </div>
             <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>

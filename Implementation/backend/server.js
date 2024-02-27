@@ -265,18 +265,18 @@ ORDER BY
 
     const id = messageData.id;
 
-    const status = "Approved"; 
+    const status = "Approved";
 
     const sql = `UPDATE employee_supervisor_request SET status = ? WHERE id = ?`;
 
     db.query(sql, [status, id], (error, result) => {
-      if(error){
+      if (error) {
         console.error("Error: ", error)
-      }else{
+      } else {
         console.log("Status set Approved");
       }
     })
-    
+
   })
 
   socket.on("disconnect", () => {
@@ -295,8 +295,8 @@ app.post("/employee", (req, res) => {
   const department = req.body.departmentName;
   const role = req.body.roleName;
 
-  const departmentID =  parseInt(department, 10);
-  const roleID =  parseInt(role, 10);
+  const departmentID = parseInt(department, 10);
+  const roleID = parseInt(role, 10);
 
   console.log("Department ID", department);
   console.log("role ID", role);
@@ -304,7 +304,7 @@ app.post("/employee", (req, res) => {
 
   const query = "INSERT INTO employees (username, password, roleID, departmentID, status) VALUES (?, ?, ?, ?, ?)";
 
-  const values = [ 
+  const values = [
     req.body.username,
     req.body.password,
     roleID,
@@ -312,10 +312,10 @@ app.post("/employee", (req, res) => {
     status
   ];
 
-  db.query(query, values, (error, result)=>{
-    if(error){
-      console.error("Error: ". error);
-    }else{
+  db.query(query, values, (error, result) => {
+    if (error) {
+      console.error("Error: ".error);
+    } else {
       console.log(result)
     }
 
@@ -323,7 +323,7 @@ app.post("/employee", (req, res) => {
 })
 
 app.post("/add-employee", (req, res) => {
- 
+
 });
 
 app.post('/add-items', (req, res) => {
@@ -331,30 +331,30 @@ app.post('/add-items', (req, res) => {
 
   console.log("Category", categoryId);
 
-    const supplierId = req.body.supplier;
+  const supplierId = req.body.supplier;
 
-    const intValue = parseInt(supplierId, 10);
+  const intValue = parseInt(supplierId, 10);
 
-    console.log("Supplier", supplierId);
+  console.log("Supplier", supplierId);
 
-    const insertQuery = 'INSERT INTO item (name, supplierID, categoryID) VALUES (?, ?, ?)';
+  const insertQuery = 'INSERT INTO item (name, supplierID, categoryID) VALUES (?, ?, ?)';
 
-    const insertValues = [
-      req.body.name || null,
-      intValue ,
-      categoryId || null,
-    ];
+  const insertValues = [
+    req.body.name || null,
+    intValue,
+    categoryId || null,
+  ];
 
-    console.log("VALUES: ", insertValues)
+  console.log("VALUES: ", insertValues)
 
-    db.query( insertQuery, insertValues, (insertError, result) => {
-      if (insertError) {
-        console.error('Error adding item:', insertError);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-      res.status(201).json({ message: 'Item added successfully' });
-    });
+  db.query(insertQuery, insertValues, (insertError, result) => {
+    if (insertError) {
+      console.error('Error adding item:', insertError);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+    res.status(201).json({ message: 'Item added successfully' });
   });
+});
 
 
 app.put("/employee/:id", (req, res) => {
@@ -851,32 +851,55 @@ app.put('/update-serial-item/:id', (req, res) => {
 
 })
 
-app.delete('/delete-serial-item/:id', (req, res) => {
+app.delete('/delete-serial-item/:id', async (req, res) => {
   const id = req.params.id;
-  const q = `DELETE FROM serial_number WHERE id = ?`;
-  db.query(q, [id], (error, result) => {
-    if (error) {
-      console.error("Error", error);
-    } else {
-      console.log("Done well", result)
-      // return result;
-    }
-  })
-})
+
+  const Check = async (id) => {
+    return new Promise((resolve, reject) => {
+      const q = `SELECT status FROM serial_number WHERE id = ?`;
+      const value = [id];
+      db.query(q, value, (error, result) => {
+        if (error) {
+          console.error("Error", error);
+        } else {
+          console.log(result);
+          resolve(result);
+        }
+      })
+    })
+  }
+
+  const word = await Check(id);
+
+  if (word === "In") {
+    const message = "Cannot delete"
+    return message;
+  } else {
+    const q = `DELETE FROM serial_number WHERE id = ? `;
+    db.query(q, [id], (error, result) => {
+      if (error) {
+        console.error("Error", error);
+      } else {
+        console.log("Done well", result)
+      };
+    });
+  };
+});
 
 app.put('/deactivate-employee/:id', (req, res) => {
   const id = req.params.id;
   const q = `UPDATE employees SET status = ? WHERE id = ?`;
+  const deactivate = req.body.status;
   const values = [
-    req.body.inactive,
+    deactivate,
     id
   ]
   db.query(q, values, (error, result) => {
     if (error) {
       console.error("Error", error);
     } else {
-      console.log("Done did: ", result);
-      return result;
+      // console.log("Done did: ", result);
+      // return result;
     }
   });
 });
@@ -1579,12 +1602,12 @@ app.post('/post-by-hr', async (req, res) => {
 
   const sql = `INSERT INTO hr_admin_request (id,categoryID,itemID,amount,supervisorID,description,employeeID) VALUES (?, ?, ?, ?, ?, ?, ? )`;
 
-  const values = [ id, category, item, amount, supervisor, description, employee ];
+  const values = [id, category, item, amount, supervisor, description, employee];
 
   db.query(sql, values, (error, result) => {
-    if (error){
-      console.error("ERROR" ,error);
-    }else{
+    if (error) {
+      console.error("ERROR", error);
+    } else {
       console.log(result)
     }
   })
