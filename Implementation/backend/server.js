@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const { Server } = require("socket.io");
 const http = require("http");
+const nodemailer = require('nodemailer');
 
 const app = express();
 const server = http.createServer(app);
@@ -145,6 +146,9 @@ io.on("connection", (socket) => {
     // io.emit("Employee_Message_Supervisor(2)", [messageData]);
   });
 
+  socket.on("HandleDelete", (object) => {
+    console.log("Object Shown", object);
+  })
 
 
 
@@ -277,7 +281,33 @@ ORDER BY
       }
     })
 
+  });
+
+  socket.on("Send Approved Email", (messageData) => {
+    console.log("Object to be sent",  messageData);
+    const transporter = nodemailer.createTransport({
+      service: 'centrika.rw',
+      auth: {
+        user: 'Centrika Inventory System',
+        pass: 'centrika@3030',
+      }
+    });
+    const mailOption = {
+      from: 'Centrika Inventory System',
+      to: messageData.employeeEmail,
+      subject: 'Item Requested Approved',
+      text: `Item you requested ${messageData.name} was approved on ${messageData.date_approved}`
+    };
+  
+    transporter.sendMail(mailOption, function(error, info){
+      if(error){
+        console.error("Error", error)
+      }else{
+        console.log(info.response)
+      }
+    })
   })
+
 
   socket.on("disconnect", () => {
   });
@@ -302,14 +332,15 @@ app.post("/employee", (req, res) => {
   console.log("role ID", role);
   const status = 'ACTIVE';
 
-  const query = "INSERT INTO employees (username, password, roleID, departmentID, status) VALUES (?, ?, ?, ?, ?)";
+  const query = "INSERT INTO employees (username, password, roleID, departmentID, status, email) VALUES (?, ?, ?, ?, ?, ?)";
 
   const values = [
     req.body.username,
     req.body.password,
     roleID,
     departmentID,
-    status
+    status,
+    req.body.email,
   ];
 
   db.query(query, values, (error, result) => {
@@ -361,6 +392,18 @@ app.put("/employee/:id", (req, res) => {
   const empID = req.params.id;
   const roleName = req.body.roleName;
   const departmentName = req.body.departmentName;
+  const username = req.body.username;
+  const password = req.body.password;
+  const status = req.body.status;
+  const email = req.body.email;
+
+  console.log("FROM BODY: ", empID);
+  console.log("FROM BODY: ", roleName);
+  console.log("FROM BODY: ", departmentName);
+  console.log("FROM BODY: ", username);
+  console.log("FROM BODY: ", password);
+  console.log("FROM BODY: ", status);
+  console.log("FROM BODY: ", email);
 
   function getRoleId(role) {
     const q = 'SELECT role_name FROM role WHERE id = ?'
@@ -388,18 +431,19 @@ app.put("/employee/:id", (req, res) => {
     })
   }
 
-  const departmentID = getDepartmentId(departmentName);
-  const roleID = getRoleId(roleName);
 
-  const q = "UPDATE employees SET `username`= ?, `password`= ?, roleID = ?, departmentID = ?, status = ? WHERE id = ?";
+
+  const q = "UPDATE employees SET username = ?, password = ?, roleID = ?, departmentID = ?, status = ?, email = ? WHERE id = ?";
   const values = [
-    req.body.username,
-    req.body.password,
-    roleID,
-    departmentID,
-    req.body.status,
+    username,
+    password,
+    roleName,
+    departmentName,
+    status,
+    email,
+    empID
   ];
-  db.query(q, [...values, empID], (err, data) => {
+  db.query(q, values, (err, data) => {
     if (err) {
       console.error("Error updating: ", err);
       return res.status(500).json({ error: "Internal Server Error" })
@@ -443,12 +487,14 @@ app.post('/login', (req, res) => {
     if (result.length > 0) {
       const userID = result[0].id;
       const roleID = result[0].roleID;
+      const email = result[0].email
 
       req.session.username = result[0].username;
       req.session.user_id = userID;
       req.session.role_id = roleID;
+      req.session.email = email
       console.log(req.session.username);
-      return res.json({ Login: true, username: req.session.username, id: req.session.user_id, roleID: req.session.role_id })
+      return res.json({ Login: true, username: req.session.username, id: req.session.user_id, roleID: req.session.role_id, email: req.session.email })
     } else {
       return res.json({ Login: false })
     }
@@ -467,7 +513,11 @@ app.get('/category', (req, res) => {
 });
 
 app.get('/employees', (req, res) => {
-  const sql = 'SELECT employees.id, employees.username, employees.password, employees.profile_picture, employees.roleID, employees.departmentID, employees.status, role.role_name, department.department_name FROM employees JOIN role ON employees.roleID = role.id JOIN department ON employees.departmentID = department.id';
+  const sql = ` SELECT employees.id, employees.username, employees.password, employees.profile_picture,employees.roleID,employees.departmentID, employees.status, role.role_name,employees.email, department.department_name 
+FROM 
+employees 
+JOIN role ON employees.roleID = role.id 
+JOIN department ON employees.departmentID = department.id`;
   db.query(sql, (err, results) => {
     if (err) {
       console.error('Error executing query: ', err);
@@ -763,11 +813,15 @@ app.get('/get-name-serial-number/:itemID', (req, res) => {
   })
 })
 
-app.put('/update-item/:id', (req, res) => {
-  const id = req.params.id;
+app.put('/update-item/:itemID', (req, res) => {
+  const id = req.params.itemID;
   const newItemName = req.body.newItemName;
   const newSupplierName = req.body.newSupplierName;
   const newCategoryName = req.body.newCategoryName;
+
+  console.log("Sum", newItemName);
+  console.log("Sum", newSupplierName);
+  console.log("Sum", newCategoryName);
 
   // Step 1: Retrieve supplierID
   db.query('SELECT id FROM supplier WHERE first_name = ?', [newSupplierName], (err1, supplierResult) => {
@@ -1035,9 +1089,6 @@ JOIN item ON serial_number.itemID = item.id
 LEFT JOIN employees ON serial_number.taker = employees.id
 GROUP BY month, item_name, taker_name, item.id
 ORDER BY serial_number.date DESC;
-
-
-
 
   `;
   db.query(query, (error, result) => {
@@ -1612,6 +1663,76 @@ app.post('/post-by-hr', async (req, res) => {
     }
   })
 })
+
+app.post('/insert-doer/:itemID/:employeeID', (req, res) => {
+  console.log("Endpoint hit~~~~~");
+  const itemID = req.params.itemID;
+  const employeeID = req.params.employeeID;
+  const action = "Updated";
+
+  const sql = `INSERT INTO item_deletion_or_updation (itemID,employeeID,action) VALUES (?, ?, ?)`;
+
+  const values = [itemID, employeeID, action];
+
+  db.query(sql, values, (error, result) => {
+    if (error) {
+      console.error("Error", error)
+    }
+  })
+})
+
+app.post('/insert-deletion-doer/:itemID/:employeeID', (req, res) => {
+  console.log("Endpoint hit~~~~~");
+  const itemID = req.params.itemID;
+  const employeeID = req.params.employeeID;
+  const action = "Deleted";
+
+  const sql = `INSERT INTO item_deletion_or_updation (itemID,employeeID,action) VALUES (?, ?, ?)`;
+
+  const values = [itemID, employeeID, action];
+
+  db.query(sql, values, (error, result) => {
+    if (error) {
+      console.error("Error", error)
+    }
+  })
+});
+
+app.get('/get-action-transaction', (req, res) => {
+  const get =
+    `
+    SELECT 
+    item_deletion_or_updation.itemID AS item_id,
+    item.name AS item_name,
+    item_deletion_or_updation.employeeID AS employee_id,
+    employees.username AS employee_username,
+    item_deletion_or_updation.action 
+FROM
+    item_deletion_or_updation
+LEFT JOIN
+    item ON item_deletion_or_updation.itemID = item.id
+LEFT JOIN
+    employees ON item_deletion_or_updation.employeeID = employees.id
+ORDER BY
+    item_deletion_or_updation.id DESC;
+
+
+   `;
+  //  SELECT item.name, employees.username, item_deletion_or_updation.action
+  // FROM item_deletion_or_updation
+  // JOIN item ON item_deletion_or_updation.itemID = item.id
+  // JOIN employees ON item_deletion_or_updation.employeeID = employees.id
+
+  db.query(get, (error, result) => {
+    if (error) {
+      console.error("Error: ", error);
+    } else {
+      return res.json(result);
+    }
+  })
+
+})
+
 
 app.listen(5500, () => {
   console.log("Connected to backend")

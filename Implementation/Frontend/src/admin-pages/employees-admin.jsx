@@ -67,23 +67,30 @@ function EmployeesAdmin() {
   }
 
   const [emps, setEmps] = useState([]);
-  const [update, setUpdate] = useState({
-    username: '',
-    password: '',
-    role: '',
-    department: '',
-    profile_pricture: '',
-    status: ''
-  });
+
   const [visible, setVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
   const location = useLocation();
   const [switchStates, setSwitchStates] = useState({});
   const [department, setDepartment] = useState([]);
   const [role, setRole] = useState([]);
+  const [roleUpdate, setRoleUpdate] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
-  
+  const [selectedUpdatedRole, setSelectedUpdatedRole] = useState('');
+  const [selectedUpdateDepartment, setSelectedUpdateDepartment] = useState('');
+  const [update, setUpdate] = useState({
+    username: '',
+    password: '',
+    department: '',
+    role: '',
+    profile_pricture: '',
+    status: '',
+    email: ''
+  });
+
+  console.log("Update OBJECT: ", update);
+
   const EmpID = localStorage.getItem("userID");
 
   useEffect(() => {
@@ -131,8 +138,20 @@ function EmployeesAdmin() {
   const handleChange = (event) => {
     setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
-  const handleUpdate = async (event) => {
+
+
+  useEffect(() => {
+    setUpdate(prevUpdate => ({
+      ...prevUpdate,
+      roleName: selectedUpdatedRole,
+      departmentName: selectedUpdateDepartment,
+    }))
+  }, [selectedUpdatedRole, selectedUpdateDepartment])
+
+  const handleUpdate = async (EmpID) => {
+    console.log("SELECTED EMPLOYEE ID: ", EmpID);
     try {
+      console.log("Selected Employee ID",)
       await axios.put(`http://localhost:5500/employee/${EmpID}`, update);
       setEmps((prevEmps) => {
         prevEmps.forEach((emp, index) => {
@@ -147,6 +166,7 @@ function EmployeesAdmin() {
       console.error(err);
     }
   };
+  
   const handleChange2 = (event) => {
     setEmployee((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
@@ -199,6 +219,14 @@ function EmployeesAdmin() {
     console.log("TYPE OF SELECTED VALUE DOWN for Department", typeof selectedValue);
     setSelectedDepartment(selectedValue);
   }
+
+  const handleUpdateDepartmentChange = (event) => {
+    const selectedValue = event.target.value;
+    console.log("TYPE OF SELECTED VALUE DOWN for Department", typeof selectedValue);
+    setSelectedUpdateDepartment(selectedValue);
+  }
+
+
   const Select = {
     width: '65%',
     height: '28%',
@@ -220,11 +248,30 @@ function EmployeesAdmin() {
     }
   }, [selectedDepartment])
 
+  useEffect(() => {
+    const fetchRole = async (selectedUpdateDepartment) => {
+      const response = await axios.get(`http://localhost:5500/get-role/${selectedUpdateDepartment}`);
+      setRoleUpdate(response.data);
+      console.log("DATA: ", response.data)
+    }
+    if (selectedUpdateDepartment) {
+      fetchRole(selectedUpdateDepartment);
+    }
+  }, [selectedUpdateDepartment])
+
   const handleRoleChange = (event) => {
     const selectedValue = event.target.value;
     console.log("TYPE OF SELECTED VALUE DOWN for role", typeof selectedValue);
     setSelectedRole(selectedValue);
   }
+
+  const handleUpdateRoleChange = (event) => {
+    const selectedValue = event.target.value;
+    console.log("TYPE OF SELECTED VALUE DOWN for role", typeof selectedValue);
+    setSelectedUpdatedRole(selectedValue);
+  }
+
+
   const OptionColor = {
     width: '39%',
     height: '25%',
@@ -235,13 +282,14 @@ function EmployeesAdmin() {
     border: 'none',
     borderRadius: '14px'
   }
- 
+
 
   const [employee, setEmployee] = useState({
     username: '',
     password: '',
-    departmentName : '',
+    departmentName: '',
     roleName: '',
+    email: ''
   })
   useEffect(() => {
     setEmployee(prevEmployee => ({
@@ -262,70 +310,87 @@ function EmployeesAdmin() {
       console.log('Error', error)
     }
   }
-const Kaine = {
-  width : '100%',
-  height: '100vh',
-  backgroundColor: 'rgb(163, 187, 197)'
+  const Kaine = {
+    width: '100%',
+    height: '100vh',
+    backgroundColor: 'rgb(163, 187, 197)'
 
-}
+  }
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div style={Kaine}>
-      <div style={kain}>
-        <h1>Add A New Employee</h1>
-      </div>
-      <br />
-      <div style={some}>
-        <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Employee</p></button>
-        <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
-          <h2>Adding a new Employee</h2>
-          <input type='text' placeholder='Username' name='username' onChange={handleChange2} />
-          <input type='text' placeholder='Password' name='password' onChange={handleChange2} />
+        <div style={kain}>
+          <h1>Add A New Employee</h1>
+        </div>
+        <br />
+        <div style={some}>
+          <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Employee</p></button>
+          <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
+            <h2>Adding a new Employee</h2>
+            <input type='text' placeholder='Username' name='username' onChange={handleChange2} />
+            <input type='text' placeholder='Password' name='password' onChange={handleChange2} />
 
-          <select onChange={handleDepartmentChange} value={selectedDepartment} style={Select}>
-            <option value='' disabled>Select Department</option>
-            {department.map(departments => (
-              <option key={departments.id} value={departments.id}>{departments.department_name}</option>
-            ))}
-          </select>
+            <select onChange={handleDepartmentChange} value={selectedDepartment} style={Select}>
+              <option value='' disabled>Select Department</option>
+              {department.map(departments => (
+                <option key={departments.id} value={departments.id}>{departments.department_name}</option>
+              ))}
+            </select>
 
-          <select onChange={handleRoleChange} value={selectedRole} style={Select}>
-            <option value='' disabled>Select Role</option>
-            {role.map(roles => (
-              <option key={roles.id} value={roles.id} style={OptionColor}>{roles.role_name}</option>
-            ))}
-          </select>
-          <button onClick={handleMake}>Submit</button>
-        </Model>
-        {emps.map((emp) => (
-          <div key={emp.id} className="employee">
-            <h1>{emp.username}</h1>
-            <img src={emp.profile_picture} id='profile_picture' alt="" />
-            <p>Username: {emp.username}</p>
-            {/* <p>Password: {emp.password}</p> */}
-            <p>Password: *******</p>
-            <p>Position: {emp.role_name}</p>
-            <p>Department: {emp.department_name}</p>
-            <p>Status:  <span style={{ color: emp.status === 'DE-ACTIVATED' ? 'red' : 'green' }}>{emp.status}</span></p>
-            <div style={ThemBs}>
-              <button className='addItem-btn' onClick={() => setVisible(true)}><img src={Update} style={svgStyle} /></button>
-              {/* <button className='addItem-btn' onClick={() => handleDelete(emp.id)} ><img src={Delete} style={svgStyle} /></button> */}
-              <Switch onChange={(checked) => handleSwitchChange(checked, emp.id)} checked={switchStates[emp.id] || false} />
+            <select onChange={handleRoleChange} value={selectedRole} style={Select}>
+              <option value='' disabled>Select Role</option>
+              {role.map(roles => (
+                <option key={roles.id} value={roles.id} style={OptionColor}>{roles.role_name}</option>
+              ))}
+            </select>
+            <input type='email' placeholder='Work-Related email' name='email' onChange={handleChange2} />
+            <button onClick={handleMake}>Submit</button>
+          </Model>
+          {emps.map((emp) => (
+            console.log("Emps IDs Down: ", emp.id),
+            <div key={emp.id} className="employee">
+              <h1>{emp.username}</h1>
+              <img src={emp.profile_picture} id='profile_picture' alt="" />
+              <p>Username: {emp.username}</p>
+              {/* <p>Password: {emp.password}</p> */}
+              <p>Password: *******</p>
+              <p>Position: {emp.role_name}</p>
+              <p>Department: {emp.department_name}</p>
+              <p>Email: {emp.email}</p>
+              <p>Status:  <span style={{ color: emp.status === 'DE-ACTIVATED' ? 'red' : 'green' }}>{emp.status}</span></p>
+              <div style={ThemBs}>
+                <button className='addItem-btn' onClick={() => setVisible(true)}><img src={Update} style={svgStyle} /></button>
+                {/* <button className='addItem-btn' onClick={() => handleDelete(emp.id)} ><img src={Delete} style={svgStyle} /></button> */}
+                <Switch onChange={(checked) => handleSwitchChange(checked, emp.id)} checked={switchStates[emp.id] || false} />
+              </div>
+              <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
+                <h1>Update</h1>
+                <input type='text' placeholder='Username' name="username" onChange={handleChange} />
+                <input type='text' placeholder='Password' name="password" onChange={handleChange} />
+                {/* <input type='text' placeholder='Department' name="departmentName" onChange={handleChange} /> */}
+                <select onChange={handleUpdateDepartmentChange} value={selectedUpdateDepartment} style={Select}>
+                  <option value='' disabled >Select Department</option>
+                  {department.map(departments => (
+                    <option key={departments.id} value={departments.id} >{departments.department_name}</option>
+                  ))}
+                </select>
+
+                <select onChange={handleUpdateRoleChange} value={selectedUpdatedRole} style={Select}>
+                  <option value='' disabled>Select Role</option>
+                  {roleUpdate.map(roles => (
+                    <option key={roles.id} value={roles.id} style={OptionColor}>{roles.role_name}</option>
+                  ))}
+
+                </select>
+                <input type='email' placeholder='Work-related Email' name='email' onChange={handleChange} />
+                <input type='text' placeholder='Status' name="status" onChange={handleChange} />
+                <button onClick={() => handleUpdate(emp.id)}>Submit</button>
+              </Model>
             </div>
-            <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
-              <h1>Update</h1>
-              <input type='text' placeholder='Username' name="username" onChange={handleChange} />
-              <input type='text' placeholder='Password' name="password" onChange={handleChange} />
-              <input type='text' placeholder='Role' name="roleName" onChange={handleChange} />
-              <input type='text' placeholder='Department' name="departmentName" onChange={handleChange} />
-              <input type='text' placeholder='Status' name="status" onChange={handleChange} />
-              <button onClick={() => handleUpdate(emp.id)}>Submit</button>
-            </Model>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
     </div>
   );
 }

@@ -6,7 +6,7 @@
 .App {
     margin: 0px;
     height: 100vh;
-    display: flex;    
+    display: flex;
 }
 
 .account-container {
@@ -161,6 +161,18 @@ input[type="text"] {
     border-bottom: 2px rgb(23, 219, 170);
 }
 
+input[type="email"] {
+    width: 66%;
+    height: 23%;
+    border: none;
+    color: white;
+    padding: 12px 0px;
+    padding-left: 12px;
+    border-radius: 12px;
+    background-color: #000000;
+    border-bottom: 2px rgb(23, 219, 170);
+}
+
 input[type="password"] {
     width: 66%;
     height: 23%;
@@ -297,7 +309,9 @@ li a:hover {
     border-radius: 15px;
     align-items: center;
     background-color: rgb(218, 8, 36);
-};
+}
+
+;
 
 .login-container {
     width: 100%;
@@ -497,7 +511,9 @@ li a:hover {
     justify-content: center;
     font-family: 'Arial', sans-serif;
     background-color: rgb(163, 187, 197);
-};
+}
+
+;
 
 #two.account {
     gap: 9px;
@@ -524,7 +540,9 @@ li a:hover {
     justify-content: center;
     font-family: 'Arial', sans-serif;
     background-color: rgb(163, 187, 197);
-};
+}
+
+;
 
 
 .employee-container {
@@ -711,7 +729,9 @@ li a:hover {
     color: rgb(29, 27, 27);
     font-family: 'Arial', sans-serif;
     background-color: rgb(206, 206, 236);
-};
+}
+
+;
 
 .th1 {
     width: 23px;
@@ -1062,13 +1082,15 @@ li a:hover {
     color: rgb(240, 239, 239);
     font-family: 'Arial', sans-serif;
     background-color: rgb(101, 131, 184);
-};
+}
 
-.KindaStyle { 
-width: 20%;
-height: 10%;
-display: flex;
-align-items: center;
-justify-content: center;
-background-color: rgb(153, 235, 240);
+;
+
+.KindaStyle {
+    width: 20%;
+    height: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(153, 235, 240);
 }

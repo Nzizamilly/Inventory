@@ -67,14 +67,11 @@ function NotificationHR() {
     const handleApprove = async (notifications, index) => {
         window.alert("Sent to Stock-Manager for Deliverance");
         socket.emit("Take This", notifications);
-
+        socket.emit("Send Approved Email", notifications);
         try {
             console.log("Notifications to be passed: ", notifications);
 
             const putResponse = await axios.post('http://localhost:5500/post-by-hr', notifications);
-
-
-
         } catch (error) {
             console.error('Error', error);
         }

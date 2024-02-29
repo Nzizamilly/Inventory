@@ -8,7 +8,11 @@ import Modal from 'react-modal'
 
 function TransactionsAdmin() {
 
-  const [isItemModalOpen, setIsItemModalOpen] = useState(false)
+  const [report, setReport] = useState([]);
+  const [records, setRecords] = useState(report);
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [action, setAction] = useState([]);
+  const [isActionTransactionOpen, setIsActionTransactionOpen] = useState(false);
 
   const openItemTransaction = () => {
     setIsItemModalOpen(true);
@@ -16,15 +20,23 @@ function TransactionsAdmin() {
 
   const closeItemModal = () => {
     setIsItemModalOpen(false)
+  };
+
+  const openActionTransaction = () => {
+    setIsActionTransactionOpen(true);
+  }
+
+  const closeActionTransaction = () => {
+    setIsActionTransactionOpen(false);
   }
 
   const buttonStyle = {
-    backgroundColor: 'black',
     color: 'white',
     width: '109%',
     height: '23px',
     padding: '5px 12px',
     borderRadius: '45px',
+    backgroundColor: 'black',
   };
 
   const modalStyles = {
@@ -49,9 +61,6 @@ function TransactionsAdmin() {
       alignItems: 'center'
     },
   }
-
-  const [report, setReport] = useState([]);
-  const [records, setRecords] = useState(report);
 
   useEffect(() => {
     const fetchMonthlyReport = async () => {
@@ -98,45 +107,96 @@ function TransactionsAdmin() {
     setRecords(newData)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     setRecords(report);
-  },[report])
-const handlePrint = () => {
-  window.print();
-}
-const kain = {
-  marginLeft: '20px',
-  fontFamily: 'Arial, sans-serif',
-  backgroundColor: 'rgb(163, 187, 197)',
-  paddingTop: '70px',
-  display: 'flex',
-  justifyContent: 'center',
-  alignContent: 'center',
-  color: 'black'
-}
+  }, [report]);
+
+  const handlePrint = () => {
+    window.print();
+  }
+  const kain = {
+    marginLeft: '20px',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: 'rgb(163, 187, 197)',
+    paddingTop: '70px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    color: 'black'
+  }
+
+  const Buttons = {
+    width: "470px",
+    display: "flex",
+    gap: '12px'
+  }
+
+  useEffect(() => {
+
+    const Func = async () => {
+      try {
+
+        const response = await axios.get("http://localhost:5500/get-action-transaction");
+        setAction(response.data)
+
+      } catch (error) {
+        console.error("Error", error)
+      }
+    }
+
+    Func()
+  }, [])
+
+  const colum = [
+    {
+      name: 'Employee Name',
+      selector: row => row.employee_username
+    },
+    {
+      name: 'Action',
+      selector: row => row.action,
+      style: row => ({
+        color: row.action === 'Deleted' ? 'red' : row.action === 'Updated' ? 'blue' : 'black'
+      })
+    },
+    {
+      name: 'Item',
+      selector: row => row.item_name
+    }
+  ]
+
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div style={kain}>
         <h1>Transactions Tab</h1>
       </div>
-    <div className="transaction-container-admin">
-      <div>
+      <div className="transaction-container-admin">
         <div>
-          <button className='buttonStyle' onClick={openItemTransaction}>Open Item Transactions</button>
+          <div style={Buttons}>
+            <button className='buttonStyle' onClick={openItemTransaction}>Open Item Transactions</button>
+            {/* <br /> */}
+            <button className='buttonStyle' onClick={openActionTransaction}>Action Transaction</button>
+          </div>
+          <Modal style={modalStyles} isOpen={isItemModalOpen} onRequestClose={closeItemModal}>
+            <input type='text' placeholder='Search By Item Name' onChange={handleFilter} />
+            <br />
+            <button onClick={handlePrint}>Print</button>
+            <DataTable
+              columns={columns}
+              data={records}
+              pagination
+            ></DataTable>
+          </Modal>
+          <Modal style={modalStyles} isOpen={isActionTransactionOpen} onRequestClose={closeActionTransaction}>
+            <DataTable
+              columns={colum}
+              data={action}
+              pagination
+            ></DataTable>
+          </Modal>
         </div>
-        <Modal style={modalStyles} isOpen={isItemModalOpen} onRequestClose={closeItemModal}>
-          <input type='text' placeholder='Search By Item Name' onChange={handleFilter} />
-          <br />
-          <button onClick={handlePrint}>Print</button>
-          <DataTable
-            columns={columns}
-            data={records}
-            pagination
-          ></DataTable>
-        </Modal>
       </div>
-    </div>
     </div>
   );
 }

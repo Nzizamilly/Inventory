@@ -66,6 +66,7 @@ function Login() {
                 localStorage.setItem("password", password.current.value);
                 localStorage.setItem("userID", res.data.id);
                 localStorage.setItem("roleID", res.data.roleID);
+                localStorage.setItem("email", res.data.email);
                 const userRole = res.data.roleID;
                 if (userRole === 3){
                     navigate('/home-admin');

@@ -100,6 +100,7 @@ function Request() {
   const sendMessage = async () => {
 
     const get = localStorage.getItem('username');
+    const email = localStorage.getItem('email')
     const itemName = item.name
     const categoryName = category.category_name;
     const date = Date.now();
@@ -120,6 +121,7 @@ function Request() {
       itemName: someName.name,
       count: amount.amount,
       description,
+      email: email,
       date: formatDate(date),
     };
 

@@ -10,10 +10,18 @@ import Info from '../images/info.svg'
 import NavbarAdmin from './navbarAdmin';
 import DataTable from 'react-data-table-component';
 import Multiselect from 'multiselect-react-dropdown';
-import { Socket } from 'socket.io-client';
+import io from 'socket.io-client';
 
 function ItemsAdmin() {
 
+  const socket = io.connect("http://localhost:5001");
+
+
+
+
+  socket.on("disconnect", () => {
+    console.log("Disconnect from the server");
+  });
 
   const modalStyles = {
     content: {
@@ -114,7 +122,7 @@ function ItemsAdmin() {
   const openUpdateModal = (itemID) => {
     setTakeUpdateID(itemID);
     setIsUpdateModalOpen(true);
-    handleUpdateClick(itemID)
+    // handleUpdateClick(itemID)
   }
 
   const closeUpdateModal = () => {
@@ -311,49 +319,54 @@ function ItemsAdmin() {
     setSerialNumber((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
 
+  const employeeIDForBackend = localStorage.getItem('userID');
+
   const [update, setUpdate] = useState({
     newItemName: '',
     newSupplierName: '',
-    newCategoryName: ''
+    newCategoryName: '',
+    employeeID: employeeIDForBackend
   })
   const handleUpdateInput = (event) => {
     setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   }
 
+  socket.on("connection", (socket) => {
+  })
+  const someKind = async (itemID) => {
+    console.log("SomeKIND Hit~~~~~~~");
+    const employeeID = localStorage.getItem('userID');
+    const response = await axios.post(`http://localhost:5500/insert-deletion-doer/${itemID}/${employeeID}`)
+  }
   const HandleConfirm = async (itemID) => {
-    // Set the confirmed state to true
     setConfirmed(true);
     setForDown(itemID);
     console.log("ITEMID :", itemID);
-  
+
     if (confirm) {
+      someKind(itemID);
       try {
-        // Make an asynchronous HTTP DELETE request
         const response = await axios.delete(`http://localhost:5500/delete-item/${itemID}`);
-        
-        // Display a success message
-        alert("Item Deleted Successfully");
-  
-        // Log the response to the console
         console.log(response);
+        // alert("Item Deleted Successfully");
+        // const responsee = await axios.post(`http://localhost:5500/insert-deletion-doer/${itemID}/${employeeID}`);
+        // console.log("Insertion of deletie", responsee);
+
       } catch (error) {
-        // Handle errors, e.g., display an error message
         console.error('Error deleting item: ', error);
       } finally {
-        // Reset the confirmed state, assuming you want to reset it after the operation
         setConfirmed(null);
-  
-        // Assuming closeConfirmModal is a function to close the confirmation modal
         closeConfirmModal();
-      }
+      };
     }
   };
-  
-  
+
+
 
   const handleDelete = async (itemID) => {
     openComfirmModal();
-    HandleConfirm(itemID)
+    HandleConfirm(itemID);
+
     // if (confirm === true){
     //   console.log("Yes its confirmed");
     //   // try {
@@ -371,8 +384,12 @@ function ItemsAdmin() {
   const handleUpdateClick = async (itemID) => {
     try {
       const response = await axios.put(`http://localhost:5500/update-item/${itemID}`, update);
-      alert("Updated successfully")
+      console.log("Updaties:", update);
+      alert("Updated successfully");
       console.log(response);
+      const employeeID = localStorage.getItem('userID')
+      const responsee = await axios.post(`http://localhost:5500/insert-doer/${itemID}/${employeeID}`);
+      console.log("The post responsee was made", responsee)
       closeUpdateModal();
     } catch (error) {
       console.error('Error fetching items: ', error);
@@ -635,7 +652,7 @@ function ItemsAdmin() {
       justifyContent: 'center',
     },
   }
- 
+
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
@@ -675,7 +692,7 @@ function ItemsAdmin() {
             <br />
             <input placeholder='Category' name='newCategoryName' type='text' onChange={handleUpdateInput} />
             <br />
-            <button onClick={() => handleUpdateClick(takenItemId)}>Add </button>
+            <button onClick={() => handleUpdateClick(takeUpdateId)}>Add </button>
 
           </Modal>
           <Modal isOpen={isSimpleModalOpen} onRequestClose={closeSimpleModal} style={modalStyles}>
@@ -729,7 +746,7 @@ function ItemsAdmin() {
           <Modal isOpen={isConfirmModalOpen} onRequestClose={closeConfirmModal} style={kindaStyle}>
             <span>Are You Sure You Want To Delete this Item</span>
             <br />
-            <button onClick={()=>HandleConfirm(forDown)}>Yes</button>
+            <button onClick={() => HandleConfirm(forDown)}>Yes</button>
 
           </Modal>
         </div>
