@@ -7,6 +7,8 @@ const bodyParser = require("body-parser");
 const { Server } = require("socket.io");
 const http = require("http");
 const nodemailer = require('nodemailer');
+const { EMAIL, PASSWORD } = require('./env.js');
+
 
 const app = express();
 const server = http.createServer(app);
@@ -124,9 +126,11 @@ io.on("connection", (socket) => {
 
       const status = 'Pending'
 
+      const email = messageData.email
+
       const q =
-        "INSERT INTO employee_supervisor_request (categoryID,	itemID,	employeeID,	description,	date_of_request,	status,	amount	) VALUES (?, ?, ?, ?, ?, ?, ? )";
-      const values = [categoryID, itemID, employeeID, messageData.description, messageData.date, status, messageData.count];
+        "INSERT INTO employee_supervisor_request ( categoryID,	itemID,	employeeID,	description,	date_of_request, email,	status,	amount	) VALUES (?, ?, ?, ?, ?, ?, ?, ? )";
+      const values = [categoryID, itemID, employeeID, messageData.description, messageData.date, email, status, messageData.count];
 
       db.query(q, values, (err, data) => {
         if (err) {
@@ -153,7 +157,7 @@ io.on("connection", (socket) => {
 
 
   app.get('/get-notification', (req, res) => {
-    const sql = `SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount, employee_supervisor_request.description, employee_supervisor_request.date_of_request, employee_supervisor_request.id
+    const sql = `SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount, employee_supervisor_request.description, employee_supervisor_request.date_of_request,employee_supervisor_request.email , employee_supervisor_request.id
     FROM employee_supervisor_request
     JOIN employees ON employee_supervisor_request.employeeID = employees.id
     JOIN category ON employee_supervisor_request.categoryID = category.id
@@ -180,6 +184,7 @@ io.on("connection", (socket) => {
     supervisor_hr_request.date_approved, 
     supervisor_hr_request.id, 
     supervisor_hr_request.supervisorID,
+    supervisor_hr_request.email,
     category.category_name,
     item.name
 FROM 
@@ -284,26 +289,28 @@ ORDER BY
   });
 
   socket.on("Send Approved Email", (messageData) => {
-    console.log("Object to be sent",  messageData);
+    console.log("Object to be sent", messageData);
     const transporter = nodemailer.createTransport({
-      service: 'centrika.rw',
+      service: 'gmail',
       auth: {
-        user: 'Centrika Inventory System',
-        pass: 'centrika@3030',
+        user: EMAIL,
+        pass: PASSWORD
       }
     });
     const mailOption = {
       from: 'Centrika Inventory System',
-      to: messageData.employeeEmail,
+      to: 'cnziza@centrika.rw',
       subject: 'Item Requested Approved',
-      text: `Item you requested ${messageData.name} was approved on ${messageData.date_approved}`
+      text: `Item you requested ${messageData.name} was successfully approved on ${messageData.date_approved}`
     };
-  
-    transporter.sendMail(mailOption, function(error, info){
-      if(error){
+
+    transporter.sendMail(mailOption, function (error, info) {
+      if (error) {
         console.error("Error", error)
-      }else{
-        console.log(info.response)
+      } else {
+        console.log("DONE DIDDDDDDD....~~~!!!")
+        console.log(info.response);
+
       }
     })
   })
@@ -816,56 +823,27 @@ app.get('/get-name-serial-number/:itemID', (req, res) => {
 app.put('/update-item/:itemID', (req, res) => {
   const id = req.params.itemID;
   const newItemName = req.body.newItemName;
-  const newSupplierName = req.body.newSupplierName;
-  const newCategoryName = req.body.newCategoryName;
+  const newSupplierID = req.body.newSupplierID;
+  const newCategoryID = req.body.newCategoryID;
 
   console.log("Sum", newItemName);
-  console.log("Sum", newSupplierName);
-  console.log("Sum", newCategoryName);
+  console.log("Sum", newSupplierID);
+  console.log("Sum", newCategoryID);
 
-  // Step 1: Retrieve supplierID
-  db.query('SELECT id FROM supplier WHERE first_name = ?', [newSupplierName], (err1, supplierResult) => {
-    if (err1) {
-      console.error('Error retrieving supplierID:', err1);
+  const date = new Date();
+
+  const currentTimeString = date.toLocaleDateString();
+
+  const updateQuery = 'UPDATE item SET name = ?, supplierID = ?, categoryID = ?, updatedtime = ? WHERE id = ?';
+  const updateValues = [newItemName, newSupplierID, newCategoryID, currentTimeString, id];
+
+  db.query(updateQuery, updateValues, (err3) => {
+    if (err3) {
+      console.error('Error updating item:', err3);
       return res.status(500).json({ error: 'Internal Server Error' });
     }
 
-    if (supplierResult.length === 0) {
-      // Supplier not found
-      console.error('Supplier not found.');
-      return res.status(404).json({ error: 'Supplier not found' });
-    }
-
-    const supplierID = supplierResult[0].id;
-
-    // Step 2: Retrieve categoryID
-    db.query('SELECT id FROM category WHERE category_name = ?', [newCategoryName], (err2, categoryResult) => {
-      if (err2) {
-        console.error('Error retrieving categoryID:', err2);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-
-      if (categoryResult.length === 0) {
-        // Category not found
-        console.error('Category not found.');
-        return res.status(404).json({ error: 'Category not found' });
-      }
-
-      const categoryID = categoryResult[0].id;
-
-      // Step 3: Update item table
-      const updateQuery = 'UPDATE item SET name = ?, supplierID = ?, categoryID = ? WHERE id = ?';
-      const updateValues = [newItemName, supplierID, categoryID, id];
-
-      db.query(updateQuery, updateValues, (err3) => {
-        if (err3) {
-          console.error('Error updating item:', err3);
-          return res.status(500).json({ error: 'Internal Server Error' });
-        }
-
-        res.json({ message: 'Item updated successfully' });
-      });
-    });
+    res.json({ message: 'Item updated successfully' });
   });
 });
 
@@ -1360,10 +1338,10 @@ app.post('/add-request-supervisor-hr/:supervisorID', async (req, res) => {
     const status = 'Pending'
 
     const supervisorID = req.params.supervisorID;
+    const email = req.body.email;
 
-    const q =
-      "INSERT INTO supervisor_hr_request (supervisorID,	employeeID,	itemID,	categoryID,	description, date_approved,	amount,	status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
-    const values = [supervisorID, employeeID, itemID, categoryID, req.body.description, req.body.date_of_request, req.body.amount, status];
+    const q = "INSERT INTO supervisor_hr_request (supervisorID,employeeID,itemID,categoryID,description,date_approved,amount,email,status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+    const values = [supervisorID, employeeID, itemID, categoryID, req.body.description, req.body.date_of_request, req.body.amount, email, status];
     console.log("Values: ", values);
 
     db.query(q, values, (err, data) => {

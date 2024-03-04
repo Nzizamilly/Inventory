@@ -9,7 +9,6 @@ import Addy from '../images/addy.svg'
 import Info from '../images/info.svg'
 import NavbarAdmin from './navbarAdmin';
 import DataTable from 'react-data-table-component';
-import Multiselect from 'multiselect-react-dropdown';
 import io from 'socket.io-client';
 
 function ItemsAdmin() {
@@ -36,6 +35,7 @@ function ItemsAdmin() {
       opacity: 0.9,
       fontFamily: 'Your Custom Font, sans-serif',
       fontSize: '16px',
+      // backgroundColor: 'blue',
       fontWeight: 'bold',
       border: 'none',
       lineHeight: '1.5',
@@ -96,6 +96,9 @@ function ItemsAdmin() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(null);
   const [confirm, setConfirmed] = useState(null);
   const [forDown, setForDown] = useState(null);
+  const [selectedUpdateSupplier, setSelectedUpdateSupplier] = useState(null);
+  const [selectedUpdateCategory, setSelectedUpdateCategory] = useState(null)
+
 
   const openComfirmModal = () => {
     setIsConfirmModalOpen(true);
@@ -232,6 +235,7 @@ function ItemsAdmin() {
   const fetchItemsByCategory = async (categoryId) => {
     try {
       const response = await axios.get(`http://localhost:5500/items?category=${categoryId}`);
+      console.log("ALL DATA INCLUDING UPDATED AT", response.data)
       setItems(response.data);
     } catch (error) {
       console.error('Error fetching items: ', error);
@@ -323,8 +327,6 @@ function ItemsAdmin() {
 
   const [update, setUpdate] = useState({
     newItemName: '',
-    newSupplierName: '',
-    newCategoryName: '',
     employeeID: employeeIDForBackend
   })
   const handleUpdateInput = (event) => {
@@ -333,6 +335,7 @@ function ItemsAdmin() {
 
   socket.on("connection", (socket) => {
   })
+
   const someKind = async (itemID) => {
     console.log("SomeKIND Hit~~~~~~~");
     const employeeID = localStorage.getItem('userID');
@@ -361,30 +364,23 @@ function ItemsAdmin() {
     }
   };
 
-
-
   const handleDelete = async (itemID) => {
     openComfirmModal();
     HandleConfirm(itemID);
-
-    // if (confirm === true){
-    //   console.log("Yes its confirmed");
-    //   // try {
-    //     const response = await axios.delete(`http://localhost:5500/delete-item/${itemID}`)
-    //     alert("Item Deleted Successfully");
-    //     console.log(response);
-    //   // } catch (error) {
-    //     // console.error('Error Deleting Item: ', error);
-    //   // };
-    // }else if(confirm === ''){
-    //   console.log("You need to confirm");
-    // }
   };
+
+  useEffect(()=> {
+    setUpdate(prevUpdate => ({
+      ...prevUpdate,
+      newSupplierID: selectedUpdateSupplier,
+      newCategoryID: selectedUpdateCategory
+    }))
+  },[selectedUpdateSupplier, selectedUpdateCategory]);
 
   const handleUpdateClick = async (itemID) => {
     try {
-      const response = await axios.put(`http://localhost:5500/update-item/${itemID}`, update);
       console.log("Updaties:", update);
+      const response = await axios.put(`http://localhost:5500/update-item/${itemID}`, update);
       alert("Updated successfully");
       console.log(response);
       const employeeID = localStorage.getItem('userID')
@@ -487,8 +483,12 @@ function ItemsAdmin() {
       selector: row => row.first_name
     },
     {
-      name: 'Date',
+      name: 'Created At',
       selector: row => formatDate(row.createdAt)
+    },
+    {
+      name: 'Updated At',
+      selector: row => row.updatedtime
     },
     {
       name: 'Edit',
@@ -590,7 +590,6 @@ function ItemsAdmin() {
     const supplierG = async () => {
       const response = await axios.get("http://localhost:5500/supplier");
       const result = response.data;
-      // console.log("ALL SUPPLIER'S DATA ", result);
       setSupplier(result);
     }
 
@@ -600,20 +599,22 @@ function ItemsAdmin() {
   const handleSupplierChange = (event) => {
     const selectedValue = event.target.value;
     console.log("TYPE OF SELECTED VALUE DOWN", typeof selectedValue);
-    setSelectedSupplier(selectedValue)
+    setSelectedSupplier(selectedValue);
   }
 
   const Select = {
-    width: '43%',
-    height: '18%',
+    width: '65%',
+    height: '48%',
     color: 'black',
     border: 'none',
+    backgroundColor: 'black',
+    color: 'white',
     borderRadius: '21px'
   };
 
   const OptionColor = {
     width: '39%',
-    height: '25%',
+    height: '55%',
     display: 'flex',
     gap: '12px',
     color: 'white',
@@ -651,6 +652,17 @@ function ItemsAdmin() {
       alignItems: 'center',
       justifyContent: 'center',
     },
+  };
+
+
+  const handleUpdateSupplierChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedUpdateSupplier(selectedValue);
+  };
+
+  const handleUpdateCategoryChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedUpdateCategory(selectedValue);
   }
 
   return (
@@ -668,7 +680,6 @@ function ItemsAdmin() {
             </button>
           ))}
         </div>
-        {/* <br /> */}
         <div style={itemstyle}>
           {categories.map(category => (
             <button key={category.id} onClick={() => handleCategoryClick(category.id, category.category_name)} className='buttonStyle2'>{category.category_name}</button>
@@ -688,9 +699,23 @@ function ItemsAdmin() {
             <h1>Update Items</h1>
             <input placeholder='Name' name='newItemName' type='text' onChange={handleUpdateInput} />
             <br />
-            <input placeholder='Supplier' name='newSupplierName' type='text' onChange={handleUpdateInput} />
+
+            <select onChange={handleUpdateSupplierChange} value={selectedUpdateSupplier} style={Select}>
+              <option value='' disabled>Select Supplier</option>
+              {supplier.map( suppliers =>(
+                <option key={suppliers.id} value={suppliers.id}  style={OptionColor}>{suppliers.first_name}</option>
+              ))}
+            </select>
+
             <br />
-            <input placeholder='Category' name='newCategoryName' type='text' onChange={handleUpdateInput} />
+
+            <select onChange={handleUpdateCategoryChange} value={selectedUpdateCategory} style={Select}>
+              <option value='' disabled>Select Category</option>
+              {categories.map( categories =>(
+                <option key={categories.id} value={categories.id}  style={OptionColor}>{categories.category_name}</option>
+              ))}
+            </select>
+            <br />
             <br />
             <button onClick={() => handleUpdateClick(takeUpdateId)}>Add </button>
 
@@ -747,7 +772,6 @@ function ItemsAdmin() {
             <span>Are You Sure You Want To Delete this Item</span>
             <br />
             <button onClick={() => HandleConfirm(forDown)}>Yes</button>
-
           </Modal>
         </div>
       </div >

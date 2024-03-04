@@ -141,7 +141,7 @@ function NotificationSupervisor() {
       <NavbarHome></NavbarHome>
       <div className="notification-supervisor">
         {notifications.map((notification, index) => {
-          console.log("type: ", typeof notification);
+          console.log("Notifications Shown: ",  notification);
 
           const employeeName = notification.username;
           const itemName = notification.name;

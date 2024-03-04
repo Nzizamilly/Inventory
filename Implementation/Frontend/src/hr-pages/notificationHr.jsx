@@ -77,9 +77,6 @@ function NotificationHR() {
         }
     };
 
-
-
-
     const handleDeny = async (index, notification) => {
         socket.emit("Denied_By_Either(1)", notification);
         try {
@@ -112,7 +109,7 @@ function NotificationHR() {
             <NavbarMain></NavbarMain>
             <div className="notification-hr ">
                 {notifications.map((notification) => {
-                    // console.log("Data in the div", notification.username);
+                    console.log("Data in the div", notification);
                     const employeeName = notification.employee_username;
                     const itemName = notification.name;
                     const categoryName = notification.category_name;
