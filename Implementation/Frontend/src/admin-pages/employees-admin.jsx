@@ -1,9 +1,12 @@
 import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
-import Model from 'react-modal'
+import DataTable from 'react-data-table-component';
+import Model from 'react-modal';
+import Modal from 'react-modal'
 import Switch from 'react-switch'
 import Add from '../images/add.svg'
+import Info from '../images/info.svg'
 import '../style.css'
 import NavbarAdmin from './navbarAdmin';
 import Update from '../images/update.svg'
@@ -14,7 +17,6 @@ function EmployeesAdmin() {
 
   const modal = {
     overlay: {
-      // backgroundColor: 'rgb(163, 187, 197)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
@@ -22,9 +24,8 @@ function EmployeesAdmin() {
     content: {
       width: '23%',
       marginLeft: '495px',
-      // marginTop: '99px',
       height: '72vh',
-      backgroundColor: 'rgb(163, 187, 197)',
+      backgroundColor: 'rgb(206, 206, 236)',
       border: 'none',
       borderRadius: '12px',
       gap: '23px',
@@ -53,13 +54,12 @@ function EmployeesAdmin() {
 
   const ThemBs = {
     display: 'flex',
-    // backgroundColor: 'black',
     gap: '9px',
     flexDirection: 'row'
   }
 
   const svgStyle = {
-    backgroundColor: 'rgb(206, 206, 236)',
+    // backgroundColor: 'rgb(206, 206, 236)',
     width: '30px',
     height: '30px',
     borderRadius: '14px',
@@ -78,6 +78,8 @@ function EmployeesAdmin() {
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedUpdatedRole, setSelectedUpdatedRole] = useState('');
+  const [oneEmployee, setOneEmployee] = useState(false);
+  const [sumOne, setSumOne] = useState([]);
   const [selectedUpdateDepartment, setSelectedUpdateDepartment] = useState('');
   const [update, setUpdate] = useState({
     username: '',
@@ -166,7 +168,7 @@ function EmployeesAdmin() {
       console.error(err);
     }
   };
-  
+
   const handleChange2 = (event) => {
     setEmployee((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
@@ -180,7 +182,44 @@ function EmployeesAdmin() {
     } catch {
       console.error("No");
     }
+  };
+
+  const bringOneEmployee = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:5500/employee/${id}`);
+      setSumOne(response.data);
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+
   }
+
+  const openInfoModal = (id) => {
+    bringOneEmployee(id);
+    setOneEmployee(true);
+  }
+
+  const closeInfoModal = () => {
+    setOneEmployee(false);
+  }
+
+  const empsColumn = [
+    {
+      name: 'Name',
+      selector: row => row.username
+    },
+
+    {
+      name: 'Role',
+      selector: row => row.role_name
+    },
+    {
+      name: 'View',
+      cell: row => (
+        <button className='addItem-btn' onClick={() => openInfoModal(row.id)}><img src={Info} style={svgStyle} /></button>
+      )
+    },
+  ]
 
   const some = {
     fontFamily: 'Arial, sans-serif',
@@ -271,7 +310,6 @@ function EmployeesAdmin() {
     setSelectedUpdatedRole(selectedValue);
   }
 
-
   const OptionColor = {
     width: '39%',
     height: '25%',
@@ -282,7 +320,6 @@ function EmployeesAdmin() {
     border: 'none',
     borderRadius: '14px'
   }
-
 
   const [employee, setEmployee] = useState({
     username: '',
@@ -314,18 +351,40 @@ function EmployeesAdmin() {
     width: '100%',
     height: '100vh',
     backgroundColor: 'rgb(163, 187, 197)'
+  }
 
+  console.log("Type of Emp: ", typeof sumOne);
+
+  const MakeBig = {
+    width: '90%',
+    marginLeft: '15%'
+  }
+  const One = {
+    display: 'flex',
+    // gap: '6px',
+    justifyContent: 'center',
+    flexDirection: 'inline'
   }
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div style={Kaine}>
         <div style={kain}>
-          <h1>Add A New Employee</h1>
+          <div style={MakeBig}>
+            <div style={One}>
+            <h1>List OF Employees</h1>
+            <button onClick={() => setAddVisible(true)} className='add-btn1'><img src={Add} style={svgStyle} /></button>
+            </div>
+            <DataTable
+              columns={empsColumn}
+              data={emps}
+              pagination
+            ></DataTable>
+          </div>
+
         </div>
         <br />
         <div style={some}>
-          <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Employee</p></button>
           <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
             <h2>Adding a new Employee</h2>
             <input type='text' placeholder='Username' name='username' onChange={handleChange2} />
@@ -346,49 +405,51 @@ function EmployeesAdmin() {
             </select>
             <input type='email' placeholder='Work-Related email' name='email' onChange={handleChange2} />
             <button onClick={handleMake}>Submit</button>
-          </Model>
-          {emps.map((emp) => (
-            console.log("Emps IDs Down: ", emp.id),
-            <div key={emp.id} className="employee">
-              <h1>{emp.username}</h1>
-              <img src={emp.profile_picture} id='profile_picture' alt="" />
-              <p>Username: {emp.username}</p>
-              {/* <p>Password: {emp.password}</p> */}
-              <p>Password: *******</p>
-              <p>Position: {emp.role_name}</p>
-              <p>Department: {emp.department_name}</p>
-              <p>Email: {emp.email}</p>
-              <p>Status:  <span style={{ color: emp.status === 'DE-ACTIVATED' ? 'red' : 'green' }}>{emp.status}</span></p>
-              <div style={ThemBs}>
-                <button className='addItem-btn' onClick={() => setVisible(true)}><img src={Update} style={svgStyle} /></button>
-                {/* <button className='addItem-btn' onClick={() => handleDelete(emp.id)} ><img src={Delete} style={svgStyle} /></button> */}
-                <Switch onChange={(checked) => handleSwitchChange(checked, emp.id)} checked={switchStates[emp.id] || false} />
+          </Model >
+          <Modal isOpen={oneEmployee} onRequestClose={closeInfoModal} style={modal}>
+            {sumOne.map((emp) => (
+              console.log("Type of Emp: ", typeof emp),
+              <div key={emp.id} className="employee">
+                <h1>{emp.username}</h1>
+                <img src={emp.profile_picture} id='profile_picture' alt="" />
+                <p>Username: {emp.username}</p>
+                {/* <p>Password: {emp.password}</p> */}
+                <p>Password: *******</p>
+                <p>Position: {emp.role_name}</p>
+                <p>Department: {emp.department_name}</p>
+                <p>Email: {emp.email}</p>
+                <p>Status:  <span style={{ color: emp.status === 'DE-ACTIVATED' ? 'red' : 'green' }}>{emp.status}</span></p>
+                <div style={ThemBs}>
+                  <button className='addItem-btn' onClick={() => setVisible(true)}><img src={Update} style={svgStyle} /></button>
+                  {/* <button className='addItem-btn' onClick={() => handleDelete(emp.id)} ><img src={Delete} style={svgStyle} /></button> */}
+                  <Switch onChange={(checked) => handleSwitchChange(checked, emp.id)} checked={switchStates[emp.id] || false} />
+                </div>
+
+                <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
+                  <h1>Update</h1>
+                  <input type='text' placeholder='Username' name="username" onChange={handleChange} />
+                  <input type='text' placeholder='Password' name="password" onChange={handleChange} />
+                  {/* <input type='text' placeholder='Department' name="departmentName" onChange={handleChange} /> */}
+                  <select onChange={handleUpdateDepartmentChange} value={selectedUpdateDepartment} style={Select}>
+                    <option value='' disabled >Select Department</option>
+                    {department.map(departments => (
+                      <option key={departments.id} value={departments.id} >{departments.department_name}</option>
+                    ))}
+                  </select>
+
+                  <select onChange={handleUpdateRoleChange} value={selectedUpdatedRole} style={Select}>
+                    <option value='' disabled>Select Role</option>
+                    {roleUpdate.map(roles => (
+                      <option key={roles.id} value={roles.id} style={OptionColor}>{roles.role_name}</option>
+                    ))}
+                  </select>
+                  <input type='email' placeholder='Work-related Email' name='email' onChange={handleChange} />
+                  <input type='text' placeholder='Status' name="status" onChange={handleChange} />
+                  <button onClick={() => handleUpdate(emp.id)}>Submit</button>
+                </Model>
               </div>
-              <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
-                <h1>Update</h1>
-                <input type='text' placeholder='Username' name="username" onChange={handleChange} />
-                <input type='text' placeholder='Password' name="password" onChange={handleChange} />
-                {/* <input type='text' placeholder='Department' name="departmentName" onChange={handleChange} /> */}
-                <select onChange={handleUpdateDepartmentChange} value={selectedUpdateDepartment} style={Select}>
-                  <option value='' disabled >Select Department</option>
-                  {department.map(departments => (
-                    <option key={departments.id} value={departments.id} >{departments.department_name}</option>
-                  ))}
-                </select>
-
-                <select onChange={handleUpdateRoleChange} value={selectedUpdatedRole} style={Select}>
-                  <option value='' disabled>Select Role</option>
-                  {roleUpdate.map(roles => (
-                    <option key={roles.id} value={roles.id} style={OptionColor}>{roles.role_name}</option>
-                  ))}
-
-                </select>
-                <input type='email' placeholder='Work-related Email' name='email' onChange={handleChange} />
-                <input type='text' placeholder='Status' name="status" onChange={handleChange} />
-                <button onClick={() => handleUpdate(emp.id)}>Submit</button>
-              </Model>
-            </div>
-          ))}
+            ))}
+          </Modal>
         </div>
       </div>
     </div>

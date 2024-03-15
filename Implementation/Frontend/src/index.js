@@ -27,6 +27,9 @@ import NotificationHR from './hr-pages/notificationHr';
 import RequestHr from './hr-pages/requestHR';
 import TransactionsHR from './hr-pages/transactionHr';
 import TermsHR from './hr-pages/termsHR';
+import ItemTransactionsAdmin from './admin-pages/itemTransacation';
+import ActionTransactionsAdmin from './admin-pages/actionTransaction';
+import PurchaseRequest from './employee-pages/purchaseRequest';
 
 const router = createBrowserRouter([
   {
@@ -128,6 +131,18 @@ const router = createBrowserRouter([
   {
     path: "terms-hr",
     element: <TermsHR />
+  },
+  {
+    path: 'item-transaction',
+    element: <ItemTransactionsAdmin />
+  },
+  {
+    path: 'action-transaction',
+    element: <ActionTransactionsAdmin />
+  },
+  {
+    path: 'purchase-request',
+    element: <PurchaseRequest />
   }
 
 ])

@@ -7,7 +7,6 @@ import Model from 'react-modal'
 
 function CategoryAdmin() {
   const svgStyle = {
-    // backgroundColor: 'green',
     width: '30px',
     height: '30px',
     borderRadius: '14px',
@@ -15,7 +14,6 @@ function CategoryAdmin() {
   }
   const modal = {
     overlay: {
-      // backgroundColor: 'rgb(163, 187, 197)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
@@ -67,7 +65,8 @@ function CategoryAdmin() {
       }
     };
     fetchCategories();
-  }, []);
+  }, [categories]);
+
   const handleChange2 = (event) => {
     setCategory((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };

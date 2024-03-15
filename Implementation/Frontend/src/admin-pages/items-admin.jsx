@@ -91,13 +91,13 @@ function ItemsAdmin() {
   const [searchInput, setSeachInput] = useState('');
   const [someCategoryName, setSomeCategoryName] = useState('')
   const [supplier, setSupplier] = useState([]);
-  const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [selectedSupplier, setSelectedSupplier] = useState('');
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(null);
   const [confirm, setConfirmed] = useState(null);
   const [forDown, setForDown] = useState(null);
-  const [selectedUpdateSupplier, setSelectedUpdateSupplier] = useState(null);
-  const [selectedUpdateCategory, setSelectedUpdateCategory] = useState(null)
+  const [selectedUpdateSupplier, setSelectedUpdateSupplier] = useState('');
+  const [selectedUpdateCategory, setSelectedUpdateCategory] = useState('')
 
 
   const openComfirmModal = () => {
@@ -231,6 +231,7 @@ function ItemsAdmin() {
     };
     fetchCategories();
   }, []);
+
 
   const fetchItemsByCategory = async (categoryId) => {
     try {
@@ -369,13 +370,16 @@ function ItemsAdmin() {
     HandleConfirm(itemID);
   };
 
-  useEffect(()=> {
+  const employeeUpdateName = localStorage.getItem('username')
+
+  useEffect(() => {
     setUpdate(prevUpdate => ({
       ...prevUpdate,
       newSupplierID: selectedUpdateSupplier,
-      newCategoryID: selectedUpdateCategory
+      newCategoryID: selectedUpdateCategory,
+      employeeUpdateName: employeeUpdateName
     }))
-  },[selectedUpdateSupplier, selectedUpdateCategory]);
+  }, [selectedUpdateSupplier, selectedUpdateCategory]);
 
   const handleUpdateClick = async (itemID) => {
     try {
@@ -415,7 +419,7 @@ function ItemsAdmin() {
     {
       name: 'Update',
       cell: row => (
-        <button className='addItem-btn' onClick={() => openUpdateSerial(row.id)}><img src={Update} style={svgStyle} /></button>
+        <button className='addItem-btn' onClick={() => openUpdateSerial(row.id)}><img src={Update} style={svgStyle}/></button>
       )
 
     },
@@ -489,6 +493,10 @@ function ItemsAdmin() {
     {
       name: 'Updated At',
       selector: row => row.updatedtime
+    },
+    {
+      name: 'Updated By',
+      selector: row => row.nameUpdated
     },
     {
       name: 'Edit',
@@ -588,18 +596,21 @@ function ItemsAdmin() {
 
   useEffect(() => {
     const supplierG = async () => {
-      const response = await axios.get("http://localhost:5500/supplier");
-      const result = response.data;
-      setSupplier(result);
-    }
+      try {
 
+        const response = await axios.get(`http://localhost:5500/supplier`);
+        setSupplier(response.data);
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    };
     supplierG();
   }, [])
 
   const handleSupplierChange = (event) => {
     const selectedValue = event.target.value;
     console.log("TYPE OF SELECTED VALUE DOWN", typeof selectedValue);
-    setSelectedSupplier(selectedValue);
+    setSelectedSupplier(event.target.value);
   }
 
   const Select = {
@@ -702,8 +713,8 @@ function ItemsAdmin() {
 
             <select onChange={handleUpdateSupplierChange} value={selectedUpdateSupplier} style={Select}>
               <option value='' disabled>Select Supplier</option>
-              {supplier.map( suppliers =>(
-                <option key={suppliers.id} value={suppliers.id}  style={OptionColor}>{suppliers.first_name}</option>
+              {supplier.map(suppliers => (
+                <option key={suppliers.id} value={suppliers.id} style={OptionColor}>{suppliers.first_name}</option>
               ))}
             </select>
 
@@ -711,8 +722,8 @@ function ItemsAdmin() {
 
             <select onChange={handleUpdateCategoryChange} value={selectedUpdateCategory} style={Select}>
               <option value='' disabled>Select Category</option>
-              {categories.map( categories =>(
-                <option key={categories.id} value={categories.id}  style={OptionColor}>{categories.category_name}</option>
+              {categories.map(categories => (
+                <option key={categories.id} value={categories.id} style={OptionColor}>{categories.category_name}</option>
               ))}
             </select>
             <br />

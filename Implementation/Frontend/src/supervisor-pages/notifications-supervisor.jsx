@@ -5,7 +5,10 @@ import { io } from 'socket.io-client';
 import Approve from '../images/approve.svg';
 import Deny from '../images/deny.png';
 import NavbarHome from './NavbarHome';
-import Modal from 'react-modal'
+import DataTable from 'react-data-table-component';
+import Red from '../images/red-circle.svg';
+import Green from '../images/green-circle.svg';
+import Cyan from '../images/cyan-circle.svg';
 
 function NotificationSupervisor() {
   const [notifications, setNotifications] = useState([]);
@@ -109,7 +112,10 @@ function NotificationSupervisor() {
   useEffect(() => {
     const fetch = async () => {
       try{
-        const response = await axios.get("http://localhost:5500/get-notification");
+        const supervisorID = localStorage.getItem("userID");
+        const supervisorRole = localStorage.getItem("roleID");
+
+        const response = await axios.get(`http://localhost:5500/get-notification/${supervisorID}`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setNotifications(result);
@@ -118,7 +124,7 @@ function NotificationSupervisor() {
       }
     };
     fetch();
-}, [notifications])
+}, [])
 
   // useEffect(() => {
   //   const handleNotification = (messageData) => {
@@ -135,12 +141,112 @@ function NotificationSupervisor() {
 
   console.log("type in Upper logger", typeof notifications);
 
+  const column = [
+    {
+      name : 'Employee',
+      selector: row => row.username
+    },
+    {
+      name : 'Item Requested',
+      selector: row => row.name
+    },
+    {
+      name : 'Category ',
+      selector: row => row.category_name
+    },
+    {
+      name : 'Request Description',
+      selector: row => row.description
+    },
+    {
+      name : 'Date of Request',
+      selector: row => row.date_of_request
+    },
+    {
+      name : 'Amount Requested',
+      selector: row => row.amount
+    },
+    {
+      name: 'Priority',
+      selector: row => (
+        row.priority === 'green' ? 
+          <img src={Green} style={svgStyle} alt="green" /> :
+        row.priority === 'red' ? 
+          <img src={Red} style={svgStyle} alt="red" /> :
+        row.priority === 'cyan' ? 
+          <img src={Cyan} style={svgStyle} alt="cyan" /> :
+        (console.log("Not green, red, or cyan"), null)
+      )
+    },
+    {
+      name: 'Status',
+      selector: row => row.status
+    },
+    {
+      name: 'Approve',
+      cell: row => (
+        <button className='buttonStyle3' onClick={() => handleApprove(row, row.id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
+      )
+    },
+    {
+      name: 'Deny',
+      cell: row => (
+        <button className='buttonStyle3' onClick={() => handleDeny(row.id, row)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
+      )
+    }
+  ];
+
+  const div = {
+    width: '90%',
+    marginLeft: '13%'
+  }
+
+  const buttons = {
+    width: '65px',
+    color: 'black',
+    cursor: 'pointer',
+    padding: '12px 0px',
+    borderRadius: '1px',
+    backgroundColor: 'white'
+  };
+  const smaller = {
+    display: 'flex',
+    flexDirection: 'inline',
+  }
+
+  const handlePending = async () => {
+    console.log("HandlePending is Hit");
+    const supervisorID = localStorage.getItem("userID");
+      const response = await axios.get(`http://localhost:5500/get-notification/${supervisorID}`);
+      const result = response.data;
+      console.log("DATA FROM ENDPOINT: ", result);
+      setNotifications(result);
+  };
+
+  const handleApprovedRequest = async () => {
+    console.log("HandleApproved is Hit");
+    const response = await axios.get("http://localhost:5500/get-approved-notification");
+    const result = response.data;
+    console.log("DATA FROM ENDPOINT: ", result);
+    setNotifications(result)
+  }
+  const handleDenyRequest = async () => {
+    console.log("HandleDenied is Hit");
+    const response = await axios.get("http://localhost:5500/get-denied-notification");
+    const result = response.data;
+    console.log("DATA FROM ENDPOINT: ", result);
+    setNotifications(result)
+  }
+
+  
+
+
   return (
 
     <div>
       <NavbarHome></NavbarHome>
       <div className="notification-supervisor">
-        {notifications.map((notification, index) => {
+        {/* {notifications.map((notification, index) => {
           console.log("Notifications Shown: ",  notification);
 
           const employeeName = notification.username;
@@ -166,7 +272,22 @@ function NotificationSupervisor() {
               <button className='buttonStyle3' onClick={() => handleDeny(id, notification)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
             </div>
           )
-        })}
+        })} */}
+
+        <div style={div}>
+          <div style={smaller}>
+          <button style={buttons} onClick={handlePending}>Pending</button>
+          <button style={buttons} onClick={handleApprovedRequest}>Approved</button>
+          <button style={buttons} onClick={handleDenyRequest} >Denied</button>
+          </div>
+        <DataTable 
+        data={notifications}
+        columns={column}
+        pagination
+        ></DataTable>
+        </div>
+
+
 
         {/* {notifications.map((notification, index) => {
           console.log("Data in the div", notification);

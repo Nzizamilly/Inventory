@@ -5,7 +5,10 @@ import { io } from 'socket.io-client';
 import Approve from '../images/approve.svg';
 import Deny from '../images/deny.png';
 import NavbarMain from './navbarMain.jsx';
-import Modal from 'react-modal'
+import DataTable from 'react-data-table-component';
+import Red from '../images/red-circle.svg';
+import Green from '../images/green-circle.svg';
+import Cyan from '../images/cyan-circle.svg';
 
 function NotificationHR() {
     const [notifications, setNotifications] = useState([]);
@@ -68,6 +71,7 @@ function NotificationHR() {
         window.alert("Sent to Stock-Manager for Deliverance");
         socket.emit("Take This", notifications);
         socket.emit("Send Approved Email", notifications);
+        socket.emit("change-status-approve", notifications );
         try {
             console.log("Notifications to be passed: ", notifications);
 
@@ -79,6 +83,8 @@ function NotificationHR() {
 
     const handleDeny = async (index, notification) => {
         socket.emit("Denied_By_Either(1)", notification);
+        socket.emit("change-status-deny", notification);
+        socket.emit("change-status-deny-for-employee", notification);
         try {
             const updatedNotifications = notifications.filter((_, i) => i !== index);
             setNotifications(updatedNotifications);
@@ -101,14 +107,116 @@ function NotificationHR() {
             }
         };
         fetch();
-    }, [notifications])
+    }, []);
+
+    const div = {
+        width: '86%',
+        marginLeft: '14%'
+    };
+
+    const smaller = {
+        display: 'flex',
+        flexDirection: 'inline',
+    };
+
+    const buttons = {
+        width: '65px',
+        color: 'black',
+        cursor: 'pointer',
+        padding: '12px 0px',
+        borderRadius: '1px',
+        backgroundColor: 'white'
+    };
+
+    const handlePending = async () => {
+        console.log("HandlePending is Hit");
+        const response = await axios.get("http://localhost:5500/get-pending-notifications");
+        const result = response.data;
+        console.log("DATA FROM ENDPOINT: ", result);
+        setNotifications(result);
+    };
+
+    const handleApprovedRequest = async () => {
+        console.log("HandleApproved is Hit");
+        const response = await axios.get("http://localhost:5500/get-approved-notifications");
+        const result = response.data;
+        console.log("DATA FROM ENDPOINT: ", result);
+        setNotifications(result)
+    }
+    const handleDenyRequest = async () => {
+        console.log("HandleDenied is Hit");
+        const response = await axios.get("http://localhost:5500/get-denied-notifications");
+        const result = response.data;
+        console.log("DATA FROM ENDPOINT: ", result);
+        setNotifications(result)
+    };
+
+    const column = [
+        {
+            name: 'Employee',
+            selector: row => row.employee_username
+        },
+        {
+            name: 'Approved Supervisor ',
+            selector: row => row.supervisor_username
+        },
+        {
+            name: 'Item Requested',
+            selector: row => row.name
+        },
+        {
+            name: 'Category ',
+            selector: row => row.category_name
+        },
+        {
+            name: 'Request Description',
+            selector: row => row.description
+        },
+        {
+            name: 'Date of Request',
+            selector: row => row.date_approved
+        },
+        {
+            name: 'Amount Requested',
+            selector: row => row.amount
+        },
+        {
+            name: 'Priority',
+            selector: row => (
+              row.priority === 'green' ? 
+                <img src={Green} style={svgStyle} alt="green" /> :
+              row.priority === 'red' ? 
+                <img src={Red} style={svgStyle} alt="red" /> :
+              row.priority === 'cyan' ? 
+                <img src={Cyan} style={svgStyle} alt="cyan" /> :
+              (console.log("Not green, red, or cyan"), null)
+            )
+          },
+        {
+            name: 'Status',
+            selector: row => row.status
+
+        },
+        {
+            name: 'Approve',
+            cell: row => (
+                <button className='buttonStyle3' onClick={() => handleApprove(row, row.id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
+            )
+        },
+        {
+            name: 'Deny',
+            cell: row => (
+                <button className='buttonStyle3' onClick={() => handleDeny(row.id, row)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
+            )
+        }
+    ];
 
     return (
 
         <div>
             <NavbarMain></NavbarMain>
             <div className="notification-hr ">
-                {notifications.map((notification) => {
+                {/* {notifications.map((notification) => {
                     console.log("Data in the div", notification);
                     const employeeName = notification.employee_username;
                     const itemName = notification.name;
@@ -125,7 +233,23 @@ function NotificationHR() {
                             <button className='buttonStyle3' onClick={() => handleDeny(id, notification)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
                         </div>
                     )
-                })}
+                })} */}
+
+                <div style={div}>
+                    <div style={smaller}>
+                        <button style={buttons} onClick={handlePending}>Pending</button>
+                        <button style={buttons} onClick={handleApprovedRequest}>Approved</button>
+                        <button style={buttons} onClick={handleDenyRequest} >Denied</button>
+                    </div>
+                    <DataTable
+                        data={notifications}
+                        columns={column}
+                        pagination
+                    ></DataTable>
+                </div>
+
+
+
             </div>
         </div>
     );

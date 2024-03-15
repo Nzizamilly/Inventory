@@ -1,7 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Modal from 'react-modal'
+import Modal from 'react-modal';
+import Select from 'react-select';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -54,19 +55,69 @@ function Navbar() {
   useEffect(() => {
     const fetchData = async () => {
       const EmpID = localStorage.getItem("userID");
-      // console.log("EmpID", EmpID)
-    try {
-      // console.log("EmpID", EmpID)
-      const response = await axios.get(`http://localhost:5500/employee/${EmpID}`);
-      setData(response.data[0]);
-      // console.log("Data", data);
-    } catch (error) {
-      console.error("Error", error);
-    }
+      try {
+        const response = await axios.get(`http://localhost:5500/employee/${EmpID}`);
+        setData(response.data[0]);
+      } catch (error) {
+        console.error("Error", error);
+      }
+    };
+
+    fetchData();
+  }, [data]);
+
+
+  const option = [
+    { value: 'item', label: "Item Request" },
+    { value: 'purchase', label: "Purchase Request" },
+  ];
+
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      color: 'white',
+      border: 'none',
+      backgroundColor: 'black',
+      display: 'flex',
+      alignItems: 'center'
+    }),
+    option: (provided) => ({
+      ...provided,
+      backgroundColor: 'black',
+      display: 'flex',
+      // justifyContent: 'center',
+      '&:hover': {
+        backgroundColor: 'lightgrey',
+        color: 'black'
+      }
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      width: '54px',
+      height: '24px',
+      display: 'flex',
+      alignItems: 'center',
+      backgroundColor: 'black',
+      color: 'white',
+    })
+  }
+  const [selectedRequest, setSelectedRequest] = useState(null);
+
+  const handleRequestChange = (event) => {
+    setSelectedRequest(event.value);
   };
 
-  fetchData();
-  }, [data]);
+  useEffect(() => {
+    const changeRequest = (selectedRequest) => {
+      if (selectedRequest === 'item') {
+        navigate('/request-employee');
+      } else if (selectedRequest === 'purchase') {
+        navigate('/purchase-request');
+      };
+    }
+
+    changeRequest(selectedRequest);
+  }, [selectedRequest])
 
   return (
     <div className="navbar">
@@ -75,19 +126,25 @@ function Navbar() {
         <li className='li1'><Link to={'/home-employee'}>Home</Link></li>
       </ul>
       <ul>
-      <li><Link to={'/account-employee'} onMouseOver={openModal}>Account</Link></li>
-        <li><Link to={'/request-employee'}>Request</Link></li>
+        <li><Link to={'/account-employee'} onMouseOver={openModal}>Account</Link></li>
+        {/* <li><Link to={'/request-employee'}>Request</Link></li> */}
+        <Select
+          options={option}
+          styles={customStyles}
+          placeholder="Request"
+          onChange={handleRequestChange}
+        />
         <li><Link to={'/notification-employee'}>Notification</Link></li>
         <li><Link to={'/terms-employee'}>Terms and Conditions</Link></li>
       </ul>
       <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
         {data && (
           <>
-        <p>Username: {data.username}</p>
-        <p>Password: {data.password}</p>
-        <p>Position: {data.role_name}</p>
-        <p>Department: {data.department_name}</p>
-        </>
+            <p>Username: {data.username}</p>
+            <p>Password: {data.password}</p>
+            <p>Position: {data.role_name}</p>
+            <p>Department: {data.department_name}</p>
+          </>
         )}
       </Modal>
     </div>

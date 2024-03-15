@@ -32,15 +32,16 @@ function SupplierAdmin() {
   }
 
   const employeeContainer = {
-    fontFamily: 'Arial, sans-serif',
-    width: '100%',
-    height: '100vh',
-    backgroundColor: 'rgb(163, 187, 197)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    display: 'flex',
     gap: '51px',
-    flexWrap: 'wrap'
+    width: '100%',
+    height: '120vh',
+    display: 'flex',
+    flexWrap: 'wrap',
+    overFlow: 'auto',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: 'rgb(163, 187, 197)',
   }
 
   const color = {
@@ -48,7 +49,6 @@ function SupplierAdmin() {
   }
 
   const svgStyle = {
-    // backgroundColor: 'green',
     width: '30px',
     height: '30px',
     borderRadius: '14px',
@@ -70,28 +70,36 @@ function SupplierAdmin() {
 
   const [update, setUpdate] = useState({
     first_name: '',
-    second_name: '',
     address: '',
     phone: '',
     email: '',
     status: ''
   });
 
-  const location = useLocation();
-
   const handleChange = (event) => {
     setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
+
+
+  const handleUpdate = async (id) => {
+    try{
+      console.log("UPdatiess: ", update);
+      const response = await axios.put(`http://localhost:5500/supplier/${id}`,update);
+      console.log("Updated Well!", response.info);
+    }catch(error){
+      console.error("Error: ", error)
+    };
+  }
+
   const EmpID = localStorage.getItem("userID");
-  
-  
+
+
 
   const [visible, setVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
-  
+
   const [supp, setSupp] = useState({
     first_name: '',
-    second_name: '',
     address: '',
     phone: '',
     email: '',
@@ -100,7 +108,7 @@ function SupplierAdmin() {
   const handleChange2 = (event) => {
     setSupp((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
-  const handleMake = async (event) => {
+  const handleMake = async () => {
     try {
       await axios.post(`http://localhost:5500/supplier`, supp);
       console.log("Supplier added successfully")
@@ -127,44 +135,42 @@ function SupplierAdmin() {
       <div style={kain}>
         <h1>Add A New Supplier</h1>
       </div>
-    <div style={employeeContainer}>
-      <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Supplier</p></button>
+      <div style={employeeContainer}>
+        <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Supplier</p></button>
 
-      <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
-        <h1>Add Supplier</h1>
-        <input type='text' placeholder='First Name' name='first_name' onChange={handleChange2} />
-        <input type='text' placeholder='Second name' name='second_name' onChange={handleChange2} />
-        <input type='text' placeholder='Address' name='address' onChange={handleChange2} />
-        <input type='text' placeholder='Phone' name='phone' onChange={handleChange2} />
-        <input type='text' placeholder='Email' name='email' onChange={handleChange2} />
-        <input type='text' placeholder='Status' name='status' onChange={handleChange2} />
-        <button onClick={handleMake}>Submit</button>
-      </Model>
+        <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
+          <h1>Add Supplier</h1>
+          <input type='text' placeholder='First Name' name='first_name' onChange={handleChange2} />
+          <input type='text' placeholder='Address' name='address' onChange={handleChange2} />
+          <input type='text' placeholder='Phone' name='phone' onChange={handleChange2} />
+          <input type='text' placeholder='Email' name='email' onChange={handleChange2} />
+          <input type='text' placeholder='Status' name='status' onChange={handleChange2} />
+          <button onClick={handleMake}>Submit</button>
+        </Model>
 
-      {suppliers.map((supplier) => (
-        <div key={supplier.id} className="employee">
-          <div className="bigger">
-          <p>{supplier.first_name && supplier.first_name.charAt(0).toUpperCase()}</p>
+        {suppliers.map((supplier) => (
+          <div key={supplier.id} className="employee">
+            <div className="bigger">
+              <p>{supplier.first_name && supplier.first_name.charAt(0).toUpperCase()}</p>
+            </div>
+            <p>First Name: {supplier.first_name}</p>
+            <p>Address: {supplier.address}</p>
+            <p>Phone: {supplier.phone}</p>
+            <p>Email: {supplier.email}</p>
+            <p>Status:  <span style={color}>{supplier.status}</span></p>
+            <button onClick={() => setVisible(true)}>Update</button>
+            <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
+              <h1>Update</h1>
+              <input type='text' placeholder="Supplier's Name" name='first_name' onChange={handleChange} />
+              <input type='text' placeholder='Address' name='address' onChange={handleChange} />
+              <input type='text' placeholder='Phone' name='phone' onChange={handleChange} />
+              <input type='text' placeholder='Email' name='email' onChange={handleChange} />
+              <input type='text' placeholder='Status' name='status' onChange={handleChange} />
+              {/* <button onClick={handleUpdate(supplier.id)}>Submit</button> */}
+            </Model>
           </div>
-          <p>First Name: {supplier.first_name}</p>
-          <p>Address: {supplier.address}</p>
-          <p>Phone: {supplier.phone}</p>
-          <p>Email: {supplier.email}</p>
-          <p>Status:  <span style={color}>{supplier.status}</span></p>
-          <button onClick={() => setVisible(true)}>Update</button>
-          <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
-            <h1>Update</h1>
-            <input type='text' placeholder='First Name' name='first_name' onChange={handleChange} />
-            <input type='text' placeholder='second_name' name='second_name' onChange={handleChange} />
-            <input type='text' placeholder='Address' name='address' onChange={handleChange} />
-            <input type='text' placeholder='Phone' name='phone' onChange={handleChange} />
-            <input type='text' placeholder='Email' name='email' onChange={handleChange} />
-            <input type='text' placeholder='Status' name='status' onChange={handleChange} />
-            {/* <button onClick={() => handleUpdate(supplier.id)}>Submit</button> */}
-          </Model>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
     </div>
   );
 }

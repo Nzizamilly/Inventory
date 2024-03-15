@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const { Server } = require("socket.io");
 const http = require("http");
+const moment = require('moment');
 const nodemailer = require('nodemailer');
 const { EMAIL, PASSWORD } = require('./env.js');
 
@@ -126,11 +127,15 @@ io.on("connection", (socket) => {
 
       const status = 'Pending'
 
-      const email = messageData.email
+      const email = messageData.email;
+
+      const priority = messageData.priority;
+
+      const supervisorID = messageData.supervisor
 
       const q =
-        "INSERT INTO employee_supervisor_request ( categoryID,	itemID,	employeeID,	description,	date_of_request, email,	status,	amount	) VALUES (?, ?, ?, ?, ?, ?, ?, ? )";
-      const values = [categoryID, itemID, employeeID, messageData.description, messageData.date, email, status, messageData.count];
+        "INSERT INTO employee_supervisor_request ( categoryID,	itemID,	employeeID,	description,	date_of_request, email,	status,	amount, priority, supervisor_concerned ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+      const values = [categoryID, itemID, employeeID, messageData.description, messageData.date, email, status, messageData.count, priority, supervisorID ];
 
       db.query(q, values, (err, data) => {
         if (err) {
@@ -154,18 +159,19 @@ io.on("connection", (socket) => {
     console.log("Object Shown", object);
   })
 
-
-
-  app.get('/get-notification', (req, res) => {
-    const sql = `SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount, employee_supervisor_request.description, employee_supervisor_request.date_of_request,employee_supervisor_request.email , employee_supervisor_request.id
+  app.get('/get-notification/:supervisorID', (req, res) => {
+    const sql = `
+    SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount,employee_supervisor_request.priority, employee_supervisor_request.description, employee_supervisor_request.date_of_request,employee_supervisor_request.email ,employee_supervisor_request.status , employee_supervisor_request.id
     FROM employee_supervisor_request
     JOIN employees ON employee_supervisor_request.employeeID = employees.id
     JOIN category ON employee_supervisor_request.categoryID = category.id
     JOIN item ON employee_supervisor_request.itemID = item.id
+   WHERE employee_supervisor_request.status = 'Pending' AND employee_supervisor_request.supervisor_concerned = ? 	
     ORDER BY employee_supervisor_request.id DESC;
     `;
+    const supervisorID = req.params.supervisorID;
 
-    db.query(sql, (error, result) => {
+    db.query(sql, [supervisorID], (error, result) => {
       if (error) {
         console.error("Error", error);
       } else {
@@ -173,7 +179,6 @@ io.on("connection", (socket) => {
       }
     })
   })
-
 
   app.get('/get-notifications', (req, res) => {
     const sql = `SELECT 
@@ -185,6 +190,8 @@ io.on("connection", (socket) => {
     supervisor_hr_request.id, 
     supervisor_hr_request.supervisorID,
     supervisor_hr_request.email,
+    supervisor_hr_request.status,
+    supervisor_hr_request.priority,
     category.category_name,
     item.name
 FROM 
@@ -236,7 +243,6 @@ ORDER BY
     }
   })
 
-
   socket.on("Supervisor_Message_HR(1)", (messageData, supervisorName) => {
     console.log("From supervisor: to HR", messageData, supervisorName);
     console.log("TYPE OF message", typeof messageData);
@@ -270,7 +276,7 @@ ORDER BY
   });
 
   socket.on("Take This", (messageData) => {
-    console.log("Data Came: ", messageData.id);
+    console.log("Update Approved Is hit ");
 
     const id = messageData.id;
 
@@ -285,11 +291,59 @@ ORDER BY
         console.log("Status set Approved");
       }
     })
-
   });
+
+  socket.on("change-status-approve", (messageData) => {
+    console.log("Update status Is hit ");
+    const id = messageData.id;
+
+    const status = "Approved";
+
+    const sql = `UPDATE supervisor_hr_request SET status = ? WHERE id = ?`;
+    db.query(sql, [status, id], (error, result) => {
+      if (error) {
+        console.error("Error: ", error)
+      } else {
+        console.log("Status set Approved");
+      };
+    });
+  });
+  socket.on("change-status-deny", (messageData) => {
+    console.log("Denied status Is hit");
+    const id = messageData.id;
+
+    const status = "Denied";
+
+    const sql = `UPDATE supervisor_hr_request SET status = ? WHERE id = ?`;
+    db.query(sql, [status, id], (error, result) => {
+      if (error) {
+        console.error("Error: ", error)
+      } else {
+        console.log("Status set Denied");
+      };
+    });
+  });
+
+  socket.on("change-status-deny-for-employee", (messageData) => {
+    console.log("~~~~~Change for employee Hit~~~~~");
+
+    const id = messageData.id;
+    const status = "Denied";
+
+    const sqli = `UPDATE employee_supervisor_request SET status = ? WHERE id = ?`;
+
+    db.query(sqli, [status, id], (error, result) => {
+      if (error) {
+        console.error("Error: ", error)
+      } else {
+        console.log("Status set Denied");
+      };
+    });
+  })
 
   socket.on("Send Approved Email", (messageData) => {
     console.log("Object to be sent", messageData);
+
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -297,6 +351,7 @@ ORDER BY
         pass: PASSWORD
       }
     });
+
     const mailOption = {
       from: 'Centrika Inventory System',
       to: 'cnziza@centrika.rw',
@@ -308,13 +363,10 @@ ORDER BY
       if (error) {
         console.error("Error", error)
       } else {
-        console.log("DONE DIDDDDDDD....~~~!!!")
-        console.log(info.response);
-
+        const response = info;
       }
     })
-  })
-
+  });
 
   socket.on("disconnect", () => {
   });
@@ -470,6 +522,7 @@ app.get("/employee/:id", (req, res) => {
     employees.roleID,
     employees.departmentID,
     employees.status,
+    employees.email,
     role.role_name,
     department.department_name
 FROM
@@ -557,11 +610,9 @@ app.get('/items', (req, res) => {
         item.categoryID = ?`;
 
   db.query(sql, [categoryId], (err, results) => {
-    if (err) {
-      console.error('Error executing query: ', err);
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
-    res.json(results);
+
+    err ? console.error("Error: ", err) : res.json(results);
+
   });
 });
 
@@ -664,10 +715,9 @@ app.post('/category', (req, res) => {
 })
 
 app.post('/supplier', (req, res) => {
-  const q = 'INSERT INTO supplier (first_name, second_name, address, phone, email, status) VALUES (?)';
+  const q = 'INSERT INTO supplier (first_name, address, phone, email, status) VALUES (?)';
   const values = [
     req.body.first_name,
-    req.body.second_name,
     req.body.address,
     req.body.phone,
     req.body.email,
@@ -694,6 +744,26 @@ app.get('/supplier', (req, res) => {
       res.json(result)
     }
   })
+});
+
+app.put('/supplier/:id', (req, res) => {
+  const id = req.params.id;
+
+  const query = `UPDATE supplier SET supplier first_name = ?, address = ?, phone = ?, email = ?, status = ? WHERE id = ?`;
+
+  const values = [
+    req.body.first_name,
+    req.body.address.
+      req.body.phone,
+    req.body.email,
+    req.body.status,
+    id
+  ];
+
+  db.query(query, values, (err, result) => {
+    err ? console.error("Error: ", err) : res.json(result);
+  })
+
 })
 
 app.post('/add-serial-number/:takeItemID', (req, res) => {
@@ -825,6 +895,7 @@ app.put('/update-item/:itemID', (req, res) => {
   const newItemName = req.body.newItemName;
   const newSupplierID = req.body.newSupplierID;
   const newCategoryID = req.body.newCategoryID;
+  const employeeUpdateName = req.body.employeeUpdateName;
 
   console.log("Sum", newItemName);
   console.log("Sum", newSupplierID);
@@ -834,8 +905,8 @@ app.put('/update-item/:itemID', (req, res) => {
 
   const currentTimeString = date.toLocaleDateString();
 
-  const updateQuery = 'UPDATE item SET name = ?, supplierID = ?, categoryID = ?, updatedtime = ? WHERE id = ?';
-  const updateValues = [newItemName, newSupplierID, newCategoryID, currentTimeString, id];
+  const updateQuery = 'UPDATE item SET name = ?, supplierID = ?, categoryID = ?, updatedtime = ?, nameUpdated	= ? WHERE id = ?';
+  const updateValues = [newItemName, newSupplierID, newCategoryID, currentTimeString, employeeUpdateName, id];
 
   db.query(updateQuery, updateValues, (err3) => {
     if (err3) {
@@ -951,20 +1022,18 @@ app.get('/items/:categoryID', (req, res) => {
   console.log("CategoryID: ", categoryID);
   const q = 'SELECT * FROM item WHERE categoryID = ?';
   db.query(q, categoryID, (error, result) => {
-    if (error) {
-      console.error("Error: ", error);
-    } else {
-      return res.json(result);
-    }
+    error ? console.error("Error: ", error) : res.json(result);
+    console.log("This passed successfully");
   })
 })
 
 app.get('/serial-number', (req, res) => {
   const q = 'SELECT * FROM serial_number';
-  db.query(q, categoryID, (error, result) => {
+  db.query(q, (error, result) => {
     if (error) {
       console.error("Error: ", error);
     } else {
+      console.log("Type OF", typeof result);
       return res.json(result);
     }
   })
@@ -1053,30 +1122,41 @@ app.put('/update-serial-status/:id/:status/:taker', async (req, res) => {
 });
 // app.get('/get-serial-status/:id'
 
-app.get('/monthly-report', (req, res) => {
+app.get('/monthly-report/:StartDate/:EndDate', (req, res) => {
+  const start = req.params.StartDate;
+  const end = req.params.EndDate;
+  console.log("Start from front: ", start);
+  console.log("end from front: ", end);
   const query = `
-  SELECT
-  DATE_FORMAT(serial_number.date, '%d-%m-%Y') AS month,
+  SELECT 
+  DATE_FORMAT(serial_number.date, '%Y-%m-%d') AS transaction_date,
   item.name AS item_name,
-  SUM(CASE WHEN serial_number.status = 'In' THEN 1 ELSE 0 END) AS amount_entered,
-  SUM(CASE WHEN serial_number.status = 'Out' THEN 1 ELSE 0 END) AS amount_went_out,
+  COALESCE(SUM(CASE WHEN serial_number.status = 'In' THEN 1 ELSE 0 END), 0) AS amount_entered,
+  COALESCE(SUM(CASE WHEN serial_number.status = 'Out' THEN 1 ELSE 0 END), 0) AS amount_went_out,
   employees.username AS taker_name,
-  (SELECT COUNT(*) FROM serial_number s WHERE s.status = 'In' AND s.itemID = item.id) AS total_items_in
+  COALESCE((SELECT COUNT(*) FROM serial_number s WHERE s.status = 'In' AND s.itemID = item.id), 0) AS total_items_in
 FROM serial_number
 JOIN item ON serial_number.itemID = item.id
 LEFT JOIN employees ON serial_number.taker = employees.id
-GROUP BY month, item_name, taker_name, item.id
-ORDER BY serial_number.date DESC;
+WHERE serial_number.date >= ? AND serial_number.date <= ? -- Specify your date range here
+GROUP BY transaction_date, item.name, employees.username, item.id
+ORDER BY serial_number.date DESC; -- Order by date in descending order
 
   `;
-  db.query(query, (error, result) => {
+  const startDate = moment(req.query.start, 'DD-MM-YYYY').format('YYYY-MM-DD');
+  const endDate = moment(req.query.end, 'DD-MM-YYYY').format('YYYY-MM-DD');
+  const values = [start, end];
+  db.query(query, values, (error, result) => {
     if (error) {
       console.error("Error", error);
+      res.status(500).json({ error: "Internal Server Error" });
     } else {
+      console.log("Result: ", result);
       res.json(result);
     }
-  })
-})
+  });
+});
+
 
 app.post('/add-department', (req, res) => {
   const q = 'INSERT INTO department(department_name, status) VALUES (?,?)';
@@ -1339,9 +1419,10 @@ app.post('/add-request-supervisor-hr/:supervisorID', async (req, res) => {
 
     const supervisorID = req.params.supervisorID;
     const email = req.body.email;
+    const priority = req.body.priority;
 
-    const q = "INSERT INTO supervisor_hr_request (supervisorID,employeeID,itemID,categoryID,description,date_approved,amount,email,status) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-    const values = [supervisorID, employeeID, itemID, categoryID, req.body.description, req.body.date_of_request, req.body.amount, email, status];
+    const q = "INSERT INTO supervisor_hr_request (supervisorID,employeeID,itemID,categoryID,description,date_approved,amount,email,status, priority) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+    const values = [supervisorID, employeeID, itemID, categoryID, req.body.description, req.body.date_of_request, req.body.amount, email, status, priority];
     console.log("Values: ", values);
 
     db.query(q, values, (err, data) => {
@@ -1708,9 +1789,154 @@ ORDER BY
       return res.json(result);
     }
   })
+});
 
-})
+app.get('/get-approved-notification', (req, res) => {
+  const q = ` SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount, employee_supervisor_request.description, employee_supervisor_request.date_of_request,employee_supervisor_request.email ,employee_supervisor_request.status , employee_supervisor_request.id
+  FROM employee_supervisor_request
+  JOIN employees ON employee_supervisor_request.employeeID = employees.id
+  JOIN category ON employee_supervisor_request.categoryID = category.id
+  JOIN item ON employee_supervisor_request.itemID = item.id
+ WHERE employee_supervisor_request.status = 'Approved'
+  ORDER BY employee_supervisor_request.id DESC;
+`;
+  db.query(q, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
 
+app.get('/get-denied-notification', (req, res) => {
+  const q = ` SELECT employees.username, category.category_name, item.name, employee_supervisor_request.priority, employee_supervisor_request.amount, employee_supervisor_request.priority, employee_supervisor_request.description, employee_supervisor_request.date_of_request,employee_supervisor_request.email ,employee_supervisor_request.status , employee_supervisor_request.id
+  FROM employee_supervisor_request
+  JOIN employees ON employee_supervisor_request.employeeID = employees.id
+  JOIN category ON employee_supervisor_request.categoryID = category.id
+  JOIN item ON employee_supervisor_request.itemID = item.id
+ WHERE employee_supervisor_request.status = 'Denied'
+  ORDER BY employee_supervisor_request.id DESC;
+`;
+  db.query(q, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+app.get('/get-pending-notifications', (req, res) => {
+
+  const sql = `SELECT 
+  employees.username AS employee_username, 
+  supervisor.username AS supervisor_username,
+  supervisor_hr_request.amount, 
+  supervisor_hr_request.description, 
+  supervisor_hr_request.date_approved, 
+  supervisor_hr_request.id, 
+  supervisor_hr_request.supervisorID,
+  supervisor_hr_request.email,
+  supervisor_hr_request.priority,
+  supervisor_hr_request.status,
+  category.category_name,
+  item.name
+FROM 
+  supervisor_hr_request
+JOIN 
+  employees ON supervisor_hr_request.employeeID = employees.id
+JOIN 
+  employees AS supervisor ON supervisor_hr_request.supervisorID = supervisor.id
+JOIN 
+  category ON supervisor_hr_request.categoryID = category.id
+JOIN 
+  item ON supervisor_hr_request.itemID = item.id
+  WHERE  supervisor_hr_request.status = 'Pending'
+ORDER BY 
+  supervisor_hr_request.id DESC;
+`
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+app.get('/get-approved-notifications', (req, res) => {
+
+  const sql = `SELECT 
+  employees.username AS employee_username, 
+  supervisor.username AS supervisor_username,
+  supervisor_hr_request.amount, 
+  supervisor_hr_request.description, 
+  supervisor_hr_request.date_approved, 
+  supervisor_hr_request.id, 
+  supervisor_hr_request.supervisorID,
+  supervisor_hr_request.priority,
+  supervisor_hr_request.email,
+  supervisor_hr_request.status,
+  category.category_name,
+  item.name
+FROM 
+  supervisor_hr_request
+JOIN 
+  employees ON supervisor_hr_request.employeeID = employees.id
+JOIN 
+  employees AS supervisor ON supervisor_hr_request.supervisorID = supervisor.id
+JOIN 
+  category ON supervisor_hr_request.categoryID = category.id
+JOIN 
+  item ON supervisor_hr_request.itemID = item.id
+  WHERE  supervisor_hr_request.status = 'Approved'
+ORDER BY 
+  supervisor_hr_request.id DESC;
+`
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+app.get('/get-denied-notifications', (req, res) => {
+
+  const sql = `SELECT 
+  employees.username AS employee_username, 
+  supervisor.username AS supervisor_username,
+  supervisor_hr_request.amount, 
+  supervisor_hr_request.description, 
+  supervisor_hr_request.date_approved, 
+  supervisor_hr_request.id, 
+  supervisor_hr_request.supervisorID,
+  supervisor_hr_request.email,
+  supervisor_hr_request.priority,
+  supervisor_hr_request.status,
+  category.category_name,
+  item.name
+FROM 
+  supervisor_hr_request
+JOIN 
+  employees ON supervisor_hr_request.employeeID = employees.id
+JOIN 
+  employees AS supervisor ON supervisor_hr_request.supervisorID = supervisor.id
+JOIN 
+  category ON supervisor_hr_request.categoryID = category.id
+JOIN 
+  item ON supervisor_hr_request.itemID = item.id
+  WHERE  supervisor_hr_request.status = 'Denied'
+ORDER BY 
+  supervisor_hr_request.id DESC;
+`
+  db.query(sql, (error, result) => {
+    console.log("TYPE OF RESULT: ", typeof result);
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+app.get('/show-supervisor', (req, res) => {
+  const q = `
+  SELECT username, id
+  FROM employees
+  WHERE roleID = 5;
+  ;`
+  ;
+  db.query(q, (error, data) => {
+    if(error) {
+      console.error("Error: ", error);
+    }else{
+      return res.json(data);
+    }
+  })
+});
 
 app.listen(5500, () => {
   console.log("Connected to backend")

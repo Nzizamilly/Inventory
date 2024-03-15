@@ -77,7 +77,7 @@ function TransactionsAdmin() {
 
   const columns = [
     {
-      name: 'Month',
+      name: 'Date',
       selector: row => row.month
     },
     {
