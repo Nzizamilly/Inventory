@@ -2,11 +2,26 @@ import { Link } from 'react-router-dom';
 import React from 'react';
 import NavbarAdmin from './navbarAdmin';
 
+
+const Container = {
+  width: '100%',
+  height: '100vh',
+  display: 'flex',
+  overflow: 'auto',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontFamily: "'Arial', sans-serif",
+  backgroundColor:' rgb(163, 187, 197)',
+}
+
+
+
 function TermsAdmin() {
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
-    <div className="notification-container-admin">
+    <div style={Container}>
       <div className="terms-admin">
         <h1>Terms</h1>
         <p>By using the material requistion form you agree to the following terms and conditions:</p>

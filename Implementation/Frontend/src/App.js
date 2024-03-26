@@ -1,7 +1,6 @@
 import React from 'react';
 import './style.css';
 import Modal from 'react-modal'
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './employee-pages/login.jsx';
 import Home from './employee-pages/home.jsx';
 import Terms from './employee-pages/terms';
@@ -21,6 +20,7 @@ import Departments_Roles from './admin-pages/department&roles.jsx';
 import NavbarSuperVisor from './supervisor-pages/NavbarSuperVisor.jsx'
 import SupervisorNotifier from './supervisor-pages/SuperVisorNotifier.jsx';
 import NoPage from './employee-pages/NoPage.jsx';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 Modal.setAppElement('#root');
 
@@ -28,14 +28,12 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-
-
         <Routes>
           <Route index path="/" element={<Login />} />
           <Route path="*" element={<NoPage />} />
         </Routes>
 
-{/* 
+        {/* 
         <NavbarSuperVisor />
         <Routes>
           <Route path="/notifier-supervisor" element={<SupervisorNotifier />} />
@@ -82,8 +80,8 @@ function App() {
           <Route path="/departments-and-roles-admin" element={<Departments_Roles />} />
         </Routes> */}
 
-        
-<NavbarSuperVisor />
+
+        <NavbarSuperVisor />
         <Routes>
           <Route path="/notifier-supervisor" element={<SupervisorNotifier />} />
         </Routes>

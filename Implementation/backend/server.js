@@ -6,9 +6,11 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const { Server } = require("socket.io");
 const http = require("http");
+const fs = require('fs');
 const moment = require('moment');
 const nodemailer = require('nodemailer');
 const { EMAIL, PASSWORD } = require('./env.js');
+const { Blob } = require("buffer");
 
 
 const app = express();
@@ -135,7 +137,7 @@ io.on("connection", (socket) => {
 
       const q =
         "INSERT INTO employee_supervisor_request ( categoryID,	itemID,	employeeID,	description,	date_of_request, email,	status,	amount, priority, supervisor_concerned ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-      const values = [categoryID, itemID, employeeID, messageData.description, messageData.date, email, status, messageData.count, priority, supervisorID ];
+      const values = [categoryID, itemID, employeeID, messageData.description, messageData.date, email, status, messageData.count, priority, supervisorID];
 
       db.query(q, values, (err, data) => {
         if (err) {
@@ -1582,14 +1584,28 @@ app.get('/get-number', (req, res) => {
       console.error("Error", error);
       return res.status(500).json({ error: "Internal Server Error" });
     } else {
-      // Check if there is any result
       if (result.length > 0) {
         const latestId = result[0].id;
-
-        // console.log("Latest ID in employee_supervisor_request table:", latestId);
         return res.json({ latestId });
       } else {
-        return res.json({ latestId: null }); // Or handle the case where there is no result
+        return res.json({ latestId: null });
+      }
+    }
+  });
+});
+
+app.get('/get-number-purchase', (req, res) => {
+  const sql = "SELECT id FROM employee_supervisor_purchase ORDER BY id DESC LIMIT 1";
+  db.query(sql, (error, result) => {
+    if (error) {
+      console.error("Error", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    } else {
+      if (result.length > 0) {
+        const latestId = result[0].id;
+        return res.json({ latestId });
+      } else {
+        return res.json({ latestId: null });
       }
     }
   });
@@ -1928,15 +1944,164 @@ app.get('/show-supervisor', (req, res) => {
   FROM employees
   WHERE roleID = 5;
   ;`
-  ;
+    ;
   db.query(q, (error, data) => {
-    if(error) {
+    if (error) {
       console.error("Error: ", error);
-    }else{
+    } else {
       return res.json(data);
     }
   })
 });
+
+app.delete('/delete-category/:id', (req, res) => {
+  const id = req.params.id;
+  const q = `DELETE FROM category
+  WHERE id = ?;
+  `;
+
+  db.query(q, [id], (error, result) => {
+    result ? console.log(result) : console.error("Error: ", error);
+  })
+});
+
+app.post('/add-employee-supervisor-purchase', (req, res) => {
+  const employeeID = req.body.employeeID;
+  const expenditure_line = req.body.description;
+  const amount = req.body.amount;
+  const cost = req.body.cost;
+  const supervisorID = req.body.supervisorID;
+  const endGoal = req.body.endGoalValue;
+  const quotation = req.body.file;
+  const priority = req.body.priority;
+  const email = req.body.email;
+  const status = "Pending";
+
+  const q = "INSERT INTO employee_supervisor_purchase (expenditure_line,amount,cost_method,supervisor,end_goal,quotation,priority,employeeID,email,status) VALUES (?,?,?,?,?,?,?,?,?,?)";
+
+  const values = [
+    expenditure_line,
+    amount,
+    cost,
+    supervisorID,
+    endGoal,
+    quotation,
+    priority,
+    employeeID,
+    email,
+    status
+  ]
+
+  db.query(q, values, (error, result) => {
+    result ? console.log("Result: ", result) : console.error("Error: ", error);
+  });
+});
+
+app.get('/get-purchase-notification/:supervisorID', (req, res) => {
+  const id = req.params.supervisorID;
+  const sql = ` SELECT employees.username,employee_supervisor_purchase.amount,employee_supervisor_purchase.cost_method,employee_supervisor_purchase.expenditure_line,employee_supervisor_purchase.email,employee_supervisor_purchase.status, employee_supervisor_purchase.end_goal,employee_supervisor_purchase.quotation, employee_supervisor_purchase.quotation, employee_supervisor_purchase.priority,employee_supervisor_purchase.date ,employee_supervisor_purchase.date , employee_supervisor_purchase.id
+ FROM employee_supervisor_purchase
+ JOIN employees ON employee_supervisor_purchase.employeeID = employees.id
+WHERE employee_supervisor_purchase.status = 'Pending' AND employee_supervisor_purchase.supervisor = ?
+ ORDER BY employee_supervisor_purchase.id DESC `;
+
+  const values = [id];
+  db.query(sql, values, (error, result) => {
+    if (error) {
+      console.error("Error: ", error);
+    } else {
+      res.json(result);
+      console.log("Type of quotation: ", result[0].quotation);
+    };
+  })
+});
+
+app.post('/add-purchase-supervisor-hr/:supervisorID', async (req, res) => {
+
+  const getEmployeeID = (employeeName) => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT id FROM employees WHERE username = ?`;
+      db.query(sql, [employeeName], (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(error);
+        } else {
+          const employeeID = result.length > 0 ? result[0].id : null;
+          resolve(employeeID);
+        }
+      });
+    });
+  };
+
+  try {
+    const gotEmployeeName = req.body.username;
+    const employeeID = await getEmployeeID(gotEmployeeName);
+
+    const status = 'Pending'
+
+    const supervisorID = req.params.supervisorID;
+    const email = req.body.email;
+    const priority = req.body.priority;
+    const expenditure = req.body.expenditure_line;
+    const amount = req.body.amount;
+    const cost_method = req.body.cost_method;
+    const endGoal = req.body.end_goal;
+    const quotation = req.body.quotation;
+
+    console.log("Email From Front: ", email);
+
+    const readImageFile = (filePath) => {
+      try {
+        const bitmap = fs.readFileSync(filePath);
+        return Blob.from(bitmap);
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    }
+
+    const quotationPath = req.body.quotation;
+
+    const doneQuotation = readImageFile(quotationPath);
+
+
+    const q = "INSERT INTO supervisor_hr_purchase (expenditure_line, amount, cost_method, supervisor, end_goal, quotation, status, email, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    const values = [
+      expenditure,
+      amount,
+      cost_method,
+      supervisorID,
+      endGoal,
+      doneQuotation,
+      status,
+      email,
+      priority,
+    ];
+
+    console.log("Values: ", values);
+
+    db.query(q, values, (err, data) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+      } else {
+        res.status(200).send("Request successfully inserted");
+      };
+
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get('/get-purchase-id', (req, res) => {
+  const q = `SELECT id FROM employee_supervisor_purchase ORDER BY id DESC LIMIT 1;`;
+  db.query(q, (error, data) => {
+    console.log("Data: ", data);
+    data ? res.json(data) : console.error("Error: ", error);
+  })
+})
 
 app.listen(5500, () => {
   console.log("Connected to backend")

@@ -56,11 +56,9 @@ function ItemsAdmin() {
   }
 
   const svgStyle = {
-    // backgroundColor: 'green',
     width: '30px',
     height: '30px',
     borderRadius: '14px',
-    // marginTop: '2px'
   }
   const inano = {
     color: 'black'
@@ -419,7 +417,7 @@ function ItemsAdmin() {
     {
       name: 'Update',
       cell: row => (
-        <button className='addItem-btn' onClick={() => openUpdateSerial(row.id)}><img src={Update} style={svgStyle}/></button>
+        <button className='addItem-btn' onClick={() => openUpdateSerial(row.id)}><img src={Update} style={svgStyle} /></button>
       )
 
     },
@@ -536,16 +534,14 @@ function ItemsAdmin() {
   }
 
   const handleSerialUpdate = async (getUpdateSerialID) => {
-    console.log("ID: ", getUpdateSerialID);
     try {
       const response = await axios.put(`http://localhost:5500/update-serial-item/${getUpdateSerialID}`, serialUpdateData);
-      alert("Updated successfully");
+      window.alert("Updated successfully");
       console.log(response);
       closeUpdateSerialModal();
     } catch (error) {
       console.error('Error fetching updating: ', error);
     }
-
   }
 
   const handleSerialDelete = async (row) => {
@@ -654,7 +650,7 @@ function ItemsAdmin() {
       border: 'none',
       borderRadius: '12px',
       backgroundColor: 'rgb(153, 235, 240)',
-      marginLeft: '580px',
+      marginLeft: '480px',
       marginTop: '320px'
     },
     overlay: {

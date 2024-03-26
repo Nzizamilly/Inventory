@@ -3,6 +3,7 @@ import RingLoader from "react-spinners/RingLoader";
 
 function NoPage() {
     const [loading, setLoading] = useState(true)
+    
     useEffect(() => {
         const intervalId = setInterval(() => {
             setLoading(prevLoading => !prevLoading);

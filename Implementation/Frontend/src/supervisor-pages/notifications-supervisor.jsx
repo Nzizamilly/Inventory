@@ -75,8 +75,6 @@ function NotificationSupervisor() {
       await axios.post(`http://localhost:5500/add-request-supervisor-hr/${supervisorID}`, notifications);
       window.alert("Request Sent to HR for Second-tier Approval");
 
-      // await axios.put(`http://localhost:5500/approve-by-supervisor/${index}`)
-
     } catch (error) {
       console.error('Error', error);
     }
@@ -96,25 +94,10 @@ function NotificationSupervisor() {
     }
   }
 
-  // useEffect(()=>{
-
-  //     socket.emit("get-some");
-  //     socket.on("give-some", (messageData) => {
-  //       // if (messageData.status !== 'Denied') {
-  //         setNotifications((prevNotifications) => [...prevNotifications, messageData]);
-  //       // }
-  //     });
-
-
-  // }, [notifications])
-
-
   useEffect(() => {
     const fetch = async () => {
       try{
         const supervisorID = localStorage.getItem("userID");
-        const supervisorRole = localStorage.getItem("roleID");
-
         const response = await axios.get(`http://localhost:5500/get-notification/${supervisorID}`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
@@ -125,19 +108,6 @@ function NotificationSupervisor() {
     };
     fetch();
 }, [])
-
-  // useEffect(() => {
-  //   const handleNotification = (messageData) => {
-  //     setNotifications((prevNotifications) => [...prevNotifications, ...messageData]);
-  //   };
-
-  //   socket.on("Employee_Message_Supervisor(2)", handleNotification);
-
-  //   return () => {
-  //     // Cleanup the event listener when the component unmounts
-  //     socket.off("Employee_Message_Supervisor(2)", handleNotification);
-  //   };
-  // }, [ setNotifications]);
 
   console.log("type in Upper logger", typeof notifications);
 
@@ -200,7 +170,6 @@ function NotificationSupervisor() {
     width: '90%',
     marginLeft: '13%'
   }
-
   const buttons = {
     width: '65px',
     color: 'black',
@@ -238,42 +207,11 @@ function NotificationSupervisor() {
     setNotifications(result)
   }
 
-  
-
-
   return (
 
     <div>
       <NavbarHome></NavbarHome>
       <div className="notification-supervisor">
-        {/* {notifications.map((notification, index) => {
-          console.log("Notifications Shown: ",  notification);
-
-          const employeeName = notification.username;
-          const itemName = notification.name;
-          const categoryName = notification.category_name;
-          const description = notification.description;
-          const date = notification.date_of_request;
-          const count = notification.amount;
-          const id = notification.id
-          const uniqueKey = `${id}_${index}`;
-          // const employeeName = notification.username;
-
-          // const itemName = notification.name;
-          // const categoryName = notification.category_name;
-          // const description = notification.description;
-          // const date = notification.date_of_request;
-          // const count = notification.amount;
-          // const id = notification.id;
-          return (
-            <div style={notificationAdmin} key={id}>
-              <span style={sumStyle}> {employeeName} Requested: {itemName}  From: {categoryName}  Amount: {count}  Description: {description} Date: {date} </span>
-              <button className='buttonStyle3' onClick={() => handleApprove(notification, id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
-              <button className='buttonStyle3' onClick={() => handleDeny(id, notification)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
-            </div>
-          )
-        })} */}
-
         <div style={div}>
           <div style={smaller}>
           <button style={buttons} onClick={handlePending}>Pending</button>
@@ -286,25 +224,6 @@ function NotificationSupervisor() {
         pagination
         ></DataTable>
         </div>
-
-
-
-        {/* {notifications.map((notification, index) => {
-          console.log("Data in the div", notification);
-          const itemName = notification.itemName;
-          const categoryName = notification.category_name;
-          const employeeName = notification.username;
-          const description = notification.description;
-          const date = notification.date;
-          const count = notification.amount;
-          return (
-            <div style={notificationAdmin} key={index}>
-              <span key={index} style={sumStyle}> {employeeName} Requested: {itemName}  From: {categoryName} Amount: {count} Description: {description} Date: {date}</span>
-              <button className='buttonStyle3' onClick={() => handleApprove(notification.id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
-              <button className='buttonStyle3' onClick={() => handleDeny(notification.id)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
-            </div>
-          )
-        })} */}
 
       </div>
     </div>

@@ -383,7 +383,6 @@ function Request() {
               <br />
               <button onClick={sendMessage}>Send</button>
             </div>
-
           </Modal>
         </div>
       </div>

@@ -10,6 +10,7 @@ function NavbarHome() {
     const navigate = useNavigate();
     const [data, setData] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [transactionType, setTransactionType] = useState('');
 
     const modalStyles = {
         content: {
@@ -72,12 +73,40 @@ function NavbarHome() {
 
         fetchData();
     }, []);
-    // 
+
+    const handleTransactionChange = (event) => {
+        const selectedTransactionType = event.target.value;
+        setTransactionType(event.target.value);
+
+        if (selectedTransactionType === "item") {
+            navigate('/notification-supervisor')
+        } else {
+            navigate('/purchase-supervisor')
+        }
+    };
+   
+    const select = {
+        display: 'block',
+        padding: '8px 16px',
+        borderRadius: '12px',
+        textDecoration: 'none',
+        color: 'rgb(5, 5, 5)',
+        width: '209px',
+        backgroundColor: 'black',
+        color: 'white'
+
+    }
+
     return (
         <div className="navbar">
             <ul className='ulsupervisor' style={color}>
                 <li className='li1supervisor'><Link to={'/home-supervisor'}>Home</Link></li>
-                <li className='li1supervisor'><Link to={'/notification-supervisor'}>View Requests</Link></li>
+                {/* <li className='li1supervisor'><Link to={'/notification-supervisor'}>View Requests</Link></li> */}
+                <select onChange={handleTransactionChange} value={transactionType} style={select}>
+                    <option value="" disabled >Requests</option>
+                    <option value="item" >Item</option>
+                    <option value="purchase" >Purchase</option>
+                </select>
                 <li className='li1supervisor' onClick={handleLogout}><Link>Log Out</Link></li>
             </ul>
             <ul className='ul2supervisor'>

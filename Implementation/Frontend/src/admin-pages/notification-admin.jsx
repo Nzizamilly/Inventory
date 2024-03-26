@@ -57,11 +57,13 @@ function NotificationAdmin() {
     justifyContent: 'center',
     alignItems: 'center',
     padding: '5px 12px',
-}
+};
+
+
 
   return (
     <div> <NavbarAdmin></NavbarAdmin>
-      <div className="notification-container-admin">
+      <div className="random-container">
         {notifications.map((notification) => {
           return (
             <div key={notification.id} style={notificationAdmin}>

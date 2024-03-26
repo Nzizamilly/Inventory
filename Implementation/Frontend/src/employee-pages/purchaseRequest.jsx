@@ -9,33 +9,29 @@ import Cyan from '../images/cyan-circle.svg';
 import ImgAdd from '../images/add-photo.svg';
 import Select from 'react-select';
 import Modal from 'react-modal'
-
+import { storage } from '../firebase';
+import { ref, uploadBytes } from "firebase/storage";
+import {v4} from "uuid"
+ 
 function PurchaseRequest() {
 
 
   const [description, setDescription] = useState('');
   const [endGoalValue, setEndGoalValue] = useState('');
-  const [category, setCategory] = useState([]);
-  const [backCount, setBackCount] = useState('');
-  const [item, setItem] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [ItemNameTrial, setItemNameTrial] = useState('');
-  const [someName, setSomeName] = useState({});
-  const [options, setOptions] = useState([]);
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
   const [selectedPriority, setSelectedPriority] = useState(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const [message, setMessage] = useState([]);
+  const [file, setFile] = useState('');
+  const [cost, setCost] = useState('');
+  const [selectedSupervisorName, setSelectedSupervisorName] = useState('');
+  const [taker, setTaker] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [imageUpload, setImageUpload] = useState(null);
+  const [latestId, setLatestID] = useState('');
+  const [supervisorId, setSupervisorId] = useState([]);
 
-
-  const Selects = {
-    width: '43%',
-    height: '18%',
-    color: 'black',
-    border: 'none',
-    borderRadius: '21px'
-  };
 
   const modal = {
     overlay: {
@@ -60,139 +56,16 @@ function PurchaseRequest() {
     },
   };
 
-  const Option = {
-    width: '39%',
-    height: '25%',
-    display: 'flex',
-    gap: '12px',
-    color: 'white',
-    backgroundColor: 'black',
-    border: 'none',
-    borderRadius: '14px'
-  }
-
-  const socket = io.connect("http://localhost:5001");
-
-  useEffect(() => {
-    const fetchCategory = async () => {
-      try {
-        const res = await axios.get(`http://localhost:5500/category`);
-        setCategory(res.data);
-      } catch (error) {
-        console.error("Error: ", error)
-      }
-    };
-    fetchCategory();
-  }, []);
-
-  useEffect(() => {
-    const fetchItem = async (categoryID) => {
-      console.log("CategoryID: ", categoryID);
-      try {
-        const response = await axios.get(`http://localhost:5500/items/${categoryID}`);
-        setItem(response.data);
-        setOptions(response.data);
-
-      } catch (error) {
-        console.error("Error: ", error);
-      }
-    }
-    if (selectedCategory) {
-      fetchItem(selectedCategory);
-    }
-  }, [selectedCategory]);
-
-  const handleCategoryChange = (event) => {
-    const selectedValue = event.target.value;
-    setSelectedCategory(selectedValue);
-  }
-
-  useEffect(() => {
-    const fetchCount = async (itemID) => {
-      try {
-        const itemId = itemID;
-        const response = await axios.get(`http://localhost:5500/get-total-number/${itemId}`);
-        setBackCount(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error: ", error);
-      }
-    }
-    if (someName.id) {
-      fetchCount(someName.id);
-    }
-  }, [someName]);
-
   const handleAmount = (event) => {
     setAmount(event.target.name);
   };
 
-  const sendMessage = async () => {
-
-    const get = localStorage.getItem('username');
-    const email = localStorage.getItem('email')
-
-    const date = Date.now();
-
-    const response = await axios.get('http://localhost:5500/get-number');
-
-    const idTaker = response.data.latestId + 1;
-
-    const messageData = {
-      id: idTaker,
-      employeeName: get,
-      categoryName: category[0].category_name,
-      itemName: someName.name,
-      count: amount.amount,
-      description,
-      email: email,
-      date: formatDate(date),
-
-    };
-
-    messageData.priority = selectedPriority;
-
-    // console.log("Item name: ", messageData.itemName);
-    // console.log("Category Name: ", messageData.categoryName)
-    // console.log("Back Count: ", backCount.totalCount);
-    // console.log("Front Count: ", amount.amount);
-    console.log("SelectedPriority", selectedPriority);
-    console.log("MessageData Data: ", messageData);
-
-
-    window.alert("Request sent....");
-    socket.emit("Employee_Message_Supervisor(1)", messageData);
-    try {
-      const response = await axios.post('http://localhost:5500/add-request-employee-supervisor', messageData);
-      messageData.id = id;
-      const id = response.id;
-      console.log("Response", response);
-    } catch (error) {
-      console.error("Error Occurred Unexpectedly", error)
-    }
-
-    socket.on("disconnect", () => {
-      console.log("Disconnected from socket server")
-    })
-  };
-
-  const requestContainer = {
-    fontFamily: 'Arial sansSerif',
-    width: '100%',
-    height: '100vh',
-    backgroundColor: 'rgb(34, 41, 44)',
-    justifyContent: 'center',
-    display: 'flex',
-    alignItems: 'center'
-  }
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const handleSelectedItemName = (selectedList, selectedItem) => {
-    setItemNameTrial(selectedList.map(item => setSomeName(item)))
-  }
+
   const kain = {
     marginLeft: '20px',
     fontFamily: 'Arial, sans-serif',
@@ -228,7 +101,7 @@ function PurchaseRequest() {
       display: 'flex',
       alignItems: 'center'
     }),
-    option: (provided, state) => ({
+    option: (provided) => ({
       ...provided,
       backgroundColor: 'black',
       display: 'flex',
@@ -247,9 +120,6 @@ function PurchaseRequest() {
       backgroundColor: 'black'
     })
   };
-
-  const [supervisorId, setSupervisorId] = useState([]);
-
 
   const handlePriorityChange = (event) => {
     setSelectedPriority(event.value);
@@ -303,55 +173,96 @@ function PurchaseRequest() {
       color: 'white',
     })
   };
-
   const handleSupervisorChange = (event) => {
     setSelectedSupervisor(event.value);
+    setSelectedSupervisorName(event.label)
   };
 
-  const [file, setFile] = useState('');
-
   const updateFileName = (event) => {
-    const fileName = event.target.files[0] ? event.target.files[0].name : 'No file chosen';
+    const selectedFile = event.target.files[0];
+    setImageUpload(event.target.files[0]);
+    const fileName = selectedFile ? selectedFile.name : 'No file Chosen';
     setFile(fileName);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageUrl(reader.result);
+    };
+    if (selectedFile) {
+      reader.readAsDataURL(selectedFile)
+    }
+  };
+
+  const employeeID = localStorage.getItem('userID');
+  const employeeName = localStorage.getItem('username');
+  const employeeEmail = localStorage.getItem('email');
+
+  const messageForDown = {
+    id: taker,
+    employeeName: employeeName,
+    employeeID: employeeID,
+    description: description,
+    amount: amount,
+    email: employeeEmail,
+    cost: cost,
+    supervisorID: selectedSupervisor,
+    supervisorName: selectedSupervisorName,
+    endGoalValue: endGoalValue,
+    file: file,
+    date: Date.now(),
+    priority: selectedPriority
   };
 
   const openReviewModal = () => {
     setIsReviewModalOpen(true);
   }
 
-
   const closeReviewModal = () => {
     setIsReviewModalOpen(false);
   }
-
-  const [cost, setCost] = useState('');
 
   const handleCost = (event) => {
     setCost(event.target.value);
   };
 
-  const employeeName = localStorage.getItem('username');
-  const employeeID = localStorage.getItem('userID');
+  console.log("MessageData For Down: ", message);
 
-  const messageForDown = [
-    employeeName,
-    description,
-    amount,
-    cost,
-    supervisor,
-    endGoalValue,
-    file
-  ];
+  const sendMessages = async (message) => {
 
-useEffect(() => {
-  const append = (messageForDown) => {
-    setMessage(messageForDown);
-  }
-  append(messageForDown)
-},[message])
+    const response = await axios.get('http://localhost:5500/get-number-purchase');
+    const idTaker = response.data.latestId + 1;
+    setTaker(idTaker);
+
+    if (imageUpload == null) return;
+    const IdForQuotation = latestId + 1;
+    console.log("ID FOR QUOTATION: ", IdForQuotation);
+    const imageRef = ref(storage, `images/${imageUpload.name, IdForQuotation}`); 
+    uploadBytes(imageRef, imageUpload).then(()=>{
+      window.alert("Done Did");
+    });
+    
+    window.alert("Request Sent~~");
+    
+    try {       
+      const response = await axios.post('http://localhost:5500/add-employee-supervisor-purchase', message);
+      message.id = id;
+      const id = response.id;
+      console.log("Response", response);
+    } catch (error) {
+      console.error("Error: ", error);
+    };
+  };
+
+  console.log("Messages For Passing: ", messageForDown);
 
 
-  console.log("MessageData For Down: ", messageForDown );
+  useEffect(()=>{
+    const fetchIDs = async () => {
+      const response = await axios.get("http://localhost:5500/get-purchase-id");
+      console.log("Latest ID: ", response.data[0].id);
+      setLatestID(response.data[0].id);
+    }
+    fetchIDs();
+  },[])
 
   return (
     <div>
@@ -369,12 +280,22 @@ useEffect(() => {
               <p>Ongoing cost: <input type='radio' name='cost' value='ongoing' onChange={handleCost} /> </p>
             </div>
           </div>
-          <Select
-            options={supervisor}
-            styles={customStyle}
-            placeholder="Select Supervisor"
-            onChange={handleSupervisorChange}
-          />
+          <div style={{ display: 'flex', flexDirection: 'inline', gap: '9px' }}>
+
+            <Select
+              options={option}
+              styles={customStyles}
+              placeholder="Select Priority"
+              onChange={handlePriorityChange}
+            />
+
+            <Select
+              options={supervisor}
+              styles={customStyle}
+              placeholder="Select Supervisor"
+              onChange={handleSupervisorChange}
+            />
+          </div>
           <textarea style={{ height: '20%', border: 'none' }} required name='end_goal' placeholder='End Goal...' value={endGoalValue} onChange={(e) => setEndGoalValue(e.target.value)} ></textarea>
           <div style={{ display: 'flex', flexDirection: 'inline', gap: '9px', justifyContent: 'center' }}>
             <p>Attach Parforma (Not required)</p>
@@ -386,17 +307,32 @@ useEffect(() => {
 
           <button onClick={openReviewModal}>Review</button>
           <Modal isOpen={isReviewModalOpen} onRequestClose={closeReviewModal} style={modal} >
-            {message.map((messages) => (
-              <div>
-                <p>{messages.employeeName}</p>
-                <p>{messages.description}</p>
-                <p>{messages.amount}</p>
-                <p>{messages.cost}</p>
-                <p>{messages.supervisor}</p>
-                <p>{messages.endGoalValue}</p>
-                <p>{messages.file}</p>
-              </div>
-            ))}
+            <div className='request-review'>
+              <h1>Request Review</h1>
+              <br />
+              <p>Employee Name: {messageForDown.employeeName}</p>
+              <br />
+              <p>Description: {messageForDown.description}</p>
+              <br />
+              <p>Amount: {messageForDown.amount}</p>
+              <br />
+              <p>End Goal: {messageForDown.endGoalValue}</p>
+              <br />
+              <p>Priority: {messageForDown.priority}</p>
+              <br />
+              <p>Email: {messageForDown.email}</p>
+              <br />
+              <p>Supervisor: {messageForDown.supervisorName}</p>
+              <br />
+              <p>Date {messageForDown.date}</p>
+              <br />
+              <p>Quotation: {messageForDown.file}</p>
+              <br />
+              <label htmlFor='file'>
+                <img style={{width: '92%', marginLeft: '12px' }} src={imageUrl || ImgAdd} alt='Add' />
+              </label>
+              <button onClick={() => sendMessages(messageForDown)}>Send</button>
+            </div>
           </Modal>
         </div>
       </div>

@@ -30,6 +30,7 @@ import TermsHR from './hr-pages/termsHR';
 import ItemTransactionsAdmin from './admin-pages/itemTransacation';
 import ActionTransactionsAdmin from './admin-pages/actionTransaction';
 import PurchaseRequest from './employee-pages/purchaseRequest';
+import PurchaseSupervisor from './supervisor-pages/puchaseNotifier';
 
 const router = createBrowserRouter([
   {
@@ -143,6 +144,10 @@ const router = createBrowserRouter([
   {
     path: 'purchase-request',
     element: <PurchaseRequest />
+  },
+  {
+    path: 'purchase-supervisor',
+    element: <PurchaseSupervisor />
   }
 
 ])

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import NavbarAdmin from './navbarAdmin';
 import axios from 'axios'
 import Add from '../images/add.svg'
+import Delete from '../images/delete.svg'
 import Model from 'react-modal'
 
 function CategoryAdmin() {
@@ -10,7 +11,8 @@ function CategoryAdmin() {
     width: '30px',
     height: '30px',
     borderRadius: '14px',
-    marginTop: '2px'
+    marginTop: '2px',
+    backgroundColor: 'rgb(206, 206, 236)'
   }
   const modal = {
     overlay: {
@@ -79,30 +81,45 @@ function CategoryAdmin() {
     justifyContent: 'center',
     alignContent: 'center',
     color: 'black'
+  };
+
+  const handleSerialDelete = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:5500/delete-category/${id}`);
+      window.alert("Deleted successfully");
+      console.log("Response from deletion ", response.data);
+    } catch (error) {
+      console.error('Error fetching items: ', error);
+    }
   }
+
+
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div style={kain}>
         <h1>Add A New Category</h1>
       </div>
-    <div className="category-container">
-      <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Category</p></button>
-      <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
-        <h1>Add Category</h1>
-        <input type='text' placeholder='Category Name' name='category_name' onChange={handleChange2} />
-        <input type='text' placeholder='Description' name='description' onChange={handleChange2} />
-        <button onClick={handleMake}>Submit</button>
-      </Model>
-      {categories.map((category) => (
-        <div key={category.id} className="category">
-          <h2>{category.category_name}</h2>
-          <br />
-          <br />
-          <p>{category.description}</p>
-        </div>
-      ))}
-    </div>
+      <div className="category-container">
+        <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Category</p></button>
+        <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
+          <h1>Add Category</h1>
+          <input type='text' placeholder='Category Name' name='category_name' onChange={handleChange2} />
+          <input type='text' placeholder='Description' name='description' onChange={handleChange2} />
+          <button onClick={handleMake}>Submit</button>
+        </Model>
+        {categories.map((category) => (
+          <div key={category.id} className="category">
+            <h2>{category.category_name}</h2>
+            <br />
+            <div style={{display: 'flex', flexDirection: 'inline', gap: '9px'}}>
+              <p>{category.description}</p>
+              <button className='addItem-btn' onClick={() => handleSerialDelete(category.id)}><img src={Delete} style={svgStyle} /></button>
+            </div>
+
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

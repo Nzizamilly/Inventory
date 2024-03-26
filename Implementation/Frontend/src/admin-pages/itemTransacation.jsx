@@ -59,6 +59,7 @@ function ItemTransactionsAdmin() {
   const kindaStyle = {
     width: '70%',
     marginLeft: '273px',
+    marginBottom: '1px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -93,7 +94,7 @@ function ItemTransactionsAdmin() {
       selector: (row) => row.item_name,
     },
     {
-      name: 'Item Entered',
+      name: 'Item in-Stock',
       selector: (row) => row.amount_entered,
     },
     {
@@ -101,7 +102,7 @@ function ItemTransactionsAdmin() {
       selector: (row) => row.amount_went_out,
     },
     {
-      name: 'Taker',
+      name: 'Requestor',
       selector: (row) => row.taker_name,
     },
     {
@@ -151,14 +152,11 @@ function ItemTransactionsAdmin() {
     color: 'black',
   };
 
- 
-
-
   return (
     <div>
       <NavbarAdmin />
       <div style={kain}>
-        <h1> Item Transactions Tab</h1>
+        <h1> Item Report Tab</h1>
       </div>
       <div className="transaction-container-admin">
         <div style={kindaStyle}>
@@ -170,8 +168,6 @@ function ItemTransactionsAdmin() {
             {/* <button onClick={handleDateFilter}>Apply Filter</button> */}
           </div>
           <br />
-
-           
           <button onClick={handlePrint}>Print</button>
           <br />
           <DataTable columns={columns} data={records}  />
