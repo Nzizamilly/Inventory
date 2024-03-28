@@ -36,7 +36,7 @@ function PurchaseSupervisor() {
 
     const handleViewQuotation = (ID) => {
         setViewQuotation(true);
-        // fetchImageURL(ID);
+        fetchImageURL(ID);
         setImageURL(ID);
 
     }
@@ -76,7 +76,7 @@ function PurchaseSupervisor() {
     const fetchImageURL = async (ID) => {
         try {
             if (ID) {
-                console.log("ID PRIVODED: ", ID)
+                console.log("ID PROVIDED: ", ID)
                 const imageRef = ref(storage, `images/${ID}`);
                 const imageURL = await getDownloadURL(imageRef);
                 setImageURL(imageURL);
@@ -145,23 +145,24 @@ function PurchaseSupervisor() {
             )
         },
         {
+            name: 'View Quotation',
+            cell: row => (
+                <button className='buttonStyle3' onClick={() => handleViewQuotation(row.id)}><img src={View} style={svgStyle} alt="Deny" /></button>
+            )
+        },
+        {
             name: 'Approve',
             cell: row => (
                 <button className='buttonStyle3' onClick={() => handleApprove(row)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
             )
         },
+       
         // {
         //     name: 'View Quotation',
         //     cell: row => (
-        //         <button className='buttonStyle3' onClick={() => handleViewQuotation(row.id)}><img src={View} style={svgStyle} alt="Deny" /></button>
+        //         <button className='buttonStyle3' onClick={() => handleViewQuotation(row.quotation)}><img src={View} style={svgStyle} alt="Deny" /></button>
         //     )
         // },
-        {
-            name: 'View Quotation',
-            cell: row => (
-                <button className='buttonStyle3' onClick={() => handleViewQuotation(row.quotation)}><img src={View} style={svgStyle} alt="Deny" /></button>
-            )
-        },
         {
             name: 'Deny',
             cell: row => (
@@ -173,15 +174,13 @@ function PurchaseSupervisor() {
 
     const handleApprove = async (notifications) => {
         console.log("Notification: ", notifications.quotation);
-
-        
         try {
 
-            // if (imageURL == null) return;
-            // const fileName = getImageFileNameFromURL(imageURL);
-            // const imageBLOB = await fetchImageBLOB(imageURL);
-            // const imageRef = ref(storage, `images-for-hr/${fileName}`);
-            // await uploadBytes(imageRef, imageBLOB);
+            if (imageURL == null) return;
+            const fileName = getImageFileNameFromURL(imageURL);
+            const imageBLOB = await fetchImageBLOB(imageURL);
+            const imageRef = ref(storage, `images-for-hr/${fileName}`);
+            await uploadBytes(imageRef, imageBLOB);
 
             const supervisorID = localStorage.getItem("userID");
             await axios.post(`http://localhost:5500/add-purchase-supervisor-hr/${supervisorID}`, notifications);
@@ -197,18 +196,18 @@ function PurchaseSupervisor() {
     };
 
     const fetchImageBLOB = async (imageURL) => {
-    const response = await fetch(imageURL);
-    return response.blob();
+        const response = await fetch(imageURL);
+        return response.blob();
 
     }
 
     const handleDeny = async (index, notification) => {
         console.log("Notifications id :", index);
-        const status = 'Denied';
-        socket.emit("Denied_By_Either(1)", notification);
+        // socket.emit("Denied_By_Either(1)", notification);
         try {
-            await axios.put(`http://localhost:5500/deny-by-supervisor/${index}`);
+            await axios.put(`http://localhost:5500/deny-by-supervisor-purchase/${index}`);
             console.log("Denied for ID", index);
+            window.alert("Request Denied Successfully");
         } catch (error) {
             console.log('Error', error);
         }
@@ -233,33 +232,34 @@ function PurchaseSupervisor() {
 
     const handleDenyRequest = async () => {
         console.log("HandleDenied is Hit");
-        const response = await axios.get("http://localhost:5500/get-denied-notification");
+        const supervisorID = localStorage.getItem('userID');
+        const response = await axios.get(`http://localhost:5500/get-denied-notification-purchase/${supervisorID}`);
         const result = response.data;
-        console.log("DATA FROM ENDPOINT: ", result);
-        setAllRequests(result)
+        console.log("DATA For Denied: ", result);
+        setAllRequests(result);
     };
 
     const modal = {
         overlay: {
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         content: {
-          width: '63%',
-          marginLeft: '295px',
-          height: '82vh',
-          border: 'none',
-          borderRadius: '12px',
-          gap: '23px',
-          color: "black",
-          padding: '12px 0px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
+            width: '80%',
+            maxWidth: '800px', // Added maximum width to prevent the modal from becoming too wide
+            height: 'auto', // Auto height to fit content
+            border: 'none',
+            marginLeft: '295px',
+            overflow: 'auto',
+            borderRadius: '12px',
+            backgroundColor: 'black', // Set background color of modal content
+            display: 'flex',
+            flexDirection: 'column', // Align content vertically
+            justifyContent: 'center', // Center content horizontally
+            alignItems: 'center', // Center content vertically
         },
-      };
+    };
 
 
     return (
@@ -279,14 +279,14 @@ function PurchaseSupervisor() {
                         pagination
                     ></DataTable>
                     <Modal isOpen={viewQuotation} onRequestClose={closeModal} style={modal}>
-                        <div style={{width: "80%", height: '30px', display:'flex', alignItems: 'center'}}>
-                        {imageURL ? (
-                            <img src={imageURL} alt="User Uploaded" />
-                        ) : (
-                            <div className="NoPage">
-                                <FadeLoader color={'#D0031B'} loading={loading} size={200} />
-                            </div>
-                        )}
+                        <div style={{ width: "100%", height: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            {imageURL ? (
+                                <img src={imageURL} style={{ maxWidth: '100%', maxHeight: '80vh' }} />
+                            ) : (
+                                <div className="NoPage">
+                                    <FadeLoader color={'#D0031B'} loading={loading} size={200} />
+                                </div>
+                            )}
                         </div>
                     </Modal>
                 </div>

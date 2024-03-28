@@ -80,20 +80,15 @@ function SupplierAdmin() {
     setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
 
-
   const handleUpdate = async (id) => {
     try{
-      console.log("UPdatiess: ", update);
-      const response = await axios.put(`http://localhost:5500/supplier/${id}`,update);
+      console.log("Updatiess: ", update);
+      const response = await axios.put(`http://localhost:5500/supplier/${id}`);
       console.log("Updated Well!", response.info);
     }catch(error){
       console.error("Error: ", error)
     };
   }
-
-  const EmpID = localStorage.getItem("userID");
-
-
 
   const [visible, setVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
@@ -153,7 +148,7 @@ function SupplierAdmin() {
             <div className="bigger">
               <p>{supplier.first_name && supplier.first_name.charAt(0).toUpperCase()}</p>
             </div>
-            <p>First Name: {supplier.first_name}</p>
+            <p>Name: {supplier.first_name}</p>
             <p>Address: {supplier.address}</p>
             <p>Phone: {supplier.phone}</p>
             <p>Email: {supplier.email}</p>
@@ -166,7 +161,7 @@ function SupplierAdmin() {
               <input type='text' placeholder='Phone' name='phone' onChange={handleChange} />
               <input type='text' placeholder='Email' name='email' onChange={handleChange} />
               <input type='text' placeholder='Status' name='status' onChange={handleChange} />
-              {/* <button onClick={handleUpdate(supplier.id)}>Submit</button> */}
+              <button onClick={()=>handleUpdate(supplier.id)}>Submit</button>
             </Model>
           </div>
         ))}

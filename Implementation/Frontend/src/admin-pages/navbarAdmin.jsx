@@ -117,8 +117,9 @@ function NavbarAdmin() {
 
   const select = {
     display: 'block',
-    padding: '8px 16px',
+    padding: '12px 12px',
     borderRadius: '12px',
+
     textDecoration: 'none',
     color: 'rgb(5, 5, 5)',
     width: '209px',
@@ -157,9 +158,9 @@ function NavbarAdmin() {
         <li className='liAdmin'><Link to={'/category-admin'}>Category</Link></li>
         <li className='liAdmin'><Link to={'/notification-admin'}>Notification</Link></li>
         <select onChange={handleTransactionChange} value={transactionType} style={select}>
-          <option value="" disabled>Transaction</option>
-          <option value="item">Item Transaction</option>
-          <option value="action">Action Transaction</option>
+          <option style={select}value="" disabled>Transaction</option>
+          <option style={select}value="item">Item Transaction</option>
+          <option style={select}value="action">Action Transaction</option>
         </select>
         {/* <li className='liAdmin'><Link to={'/transaction-admin'} onMouseOver={openLink}>Transactions</Link></li> */}
         <li className='liAdmin'><Link to={'/supplier-admin'}>Suppliers</Link></li>

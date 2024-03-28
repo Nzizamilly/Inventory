@@ -762,10 +762,10 @@ app.put('/supplier/:id', (req, res) => {
     id
   ];
 
-  db.query(query, values, (err, result) => {
-    err ? console.error("Error: ", err) : res.json(result);
-  })
-
+  console.log("Values: ", values);
+  // db.query(query, values, (err, result) => {
+  //   err ? console.error("Error: ", err) : res.json(result);
+  // })
 })
 
 app.post('/add-serial-number/:takeItemID', (req, res) => {
@@ -932,7 +932,7 @@ app.delete('/delete-item/:itemID', (req, res) => {
       return result;
     }
   })
-})
+});
 
 app.put('/update-serial-item/:id', (req, res) => {
   const id = req.params.id;
@@ -959,36 +959,41 @@ app.put('/update-serial-item/:id', (req, res) => {
 app.delete('/delete-serial-item/:id', async (req, res) => {
   const id = req.params.id;
 
-  const Check = async (id) => {
-    return new Promise((resolve, reject) => {
-      const q = `SELECT status FROM serial_number WHERE id = ?`;
-      const value = [id];
-      db.query(q, value, (error, result) => {
-        if (error) {
-          console.error("Error", error);
-        } else {
-          console.log(result);
-          resolve(result);
-        }
-      })
-    })
-  }
+  // const Check = async (id) => {
+  //   return new Promise((resolve, reject) => {
+  //     const q = `SELECT status FROM serial_number WHERE id = ?`;
+  //     const value = [id];
+  //     db.query(q, value, (error, result) => {
+  //       if (error) {
+  //         console.error("Error", error);
+  //       } else {
+  //         console.log(result);
+  //         resolve(result);
+  //       }
+  //     })
+  //   })
+  // }
+  // const word = await Check(id);
+  // if (word === "In") {
+  //   const message = "Cannot delete"
+  //   return message;
+  // } else {
+  //   const q = `DELETE FROM serial_number WHERE id = ? `;
+  //   db.query(q, [id], (error, result) => {
+  //     if (error) {
+  //       console.error("Error", error);
+  //     } else {
+  //       console.log("Done well", result)
+  //     };
+  //   });
+  // };
 
-  const word = await Check(id);
+  const q = "DELETE FROM serial_number WHERE id = ?";
 
-  if (word === "In") {
-    const message = "Cannot delete"
-    return message;
-  } else {
-    const q = `DELETE FROM serial_number WHERE id = ? `;
-    db.query(q, [id], (error, result) => {
-      if (error) {
-        console.error("Error", error);
-      } else {
-        console.log("Done well", result)
-      };
-    });
-  };
+  db.query(q, [id], (error, result) => {
+    // result ? console.log("Deleted Successfully") 
+    if (error) console.error("Error: ", error);
+  });
 });
 
 app.put('/deactivate-employee/:id', (req, res) => {
@@ -1575,6 +1580,22 @@ app.put('/deny-by-supervisor/:index', (req, res) => {
       return result;
     }
   })
+});
+
+app.put('/deny-by-supervisor-purchase/:index', (req, res) => {
+  const id = req.params.index;
+  const approve = "Denied";
+  const values = [approve, id];
+  const update1 = "UPDATE employee_supervisor_purchase set status = ? WHERE id = ?";
+
+  db.query(update1, values, (error, result) => {
+    if (error) {
+      console.error("Error", error)
+    } else {
+      console.log("Denied Well !!!");
+      return result;
+    }
+  })
 })
 
 app.get('/get-number', (req, res) => {
@@ -1835,6 +1856,19 @@ app.get('/get-denied-notification', (req, res) => {
   })
 });
 
+app.get('/get-denied-notification-purchase/:supervisorID', (req, res) => {
+  const id = req.params.supervisorID;
+  const q = ` SELECT employees.username,employee_supervisor_purchase.expenditure_line, employee_supervisor_purchase.amount, employee_supervisor_purchase.cost_method, employee_supervisor_purchase.end_goal, employee_supervisor_purchase.priority, employee_supervisor_purchase.date, employee_supervisor_purchase.email, employee_supervisor_purchase.status
+  FROM employee_supervisor_purchase
+  JOIN employees ON employee_supervisor_purchase.employeeID = employees.id
+  WHERE employee_supervisor_purchase.status = 'Denied' AND employee_supervisor_purchase.supervisor = ?
+  ORDER BY employee_supervisor_purchase.id DESC;
+`;
+  db.query(q, [id], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
 app.get('/get-pending-notifications', (req, res) => {
 
   const sql = `SELECT 
@@ -2015,6 +2049,8 @@ WHERE employee_supervisor_purchase.status = 'Pending' AND employee_supervisor_pu
     };
   })
 });
+
+
 
 app.post('/add-purchase-supervisor-hr/:supervisorID', async (req, res) => {
 

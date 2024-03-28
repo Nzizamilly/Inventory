@@ -42,7 +42,7 @@ function PurchaseRequest() {
     content: {
       width: '23%',
       marginLeft: '495px',
-      height: '72vh',
+      height: '76vh',
       backgroundColor: 'rgb(79, 79, 83)',
       border: 'none',
       borderRadius: '12px',
@@ -57,7 +57,7 @@ function PurchaseRequest() {
   };
 
   const handleAmount = (event) => {
-    setAmount(event.target.name);
+    setAmount(event.target.value);
   };
 
   const formatDate = (dateString) => {
@@ -237,10 +237,10 @@ function PurchaseRequest() {
     console.log("ID FOR QUOTATION: ", IdForQuotation);
     const imageRef = ref(storage, `images/${imageUpload.name, IdForQuotation}`); 
     uploadBytes(imageRef, imageUpload).then(()=>{
-      window.alert("Done Did");
+      window.alert("Request Sent well.");
     });
     
-    window.alert("Request Sent~~");
+    window.alert("Sending Request, Wait for a second Prompt..");
     
     try {       
       const response = await axios.post('http://localhost:5500/add-employee-supervisor-purchase', message);
@@ -274,7 +274,7 @@ function PurchaseRequest() {
         <div className='request'>
           <textarea style={{ height: '20%', border: 'none' }} required name='description' placeholder='Expenditure Line...' value={description} onChange={(e) => setDescription(e.target.value)} >Expenditure Line...</textarea>
           <div style={{ width: '95%', display: 'flex', justifyContent: 'center', gap: '16px' }}>
-            <input type='text' id='amount_purchase' placeholder='Amount' name='amount' onChange={handleAmount} />
+            <input type='text' id='amount_purchase' placeholder='Amount' name='amount' value={amount} onChange={handleAmount} />
             <div>
               <p>Once-Off cost: <input type='radio' name='cost' value='once-off' onChange={handleCost} /> </p>
               <p>Ongoing cost: <input type='radio' name='cost' value='ongoing' onChange={handleCost} /> </p>

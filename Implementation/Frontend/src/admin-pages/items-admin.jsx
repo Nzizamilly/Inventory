@@ -611,8 +611,9 @@ function ItemsAdmin() {
 
   const Select = {
     width: '65%',
-    height: '48%',
+    height: '78%',
     color: 'black',
+    padding: '12px 12px',
     border: 'none',
     backgroundColor: 'black',
     color: 'white',
@@ -703,6 +704,8 @@ function ItemsAdmin() {
             ></DataTable>
           </Modal>
           <Modal isOpen={isUpdateModalOpen} onRequestClose={closeUpdateModal} style={modalStyles}>
+            <div style={{width: '95%',  alignItems: 'center', justifyContent: 'center', height: '64%', display: 'flex', flexDirection: 'column'}}>
+
             <h1>Update Items</h1>
             <input placeholder='Name' name='newItemName' type='text' onChange={handleUpdateInput} />
             <br />
@@ -725,6 +728,7 @@ function ItemsAdmin() {
             <br />
             <br />
             <button onClick={() => handleUpdateClick(takeUpdateId)}>Add </button>
+            </div>
 
           </Modal>
           <Modal isOpen={isSimpleModalOpen} onRequestClose={closeSimpleModal} style={modalStyles}>
@@ -748,7 +752,7 @@ function ItemsAdmin() {
             <br />
             <input placeholder='Depreciation Rate' name='depreciation_rate' type='text' onChange={handleSerialNumber} />
             <br />
-            <button onClick={() => handleAddSerialNumberClick(takenItemId)}>Add </button>
+            <button onClick={()=>handleAddSerialNumberClick(takenItemId)}>Add</button>
           </Modal>
           <Modal isOpen={isInfoModalOpen} onRequestClose={closeInfoModal} style={modalStyles}>
             <h1>
@@ -773,7 +777,7 @@ function ItemsAdmin() {
             <button onClick={() => handleSerialUpdate(getUpdateSerialID)}>Update</button>
           </Modal>
           <Modal style={kindaStyle} isOpen={isWarningModalOpen} onRequestClose={closeWarningModal}>
-            <p>Admin Can't Delete an Item Which is out</p>
+            <p>Admin Can't Delete an Item Which is Out</p>
           </Modal>
           <Modal isOpen={isConfirmModalOpen} onRequestClose={closeConfirmModal} style={kindaStyle}>
             <span>Are You Sure You Want To Delete this Item</span>
