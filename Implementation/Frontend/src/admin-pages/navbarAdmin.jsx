@@ -1,6 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
-import Info from '../images/info.svg';
+import Centrika from '../images/centrika-removebg.png';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal'
@@ -46,51 +45,9 @@ function NavbarAdmin() {
     },
   };
 
-  const modalStyles2 = {
-    content: {
-      backgroundColor: 'white',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '192px',
-      height: '82px',
-      borderRadius: '12px'
-    },
-    overlay: {
-      backgroundColor: 'rgba(0, 0, 0, 0.0)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  };
-
-
   const openModal = () => {
     setIsModalOpen(true);
   };
-
-  const actionFunction = () => {
-    setOpenActionTransaction(true);
-    setIsItemModalOpen(true);
-  };
-
-  const itemFunction = () => {
-    setOpenItemTransaction(true);
-  }
-
-  const openLink = () => {
-    setIsLinkOpen(true);
-  };
-
-  const closeItemModal = () => {
-    setIsItemModalOpen(false)
-  };
-
-  const closeLink = () => {
-    setIsLinkOpen(false);
-  }
-
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -102,7 +59,6 @@ function NavbarAdmin() {
   };
 
   const [transactionType, setTransactionType] = useState('');
-  // const history = useHistory();
 
   const handleTransactionChange = (event) => {
     const selectedTransactionType = event.target.value;
@@ -119,10 +75,9 @@ function NavbarAdmin() {
     display: 'block',
     padding: '12px 12px',
     borderRadius: '12px',
-
     textDecoration: 'none',
     color: 'rgb(5, 5, 5)',
-    width: '209px',
+    width: '198px',
     backgroundColor: 'black',
     color: 'white'
 
@@ -150,6 +105,7 @@ function NavbarAdmin() {
       <ul className='ul1Admin'>
         <li className='li1Admin' onClick={handleLogout}><Link to={'/'}>Log Out</Link></li>
         <li className='li1Admin'><Link to={'/home-admin'}>Home</Link></li>
+        <li style={{ float: 'left', marginLeft: '193px'}} className='li1Admin'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika'/></li>
       </ul>
       <ul className='ul2Admin'>
         <li className='liAdmin'><Link to={'/account-admin'} onMouseOver={openModal}>Account</Link></li>
@@ -162,7 +118,6 @@ function NavbarAdmin() {
           <option style={select}value="item">Item Transaction</option>
           <option style={select}value="action">Action Transaction</option>
         </select>
-        {/* <li className='liAdmin'><Link to={'/transaction-admin'} onMouseOver={openLink}>Transactions</Link></li> */}
         <li className='liAdmin'><Link to={'/supplier-admin'}>Suppliers</Link></li>
         <li className='liAdmin'><Link to={'/departments-and-roles-admin'}>Department & Roles</Link></li>
         <li className='liAdmin'><Link to={'/terms-admin'}>Terms and Conditions</Link></li>

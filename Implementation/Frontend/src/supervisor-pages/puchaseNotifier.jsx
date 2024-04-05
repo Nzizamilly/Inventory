@@ -72,7 +72,6 @@ function PurchaseSupervisor() {
         fetchData();
     }, []);
 
-
     const fetchImageURL = async (ID) => {
         try {
             if (ID) {

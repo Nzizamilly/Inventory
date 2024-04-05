@@ -12,14 +12,12 @@ function SupervisorNotifier() {
 
   },[getName]);
   
-
   return (
     <div>
       <Home2></Home2>
     <div className="home-supervisor-container">
       <div className="home-supervisor">
         <h1>Welcome Supervisor {getName}</h1>
-    
       </div>
     </div>
     </div>

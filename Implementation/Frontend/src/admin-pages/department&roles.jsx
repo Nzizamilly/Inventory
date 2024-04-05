@@ -117,7 +117,9 @@ function Departments_Roles() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        width: '17%'
+        width: '17%',
+        backgroundColor: 'rgb(67, 67, 179)'
+
     }
 
     const handleInput = (event) => {
@@ -188,13 +190,13 @@ function Departments_Roles() {
         {
             name: 'Add Role',
             cell: row => (
-                <button className='addItem-btn' onClick={() => openAddRoleModal(row)}><img src={Addy} style={svgStyle}/></button>
+                <button className='addItem-btn' onClick={() => openAddRoleModal(row)}><img src={Addy} style={svgStyle} /></button>
             )
         },
         {
             name: 'View Role',
             cell: row => (
-                <button className='addItem-btn' onClick={() => openRoleViewModal(row)}><img src={Info} style={svgStyle}/></button>
+                <button className='addItem-btn' onClick={() => openRoleViewModal(row)}><img src={Info} style={svgStyle} /></button>
             )
         },
     ];
@@ -218,7 +220,7 @@ function Departments_Roles() {
         justifyContent: 'center',
         alignContent: 'center',
         color: 'black'
-      }
+    }
 
     return (
         <div>
@@ -253,7 +255,6 @@ function Departments_Roles() {
                     <button onClick={() => handleAddRole(takenDeptID)}>Submit</button>
                 </Modal>
                 <Modal isOpen={isRoleViewModalOpen} onRequestClose={closeRoleViewModal}>
-
                     <DataTable
                         columns={Roles}
                         data={viewRole}
@@ -261,10 +262,6 @@ function Departments_Roles() {
                     >
                     </DataTable>
                 </Modal>
-                {/* <Modal isOpen={isNoPageOpen} onRequestClose={closeNoPage}>
-
-
-                </Modal> */}
             </div>
         </div>
     );

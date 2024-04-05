@@ -44,7 +44,7 @@
     align-items: center;
     justify-content: center;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(34, 41, 44);
+    background-color: rgb(163, 187, 197);
 }
 
 .request {
@@ -61,7 +61,7 @@
     align-items: center;
     flex-direction: column;
     justify-content: center;
-    background-color: rgb(56, 59, 61);
+    background-color: rgb(65, 72, 79);
 }
 
 .notification-container {
@@ -75,7 +75,7 @@
     flex-direction: column;
     justify-content: flex-start;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(34, 41, 44);
+    background-color: rgb(163, 187, 197);
 }
 
 .notification {
@@ -107,7 +107,7 @@
     overflow: auto;
     align-items: center;
     justify-content: flex-start;
-    background-color: rgb(34, 41, 44);
+    background-color: rgb(163, 187, 197);
 }
 
 .terms {
@@ -125,7 +125,7 @@
     border-radius: 12px;
     flex-direction: column;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(56, 59, 61);
+    background-color: rgb(94, 120, 138);
 }
 
 button {
@@ -135,7 +135,7 @@ button {
     cursor: pointer;
     padding: 12px 0px;
     border-radius: 12px;
-    background-color: black;
+    background-color: rgb(163, 187, 197);
 }
 
 #profile_picture {
@@ -279,7 +279,7 @@ li a:hover {
     width: 100%;
     overflow: hidden;
     list-style-type: none;
-    background-color: rgb(19, 19, 24);
+    background-color: rgb(52, 209, 91);
 }
 
 .li1 {
@@ -287,7 +287,7 @@ li a:hover {
     width: 99px;
     height: 82px;
     color: white;
-    background-color: black;
+    background-color: rgb(52, 209, 91);
     justify-content: center;
 }
 
@@ -308,7 +308,7 @@ li a:hover {
     overflow: auto;
     display: inline-flex;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(34, 41, 44);
+    background-color: rgb(163, 187, 197);
 }
 
 .icons {
@@ -406,8 +406,42 @@ li a:hover {
     width: 100%;
     overflow: hidden;
     list-style-type: none;
-    background-color: rgb(206, 206, 236);
+    background-color: rgb(52, 209, 91);
 }
+
+/* ============================================== */
+
+.ulsupervisors {
+    margin: 0;
+    height: 7%;
+    width: 100%;
+    overflow: hidden;
+    list-style-type: none;
+    background-color: rgb(52, 209, 91);
+}
+
+
+.li1supervisor {
+    width: 99px;
+    height: 85px;
+    float: right;
+    border-radius: 8px;
+    justify-content: center;
+    background-color: rgb(52, 209, 91)
+}
+
+.li1supervisor a {
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.li1supervisor a:hover {
+    background-color: #f5f4f4;
+}
+
+/* ================================================== */
 
 .li1Admin {
     width: 99px;
@@ -415,11 +449,11 @@ li a:hover {
     float: right;
     border-radius: 8px;
     justify-content: center;
-    background-color: rgb(206, 206, 236);
+    background-color: rgb(52, 209, 91);
 }
 
 .li1Admin a {
-    color: black;
+    color: white;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
@@ -432,13 +466,13 @@ li a:hover {
 .ul2Admin {
     margin: 0;
     padding: 0;
-    width: 15%;
+    width: 14%;
     height: 100%;
     overflow: auto;
     position: fixed;
     list-style-type: none;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(218, 218, 236);
+    background-color: rgb(52, 209, 91);
 }
 
 .liAdmin a {
@@ -446,12 +480,12 @@ li a:hover {
     padding: 8px 16px;
     border-radius: 12px;
     text-decoration: none;
-    color: rgb(5, 5, 5);
+    color: white;
 }
 
 .liAdmin a:hover {
-    color: rgb(240, 230, 230);
-    background-color: rgb(14, 13, 13);
+    color: black;
+    background-color: #f5f4f4;
 }
 
 .icon-container-admin {
@@ -482,11 +516,11 @@ li a:hover {
     height: 98px;
     padding: 7px;
     display: flex;
-    color: black;
+    color: white;
     margin-left: 15px;
     border-radius: 15px;
     align-items: center;
-    background-color: rgb(206, 206, 236);
+    background-color: rgb(5, 5, 122);
 }
 
 .icons2-admin {
@@ -495,11 +529,11 @@ li a:hover {
     height: 98px;
     padding: 8px;
     display: flex;
+    color: white;
     margin-left: 15px;
     border-radius: 15px;
     align-items: center;
-    color: rgb(17, 16, 16);
-    background-color: rgb(206, 206, 236);
+    background-color: rgb(5, 5, 122);
 }
 
 .icons3-admin {
@@ -507,11 +541,11 @@ li a:hover {
     height: 98px;
     padding: 8px;
     display: flex;
-    color: black;
+    color: white;
     margin-left: 15px;
     border-radius: 15px;
     align-items: center;
-    background-color: rgb(206, 206, 236);
+    background-color: rgb(5, 5, 122);
 }
 
 .icons4-admin {
@@ -519,11 +553,11 @@ li a:hover {
     height: 98px;
     padding: 8px;
     display: flex;
-    color: black;
+    color: white;
     margin-left: 120px;
     align-items: center;
     border-radius: 15px;
-    background-color: rgb(206, 206, 236);
+    background-color: rgb(5, 5, 122);
 }
 
 .icons5-admin {
@@ -531,11 +565,11 @@ li a:hover {
     height: 98px;
     padding: 2px;
     display: flex;
-    color: black;
+    color: white;
     margin-left: 15px;
     align-items: center;
     border-radius: 15px;
-    background-color: rgb(206, 206, 236);
+    background-color: rgb(5, 5, 122);
 }
 
 .icons6-admin {
@@ -543,11 +577,11 @@ li a:hover {
     height: 98px;
     padding: 8px;
     display: flex;
-    color: black;
+    color: white;
     margin-left: 15px;
     align-items: center;
     border-radius: 15px;
-    background-color: rgb(206, 206, 236);
+    background-color: rgb(5, 5, 122);
 }
 
 .account-container-admin {
@@ -587,7 +621,7 @@ li a:hover {
     flex-wrap: wrap;
     justify-content: center;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(163, 187, 197);
+    background-color: rgb(201, 225, 231);
 }
 
 ;
@@ -630,7 +664,7 @@ li a:hover {
     border-radius: 15px;
     flex-direction: column;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(79, 79, 83);
+    background-color: rgb(94, 120, 138);
 }
 
 ;
@@ -734,7 +768,7 @@ li a:hover {
     height: 53px;
     text-align: center;
     border-radius: 15px;
-    background-color: black;
+    background-color: rgb(67, 67, 179);
 }
 
 .add-btn1 {
@@ -862,7 +896,7 @@ li a:hover {
     color: white;
     padding: 5px 12px;
     border-radius: 45px;
-    background-color: rgb(20, 19, 19);
+    background-color: rgb(67, 67, 179);
 }
 
 .buttonStyle3 {
@@ -875,7 +909,7 @@ li a:hover {
     border-radius: 45px;
     align-items: center;
     justify-content: center;
-    background-color: rgb(253, 251, 251);
+    background-color: rgb(244, 244, 245);
 }
 
 .buttonStyle:hover {
@@ -954,14 +988,16 @@ li a:hover {
 .ulsupervisor {
     margin: 0;
     width: 100%;
-    height: 5.5%;
+    height: 7.5%;
     display: flex;
     overflow: hidden;
     list-style-type: none;
     flex-direction: inline;
-    justify-content: right;
-    background-color: rgb(33, 116, 141);
+    /* justify-content: right; */
+    background-color: rgb(36, 178, 50);
 }
+
+
 
 .lisupervisor a {
     text-align: center;
@@ -983,13 +1019,13 @@ li a:hover {
     position: fixed;
     list-style-type: none;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(33, 116, 141);
+    background-color: rgb(52, 209, 91);
 }
 
-.lisupervisor a:hover {
+/* .lisupervisor a:hover {
     color: rgb(240, 230, 230);
     background-color: rgb(14, 13, 13);
-}
+} */
 
 .notification-supervisor {
     gap: 51px;
@@ -1002,7 +1038,7 @@ li a:hover {
     align-items: center;
     justify-content: center;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(17, 21, 37);
+    background-color: rgb(163, 187, 197);
 }
 
 .request-supervisor-container {
@@ -1013,7 +1049,7 @@ li a:hover {
     align-items: center;
     justify-content: center;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(17, 21, 37);
+    background-color: rgb(163, 187, 197);
 }
 
 .request-supervisor {
@@ -1042,7 +1078,7 @@ li a:hover {
     align-items: center;
     justify-content: center;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(17, 21, 37);
+    background-color:  rgb(163, 187, 197);
 }
 
 .notification-container-supervisor {

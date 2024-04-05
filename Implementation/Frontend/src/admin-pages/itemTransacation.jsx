@@ -3,58 +3,20 @@ import DataTable from 'react-data-table-component';
 import NavbarAdmin from './navbarAdmin';
 import '../style.css';
 import axios from 'axios';
-import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import Modal from 'react-modal';
 import { format } from 'date-fns';
+import * as XLSX from 'sheetjs-style';
+import * as FileSaver from 'file-saver';
+import { CSVLink } from 'react-csv'
 
 function ItemTransactionsAdmin() {
+
   const [report, setReport] = useState([]);
   const [records, setRecords] = useState([]);
-  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-
-  const openItemTransaction = () => {
-    setIsItemModalOpen(true);
-  };
-
-  const closeItemModal = () => {
-    setIsItemModalOpen(false);
-  };
-
-  const buttonStyle = {
-    color: 'white',
-    width: '109%',
-    height: '23px',
-    padding: '5px 12px',
-    borderRadius: '45px',
-    backgroundColor: 'black',
-  };
-
-  const modalStyles = {
-    content: {
-      top: '50%',
-      width: '90%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      borderRadius: '12px',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-      opacity: 0.9,
-      fontFamily: 'Your Custom Font, sans-serif',
-      fontSize: '16px',
-      fontWeight: 'bold',
-      border: 'none',
-      lineHeight: '1.5',
-      display: 'flex',
-      justifyContent: 'center',
-      flexDirection: 'column',
-      alignItems: 'center',
-    },
-  };
 
   const kindaStyle = {
     width: '70%',
@@ -74,7 +36,7 @@ function ItemTransactionsAdmin() {
         setReport(response.data);
         setRecords(response.data);
       } catch (error) {
-        console.error('Error fetching Data', error);
+        // console.error('Error fetching Data', error);
       }
     };
 
@@ -119,25 +81,6 @@ function ItemTransactionsAdmin() {
     setRecords(newData);
   };
 
-  const handleDateFilter = () => {
-    const filteredData = report.filter((row) => {
-      const rowDate = new Date(row.month).getTime();
-      const startTimestamp = startDate ? new Date(startDate).getTime() : null;
-      const endTimestamp = endDate ? new Date(endDate).getTime() : null;
-
-      if (startTimestamp && endTimestamp) {
-        return rowDate >= startTimestamp && rowDate <= endTimestamp;
-      } else if (startTimestamp) {
-        return rowDate >= startTimestamp;
-      } else if (endTimestamp) {
-        return rowDate <= endTimestamp;
-      }
-      return true;
-    });
-
-    setRecords(filteredData); // Update the 'records' state with filtered data
-  };
-
   const handlePrint = () => {
     window.print();
   };
@@ -153,6 +96,32 @@ function ItemTransactionsAdmin() {
     alignContent: 'center',
     color: 'black',
   };
+
+ 
+  // const handleOneExport = async (records) => {
+  //  const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+  //  const fileExtension = '.xlsx';
+
+  //  const userHeaders = Object.keys(records[0]);
+  //  console.log("UserHeaders: ",userHeaders);
+
+  //  const ws = XLSX.utils.json_to_sheet(records);
+
+  //  const headerStyle = { font: { bold: true }};
+  //  userHeaders.forEach((key, colIndex) => { 
+  //   console.log(key,colIndex);
+  //   ws[XLSX.utils.encode_col(colIndex) + '1'].s = headerStyle;
+  //  });
+
+  //  const wb = { Sheets: { 'data': ws }, SheetNames: ['data']};
+
+  //  const excelBuffer = await XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+  //  const data = new Blob([excelBuffer], {type: fileType} );
+  //  FileSaver.saveAs(data, 'Users Data '+ fileExtension)
+  // }
+
+  const fileName = `Transaction Report From ${startDate} to ${endDate}`;
 
   return (
     <div>
@@ -170,9 +139,13 @@ function ItemTransactionsAdmin() {
             {/* <button onClick={handleDateFilter}>Apply Filter</button> */}
           </div>
           <br />
-          <button onClick={handlePrint}>Print</button>
+          <div style={{ display: 'flex', gap: '9px', flexDirection: 'inline' }}>
+            <button className='buttonStyle2' onClick={handlePrint}>Print</button>
+           <CSVLink data={records} filename= {fileName}> <button className='buttonStyle2'>Export</button></CSVLink>
+          </div>
+
           <br />
-          <DataTable columns={columns} data={records}  />
+          <DataTable columns={columns} data={records} />
         </div>
       </div>
     </div>

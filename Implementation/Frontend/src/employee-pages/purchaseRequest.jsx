@@ -11,8 +11,8 @@ import Select from 'react-select';
 import Modal from 'react-modal'
 import { storage } from '../firebase';
 import { ref, uploadBytes } from "firebase/storage";
-import {v4} from "uuid"
- 
+import { v4 } from "uuid"
+
 function PurchaseRequest() {
 
 
@@ -43,7 +43,7 @@ function PurchaseRequest() {
       width: '23%',
       marginLeft: '495px',
       height: '76vh',
-      backgroundColor: 'rgb(79, 79, 83)',
+      backgroundColor: 'rgb(94, 120, 138)',
       border: 'none',
       borderRadius: '12px',
       gap: '23px',
@@ -69,21 +69,13 @@ function PurchaseRequest() {
   const kain = {
     marginLeft: '20px',
     fontFamily: 'Arial, sans-serif',
-    backgroundColor: 'rgb(34, 41, 44)',
+    backgroundColor: 'rgb(163, 187, 197)',
     paddingTop: '70px',
     display: 'flex',
     justifyContent: 'center',
     alignContent: 'center',
-    color: 'rgb(219, 215, 215)'
+    color: 'black'
   };
-
-  const sumStyle = {
-    display: 'flex',
-    flexDirection: 'inline',
-    gap: '12px',
-    width: '60%',
-    height: '33%'
-  }
 
   const option = [
     { value: 'red', label: <img src={Red} alt="Red" style={{ width: '24px', height: '24px' }} /> },
@@ -235,14 +227,14 @@ function PurchaseRequest() {
     if (imageUpload == null) return;
     const IdForQuotation = latestId + 1;
     console.log("ID FOR QUOTATION: ", IdForQuotation);
-    const imageRef = ref(storage, `images/${imageUpload.name, IdForQuotation}`); 
-    uploadBytes(imageRef, imageUpload).then(()=>{
+    const imageRef = ref(storage, `images/${imageUpload.name, IdForQuotation}`);
+    uploadBytes(imageRef, imageUpload).then(() => {
       window.alert("Request Sent well.");
     });
-    
+
     window.alert("Sending Request, Wait for a second Prompt..");
-    
-    try {       
+
+    try {
       const response = await axios.post('http://localhost:5500/add-employee-supervisor-purchase', message);
       message.id = id;
       const id = response.id;
@@ -255,14 +247,14 @@ function PurchaseRequest() {
   console.log("Messages For Passing: ", messageForDown);
 
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchIDs = async () => {
       const response = await axios.get("http://localhost:5500/get-purchase-id");
       console.log("Latest ID: ", response.data[0].id);
       setLatestID(response.data[0].id);
     }
     fetchIDs();
-  },[])
+  }, [])
 
   return (
     <div>
@@ -305,7 +297,7 @@ function PurchaseRequest() {
             </label>
           </div>
 
-          <button onClick={openReviewModal}>Review</button>
+          <button className='buttonStyle2' onClick={openReviewModal}>Review</button>
           <Modal isOpen={isReviewModalOpen} onRequestClose={closeReviewModal} style={modal} >
             <div className='request-review'>
               <h1>Request Review</h1>
@@ -329,9 +321,9 @@ function PurchaseRequest() {
               <p>Quotation: {messageForDown.file}</p>
               <br />
               <label htmlFor='file'>
-                <img style={{width: '92%', marginLeft: '12px' }} src={imageUrl || ImgAdd} alt='Add' />
+                <img style={{ width: '92%', marginLeft: '12px' }} src={imageUrl || ImgAdd} alt='Add' />
               </label>
-              <button onClick={() => sendMessages(messageForDown)}>Send</button>
+              <button className='buttonStyle2' onClick={() => sendMessages(messageForDown)}>Send</button>
             </div>
           </Modal>
         </div>

@@ -148,7 +148,7 @@ function RequestSupervisor() {
   const kain = {
     marginLeft: '20px',
     fontFamily: 'Arial, sans-serif',
-    backgroundColor: 'rgb(17, 21, 37)',
+    backgroundColor: 'rgb(163, 187, 197)',
     paddingTop: '70px',
     display: 'flex',
     justifyContent: 'center',

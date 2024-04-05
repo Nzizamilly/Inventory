@@ -547,11 +547,9 @@ function ItemsAdmin() {
   const handleSerialDelete = async (row) => {
     try {
       if (row.status === "Out") {
-        // window.alert("Can not detele an item which is out");
         openWarningModal();
       } else {
         const response = await axios.delete(`http://localhost:5500/delete-serial-item/${row.id}`);
-        // alert("Deleted successfully");
         console.log("Response from deletion ", response.data);
       }
 
@@ -704,32 +702,29 @@ function ItemsAdmin() {
             ></DataTable>
           </Modal>
           <Modal isOpen={isUpdateModalOpen} onRequestClose={closeUpdateModal} style={modalStyles}>
-            <div style={{width: '95%',  alignItems: 'center', justifyContent: 'center', height: '64%', display: 'flex', flexDirection: 'column'}}>
+            <div style={{ width: '95%', alignItems: 'center', justifyContent: 'center', height: '64%', display: 'flex', flexDirection: 'column' }}>
 
-            <h1>Update Items</h1>
-            <input placeholder='Name' name='newItemName' type='text' onChange={handleUpdateInput} />
-            <br />
+              <h1>Update Items</h1>
+              <input placeholder='Name' name='newItemName' type='text' onChange={handleUpdateInput} />
+              <br />
 
-            <select onChange={handleUpdateSupplierChange} value={selectedUpdateSupplier} style={Select}>
-              <option value='' disabled>Select Supplier</option>
-              {supplier.map(suppliers => (
-                <option key={suppliers.id} value={suppliers.id} style={OptionColor}>{suppliers.first_name}</option>
-              ))}
-            </select>
-
-            <br />
-
-            <select onChange={handleUpdateCategoryChange} value={selectedUpdateCategory} style={Select}>
-              <option value='' disabled>Select Category</option>
-              {categories.map(categories => (
-                <option key={categories.id} value={categories.id} style={OptionColor}>{categories.category_name}</option>
-              ))}
-            </select>
-            <br />
-            <br />
-            <button onClick={() => handleUpdateClick(takeUpdateId)}>Add </button>
+              <select onChange={handleUpdateSupplierChange} value={selectedUpdateSupplier} style={Select}>
+                <option value='' disabled>Select Supplier</option>
+                {supplier.map(suppliers => (
+                  <option key={suppliers.id} value={suppliers.id} style={OptionColor}>{suppliers.first_name}</option>
+                ))}
+              </select>
+              <br />
+              <select onChange={handleUpdateCategoryChange} value={selectedUpdateCategory} style={Select}>
+                <option value='' disabled>Select Category</option>
+                {categories.map(categories => (
+                  <option key={categories.id} value={categories.id} style={OptionColor}>{categories.category_name}</option>
+                ))}
+              </select>
+              <br />
+              <br />
+              <button onClick={() => handleUpdateClick(takeUpdateId)}>Add </button>
             </div>
-
           </Modal>
           <Modal isOpen={isSimpleModalOpen} onRequestClose={closeSimpleModal} style={modalStyles}>
             <h1>Create A New Item</h1>
@@ -752,7 +747,7 @@ function ItemsAdmin() {
             <br />
             <input placeholder='Depreciation Rate' name='depreciation_rate' type='text' onChange={handleSerialNumber} />
             <br />
-            <button onClick={()=>handleAddSerialNumberClick(takenItemId)}>Add</button>
+            <button onClick={() => handleAddSerialNumberClick(takenItemId)}>Add</button>
           </Modal>
           <Modal isOpen={isInfoModalOpen} onRequestClose={closeInfoModal} style={modalStyles}>
             <h1>

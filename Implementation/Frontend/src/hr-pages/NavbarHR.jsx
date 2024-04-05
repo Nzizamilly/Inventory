@@ -14,10 +14,10 @@ function Home3() {
     };
     return (
         <div >
-            <ul className='ulhr' >
-                <li className='li1hr'><Link to={'/home-hr'}>Home</Link></li>
-                <li className='li1hr'><Link to={'/notification-hr'}>View Requests</Link></li>
-                <li className='li1hr' onClick={handleLogout}><Link>Log Out</Link></li>
+            <ul className='ul1' >
+                <li className='li1'><Link to={'/home-hr'}>Home</Link></li>
+                <li className='li1'><Link to={'/notification-hr'}>View Requests</Link></li>
+                <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
             </ul>
 
         </div>

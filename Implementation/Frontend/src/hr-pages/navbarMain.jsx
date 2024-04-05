@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import Centrika from '../images/centrika-removebg.png';
 import axios from 'axios';
 import Modal from 'react-modal'
 
@@ -74,12 +75,13 @@ function NavbarMain() {
     }, []);
     return (
         <div className="navbar">
-            <ul className='ulhr' style={color}>
-                <li className='li1supervisor'><Link to={'/home-hr'}>Home</Link></li>
-                <li className='li1supervisor'><Link to={'/notification-hr'}>View Requests</Link></li>
-                <li className='li1supervisor' onClick={handleLogout}><Link>Log Out</Link></li>
+            <ul className='ul1' style={color}>
+        <li style={{ float: 'left', marginLeft: '193px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+                <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
+                <li className='li1'><Link to={'/notification-hr'}>Requests</Link></li>
+                <li className='li1'><Link to={'/home-hr'}>Home</Link></li>
             </ul>
-            <ul className='ul2hr'>
+            <ul className='ul2Admin'>
                 <li className='lisupervisor'><Link to={'/account-hr'} onMouseOver={openModal}>Account</Link></li>
                 <li className='lisupervisor'><Link to={'/request-hr'}>Request</Link></li>
                 <li className='lisupervisor'><Link to={'/transaction-hr'}>Transactions</Link></li>

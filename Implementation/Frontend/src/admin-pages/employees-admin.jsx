@@ -10,8 +10,6 @@ import Info from '../images/info.svg'
 import '../style.css'
 import NavbarAdmin from './navbarAdmin';
 import Update from '../images/update.svg'
-import Delete from '../images/delete.svg'
-import Deactivate from '../images/deactivate.svg'
 
 function EmployeesAdmin() {
 
@@ -37,20 +35,6 @@ function EmployeesAdmin() {
       alignItems: 'center',
     },
   }
-  const employeeContainer = {
-    width: '100%',
-    fontFamily: 'Arial, sans-serif',
-    height: '100vh',
-    backgroundColor: 'rgb(163, 187, 197)',
-    justifyContent: 'center',
-    display: 'flex',
-    gap: '23px',
-    paddingTop: '74px',
-    flexDirection: 'row',
-    overflow: 'auto',
-    flexWrap: 'wrap',
-    alignItems: 'center'
-  }
 
   const ThemBs = {
     display: 'flex',
@@ -59,7 +43,6 @@ function EmployeesAdmin() {
   }
 
   const svgStyle = {
-    // backgroundColor: 'rgb(206, 206, 236)',
     width: '30px',
     height: '30px',
     borderRadius: '14px',
@@ -92,8 +75,6 @@ function EmployeesAdmin() {
   });
 
   console.log("Update OBJECT: ", update);
-
-  const EmpID = localStorage.getItem("userID");
 
   useEffect(() => {
     const fetchEmp = async () => {
@@ -173,16 +154,6 @@ function EmployeesAdmin() {
     setEmployee((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
 
-
-  const handleDelete = async (empID) => {
-    try {
-      await axios.delete(`http://localhost:5500/delete-employee/${empID}`);
-      console.log("Employee Deleted safely");
-      window.alert("Done");
-    } catch {
-      console.error("No");
-    }
-  };
 
   const bringOneEmployee = async (id) => {
     try {
@@ -361,7 +332,6 @@ function EmployeesAdmin() {
   }
   const One = {
     display: 'flex',
-    // gap: '6px',
     justifyContent: 'center',
     flexDirection: 'inline'
   }
@@ -404,7 +374,7 @@ function EmployeesAdmin() {
               ))}
             </select>
             <input type='email' placeholder='Work-Related email' name='email' onChange={handleChange2} />
-            <button onClick={handleMake}>Submit</button>
+            <button className='buttonStyle2' onClick={handleMake}>Submit</button>
           </Model >
           <Modal isOpen={oneEmployee} onRequestClose={closeInfoModal} style={modal}>
             {sumOne.map((emp) => (
@@ -413,7 +383,6 @@ function EmployeesAdmin() {
                 <h1>{emp.username}</h1>
                 <img src={emp.profile_picture} id='profile_picture' alt="" />
                 <p>Username: {emp.username}</p>
-                {/* <p>Password: {emp.password}</p> */}
                 <p>Password: *******</p>
                 <p>Position: {emp.role_name}</p>
                 <p>Department: {emp.department_name}</p>
@@ -421,7 +390,6 @@ function EmployeesAdmin() {
                 <p>Status:  <span style={{ color: emp.status === 'DE-ACTIVATED' ? 'red' : 'green' }}>{emp.status}</span></p>
                 <div style={ThemBs}>
                   <button className='addItem-btn' onClick={() => setVisible(true)}><img src={Update} style={svgStyle} /></button>
-                  {/* <button className='addItem-btn' onClick={() => handleDelete(emp.id)} ><img src={Delete} style={svgStyle} /></button> */}
                   <Switch onChange={(checked) => handleSwitchChange(checked, emp.id)} checked={switchStates[emp.id] || false} />
                 </div>
 
@@ -429,7 +397,6 @@ function EmployeesAdmin() {
                   <h1>Update</h1>
                   <input type='text' placeholder='Username' name="username" onChange={handleChange} />
                   <input type='text' placeholder='Password' name="password" onChange={handleChange} />
-                  {/* <input type='text' placeholder='Department' name="departmentName" onChange={handleChange} /> */}
                   <select onChange={handleUpdateDepartmentChange} value={selectedUpdateDepartment} style={Select}>
                     <option value='' disabled >Select Department</option>
                     {department.map(departments => (

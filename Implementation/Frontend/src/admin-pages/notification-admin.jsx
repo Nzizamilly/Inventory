@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import NavbarAdmin from './navbarAdmin';
 import io from 'socket.io-client';
 import axios from 'axios';
+import DataTable from 'react-data-table-component'
 
 function NotificationAdmin() {
   const [notifications, setNotifications] = useState([]);
   const [status, setStatus] = useState('');
-  const [supervisor, setSupervisor] = useState('');
 
   const socket = io.connect("http://localhost:5001");
 
@@ -20,8 +20,6 @@ function NotificationAdmin() {
   socket.on("disconnect", () => {
     console.log("Disconnected from the server");
   });
-
-
 
   const notificationAdmin = {
     textAlign: 'center',
@@ -43,13 +41,13 @@ function NotificationAdmin() {
       try {
         const response = await axios.get("http://localhost:5500/get-notifications");
         setNotifications(response.data)
-      }catch(error){
+      } catch (error) {
         console.error("Error: ", error);
       }
     }
     fetch();
 
-  },[])
+  }, [])
 
   const sumStyle = {
     marginTop: '15px',
@@ -57,20 +55,46 @@ function NotificationAdmin() {
     justifyContent: 'center',
     alignItems: 'center',
     padding: '5px 12px',
-};
+  };
 
+  const column = [
+    {
+      name: 'Requestor',
+      selector: row => row.employee_username
+    },
+    {
+      name: 'Supervisor',
+      selector: row => row.supervisor_username
+    }, {
+      name: 'Item',
+      selector: row => row.name
+    }, {
+      name: 'Category',
+      selector: row => row.category_name
+    }, {
+      name: 'Amount',
+      selector: row => row.amount
+    }, {
+      name: 'description',
+      selector: row => row.description
+    },
+    {
+      name: 'Date Approved',
+      selector: row => row.date_approved
+    },
+  ]
 
 
   return (
     <div> <NavbarAdmin></NavbarAdmin>
       <div className="random-container">
-        {notifications.map((notification) => {
-          return (
-            <div key={notification.id} style={notificationAdmin}>
-            <span style={sumStyle}> HR Approved request from {notification.employee_username} through {notification.supervisor_username} of {notification.name} in {notification.category_name}, amount: {notification.amount} description {notification.description}, date {notification.date_approved}</span>
-          </div>
-            )
-        })}
+        <div style={{width: '74%', marginLeft: '53px'}}>
+          <DataTable
+            data={notifications}
+            columns={column}
+            pagination
+          ></DataTable>
+        </div>
       </div>
     </div>
   );

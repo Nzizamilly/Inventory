@@ -27,9 +27,6 @@ function Login() {
         alignItems: 'center',
     }
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [userData, setUserData] = useState(null);
-
     const username = useRef();
     const password = useRef();
 
@@ -43,21 +40,7 @@ function Login() {
         setValues(prev => ({...prev, [event.target.name]: event.target.value }))
     };
     axios.defaults.withCredentials = true;
-
-    
   
-    // useEffect(()=>{
-    //     axios.get('http://localhost:5500')
-    //     .then(res => {
-    //         if(res.data.valid) {
-    //             navigate('/home');
-    //         }else{
-    //             navigate('/')
-    //         }
-    //     })
-    //     .catch(err => console.log(err))
-    // }, [])
-    
     const handleSubmit = (event) => {
         axios.post("http://localhost:5500/login", values)
         .then(res => {
@@ -83,13 +66,22 @@ function Login() {
         })
         .catch(err => console.log(err));
     }
+    const button = {
+        width: '55px',
+        border: 'none',
+        color: 'white',
+        cursor: 'pointer',
+        padding: '12px 0px',
+        borderRadius: '12px',
+        backgroundColor: 'black',
+    }
     return (
         <div style={loginContainer}>
             <div style={login}>
                 <h1>Login</h1>
                 <input placeholder='Username' type='text' name='username' onChange={handleInput} ref={username} />
                 <input placeholder='Password' type='password' name='password' onChange={handleInput} ref={password} />
-                <button onClick={handleSubmit}>Enter</button>
+                <button style={button} onClick={handleSubmit}>Enter</button>
             </div>
         </div>
     );

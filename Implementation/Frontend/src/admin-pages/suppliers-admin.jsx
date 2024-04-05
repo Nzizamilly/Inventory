@@ -3,22 +3,24 @@ import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import NavbarAdmin from './navbarAdmin';
 import Model from 'react-modal'
+import Modal from 'react-modal';
+import DataTable from 'react-data-table-component';
 import Add from '../images/add.svg'
+import Info from '../images/info.svg'
 
 function SupplierAdmin() {
 
   const modal = {
     overlay: {
-      // backgroundColor: 'rgb(163, 187, 197)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
     },
     content: {
-      width: '33%',
+      width: '23%',
       marginLeft: '495px',
-      height: '77vh',
-      backgroundColor: 'rgb(163, 187, 197)',
+      height: '72vh',
+      backgroundColor: 'rgb(206, 206, 236)',
       border: 'none',
       borderRadius: '12px',
       gap: '23px',
@@ -32,14 +34,14 @@ function SupplierAdmin() {
   }
 
   const employeeContainer = {
-    gap: '51px',
+    // gap: '51px',
     width: '100%',
     height: '120vh',
     display: 'flex',
     flexWrap: 'wrap',
     overFlow: 'auto',
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'center',
     fontFamily: 'Arial, sans-serif',
     backgroundColor: 'rgb(163, 187, 197)',
   }
@@ -56,6 +58,33 @@ function SupplierAdmin() {
   }
 
   const [suppliers, setSuppliers] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [singelSupplier, setSingleSupplier] = useState([])
+  const [addVisible, setAddVisible] = useState(false);
+  const [oneEmployee, setOneEmployee] = useState(false);
+  const [update, setUpdate] = useState({
+    first_name: '',
+    address: '',
+    phone: '',
+    email: '',
+    status: ''
+  });
+  const [supp, setSupp] = useState({
+    first_name: '',
+    address: '',
+    phone: '',
+    email: '',
+    status: ''
+  });
+
+  const openInfoModal = (ID) => {
+    setOneEmployee(true)
+    bringOneSupplier(ID)
+  }
+
+  const closeOneEmployee = () => {
+    setOneEmployee(false)
+  }
 
   useEffect(() => {
     const fetchSupplier = async () => {
@@ -68,38 +97,21 @@ function SupplierAdmin() {
     fetchSupplier();
   }, [suppliers]);
 
-  const [update, setUpdate] = useState({
-    first_name: '',
-    address: '',
-    phone: '',
-    email: '',
-    status: ''
-  });
 
   const handleChange = (event) => {
     setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
 
   const handleUpdate = async (id) => {
-    try{
+    try {
       console.log("Updatiess: ", update);
       const response = await axios.put(`http://localhost:5500/supplier/${id}`);
       console.log("Updated Well!", response.info);
-    }catch(error){
+    } catch (error) {
       console.error("Error: ", error)
     };
   }
 
-  const [visible, setVisible] = useState(false);
-  const [addVisible, setAddVisible] = useState(false);
-
-  const [supp, setSupp] = useState({
-    first_name: '',
-    address: '',
-    phone: '',
-    email: '',
-    status: ''
-  })
   const handleChange2 = (event) => {
     setSupp((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
@@ -118,20 +130,49 @@ function SupplierAdmin() {
     backgroundColor: 'rgb(163, 187, 197)',
     paddingTop: '70px',
     display: 'flex',
+    marginLeft: '23px',
     justifyContent: 'center',
     alignContent: 'center',
-    color: 'black'
+    color: 'black',
+    gap: '12px'
   }
+
+  const bringOneSupplier = async (ID) => {
+    console.log("ID: ", ID);
+    try {
+      const response = await axios.get(`http://localhost:5500/supplier/${ID}`);
+      setSuppliers(response.data)
+      setSingleSupplier(response.data);
+    } catch (error) {
+      console.error("Error", error);
+    }
+  }
+
+  const columns = [
+    {
+      name: 'Supplier Name',
+      selector: row => row.first_name
+    },
+    {
+      name: 'Address',
+      selector: row => row.address
+    }, {
+      name: 'More Info',
+      cell: row => (
+        <button className='addItem-btn' onClick={() => openInfoModal(row.id)}><img src={Info} style={svgStyle} /></button>
+      )
+    },
+  ]
 
 
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div style={kain}>
-        <h1>Add A New Supplier</h1>
+        <h1>List Of Suppliers</h1>
+        <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Supplier</p></button>
       </div>
       <div style={employeeContainer}>
-        <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Supplier</p></button>
 
         <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
           <h1>Add Supplier</h1>
@@ -143,28 +184,39 @@ function SupplierAdmin() {
           <button onClick={handleMake}>Submit</button>
         </Model>
 
-        {suppliers.map((supplier) => (
-          <div key={supplier.id} className="employee">
-            <div className="bigger">
-              <p>{supplier.first_name && supplier.first_name.charAt(0).toUpperCase()}</p>
-            </div>
-            <p>Name: {supplier.first_name}</p>
-            <p>Address: {supplier.address}</p>
-            <p>Phone: {supplier.phone}</p>
-            <p>Email: {supplier.email}</p>
-            <p>Status:  <span style={color}>{supplier.status}</span></p>
-            <button onClick={() => setVisible(true)}>Update</button>
-            <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
-              <h1>Update</h1>
-              <input type='text' placeholder="Supplier's Name" name='first_name' onChange={handleChange} />
-              <input type='text' placeholder='Address' name='address' onChange={handleChange} />
-              <input type='text' placeholder='Phone' name='phone' onChange={handleChange} />
-              <input type='text' placeholder='Email' name='email' onChange={handleChange} />
-              <input type='text' placeholder='Status' name='status' onChange={handleChange} />
-              <button onClick={()=>handleUpdate(supplier.id)}>Submit</button>
-            </Model>
-          </div>
-        ))}
+        <div style={{backgroundColor: "black",width: '90%', marginTop: '12px', overFlow: 'auto', marginLeft: '220px'}}>
+          <DataTable
+            data={suppliers}
+            columns={columns}
+            pagination
+          ></DataTable>
+
+          <Modal isOpen={oneEmployee} onRequestClose={closeOneEmployee} style={modal}>
+            {singelSupplier.map((supplier) => (
+              <div key={supplier.id} className="employee">
+                <div className="bigger">
+                  <p>{supplier.first_name && supplier.first_name.charAt(0).toUpperCase()}</p>
+                </div>
+                <p>Name: {supplier.first_name}</p>
+                <p>Address: {supplier.address}</p>
+                <p>Phone: {supplier.phone}</p>
+                <p>Email: {supplier.email}</p>
+                <p>Status:  <span style={color}>{supplier.status}</span></p>
+                <button onClick={() => setVisible(true)}>Update</button>
+                <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
+                  <h1>Update</h1>
+                  <input type='text' placeholder="Supplier's Name" name='first_name' onChange={handleChange} />
+                  <input type='text' placeholder='Address' name='address' onChange={handleChange} />
+                  <input type='text' placeholder='Phone' name='phone' onChange={handleChange} />
+                  <input type='text' placeholder='Email' name='email' onChange={handleChange} />
+                  <input type='text' placeholder='Status' name='status' onChange={handleChange} />
+                  <button onClick={() => handleUpdate(supplier.id)}>Submit</button>
+                </Model>
+              </div>
+            ))}
+          </Modal>
+        </div>
+
       </div>
     </div>
   );

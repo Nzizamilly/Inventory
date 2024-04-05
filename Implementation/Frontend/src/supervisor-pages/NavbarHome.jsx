@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import Centrika from '../images/centrika-removebg.png';
 import axios from 'axios';
 import Modal from 'react-modal'
 
@@ -86,28 +87,32 @@ function NavbarHome() {
     };
    
     const select = {
+        width: '209px',
+        color: 'white',
         display: 'block',
         padding: '8px 16px',
         borderRadius: '12px',
+        color: 'white',
+        marginTop: '7px',
         textDecoration: 'none',
-        color: 'rgb(5, 5, 5)',
-        width: '209px',
         backgroundColor: 'black',
-        color: 'white'
+        float: 'right',
+        justifyContent: 'center'
 
     }
 
     return (
         <div className="navbar">
-            <ul className='ulsupervisor' style={color}>
-                <li className='li1supervisor'><Link to={'/home-supervisor'}>Home</Link></li>
+            <ul className='ul1' style={color}>
+            <li style={{ float: 'left', marginTop: '-1px', marginLeft: '174px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+                <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
                 {/* <li className='li1supervisor'><Link to={'/notification-supervisor'}>View Requests</Link></li> */}
                 <select onChange={handleTransactionChange} value={transactionType} style={select}>
                     <option value="" disabled >Requests</option>
                     <option value="item" >Item</option>
                     <option value="purchase" >Purchase</option>
                 </select>
-                <li className='li1supervisor' onClick={handleLogout}><Link>Log Out</Link></li>
+                <li className='li1'><Link to={'/home-supervisor'}>Home</Link></li>
             </ul>
             <ul className='ul2supervisor'>
                 <li className='lisupervisor'><Link to={'/account-admin'} onMouseOver={openModal}>Account</Link></li>

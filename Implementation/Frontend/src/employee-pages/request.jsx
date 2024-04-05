@@ -159,19 +159,10 @@ function Request() {
     messageData.priority = selectedPriority;
     messageData.supervisor = selectedSupervisor;
 
-    const employee = [get];
-
     setMessageDataForDown([messageData]);
 
-
-
-    // console.log("Item name: ", messageData.itemName);
-    // console.log("Category Name: ", messageData.categoryName)
-    // console.log("Back Count: ", backCount.totalCount);
-    // console.log("Front Count: ", amount.amount);
     console.log("SelectedPriority", selectedPriority);
     console.log("MessageData Data: ", messageData);
-
 
     window.alert("Request sent....");
     socket.emit("Employee_Message_Supervisor(1)", messageData);
@@ -190,18 +181,19 @@ function Request() {
   };
 
 
-  const handleSelectedItemName = (selectedList, selectedItem) => {
+  const handleSelectedItemName = (selectedList) => {
     setItemNameTrial(selectedList.map(item => setSomeName(item)))
-  }
+  };
+
   const kain = {
     marginLeft: '20px',
     fontFamily: 'Arial, sans-serif',
-    backgroundColor: 'rgb(34, 41, 44)',
+    backgroundColor: 'rgb(163, 187, 197)',
     paddingTop: '70px',
     display: 'flex',
     justifyContent: 'center',
     alignContent: 'center',
-    color: 'rgb(219, 215, 215)'
+    color: 'black'
   };
 
   const sumStyle = {
@@ -210,12 +202,12 @@ function Request() {
     gap: '12px',
     width: '90%',
     height: '33%'
-  }
+  };
 
   const option = [
-    { value: 'red', label: <img src={Red} alt="Red" style={{ width: '24px', height: '24px' }} /> },
-    { value: 'green', label: <img src={Green} alt="Green" style={{ width: '24px', height: '24px' }} /> },
-    { value: 'cyan', label: <img src={Cyan} alt="Cyan" style={{ width: '24px', height: '24px' }} /> }
+    { value: 'red', label: <div style={{ display: 'flex', flexDirection: 'inline', gap: '12px' }}><img src={Red} alt="Red" style={{ width: '24px', height: '24px' }} /> <p>Urgent</p></div> },
+    { value: 'green', label: <div style={{ display: 'flex', flexDirection: 'inline', gap: '12px' }}><img src={Green} alt="Green" style={{ width: '24px', height: '24px' }} /> <p>Medium</p></div> },
+    { value: 'cyan', label: <div style={{ display: 'flex', flexDirection: 'inline', gap: '12px' }}><img src={Cyan} alt="Cyan" style={{ width: '24px', height: '24px' }} /> <p>Low</p></div> }
   ];
 
   const customStyles = {
@@ -228,11 +220,11 @@ function Request() {
       display: 'flex',
       alignItems: 'center'
     }),
-    option: (provided, state) => ({
+    option: (provided) => ({
       ...provided,
       backgroundColor: 'black',
       display: 'flex',
-      justifyContent: 'center',
+      // justifyContent: 'center',
       '&:hover': {
         backgroundColor: 'lightgrey'
       }
@@ -315,7 +307,7 @@ function Request() {
       width: '23%',
       marginLeft: '495px',
       height: '72vh',
-      backgroundColor: 'rgb(79, 79, 83)',
+      backgroundColor: 'rgb(94, 120, 138)',
       border: 'none',
       borderRadius: '12px',
       gap: '23px',
@@ -365,7 +357,7 @@ function Request() {
           </div>
           <textarea required name='description' value={description} onChange={(e) => setDescription(e.target.value)} >Description</textarea>
           {/* <button onClick={sendMessage}>Send</button> */}
-          <button onClick={openModal}>Review</button>
+          <button className='buttonStyle2' onClick={openModal}>Review</button>
 
           <Modal isOpen={isMessageModalOpen} onRequestClose={closeModal} style={modal}>
             <div className='request-review'>
@@ -381,7 +373,7 @@ function Request() {
               <br />
               <p>Date of Request: {message.date}</p>
               <br />
-              <button onClick={sendMessage}>Send</button>
+              <button className='buttonStyle2' onClick={sendMessage}>Send</button>
             </div>
           </Modal>
         </div>

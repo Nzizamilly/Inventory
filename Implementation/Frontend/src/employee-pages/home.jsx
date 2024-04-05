@@ -27,17 +27,17 @@ function Home() {
     const kain = {
         marginLeft: '20px',
         fontFamily: 'Arial, sans-serif',
-        backgroundColor: 'rgb(34, 41, 44)',
+        backgroundColor: 'rgb(163, 187, 197)',
         paddingTop: '70px',
         width: '10%',
         display: 'flex',
         marginLeft: '220px',
-        color: 'rgb(219, 215, 215)'
+        color: 'black'
     }
     const start = {
         width: '100%',
         height: '100vh',
-        backgroundColor: 'rgb(34, 41, 44)'
+        backgroundColor: 'rgb(163, 187, 197)'
     }
     return (
         <div style={start}>

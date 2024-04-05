@@ -62,7 +62,6 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  // console.log("A user connected", socket.id);
   socket.on("Employee_Message_Supervisor(1)", async (messageData) => {
 
     console.log("From employee: to supervisor", messageData);
@@ -117,15 +116,12 @@ io.on("connection", (socket) => {
     try {
       const gotEmployeeName = messageData.employeeName;
       const employeeID = await getEmployeeID(gotEmployeeName);
-      // console.log("Employee ID: ", employeeID);
 
       const gotItemName = messageData.itemName;
       const itemID = await getItemID(gotItemName);
-      // console.log("Item ID: ", itemID);
 
       const gotCategoryName = messageData.categoryName;
       const categoryID = await getCategoryID(gotCategoryName);
-      // console.log("Category ID: ", categoryID);
 
       const status = 'Pending'
 
@@ -154,7 +150,6 @@ io.on("connection", (socket) => {
       res.status(500).send("Internal Server Error");
     }
 
-    // io.emit("Employee_Message_Supervisor(2)", [messageData]);
   });
 
   socket.on("HandleDelete", (object) => {
@@ -248,6 +243,17 @@ ORDER BY
   socket.on("Supervisor_Message_HR(1)", (messageData, supervisorName) => {
     console.log("From supervisor: to HR", messageData, supervisorName);
     console.log("TYPE OF message", typeof messageData);
+
+    const follow = "Approved By Supervisor";
+
+    const sql = `UPDATE employee_supervisor_request SET status = ?`;
+
+    db.query(sql, follow, (error, result) => {
+      result ? console.log("Done Well: ", result) : console.error("Error: ", error);
+    })
+
+
+
     io.emit("Supervisor_Message_HR(2)", messageData, supervisorName)
   })
 
@@ -356,7 +362,7 @@ ORDER BY
 
     const mailOption = {
       from: 'Centrika Inventory System',
-      to: 'cnziza@centrika.rw',
+      to: messageData.email,
       subject: 'Item Requested Approved',
       text: `Item you requested ${messageData.name} was successfully approved on ${messageData.date_approved}`
     };
@@ -761,11 +767,7 @@ app.put('/supplier/:id', (req, res) => {
     req.body.status,
     id
   ];
-
   console.log("Values: ", values);
-  // db.query(query, values, (err, result) => {
-  //   err ? console.error("Error: ", err) : res.json(result);
-  // })
 })
 
 app.post('/add-serial-number/:takeItemID', (req, res) => {
@@ -1633,11 +1635,11 @@ app.get('/get-number-purchase', (req, res) => {
 });
 
 app.get('/get-all-requests/:id', (req, res) => {
-
   const id = req.params.id;
-  const sql = `SELECT item.name, category.category_name, employee_supervisor_request.date_of_request, employee_supervisor_request.id,employee_supervisor_request.status
+  const sql = `SELECT item.name, category.category_name, employees.username, employee_supervisor_request.date_of_request, employee_supervisor_request.id,employee_supervisor_request.status
   FROM employee_supervisor_request
   JOIN item ON employee_supervisor_request.itemID = item.id
+  JOIN employees ON employee_supervisor_request.supervisor_concerned = employees.id
   JOIN category ON employee_supervisor_request.categoryID = category.id
   WHERE employee_supervisor_request.employeeID = ?;
   `;
@@ -2045,7 +2047,7 @@ WHERE employee_supervisor_purchase.status = 'Pending' AND employee_supervisor_pu
       console.error("Error: ", error);
     } else {
       res.json(result);
-      console.log("Type of quotation: ", result[0].quotation);
+      // console.log("Type of quotation: ", result[0].quotation);
     };
   })
 });
@@ -2099,7 +2101,6 @@ app.post('/add-purchase-supervisor-hr/:supervisorID', async (req, res) => {
 
     const doneQuotation = readImageFile(quotationPath);
 
-
     const q = "INSERT INTO supervisor_hr_purchase (expenditure_line, amount, cost_method, supervisor, end_goal, quotation, status, email, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     const values = [
@@ -2137,6 +2138,14 @@ app.get('/get-purchase-id', (req, res) => {
     console.log("Data: ", data);
     data ? res.json(data) : console.error("Error: ", error);
   })
+});
+
+app.get('/supplier/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = "SELECT * FROM supplier WHERE id = ?";
+  db.query(sql, [id], (error, data) => {
+    data ? res.json(data) : console.error("Error: ", error);
+  });
 })
 
 app.listen(5500, () => {
