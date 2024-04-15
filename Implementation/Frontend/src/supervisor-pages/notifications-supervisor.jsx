@@ -82,13 +82,13 @@ function NotificationSupervisor() {
 
   const handleDeny = async (index, notification) => {
     console.log("Notifications id :", index);
-    const status = 'Denied';
     socket.emit("Denied_By_Either(1)", notification);
     try {
-      const updatedNotifications = notifications.filter((_, i) => i !== index);
-      setNotifications(updatedNotifications);
+      // const updatedNotifications = notifications.filter((_, i) => i !== index);
+      // setNotifications(updatedNotifications);
       await axios.put(`http://localhost:5500/deny-by-supervisor/${index}`);
       console.log("Denied for ID", index);
+      window.alert("Request Denied")
     } catch (error) {
       console.log('Error', error);
     }
@@ -213,6 +213,7 @@ function NotificationSupervisor() {
       <NavbarHome></NavbarHome>
       <div className="notification-supervisor">
         <div style={div}>
+          <h1>Item Requisition Notifications</h1>
           <div style={smaller}>
           <button style={buttons} onClick={handlePending}>Pending</button>
           <button style={buttons} onClick={handleApprovedRequest}>Approved</button>

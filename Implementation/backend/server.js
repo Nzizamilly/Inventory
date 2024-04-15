@@ -142,14 +142,12 @@ io.on("connection", (socket) => {
         } else {
           id = data.insertId;
           // return id;
-
         }
       });
     } catch (error) {
       console.error(error);
       res.status(500).send("Internal Server Error");
     }
-
   });
 
   socket.on("HandleDelete", (object) => {
@@ -201,6 +199,7 @@ JOIN
     category ON supervisor_hr_request.categoryID = category.id
 JOIN 
     item ON supervisor_hr_request.itemID = item.id
+    WHERE supervisor_hr_request.status = 'Pending'
 ORDER BY 
     supervisor_hr_request.id DESC;
  `
@@ -246,9 +245,13 @@ ORDER BY
 
     const follow = "Approved By Supervisor";
 
-    const sql = `UPDATE employee_supervisor_request SET status = ?`;
+    const id = messageData.id;
 
-    db.query(sql, follow, (error, result) => {
+    const sql = `UPDATE employee_supervisor_request SET status = ? WHERE id = ?`;
+
+    const values = [follow, id];
+
+    db.query(sql, values, (error, result) => {
       result ? console.log("Done Well: ", result) : console.error("Error: ", error);
     })
 
@@ -298,8 +301,27 @@ ORDER BY
       } else {
         console.log("Status set Approved");
       }
-    })
+    });
   });
+
+  socket.on("Take this purchase", (messageData) => {
+    console.log("Update Approved Is hit ");
+
+    const id = messageData.id;
+
+    const status = "Approved";
+
+    const sql = `UPDATE employee_supervisor_purchase SET status = ? WHERE id = ?`;
+
+    db.query(sql, [status, id], (error, result) => {
+      if (error) {
+        console.error("Error: ", error)
+      } else {
+        console.log("Status set Approved");
+      }
+    });
+
+  })
 
   socket.on("change-status-approve", (messageData) => {
     console.log("Update status Is hit ");
@@ -316,6 +338,18 @@ ORDER BY
       };
     });
   });
+
+  socket.on("change-status-approve-purchase", (messageData) => {
+    console.log("Update status Is hit ");
+    const id = messageData.id;
+
+    const sql = `UPDATE supervisor_hr_purchase SET status = 'Approved' WHERE id = ?`;
+    db.query(sql, [ id], (error, result) => {
+      result ? console.log("Done") : console.error("Error: ", error);
+    });
+  })
+
+
   socket.on("change-status-deny", (messageData) => {
     console.log("Denied status Is hit");
     const id = messageData.id;
@@ -347,6 +381,18 @@ ORDER BY
         console.log("Status set Denied");
       };
     });
+  });
+
+  socket.on("Deny For Employee Purchase", (messageData) => {
+    const id = messageData.id;
+
+    const status = "Denied";
+
+    const sqli = `UPDATE employee_supervisor_purchase SET status = ? WHERE id = ?`;
+
+    db.query(sqli, [status, id], (error, result) => {
+     result ? console.log("Updated Well") : console.error("Error: ", error);
+    });
   })
 
   socket.on("Send Approved Email", (messageData) => {
@@ -375,6 +421,64 @@ ORDER BY
       }
     })
   });
+
+  socket.on("Send Approved Email Purchase", (messageData) => {
+    console.log("Object to be sent", messageData);
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: EMAIL,
+        pass: PASSWORD
+      }
+    });
+
+    const mailOption = {
+      from: 'Centrika Inventory System',
+      to: messageData.email,
+      subject: 'Item Requested For Purchase Approved',
+      text: `Item you requested for purchase: ${messageData.expenditure_line} was successful with amount ${messageData.amount}FRW approved on ${messageData.date} notify the administration for further details.`
+    };
+
+    transporter.sendMail(mailOption, function (error, info) {
+      if (error) {
+        console.error("Error: ", error)
+      } else {
+        const response = info;
+      }
+    })
+  });
+
+  app.post('/send-through-API', (req, res) => {
+    const email = req.body.email;
+    const name = req.body.name;
+    const date_approved = req.body.date_approved;
+
+    console.log("Object to be sent", email);
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: EMAIL,
+        pass: PASSWORD
+      }
+    });
+
+    const mailOption = {
+      from: 'Centrika Inventory System',
+      to: email,
+      subject: 'Item Requested For Purchase Approved',
+      text: `Item you requested for purchase: ${name} was successfully approved on ${date_approved} notify the administration for further details.`
+    };
+
+    transporter.sendMail(mailOption, function (error, info) {
+      if (error) {
+        console.error("Error: ", error)
+      } else {
+        const response = info;
+      }
+    })
+  })
 
   socket.on("disconnect", () => {
   });
@@ -1570,7 +1674,7 @@ app.put('/approve-by-supervisor/:index', (req, res) => {
 
 app.put('/deny-by-supervisor/:index', (req, res) => {
   const id = req.params.index;
-  const approve = "Denied";
+  const approve = "Denied By Supervisor";
   const values = [approve, id];
   const update1 = "UPDATE employee_supervisor_request set status = ? WHERE id = ?";
 
@@ -1586,7 +1690,7 @@ app.put('/deny-by-supervisor/:index', (req, res) => {
 
 app.put('/deny-by-supervisor-purchase/:index', (req, res) => {
   const id = req.params.index;
-  const approve = "Denied";
+  const approve = "Denied By Supervisor";
   const values = [approve, id];
   const update1 = "UPDATE employee_supervisor_purchase set status = ? WHERE id = ?";
 
@@ -1831,15 +1935,32 @@ ORDER BY
 });
 
 app.get('/get-approved-notification', (req, res) => {
+  const q = ` SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount,employee_supervisor_request.priority, employee_supervisor_request.description, employee_supervisor_request.date_of_request,employee_supervisor_request.email ,employee_supervisor_request.status , employee_supervisor_request.id
+  FROM employee_supervisor_request
+  JOIN employees ON employee_supervisor_request.employeeID = employees.id
+  JOIN category ON employee_supervisor_request.categoryID = category.id
+  JOIN item ON employee_supervisor_request.itemID = item.id
+ WHERE employee_supervisor_request.status = 'Approved By Supervisor'
+  ORDER BY employee_supervisor_request.id DESC;
+`;
+  db.query(q, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+
+
+app.get('/get-approved-notification-employee/:employeeID', (req, res) => {
+  const employeeID = req.params.employeeID;
   const q = ` SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount, employee_supervisor_request.description, employee_supervisor_request.date_of_request,employee_supervisor_request.email ,employee_supervisor_request.status , employee_supervisor_request.id
   FROM employee_supervisor_request
   JOIN employees ON employee_supervisor_request.employeeID = employees.id
   JOIN category ON employee_supervisor_request.categoryID = category.id
   JOIN item ON employee_supervisor_request.itemID = item.id
- WHERE employee_supervisor_request.status = 'Approved'
+ WHERE (employee_supervisor_request.status = 'Approved' OR employee_supervisor_request.status'Approved By Supervisor') AND employee_supervisor_request.employeeID = ?
   ORDER BY employee_supervisor_request.id DESC;
 `;
-  db.query(q, (error, result) => {
+  db.query(q, [employeeID], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
   })
 });
@@ -1850,7 +1971,7 @@ app.get('/get-denied-notification', (req, res) => {
   JOIN employees ON employee_supervisor_request.employeeID = employees.id
   JOIN category ON employee_supervisor_request.categoryID = category.id
   JOIN item ON employee_supervisor_request.itemID = item.id
- WHERE employee_supervisor_request.status = 'Denied'
+ WHERE employee_supervisor_request.status = 'Denied By Supervisor'
   ORDER BY employee_supervisor_request.id DESC;
 `;
   db.query(q, (error, result) => {
@@ -1858,12 +1979,25 @@ app.get('/get-denied-notification', (req, res) => {
   })
 });
 
-app.get('/get-denied-notification-purchase/:supervisorID', (req, res) => {
+app.get('/get-denied-notification-purchase-employee/:employeeID', (req, res) => {
+  const id = req.params.employeeID;
+  const q = ` SELECT employees.username,employee_supervisor_purchase.expenditure_line, employee_supervisor_purchase.amount, employee_supervisor_purchase.cost_method, employee_supervisor_purchase.end_goal, employee_supervisor_purchase.priority, employee_supervisor_purchase.date, employee_supervisor_purchase.email, employee_supervisor_purchase.status
+  FROM employee_supervisor_purchase
+  JOIN employees ON employee_supervisor_purchase.employeeID = employees.id
+  WHERE (employee_supervisor_purchase.status = 'Denied' OR employee_supervisor_purchase.status = 'Denied By Supervisor') AND employee_supervisor_purchase.employeeID = ?
+  ORDER BY employee_supervisor_purchase.id DESC;
+`;
+  db.query(q, [id], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+app.get('/get-denied-notification-purchase-supervisor/:supervisorID', (req, res) => {
   const id = req.params.supervisorID;
   const q = ` SELECT employees.username,employee_supervisor_purchase.expenditure_line, employee_supervisor_purchase.amount, employee_supervisor_purchase.cost_method, employee_supervisor_purchase.end_goal, employee_supervisor_purchase.priority, employee_supervisor_purchase.date, employee_supervisor_purchase.email, employee_supervisor_purchase.status
   FROM employee_supervisor_purchase
   JOIN employees ON employee_supervisor_purchase.employeeID = employees.id
-  WHERE employee_supervisor_purchase.status = 'Denied' AND employee_supervisor_purchase.supervisor = ?
+  WHERE (employee_supervisor_purchase.status = 'Denied' OR employee_supervisor_purchase.status = 'Denied by supervisor') AND employee_supervisor_purchase.supervisor = ?
   ORDER BY employee_supervisor_purchase.id DESC;
 `;
   db.query(q, [id], (error, result) => {
@@ -2002,6 +2136,7 @@ app.delete('/delete-category/:id', (req, res) => {
 });
 
 app.post('/add-employee-supervisor-purchase', (req, res) => {
+
   const employeeID = req.body.employeeID;
   const expenditure_line = req.body.description;
   const amount = req.body.amount;
@@ -2013,7 +2148,7 @@ app.post('/add-employee-supervisor-purchase', (req, res) => {
   const email = req.body.email;
   const status = "Pending";
 
-  const q = "INSERT INTO employee_supervisor_purchase (expenditure_line,amount,cost_method,supervisor,end_goal,quotation,priority,employeeID,email,status) VALUES (?,?,?,?,?,?,?,?,?,?)";
+  const q = "INSERT INTO employee_supervisor_purchase (expenditure_line,amount,cost_method,supervisor,end_goal,priority,employeeID,email,status) VALUES (?,?,?,?,?,?,?,?,?)";
 
   const values = [
     expenditure_line,
@@ -2021,7 +2156,6 @@ app.post('/add-employee-supervisor-purchase', (req, res) => {
     cost,
     supervisorID,
     endGoal,
-    quotation,
     priority,
     employeeID,
     email,
@@ -2053,6 +2187,108 @@ WHERE employee_supervisor_purchase.status = 'Pending' AND employee_supervisor_pu
 });
 
 
+app.get('/get-approved-purchase-notification/:supervisorID', (req, res) => {
+  const id = req.params.supervisorID;
+  const sql = `SELECT employees.username,employee_supervisor_purchase.amount,employee_supervisor_purchase.cost_method,employee_supervisor_purchase.expenditure_line,employee_supervisor_purchase.email,employee_supervisor_purchase.status, employee_supervisor_purchase.end_goal,employee_supervisor_purchase.quotation, employee_supervisor_purchase.quotation, employee_supervisor_purchase.priority,employee_supervisor_purchase.date ,employee_supervisor_purchase.date , employee_supervisor_purchase.id
+  FROM employee_supervisor_purchase
+  JOIN employees ON employee_supervisor_purchase.employeeID = employees.id
+  WHERE (employee_supervisor_purchase.status = 'Approved' OR employee_supervisor_purchase.status = 'Approved By Supervisor') AND employee_supervisor_purchase.supervisor = ?
+  ORDER BY employee_supervisor_purchase.id DESC; `;
+
+  const values = [id];
+  db.query(sql, values, (error, result) => {
+    if (error) {
+      console.error("Error: ", error);
+    } else {
+      res.json(result);
+    };
+  })
+});
+
+app.get('/get-approved-purchase-notification-employee/:employeeID', (req, res) => {
+  const id = req.params.employeeID;
+  const sql = ` SELECT employees.username,employee_supervisor_purchase.amount,employee_supervisor_purchase.cost_method,employee_supervisor_purchase.expenditure_line,employee_supervisor_purchase.email,employee_supervisor_purchase.status, employee_supervisor_purchase.end_goal,employee_supervisor_purchase.quotation, employee_supervisor_purchase.quotation, employee_supervisor_purchase.priority,employee_supervisor_purchase.date ,employee_supervisor_purchase.date , employee_supervisor_purchase.id
+ FROM employee_supervisor_purchase
+ JOIN employees ON employee_supervisor_purchase.employeeID = employees.id
+WHERE (employee_supervisor_purchase.status = 'Approved By Supervisor' OR employee_supervisor_purchase.status = 'Approved') AND employee_supervisor_purchase.employeeID = ?
+ ORDER BY employee_supervisor_purchase.id DESC `;
+
+  const values = [id];
+  db.query(sql, values, (error, result) => {
+    if (error) {
+      console.error("Error: ", error);
+    } else {
+      res.json(result);
+    };
+  })
+});
+
+app.get('/get-purchase-notification-employee/:employeeID', (req, res) => {
+  const id = req.params.employeeID;
+  const sql = ` SELECT employees.username,employee_supervisor_purchase.amount,employee_supervisor_purchase.cost_method,employee_supervisor_purchase.expenditure_line,employee_supervisor_purchase.email,employee_supervisor_purchase.status, employee_supervisor_purchase.end_goal,employee_supervisor_purchase.quotation, employee_supervisor_purchase.quotation, employee_supervisor_purchase.priority,employee_supervisor_purchase.date ,employee_supervisor_purchase.date , employee_supervisor_purchase.id
+ FROM employee_supervisor_purchase
+ JOIN employees ON employee_supervisor_purchase.employeeID = employees.id
+WHERE employee_supervisor_purchase.status = 'Pending' AND employee_supervisor_purchase.employeeID = ?
+ ORDER BY employee_supervisor_purchase.id DESC `;
+
+  const values = [id];
+  db.query(sql, values, (error, result) => {
+    if (error) {
+      console.error("Error: ", error);
+    } else {
+      res.json(result);
+    };
+  })
+});
+
+app.get('/get-purchase-notification-hr', (req, res) => {
+  const sql = `SELECT employees.username,supervisor_hr_purchase.amount,supervisor_hr_purchase.cost_method,supervisor_hr_purchase.expenditure_line,supervisor_hr_purchase.email,supervisor_hr_purchase.status, supervisor_hr_purchase.end_goal,supervisor_hr_purchase.quotation, supervisor_hr_purchase.quotation, supervisor_hr_purchase.priority,supervisor_hr_purchase.date ,supervisor_hr_purchase.date , supervisor_hr_purchase.id
+  FROM supervisor_hr_purchase
+  JOIN employees ON supervisor_hr_purchase.employeeID = employees.id
+ WHERE supervisor_hr_purchase.status = 'Pending'
+  ORDER BY supervisor_hr_purchase.id DESC;`;
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+app.get('/get-approved-purchase-notification-hr', (req, res) => {
+  const sql = `SELECT employees.username,supervisor_hr_purchase.amount,supervisor_hr_purchase.cost_method,supervisor_hr_purchase.expenditure_line,supervisor_hr_purchase.email,supervisor_hr_purchase.status, supervisor_hr_purchase.end_goal,supervisor_hr_purchase.quotation, supervisor_hr_purchase.quotation, supervisor_hr_purchase.priority,supervisor_hr_purchase.date ,supervisor_hr_purchase.date , supervisor_hr_purchase.id
+  FROM supervisor_hr_purchase
+  JOIN employees ON supervisor_hr_purchase.employeeID = employees.id
+ WHERE supervisor_hr_purchase.status = 'Approved'
+  ORDER BY supervisor_hr_purchase.id DESC;`;
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+app.get('/get-denied-notification-purchase-hr', (req, res) => {
+  const sql = `SELECT employees.username,supervisor_hr_purchase.amount,supervisor_hr_purchase.cost_method,supervisor_hr_purchase.expenditure_line,supervisor_hr_purchase.email,supervisor_hr_purchase.status, supervisor_hr_purchase.end_goal,supervisor_hr_purchase.quotation, supervisor_hr_purchase.quotation, supervisor_hr_purchase.priority,supervisor_hr_purchase.date ,supervisor_hr_purchase.date , supervisor_hr_purchase.id
+  FROM supervisor_hr_purchase
+  JOIN employees ON supervisor_hr_purchase.employeeID = employees.id
+ WHERE supervisor_hr_purchase.status = 'Denied'
+  ORDER BY supervisor_hr_purchase.id DESC;`;
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+app.put('/change-status/:id', (req, res) => {
+  const id = req.params.id;
+
+  const status = "Approved By Supervisor";
+
+  const query = `UPDATE employee_supervisor_purchase SET status = ? WHERE id = ?`;
+
+  const values = [status, id];
+
+  db.query(query, values, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+})
+
+
 
 app.post('/add-purchase-supervisor-hr/:supervisorID', async (req, res) => {
 
@@ -2073,8 +2309,8 @@ app.post('/add-purchase-supervisor-hr/:supervisorID', async (req, res) => {
 
   try {
     const gotEmployeeName = req.body.username;
-    const employeeID = await getEmployeeID(gotEmployeeName);
 
+    const employeeID = await getEmployeeID(gotEmployeeName);
     const status = 'Pending'
 
     const supervisorID = req.params.supervisorID;
@@ -2084,24 +2320,10 @@ app.post('/add-purchase-supervisor-hr/:supervisorID', async (req, res) => {
     const amount = req.body.amount;
     const cost_method = req.body.cost_method;
     const endGoal = req.body.end_goal;
-    const quotation = req.body.quotation;
 
     console.log("Email From Front: ", email);
 
-    const readImageFile = (filePath) => {
-      try {
-        const bitmap = fs.readFileSync(filePath);
-        return Blob.from(bitmap);
-      } catch (error) {
-        console.error("Error: ", error);
-      }
-    }
-
-    const quotationPath = req.body.quotation;
-
-    const doneQuotation = readImageFile(quotationPath);
-
-    const q = "INSERT INTO supervisor_hr_purchase (expenditure_line, amount, cost_method, supervisor, end_goal, quotation, status, email, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const q = "INSERT INTO supervisor_hr_purchase (expenditure_line, amount, cost_method, supervisor, end_goal, status, email, priority, employeeID) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     const values = [
       expenditure,
@@ -2109,10 +2331,10 @@ app.post('/add-purchase-supervisor-hr/:supervisorID', async (req, res) => {
       cost_method,
       supervisorID,
       endGoal,
-      doneQuotation,
       status,
       email,
       priority,
+      employeeID
     ];
 
     console.log("Values: ", values);
@@ -2146,7 +2368,27 @@ app.get('/supplier/:id', (req, res) => {
   db.query(sql, [id], (error, data) => {
     data ? res.json(data) : console.error("Error: ", error);
   });
-})
+});
+
+app.put('/approve-by-hr-purchase/:id', (req, res) => {
+
+  const id = req.params.id;
+  const status = "Approved";
+  const values = [status, id];
+  const query = `UPDATE employee_supervisor_purchase SET status = ? WHERE id = ?`;
+
+  db.query(query, values, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.put('/deny-by-hr-purchase/:id', (req, res) => {
+  const id = req.params.id;
+  const query = `UPDATE supervisor_hr_purchase SET status = 'Denied' WHERE id = ?`;
+  db.query(query, [id], (error, result) => {
+    result ? console.log("Updated Well") : console.error("Error: ", error);
+  });
+});
 
 app.listen(5500, () => {
   console.log("Connected to backend")

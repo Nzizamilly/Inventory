@@ -2,7 +2,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Centrika from '../images/centrika-removebg.png';
 import axios from 'axios';
-import Modal from 'react-modal'
+import Modal from 'react-modal';
+import Select from 'react-select';
 
 function NavbarHome() {
     const color = {
@@ -12,6 +13,8 @@ function NavbarHome() {
     const [data, setData] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [transactionType, setTransactionType] = useState('');
+    const [selectedRequest, setSelectedRequest] = useState(null);
+    const [selectedNotification, setSelectedNotification] = useState(null);
 
     const modalStyles = {
         content: {
@@ -85,7 +88,7 @@ function NavbarHome() {
             navigate('/purchase-supervisor')
         }
     };
-   
+
     const select = {
         width: '209px',
         color: 'white',
@@ -98,15 +101,85 @@ function NavbarHome() {
         backgroundColor: 'black',
         float: 'right',
         justifyContent: 'center'
+    };
 
-    }
+    const option = [
+        { value: 'item', label: "Item Request" },
+        { value: 'purchase', label: "Purchase Request" },
+    ];
+
+    const options = [
+        { value: 'item', label: "Item Request" },
+        { value: 'purchase', label: "Purchase Request" },
+    ];
+
+    const customStyles = {
+        control: (provided) => ({
+            ...provided,
+            color: 'white',
+            border: 'none',
+            backgroundColor: 'black',
+            display: 'flex',
+            alignItems: 'center'
+        }),
+        option: (provided) => ({
+            ...provided,
+            backgroundColor: 'black',
+            display: 'flex',
+            // justifyContent: 'center',
+            '&:hover': {
+                backgroundColor: 'lightgrey',
+                color: 'black'
+            }
+        }),
+        singleValue: (provided) => ({
+            ...provided,
+            width: '54px',
+            height: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'black',
+            color: 'white',
+        })
+    };
+
+    const handleRequestChange = (event) => {
+        setSelectedRequest(event.value);
+    };
+
+    const handleNotificationChange = (event) => {
+        setSelectedNotification(event.value);
+    };
+
+    useEffect(() => {
+        const changeNotifications = (selectedNotification) => {
+            if (selectedNotification === 'item') {
+                navigate('/purchase-review-supervisor');
+            } else if (selectedNotification === 'purchase') {
+                navigate('/purchase-notifications-supervisor');
+            };
+        };
+        changeNotifications(selectedNotification);
+    }, [selectedNotification])
+
+
+    useEffect(() => {
+        const changeRequest = (selectedRequest) => {
+            if (selectedRequest === 'item') {
+                navigate('/request-supervisor');
+            } else if (selectedRequest === 'purchase') {
+                navigate('/purchase-request-supervisor');
+            };
+        };
+        changeRequest(selectedRequest);
+    }, [selectedRequest])
+
 
     return (
         <div className="navbar">
             <ul className='ul1' style={color}>
-            <li style={{ float: 'left', marginTop: '-1px', marginLeft: '174px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+                <li style={{ float: 'left', marginTop: '-1px', marginLeft: '174px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
                 <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
-                {/* <li className='li1supervisor'><Link to={'/notification-supervisor'}>View Requests</Link></li> */}
                 <select onChange={handleTransactionChange} value={transactionType} style={select}>
                     <option value="" disabled >Requests</option>
                     <option value="item" >Item</option>
@@ -116,7 +189,19 @@ function NavbarHome() {
             </ul>
             <ul className='ul2supervisor'>
                 <li className='lisupervisor'><Link to={'/account-admin'} onMouseOver={openModal}>Account</Link></li>
-                <li className='lisupervisor'><Link to={'/request-supervisor'}>Request</Link></li>
+                <Select
+                    options={option}
+                    styles={customStyles}
+                    placeholder="Request Forms"
+                    onChange={handleRequestChange}
+                />
+                {/* <li className='lisupervisor'><Link to={'/purchase-review-supervisor'}>Notifications</Link></li> */}
+                <Select
+                    options={options}
+                    styles={customStyles}
+                    placeholder="Notifications"
+                    onChange={handleNotificationChange}
+                />
                 <li className='lisupervisor'><Link to={'/transactions-supervisor'}>Transactions</Link></li>
                 <li className='lisupervisor'><Link to={'/terms-supervisor'}>Terms & Conditions</Link></li>
             </ul>

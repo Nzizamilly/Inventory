@@ -73,6 +73,11 @@ function Navbar() {
     { value: 'purchase', label: "Purchase Request" },
   ];
 
+  const options = [
+    { value: 'item', label: "Item Notifications" },
+    { value: 'purchase', label: "Purchase Notifications" },
+  ];
+
   const customStyles = {
     control: (provided) => ({
       ...provided,
@@ -103,21 +108,36 @@ function Navbar() {
     })
   }
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedNotification, setSelectedNotification] = useState(null);
 
   const handleRequestChange = (event) => {
     setSelectedRequest(event.value);
   };
 
+  const handleNotificationChange = (event) => {
+    setSelectedNotification(event.value);
+  };
+
   useEffect(() => {
-    const changeRequest = (selectedRequest) => {
+    const changeRequest = (selectedNotification) => {
+      if (selectedNotification === 'item') {
+        navigate('/notification-employee');
+      } else if (selectedNotification === 'purchase') {
+        navigate('/purchase-notification-employee');
+      };
+    }
+    changeRequest(selectedNotification);
+  }, [selectedNotification])
+
+  useEffect(() => {
+    const changeNotification = (selectedRequest) => {
       if (selectedRequest === 'item') {
         navigate('/request-employee');
       } else if (selectedRequest === 'purchase') {
         navigate('/purchase-request');
       };
     }
-
-    changeRequest(selectedRequest);
+    changeNotification(selectedRequest);
   }, [selectedRequest])
 
   return (
@@ -135,7 +155,12 @@ function Navbar() {
           placeholder="Request"
           onChange={handleRequestChange}
         />
-        <li><Link to={'/notification-employee'}>Notification</Link></li>
+        <Select
+          options={options}
+          styles={customStyles}
+          placeholder="Notifications"
+          onChange={handleNotificationChange}
+        />
         <li><Link to={'/terms-employee'}>Terms and Conditions</Link></li>
       </ul>
       <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>

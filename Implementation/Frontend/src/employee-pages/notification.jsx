@@ -42,7 +42,7 @@ function Notification() {
   }, [notifications])
 
   console.log("Notifications: ", notifications);
-
+  
 
   const column = [
     {
@@ -66,19 +66,33 @@ function Notification() {
       selector: row => row.status
     }
   ]
+  const smaller = {
+    display: 'flex',
+    flexDirection: 'inline',
+    gap: '12px'
+  };
 
+  const buttons = {
+    width: '65px',
+    color: 'black',
+    cursor: 'pointer',
+    padding: '12px 0px',
+    borderRadius: '1px',
+    backgroundColor: 'white'
+  };
 
   return (
     <div>
       <Navbar></Navbar>
       <div className="notification-container">
-        <div style={{width: '64%'}}>
-        <DataTable
-          data={notifications}
-          columns={column}
-          pagination
-        >
-        </DataTable>
+    <h1>Item Requisition Notifications</h1>
+        <div style={{ width: '64%' }}>
+          <DataTable
+            data={notifications}
+            columns={column}
+            pagination
+          >
+          </DataTable>
         </div>
 
       </div>

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Centrika from '../images/centrika-removebg.png';
 import axios from 'axios';
 import Modal from 'react-modal'
+import Select from 'react-select';
 
 function NavbarMain() {
     const color = {
@@ -36,7 +37,7 @@ function NavbarMain() {
             alignItems: 'center'
         },
         overlay: {
-            backgroundColor: 'rgba(0, 0, 0, 0.0)', // Adjust the background color and opacity
+            backgroundColor: 'rgba(0, 0, 0, 0.0)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -62,7 +63,6 @@ function NavbarMain() {
                 if (EmpID) {
                     const response = await axios.get(`http://localhost:5500/employee/${EmpID}`);
                     setData(response.data[0]);
-                    // console.log("Data", response.data[0]);
                 } else {
                     console.error("EmpID Not found in localStorage")
                 }
@@ -73,17 +73,112 @@ function NavbarMain() {
 
         fetchData();
     }, []);
+
+    const option = [
+        { value: 'item', label: "Item Request" },
+        { value: 'purchase', label: "Purchase Request" },
+    ];
+
+    const customStyles = {
+        control: (provided) => ({
+            ...provided,
+            color: 'white',
+            border: 'none',
+            backgroundColor: 'black',
+            display: 'flex',
+            justifyContent: 'center'
+        }),
+        option: (provided) => ({
+            ...provided,
+            backgroundColor: 'black',
+            display: 'flex',
+            justifyContent: 'center',
+            '&:hover': {
+                backgroundColor: 'lightgrey',
+                color: 'black'
+            }
+        }),
+        singleValue: (provided) => ({
+            ...provided,
+            width: '54px',
+            height: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'blue',
+            color: 'white',
+        })
+    };
+
+    const [selectedRequest, setSelectedRequest] = useState(null);
+
+
+    const handleRequestChange = (event) => {
+        setSelectedRequest(event.value);
+    };
+
+    useEffect(() => {
+        const changeRequest = (selectedRequest) => {
+            if (selectedRequest === 'item') {
+                navigate('/request-hr');
+            } else if (selectedRequest === 'purchase') {
+                navigate('/purchase-hr');
+            };
+        }
+
+        changeRequest(selectedRequest);
+    }, [selectedRequest])
+
+    const [transactionType, setTransactionType] = useState('');
+
+
+    const handleTransactionChange = (event) => {
+        const selectedTransactionType = event.target.value;
+        setTransactionType(event.target.value);
+
+        if (selectedTransactionType === "item") {
+            navigate('/notification-hr')
+        } else {
+            navigate('/purchase-notification-hr')
+        }
+    };
+
+    const select = {
+        width: '209px',
+        color: 'white',
+        display: 'block',
+        padding: '8px 16px',
+        borderRadius: '12px',
+        color: 'white',
+        marginTop: '7px',
+        textDecoration: 'none',
+        backgroundColor: 'black',
+        float: 'right',
+        justifyContent: 'center'
+    };
+
+
     return (
         <div className="navbar">
             <ul className='ul1' style={color}>
-        <li style={{ float: 'left', marginLeft: '193px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+                <li style={{ float: 'left', marginLeft: '193px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
                 <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
-                <li className='li1'><Link to={'/notification-hr'}>Requests</Link></li>
+                {/* <li className='li1'><Link to={'/notification-hr'}>Requests</Link></li> */}
+                <select onChange={handleTransactionChange} value={transactionType} style={select}>
+                    <option value="" disabled >Notifications</option>
+                    <option value="item" >Item</option>
+                    <option value="purchase" >Purchase</option>
+                </select>
                 <li className='li1'><Link to={'/home-hr'}>Home</Link></li>
             </ul>
             <ul className='ul2Admin'>
                 <li className='lisupervisor'><Link to={'/account-hr'} onMouseOver={openModal}>Account</Link></li>
-                <li className='lisupervisor'><Link to={'/request-hr'}>Request</Link></li>
+                {/* <li className='lisupervisor'><Link to={'/request-hr'}>Request</Link></li> */}
+                <Select
+                    options={option}
+                    styles={customStyles}
+                    placeholder="Request"
+                    onChange={handleRequestChange}
+                />
                 <li className='lisupervisor'><Link to={'/transaction-hr'}>Transactions</Link></li>
                 <li className='lisupervisor'><Link to={'/terms-hr'}>Terms & Conditions</Link></li>
             </ul>

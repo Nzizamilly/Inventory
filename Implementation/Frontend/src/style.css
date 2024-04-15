@@ -464,13 +464,16 @@ li a:hover {
 }
 
 .ul2Admin {
+    gap:4px;
     margin: 0;
     padding: 0;
     width: 14%;
     height: 100%;
+    display: flex;
     overflow: auto;
     position: fixed;
     list-style-type: none;
+    flex-direction: column;
     font-family: 'Arial', sans-serif;
     background-color: rgb(52, 209, 91);
 }
@@ -1012,12 +1015,15 @@ li a:hover {
 
 .ul2supervisor {
     margin: 0;
+    gap: 8px;
     width: 13%;
     padding: 0;
     height: 100%;
+    display: flex;
     overflow: auto;
     position: fixed;
     list-style-type: none;
+    flex-direction: column;
     font-family: 'Arial', sans-serif;
     background-color: rgb(52, 209, 91);
 }

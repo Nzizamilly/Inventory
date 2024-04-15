@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
-import Navbar from './navbar';
 import axios from 'axios';
+import { Multiselect } from 'multiselect-react-dropdown';
 import Red from '../images/red-circle.svg';
 import Green from '../images/green-circle.svg';
 import Cyan from '../images/cyan-circle.svg';
@@ -10,9 +10,10 @@ import Select from 'react-select';
 import Modal from 'react-modal'
 import { storage } from '../firebase';
 import { ref, uploadBytes } from "firebase/storage";
+import NavbarHome from './NavbarHome';
+import { v4 } from "uuid"
 
-function PurchaseRequest() {
-
+function PurchaseRequestSupervisor() {
 
   const [description, setDescription] = useState('');
   const [endGoalValue, setEndGoalValue] = useState('');
@@ -77,8 +78,8 @@ function PurchaseRequest() {
 
   const option = [
     { value: 'red', label: <div style={{ display: 'flex', flexDirection: 'inline', gap: '12px' }}><img src={Red} alt="Red" style={{ width: '24px', height: '24px' }} /> <p>Urgent</p></div> },
-    { value: 'green', label: <div style={{ display: 'flex', flexDirection: 'inline', gap: '12px' }}><img src={Green} alt="Green" style={{ width: '24px', height: '24px' }} /> <p>Medium</p></div> },
-    { value: 'cyan', label: <div style={{ display: 'flex', flexDirection: 'inline', gap: '12px' }}><img src={Cyan} alt="Cyan" style={{ width: '24px', height: '24px' }} /> <p>Low</p></div> }
+    { value: 'green', label: <div style={{ display: 'flex', flexDirection: 'inline', gap: '12px' }}><img src={Green} alt="Green" style={{ width: '24px', height: '24px' }} /><p>Medium</p></div> },
+    { value: 'cyan', label: <div style={{ display: 'flex', flexDirection: 'inline', gap: '12px' }}><img src={Cyan} alt="Cyan" style={{ width: '24px', height: '24px' }} /><p>Low</p></div> }
   ];
 
   const customStyles = {
@@ -225,14 +226,14 @@ function PurchaseRequest() {
     if (imageUpload == null) return;
     const IdForQuotation = latestId + 1;
     console.log("ID FOR QUOTATION: ", IdForQuotation);
-    const imageRef = ref(storage, `images/${imageUpload.name, IdForQuotation}`); 
-    uploadBytes(imageRef, imageUpload).then(()=>{
+    const imageRef = ref(storage, `images/${imageUpload.name, IdForQuotation}`);
+    uploadBytes(imageRef, imageUpload).then(() => {
       window.alert("Request Sent well.");
     });
-    
+
     window.alert("Sending Request, Wait for a second Prompt..");
-    
-    try {       
+
+    try {
       const response = await axios.post('http://localhost:5500/add-employee-supervisor-purchase', message);
       message.id = id;
       const id = response.id;
@@ -260,7 +261,7 @@ function PurchaseRequest() {
 
   return (
     <div>
-      <Navbar></Navbar>
+      <NavbarHome></NavbarHome>
       <div style={kain}>
         <h1>Expenditure Request Tab</h1>
       </div>
@@ -308,7 +309,7 @@ function PurchaseRequest() {
               <br />
               <p>Description: {messageForDown.description}</p>
               <br />
-              <p>Amount: {messageForDown.amount} FRW</p>
+              <p>Amount: {messageForDown.amount}</p>
               <br />
               <p>End Goal: {messageForDown.endGoalValue}</p>
               <br />
@@ -334,4 +335,4 @@ function PurchaseRequest() {
   );
 };
 
-export default PurchaseRequest;
+export default PurchaseRequestSupervisor;

@@ -35,36 +35,48 @@ function Login() {
         password: ''
     });
     const navigate = useNavigate();
-    
+
     const handleInput = (event) => {
-        setValues(prev => ({...prev, [event.target.name]: event.target.value }))
+        setValues(prev => ({ ...prev, [event.target.name]: event.target.value }))
     };
     axios.defaults.withCredentials = true;
-  
+
     const handleSubmit = (event) => {
         axios.post("http://localhost:5500/login", values)
-        .then(res => {
-            if(res.data.Login){
-                localStorage.setItem("username", username.current.value);
-                localStorage.setItem("password", password.current.value);
-                localStorage.setItem("userID", res.data.id);
-                localStorage.setItem("roleID", res.data.roleID);
-                localStorage.setItem("email", res.data.email);
-                const userRole = res.data.roleID;
-                if (userRole === 3){
-                    navigate('/home-admin');
-                }else if(userRole === 2){
-                    navigate('/home-employee')
-                }else if(userRole === 5){
-                    navigate('/home-supervisor')
-                }else if(userRole === 6){
-                    navigate('home-hr')
+            .then(res => {
+                if (res.data.Login) {
+                    localStorage.setItem("username", username.current.value);
+                    localStorage.setItem("password", password.current.value);
+                    localStorage.setItem("userID", res.data.id);
+                    localStorage.setItem("roleID", res.data.roleID);
+                    localStorage.setItem("email", res.data.email);
+                    const userRole = res.data.roleID;
+
+                    switch (userRole) {
+                        case 3:
+                            navigate('/home-admin');
+                            break;
+                        case 2:
+                            navigate('/home-employee');
+                            break;
+                        case 5:
+                            navigate('/home-supervisor');
+                            break;
+                        case 6:
+                            navigate('home-hr');
+                            break;
+                        case 4:
+                            navigate('/home-employee');
+                            break;
+                        default:
+                            alert("Not found")
+                    }
+
+                } else {
+                    alert("Not found")
                 }
-            }else {
-                alert("Not found")
-            }
-        })
-        .catch(err => console.log(err));
+            })
+            .catch(err => console.log(err));
     }
     const button = {
         width: '55px',

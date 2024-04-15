@@ -19,7 +19,6 @@ function NotificationHR() {
     const socket = io.connect("http://localhost:5001");
 
     socket.on("connect", () => {
-        // console.log("Connected to the server");
         socket.on("statusUpdate", (newStatus) => {
             setStatus(newStatus);
         });
@@ -29,46 +28,14 @@ function NotificationHR() {
         console.log("Disconnected from the server");
     });
 
-    const buttonStyle = {
-        backgroundColor: 'black',
-        color: 'white',
-        width: '40px',
-        padding: '0px 0px',
-        borderRadius: '45px',
-        marginTop: '0px'
-    };
-
     const svgStyle = {
         width: '27px',
         height: '27px',
         borderRadius: '14px',
-        // marginTop: '2px'
     };
 
-    const sumStyle = {
-        marginTop: '15px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '5px 12px',
-    }
-
-    const notificationAdmin = {
-        textAlign: 'center',
-        gap: '6px',
-        border: 'none',
-        display: 'flex',
-        flexDirection: ' row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: '15px',
-        padding: '7px',
-        color: 'black',
-        backgroundColor: 'white'
-    }
-
     const handleApprove = async (notifications, index) => {
-        window.alert("Sent to Stock-Manager for Deliverance");
+        window.alert("Requst Sent to Stock-Manager ");
         socket.emit("Take This", notifications);
         socket.emit("Send Approved Email", notifications);
         socket.emit("change-status-approve", notifications );
@@ -216,26 +183,8 @@ function NotificationHR() {
         <div>
             <NavbarMain></NavbarMain>
             <div className="notification-hr ">
-                {/* {notifications.map((notification) => {
-                    console.log("Data in the div", notification);
-                    const employeeName = notification.employee_username;
-                    const itemName = notification.name;
-                    const categoryName = notification.category_name;
-                    const description = notification.description;
-                    const date = notification.date_approved;
-                    const count = notification.amount;
-                    const id = notification.id;
-                    const supervisor = notification.supervisor_username
-                    return (
-                        <div style={notificationAdmin} key={id}>
-                            <span key={id} style={sumStyle}>Supervisor {supervisor} Approved request from {employeeName} of {itemName} amount: {count} in {categoryName} category, description: {description} On {date} </span>
-                            <button className='buttonStyle3' onClick={() => handleApprove(notification, id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
-                            <button className='buttonStyle3' onClick={() => handleDeny(id, notification)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
-                        </div>
-                    )
-                })} */}
-
                 <div style={div}>
+                    <h1>Item Requisition Notifications</h1>
                     <div style={smaller}>
                         <button style={buttons} onClick={handlePending}>Pending</button>
                         <button style={buttons} onClick={handleApprovedRequest}>Approved</button>
@@ -247,9 +196,6 @@ function NotificationHR() {
                         pagination
                     ></DataTable>
                 </div>
-
-
-
             </div>
         </div>
     );

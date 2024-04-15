@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import NavbarHome from './NavbarHome';
+import NavbarMain from './navbarMain';
 import DataTable from 'react-data-table-component';
 import axios from 'axios';
 import Red from '../images/red-circle.svg';
@@ -10,7 +10,6 @@ import View from '../images/info.svg';
 import Modal from 'react-modal';
 import Green from '../images/green-circle.svg';
 import Cyan from '../images/cyan-circle.svg';
-import { io } from 'socket.io-client';
 import {
     ref,
     uploadBytes,
@@ -18,14 +17,24 @@ import {
     listAll,
     list,
 } from "firebase/storage";
+import { io } from 'socket.io-client';
 import { storage } from "../firebase";
 
-function PurchaseSupervisor() {
-
+function PurchaseNotificationHR() {
     const [viewQuotation, setViewQuotation] = useState(false);
     const [allRequests, setAllRequests] = useState([]);
     const [imageURL, setImageURL] = useState('');
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
+
+    const socket = io.connect("http://localhost:5001");
+
+    socket.on("connect", () => {
+    });
+
+    socket.on("disconnect", () => {
+        console.log("Disconnected from the server");
+    });
+
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -44,24 +53,11 @@ function PurchaseSupervisor() {
         setViewQuotation(false);
     }
 
-    const socket = io.connect("http://localhost:5001");
-
-    socket.on("connect", () => {
-        console.log("Connected to the server");
-    });
-
-    socket.on("disconnect", () => {
-        console.log("Disconnected from the server");
-    });
-
-
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const supervisorID = localStorage.getItem("userID");
-                const response = await axios.get(`http://localhost:5500/get-purchase-notification/${supervisorID}`);
+                const response = await axios.get(`http://localhost:5500/get-purchase-notification-hr`);
                 const result = response.data;
-                console.log("Quotation: ", typeof result[0].quotation);
                 setAllRequests(result);
                 console.log("DATAS: ", result);
             } catch (error) {
@@ -75,7 +71,7 @@ function PurchaseSupervisor() {
         try {
             if (ID) {
                 console.log("ID PROVIDED: ", ID)
-                const imageRef = ref(storage, `images/${ID}`);
+                const imageRef = ref(storage, `images-for-hr/${ID}`);
                 const imageURL = await getDownloadURL(imageRef);
                 setImageURL(imageURL);
             };
@@ -94,7 +90,7 @@ function PurchaseSupervisor() {
 
     const div = {
         width: '90%',
-        marginLeft: '13%',
+        marginLeft: '15%',
     }
 
     const smaller = {
@@ -154,70 +150,55 @@ function PurchaseSupervisor() {
                 <button className='buttonStyle3' onClick={() => handleViewQuotation(row.id)}><img src={View} style={svgStyle} alt="Deny" /></button>
             )
         },
+
+
         {
             name: 'Approve',
             cell: row => (
                 <button className='buttonStyle3' onClick={() => handleApprove(row)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
             )
         },
-       
-        // {
-        //     name: 'View Quotation',
-        //     cell: row => (
-        //         <button className='buttonStyle3' onClick={() => handleViewQuotation(row.quotation)}><img src={View} style={svgStyle} alt="Deny" /></button>
-        //     )
-        // },
+
         {
             name: 'Deny',
             cell: row => (
-                <button className='buttonStyle3' onClick={() => handleDeny(row.id)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
+                <button className='buttonStyle3' onClick={() => handleDeny(row)}><img src={Deny} style={svgStyle} alt="Approve" /></button>
             )
-        }
-    ]
+        },
 
-    const handleApprove = async (notifications) => {
-        console.log("Notification: ", notifications.quotation);
-        const id = notifications.id
+    ];
 
-        const response = await axios.put(`http://localhost:5500/change-status/${id}`);
-        console.log("Response Data: ", response.data);
-     
+    const handleApprove = async (row) => {
+        socket.emit("Send Approved Email Purchase", row);
+        // const post = await axios.post("http://localhost:5500/send-through-API", row);
+        socket.emit("Take this purchase", row);
+        socket.emit("change-status-approve-purchase", row);
+
         try {
-
-            const id = notifications.id;
-            const imageRef = ref(storage, `images/${id}`);
-            const imageURL = await getDownloadURL(imageRef);
-
-            const response = await fetch(imageURL);
-            const blob = await response.blob();
-            
-           const HrImageRef = ref(storage, `images-for-hr/${notifications.id}`);
-           await uploadBytes(HrImageRef, blob)
-
-            const supervisorID = localStorage.getItem("userID");
-            await axios.post(`http://localhost:5500/add-purchase-supervisor-hr/${supervisorID}`, notifications);
+            const id = row.id;
+            await axios.put(`http://localhost:5500/approve-by-hr-purchase/${id}`);
         } catch (error) {
-            console.error('Error', error);
+            console.error("Error :", error);
         }
-        window.alert("Request Sent to HR for Second-tier Approval");
-    };
+        window.alert("Requst Sent to Stock-Manager ");
+    }
 
-    const handleDeny = async (index) => {
-        console.log("Notifications id :", index);
-        // socket.emit("Denied_By_Either(1)", notification);
+    const handleDeny = async (notification) => {
+        socket.emit("Deny For Employee Purchase", notification);
         try {
-            await axios.put(`http://localhost:5500/deny-by-supervisor-purchase/${index}`);
-            console.log("Denied for ID", index);
+            const id = notification.id;
+            await axios.put(`http://localhost:5500/deny-by-hr-purchase/${id}`);
+            console.log("Denied for ID", notification.id);
+            window.alert("Request Denied Successfully");
         } catch (error) {
             console.log('Error', error);
         }
-        window.alert("Request Denied Successfully");
     };
 
     const handlePending = async () => {
         console.log("HandlePending is Hit");
-        const supervisorID = localStorage.getItem("userID");
-        const response = await axios.get(`http://localhost:5500/get-purchase-notification/${supervisorID}`);
+        const hrID = localStorage.getItem("userID");
+        const response = await axios.get(`http://localhost:5500/get-purchase-notification-hr`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setAllRequests(result);
@@ -225,8 +206,8 @@ function PurchaseSupervisor() {
 
     const handleApprovedRequest = async () => {
         console.log("HandleApproved is Hit");
-        const supervisorID = localStorage.getItem('userID');
-        const response = await axios.get(`http://localhost:5500/get-approved-purchase-notification/${supervisorID}`);
+        const hrID = localStorage.getItem('userID');
+        const response = await axios.get(`http://localhost:5500/get-approved-purchase-notification-hr`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setAllRequests(result)
@@ -234,8 +215,8 @@ function PurchaseSupervisor() {
 
     const handleDenyRequest = async () => {
         console.log("HandleDenied is Hit");
-        const supervisorID = localStorage.getItem('userID');
-        const response = await axios.get(`http://localhost:5500/get-denied-notification-purchase-supervisor/${supervisorID}`);
+        const hrID = localStorage.getItem('userID');
+        const response = await axios.get(`http://localhost:5500/get-denied-notification-purchase-hr`);
         const result = response.data;
         console.log("DATA For Denied: ", result);
         setAllRequests(result);
@@ -258,18 +239,17 @@ function PurchaseSupervisor() {
             backgroundColor: 'black',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'center', 
-            alignItems: 'center', 
+            justifyContent: 'center',
+            alignItems: 'center',
         },
     };
 
-
     return (
         <div>
-            <NavbarHome></NavbarHome>
+            <NavbarMain></NavbarMain>
             <div className="notification-supervisor">
                 <div style={div}>
-                    <h1 style={{ color: 'white' }}>Purchase Notifications</h1>
+                    <h1 style={{ color: 'white' }}>Purchase Notitfications</h1>
                     <div style={smaller}>
                         <button style={buttons} onClick={handlePending}>Pending</button>
                         <button style={buttons} onClick={handleApprovedRequest}>Approved</button>
@@ -297,4 +277,4 @@ function PurchaseSupervisor() {
     );
 }
 
-export default PurchaseSupervisor;
+export default PurchaseNotificationHR;

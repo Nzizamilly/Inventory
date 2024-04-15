@@ -145,7 +145,7 @@ function ItemTransactionsAdmin() {
           </div>
 
           <br />
-          <DataTable columns={columns} data={records} />
+          <DataTable columns={columns} data={records} pagination/>
         </div>
       </div>
     </div>

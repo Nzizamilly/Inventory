@@ -31,6 +31,12 @@ import ItemTransactionsAdmin from './admin-pages/itemTransacation';
 import ActionTransactionsAdmin from './admin-pages/actionTransaction';
 import PurchaseRequest from './employee-pages/purchaseRequest';
 import PurchaseSupervisor from './supervisor-pages/puchaseNotifier';
+import PurchaseRequestHR from './hr-pages/requestPurchase';
+import PurchaseRequestSupervisor from './supervisor-pages/purchaseRequest';
+import NotificationReviewSupervisor from './supervisor-pages/notification';
+import PurchaseNotificationEmployee from './employee-pages/purchase-notification';
+import PurchaseNotificationHR from './hr-pages/purchaseNotifications';
+import PurchaseNotificationSupervisor from './supervisor-pages/purchaseNotifications';
 
 const router = createBrowserRouter([
   {
@@ -148,7 +154,32 @@ const router = createBrowserRouter([
   {
     path: 'purchase-supervisor',
     element: <PurchaseSupervisor />
+  },
+  {
+    path: 'purchase-hr',
+    element: <PurchaseRequestHR />
+  },
+  {
+    path: 'purchase-request-supervisor',
+    element: <PurchaseRequestSupervisor />
+  },
+  {
+    path: 'purchase-review-supervisor',
+    element: <NotificationReviewSupervisor />
+  },
+  {
+    path: 'purchase-notification-employee',
+    element: <PurchaseNotificationEmployee />
+  },
+  {
+    path: 'purchase-notification-hr',
+    element: <PurchaseNotificationHR />
+  },
+  {
+    path: 'purchase-notifications-supervisor',
+    element: <PurchaseNotificationSupervisor />
   }
+
 
 ])
 
