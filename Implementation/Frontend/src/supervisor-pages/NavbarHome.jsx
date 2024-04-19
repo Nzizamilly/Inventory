@@ -109,8 +109,8 @@ function NavbarHome() {
     ];
 
     const options = [
-        { value: 'item', label: "Item Request" },
-        { value: 'purchase', label: "Purchase Request" },
+        { value: 'item', label: "Item Notification" },
+        { value: 'purchase', label: "Purchase Notification" },
     ];
 
     const customStyles = {

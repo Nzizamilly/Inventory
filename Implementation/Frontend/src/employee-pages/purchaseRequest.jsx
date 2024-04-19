@@ -328,6 +328,7 @@ function PurchaseRequest() {
               <button className='buttonStyle2' onClick={() => sendMessages(messageForDown)}>Send</button>
             </div>
           </Modal>
+          
         </div>
       </div>
     </div>

@@ -204,14 +204,13 @@ function PurchaseSupervisor() {
 
     const handleDeny = async (index) => {
         console.log("Notifications id :", index);
-        // socket.emit("Denied_By_Either(1)", notification);
+        window.alert("Request Denied Successfully");
         try {
             await axios.put(`http://localhost:5500/deny-by-supervisor-purchase/${index}`);
             console.log("Denied for ID", index);
         } catch (error) {
             console.log('Error', error);
         }
-        window.alert("Request Denied Successfully");
     };
 
     const handlePending = async () => {

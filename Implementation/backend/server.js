@@ -18,7 +18,7 @@ const server = http.createServer(app);
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
 app.use(cors({
   origin: ["http://localhost:3000"],
@@ -42,14 +42,6 @@ const db = mysql.createPool({
   password: "",
   database: "inventory",
 });
-
-// db.connect((err) => {
-//   if (err) {
-//     console.error('Error connecting to the database: ', err);
-//     return;
-//   }
-//   console.log('Connected to the database');
-// });
 
 //-----------------Socket---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -348,7 +340,6 @@ ORDER BY
       result ? console.log("Done") : console.error("Error: ", error);
     });
   })
-
 
   socket.on("change-status-deny", (messageData) => {
     console.log("Denied status Is hit");
@@ -666,6 +657,7 @@ app.post('/login', (req, res) => {
       req.session.role_id = roleID;
       req.session.email = email
       console.log(req.session.username);
+      console.log("Port: ", req.session.port);
       return res.json({ Login: true, username: req.session.username, id: req.session.user_id, roleID: req.session.role_id, email: req.session.email })
     } else {
       return res.json({ Login: false })
@@ -1994,7 +1986,7 @@ app.get('/get-denied-notification-purchase-employee/:employeeID', (req, res) => 
 
 app.get('/get-denied-notification-purchase-supervisor/:supervisorID', (req, res) => {
   const id = req.params.supervisorID;
-  const q = ` SELECT employees.username,employee_supervisor_purchase.expenditure_line, employee_supervisor_purchase.amount, employee_supervisor_purchase.cost_method, employee_supervisor_purchase.end_goal, employee_supervisor_purchase.priority, employee_supervisor_purchase.date, employee_supervisor_purchase.email, employee_supervisor_purchase.status
+  const q = ` SELECT  employees.username,employee_supervisor_purchase.expenditure_line, employee_supervisor_purchase.amount, employee_supervisor_purchase.cost_method, employee_supervisor_purchase.end_goal, employee_supervisor_purchase.priority, employee_supervisor_purchase.date, employee_supervisor_purchase.email, employee_supervisor_purchase.status
   FROM employee_supervisor_purchase
   JOIN employees ON employee_supervisor_purchase.employeeID = employees.id
   WHERE (employee_supervisor_purchase.status = 'Denied' OR employee_supervisor_purchase.status = 'Denied by supervisor') AND employee_supervisor_purchase.supervisor = ?
@@ -2389,6 +2381,14 @@ app.put('/deny-by-hr-purchase/:id', (req, res) => {
     result ? console.log("Updated Well") : console.error("Error: ", error);
   });
 });
+
+const ssh = `ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxKBPLSQ1E9SJG7podhvZjH3dP34GXWA5jW0i1jClVsSjN9BrByfKUeiq6E1KsdpXLmxXhMsrlNRugCKSnBfkIaDeobFackhkCv3v9O6KH6lPTHBbWMTT6Ah/5/8RQw5Xk4MOqmhvL6u0H8fJcDg7w3fRB/igSC1Irxe1DDjy/dCwMeAW8OJu4530FdIJ79F/7xWiEvlzx+bRbyaR8AwpBXZBQ/Wfox2frUxevW6ZXOYPu5eaT+UhMC5x4z+7HFl28d/OdDOfQLjgp1mghla/gHBr414qMKqlCWyyDIxpYNe4FjQVac7UUtRTP20ZIF/FL31GDGZOZ21j3yA34tib+yawIfrZa7f66Z1M/HiiPJcGGqoKJz5nddvIOl3F8An+ZyKJ3A2BcE8VnfowJ77WH3X3GN1vg6BpCpUkT/xzJge+U1wcK5bREDjpYeU1l5eo2eiHckjLh0W/jgU0YtGmVAnLBj/v/gxtVwMlnEZ22NrWODhCQDw+G2/xD0BF5Trs= cnziza@centrika-test02`
+
+// const PORT = process.env.PORT || 5500;
+// httpServer.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
+
 
 app.listen(5500, () => {
   console.log("Connected to backend")

@@ -7,7 +7,10 @@ import Red from '../images/red-circle.svg';
 import Green from '../images/green-circle.svg';
 import Cyan from '../images/cyan-circle.svg';
 import Select from 'react-select';
-import Modal from 'react-modal'
+import Modal from 'react-modal';
+import PulseLoader from "react-spinners/PulseLoader";
+import RequestSent from '../images/request-sent.svg'
+
 
 function Request() {
 
@@ -27,6 +30,22 @@ function Request() {
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [messageDataForDown, setMessageDataForDown] = useState([]);
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [imageApproval, setImageApproval] = useState(false);
+
+  const closeImageApproval = () => {
+    setImageApproval(false);
+  }
+
+  const openLoader = () => {
+    setIsSendModalOpen(true);
+    sendMessage();
+  }
+
+  const closeRequestModal = () => {
+    setIsSendModalOpen(false);
+  }
 
 
   const openModal = () => {
@@ -163,7 +182,19 @@ function Request() {
     console.log("SelectedPriority", selectedPriority);
     console.log("MessageData Data: ", messageData);
 
-    window.alert("Request sent....");
+    // window.alert("Request sent....");
+    setInterval(() => {
+      setIsSendModalOpen(false);
+      setInterval(() => {
+        setImageApproval(true);
+      }, 2);
+    }, 3000);
+
+    // setInterval(() => {
+    //   setImageApproval(true);
+    // }, 3000);
+
+
     socket.emit("Employee_Message_Supervisor(1)", messageData);
     try {
       const response = await axios.post('http://localhost:5500/add-request-employee-supervisor', messageData);
@@ -321,6 +352,20 @@ function Request() {
 
   console.log("MessageData FOR DOWN: ", messageDataForDown);
 
+  const No = {
+    width: '10%',
+    height: '10vh',
+    display: 'flex',
+    textAlign: 'center',
+    fontWeight: '100px',
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    backgroundColor: 'Black',
+    color: 'rgb(12, 193, 199)',
+    fontFamily: 'Arial, sans-serif',
+  }
+
   return (
     <div>
       <Navbar></Navbar>
@@ -372,8 +417,23 @@ function Request() {
               <br />
               <p>Date of Request: {message.date}</p>
               <br />
-              <button className='buttonStyle2' onClick={sendMessage}>Send</button>
+              <button className='buttonStyle2' onClick={openLoader}>Send</button>
             </div>
+          </Modal>
+          <Modal isOpen={isSendModalOpen} onRequestClose={closeRequestModal} className={modal}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+              <PulseLoader color={'green'} loading={loading} size={19} />
+              <div>
+                <p>Processing Request...</p>
+              </div>
+            </div>
+          </Modal>
+          <Modal isOpen={imageApproval} onRequestClose={closeImageApproval} className={modal}>
+            <div style={{ display: 'flex', flexDirection: 'column',  height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'black'}}>
+              <img src={RequestSent} style={{ maxWidth: '18%', maxHeight: '18vh' }} />
+              <p>Request Sent well...</p>
+            </div>
+
           </Modal>
         </div>
       </div>

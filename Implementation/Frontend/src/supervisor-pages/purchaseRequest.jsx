@@ -309,7 +309,7 @@ function PurchaseRequestSupervisor() {
               <br />
               <p>Description: {messageForDown.description}</p>
               <br />
-              <p>Amount: {messageForDown.amount}</p>
+              <p>Amount: {messageForDown.amount}FRW</p>
               <br />
               <p>End Goal: {messageForDown.endGoalValue}</p>
               <br />
