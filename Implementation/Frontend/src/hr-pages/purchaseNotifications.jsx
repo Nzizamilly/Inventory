@@ -19,14 +19,36 @@ import {
 } from "firebase/storage";
 import { io } from 'socket.io-client';
 import { storage } from "../firebase";
+import PropagateLoader from "react-spinners/PropagateLoader";
+import ScaleLoader from "react-spinners/ScaleLoader";
 
 function PurchaseNotificationHR() {
     const [viewQuotation, setViewQuotation] = useState(false);
     const [allRequests, setAllRequests] = useState([]);
     const [imageURL, setImageURL] = useState('');
     const [loading, setLoading] = useState(true);
+    const [denyModalOpen, setDenyModalOpen] = useState(false);
+    const [isSendModalOpen, setIsSendModalOpen] = useState(false);
 
     const socket = io.connect("http://localhost:5001");
+
+    const openLoader = (row) => {
+        setIsSendModalOpen(true);
+        handleApprove(row);
+    };
+
+    const closeRequestModal = () => {
+        setIsSendModalOpen(false);
+    };
+
+    const openDenyLoader = (row) => {
+        setDenyModalOpen(true);
+        handleDeny(row);
+    }
+
+    const closeDenyRequest = () => {
+        setDenyModalOpen(false);
+    };
 
     socket.on("connect", () => {
     });
@@ -155,22 +177,26 @@ function PurchaseNotificationHR() {
         {
             name: 'Approve',
             cell: row => (
-                <button className='buttonStyle3' onClick={() => handleApprove(row)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
+                <button className='buttonStyle3' onClick={() => openLoader(row)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
             )
         },
 
         {
             name: 'Deny',
             cell: row => (
-                <button className='buttonStyle3' onClick={() => handleDeny(row)}><img src={Deny} style={svgStyle} alt="Approve" /></button>
+                <button className='buttonStyle3' onClick={() => openDenyLoader(row)}><img src={Deny} style={svgStyle} alt="Approve" /></button>
             )
         },
 
     ];
 
     const handleApprove = async (row) => {
+
+        setInterval(() => {
+            setIsSendModalOpen(false);
+        }, 2600);
+
         socket.emit("Send Approved Email Purchase", row);
-        // const post = await axios.post("http://localhost:5500/send-through-API", row);
         socket.emit("Take this purchase", row);
         socket.emit("change-status-approve-purchase", row);
 
@@ -180,16 +206,19 @@ function PurchaseNotificationHR() {
         } catch (error) {
             console.error("Error :", error);
         }
-        window.alert("Requst Sent to Stock-Manager ");
     }
 
     const handleDeny = async (notification) => {
+
+        setInterval(() => {
+            setDenyModalOpen(false);
+        }, 2600);
+
         socket.emit("Deny For Employee Purchase", notification);
         try {
             const id = notification.id;
             await axios.put(`http://localhost:5500/deny-by-hr-purchase/${id}`);
             console.log("Denied for ID", notification.id);
-            window.alert("Request Denied Successfully");
         } catch (error) {
             console.log('Error', error);
         }
@@ -271,6 +300,28 @@ function PurchaseNotificationHR() {
                             )}
                         </div>
                     </Modal>
+                    <Modal isOpen={isSendModalOpen} onRequestClose={closeRequestModal} className={modal}>
+                        <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+                            <PropagateLoader color={'green'} loading={loading} size={19} />
+                            <div>
+                                <br />
+                                <br />
+                                <p>Finalizing Request...</p>
+                            </div>
+                        </div>
+                    </Modal>
+
+                    <Modal isOpen={denyModalOpen} onRequestClose={closeDenyRequest} className={modal}>
+                        <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+                            <ScaleLoader color={'red'} loading={loading} size={19} />
+                            <div>
+                                <br />
+                                <br />
+                                <p>Denying Request...</p>
+                            </div>
+                        </div>
+                    </Modal>
+
                 </div>
             </div>
         </div>

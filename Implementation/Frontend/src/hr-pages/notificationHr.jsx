@@ -9,19 +9,41 @@ import DataTable from 'react-data-table-component';
 import Red from '../images/red-circle.svg';
 import Green from '../images/green-circle.svg';
 import Cyan from '../images/cyan-circle.svg';
+import PropagateLoader from "react-spinners/PropagateLoader";
+import ScaleLoader from "react-spinners/ScaleLoader";
+import Modal from 'react-modal'
+
 
 function NotificationHR() {
     const [notifications, setNotifications] = useState([]);
-    const [supervisor, setSupervisor] = useState('');
-    const [status, setStatus] = useState('');
     const [takeSupervisorID, setTakeSupervisorID] = useState('');
+    const [denyModalOpen, setDenyModalOpen] = useState(false);
+    const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+
 
     const socket = io.connect("http://localhost:5001");
 
+    const openLoader = (row, rowId) => {
+        setIsSendModalOpen(true);
+        handleApprove(row, rowId);
+    };
+
+    const closeRequestModal = () => {
+        setIsSendModalOpen(false);
+    };
+
+    const openDenyLoader = (rowID, row) => {
+        setDenyModalOpen(true);
+        handleDeny(rowID, row);
+    }
+
+    const closeDenyRequest = () => {
+        setDenyModalOpen(false);
+    };
+
     socket.on("connect", () => {
-        socket.on("statusUpdate", (newStatus) => {
-            setStatus(newStatus);
-        });
+
     });
 
     socket.on("disconnect", () => {
@@ -34,11 +56,15 @@ function NotificationHR() {
         borderRadius: '14px',
     };
 
-    const handleApprove = async (notifications, index) => {
-        window.alert("Requst Sent to Stock-Manager ");
+    const handleApprove = async (notifications) => {
+
+        setInterval(() => {
+            setIsSendModalOpen(false);
+          }, 2600);
+
         socket.emit("Take This", notifications);
         socket.emit("Send Approved Email", notifications);
-        socket.emit("change-status-approve", notifications );
+        socket.emit("change-status-approve", notifications);
         try {
             console.log("Notifications to be passed: ", notifications);
 
@@ -49,17 +75,19 @@ function NotificationHR() {
     };
 
     const handleDeny = async (index, notification) => {
+
+        setInterval(() => {
+            setDenyModalOpen(false);
+          }, 2600);
+
         socket.emit("Denied_By_Either(1)", notification);
         socket.emit("change-status-deny", notification);
         socket.emit("change-status-deny-for-employee", notification);
         try {
-            const updatedNotifications = notifications.filter((_, i) => i !== index);
-            setNotifications(updatedNotifications);
-
             await axios.put(`http://localhost:5500/deny-by-supervisor/${index}`);
         } catch (error) {
         }
-    }
+    };
 
     useEffect(() => {
         const fetch = async () => {
@@ -94,6 +122,30 @@ function NotificationHR() {
         borderRadius: '1px',
         backgroundColor: 'white'
     };
+
+    const modal = {
+        overlay: {
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        content: {
+          width: '23%',
+          marginLeft: '495px',
+          height: '76vh',
+          backgroundColor: 'rgb(94, 120, 138)',
+          border: 'none',
+          borderRadius: '12px',
+          gap: '23px',
+          color: "black",
+          padding: '12px 0px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+      };
+    
 
     const handlePending = async () => {
         console.log("HandlePending is Hit");
@@ -150,15 +202,15 @@ function NotificationHR() {
         {
             name: 'Priority',
             selector: row => (
-              row.priority === 'green' ? 
-                <img src={Green} style={svgStyle} alt="green" /> :
-              row.priority === 'red' ? 
-                <img src={Red} style={svgStyle} alt="red" /> :
-              row.priority === 'cyan' ? 
-                <img src={Cyan} style={svgStyle} alt="cyan" /> :
-              (console.log("Not green, red, or cyan"), null)
+                row.priority === 'green' ?
+                    <img src={Green} style={svgStyle} alt="green" /> :
+                    row.priority === 'red' ?
+                        <img src={Red} style={svgStyle} alt="red" /> :
+                        row.priority === 'cyan' ?
+                            <img src={Cyan} style={svgStyle} alt="cyan" /> :
+                            (console.log("Not green, red, or cyan"), null)
             )
-          },
+        },
         {
             name: 'Status',
             selector: row => row.status
@@ -167,13 +219,13 @@ function NotificationHR() {
         {
             name: 'Approve',
             cell: row => (
-                <button className='buttonStyle3' onClick={() => handleApprove(row, row.id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
+                <button className='buttonStyle3' onClick={() => openLoader(row, row.id)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
             )
         },
         {
             name: 'Deny',
             cell: row => (
-                <button className='buttonStyle3' onClick={() => handleDeny(row.id, row)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
+                <button className='buttonStyle3' onClick={() => openDenyLoader(row.id, row)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
             )
         }
     ];
@@ -196,6 +248,27 @@ function NotificationHR() {
                         pagination
                     ></DataTable>
                 </div>
+                <Modal isOpen={isSendModalOpen} onRequestClose={closeRequestModal} className={modal}>
+                    <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+                        <PropagateLoader color={'green'} loading={loading} size={19} />
+                        <div>
+                            <br />
+                            <br />
+                            <p>Sent Request To Stock-Manager</p>
+                        </div>
+                    </div>
+                </Modal>
+
+                <Modal isOpen={denyModalOpen} onRequestClose={closeDenyRequest} className={modal}>
+                    <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+                        <ScaleLoader color={'red'} loading={loading} size={19} />
+                        <div>
+                            <br />
+                            <br />
+                            <p>Denying Request...</p>
+                        </div>
+                    </div>
+                </Modal>
             </div>
         </div>
     );

@@ -182,18 +182,9 @@ function Request() {
     console.log("SelectedPriority", selectedPriority);
     console.log("MessageData Data: ", messageData);
 
-    // window.alert("Request sent....");
     setInterval(() => {
       setIsSendModalOpen(false);
-      setInterval(() => {
-        setImageApproval(true);
-      }, 2);
-    }, 3000);
-
-    // setInterval(() => {
-    //   setImageApproval(true);
-    // }, 3000);
-
+    }, 2000);
 
     socket.emit("Employee_Message_Supervisor(1)", messageData);
     try {
@@ -429,7 +420,7 @@ function Request() {
             </div>
           </Modal>
           <Modal isOpen={imageApproval} onRequestClose={closeImageApproval} className={modal}>
-            <div style={{ display: 'flex', flexDirection: 'column',  height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'black'}}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'black' }}>
               <img src={RequestSent} style={{ maxWidth: '18%', maxHeight: '18vh' }} />
               <p>Request Sent well...</p>
             </div>

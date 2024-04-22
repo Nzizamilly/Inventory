@@ -7,10 +7,12 @@ import Green from '../images/green-circle.svg';
 import Cyan from '../images/cyan-circle.svg';
 import Select from 'react-select';
 import Modal from 'react-modal'
+import PulseLoader from "react-spinners/PulseLoader";
 import NavbarHome from './NavbarHome';
 
 
 function RequestSupervisor() {
+
 
   const [amount, setAmount] = useState({
     amount: '',
@@ -28,6 +30,22 @@ function RequestSupervisor() {
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [messageDataForDown, setMessageDataForDown] = useState([]);
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [imageApproval, setImageApproval] = useState(false);
+
+  const closeImageApproval = () => {
+    setImageApproval(false);
+  }
+
+  const openLoader = () => {
+    setIsSendModalOpen(true);
+    sendMessage();
+  }
+
+  const closeRequestModal = () => {
+    setIsSendModalOpen(false);
+  }
 
 
   const openModal = () => {
@@ -164,7 +182,10 @@ function RequestSupervisor() {
     console.log("SelectedPriority", selectedPriority);
     console.log("MessageData Data: ", messageData);
 
-    window.alert("Request sent....");
+    setInterval(() => {
+      setIsSendModalOpen(false);
+    }, 2000);
+
     socket.emit("Employee_Message_Supervisor(1)", messageData);
     try {
       const response = await axios.post('http://localhost:5500/add-request-employee-supervisor', messageData);
@@ -322,6 +343,20 @@ function RequestSupervisor() {
 
   console.log("MessageData FOR DOWN: ", messageDataForDown);
 
+  const No = {
+    width: '10%',
+    height: '10vh',
+    display: 'flex',
+    textAlign: 'center',
+    fontWeight: '100px',
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    backgroundColor: 'Black',
+    color: 'rgb(12, 193, 199)',
+    fontFamily: 'Arial, sans-serif',
+  }
+
   return (
     <div>
       <NavbarHome></NavbarHome>
@@ -373,7 +408,15 @@ function RequestSupervisor() {
               <br />
               <p>Date of Request: {message.date}</p>
               <br />
-              <button className='buttonStyle2' onClick={sendMessage}>Send</button>
+              <button className='buttonStyle2' onClick={openLoader}>Send</button>
+            </div>
+          </Modal>
+          <Modal isOpen={isSendModalOpen} onRequestClose={closeRequestModal} className={modal}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+              <PulseLoader color={'green'} loading={loading} size={19} />
+              <div>
+                <p>Processing Request...</p>
+              </div>
             </div>
           </Modal>
         </div>

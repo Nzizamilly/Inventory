@@ -5,6 +5,7 @@ import axios from 'axios';
 import Red from '../images/red-circle.svg';
 import Green from '../images/green-circle.svg';
 import Cyan from '../images/cyan-circle.svg';
+import PulseLoader from "react-spinners/PulseLoader";
 import ImgAdd from '../images/add-photo.svg';
 import Select from 'react-select';
 import Modal from 'react-modal'
@@ -29,6 +30,8 @@ function PurchaseRequest() {
   const [imageUpload, setImageUpload] = useState(null);
   const [latestId, setLatestID] = useState('');
   const [supervisorId, setSupervisorId] = useState([]);
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
 
   const modal = {
@@ -52,6 +55,15 @@ function PurchaseRequest() {
       justifyContent: 'center',
       alignItems: 'center',
     },
+  };
+
+  const openLoader = () => {
+    setIsSendModalOpen(true);
+    sendMessages(messageForDown);
+  };
+
+  const closeRequestModal = () => {
+    setIsSendModalOpen(false);
   };
 
   const handleAmount = (event) => {
@@ -222,17 +234,18 @@ function PurchaseRequest() {
     const idTaker = response.data.latestId + 1;
     setTaker(idTaker);
 
+    setInterval(() => {
+      setIsSendModalOpen(false);
+    }, 2000);
+
     if (imageUpload == null) return;
     const IdForQuotation = latestId + 1;
     console.log("ID FOR QUOTATION: ", IdForQuotation);
-    const imageRef = ref(storage, `images/${imageUpload.name, IdForQuotation}`); 
-    uploadBytes(imageRef, imageUpload).then(()=>{
-      window.alert("Request Sent well.");
+    const imageRef = ref(storage, `images/${imageUpload.name, IdForQuotation}`);
+    uploadBytes(imageRef, imageUpload).then(() => {
     });
-    
-    window.alert("Sending Request, Wait for a second Prompt..");
-    
-    try {       
+
+    try {
       const response = await axios.post('http://localhost:5500/add-employee-supervisor-purchase', message);
       message.id = id;
       const id = response.id;
@@ -241,9 +254,6 @@ function PurchaseRequest() {
       console.error("Error: ", error);
     };
   };
-
-  console.log("Messages For Passing: ", messageForDown);
-
 
   useEffect(() => {
     const fetchIDs = async () => {
@@ -325,10 +335,20 @@ function PurchaseRequest() {
               <label htmlFor='file'>
                 <img style={{ width: '92%', marginLeft: '12px' }} src={imageUrl || ImgAdd} alt='Add' />
               </label>
-              <button className='buttonStyle2' onClick={() => sendMessages(messageForDown)}>Send</button>
+              {/* <button className='buttonStyle2' onClick={() => sendMessages(messageForDown)}>Send</button> */}
+              <button className='buttonStyle2' onClick={openLoader}>Send</button>
             </div>
           </Modal>
-          
+
+          <Modal isOpen={isSendModalOpen} onRequestClose={closeRequestModal} className={modal}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+              <PulseLoader color={'green'} loading={loading} size={19} />
+              <div>
+                <p>Processing Request...</p>
+              </div>
+            </div>
+          </Modal>
+
         </div>
       </div>
     </div>

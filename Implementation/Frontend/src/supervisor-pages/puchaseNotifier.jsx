@@ -19,13 +19,35 @@ import {
     list,
 } from "firebase/storage";
 import { storage } from "../firebase";
+import PropagateLoader from "react-spinners/PropagateLoader";
+import ScaleLoader from "react-spinners/ScaleLoader";
 
 function PurchaseSupervisor() {
 
     const [viewQuotation, setViewQuotation] = useState(false);
     const [allRequests, setAllRequests] = useState([]);
     const [imageURL, setImageURL] = useState('');
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
+    const [denyModalOpen, setDenyModalOpen] = useState(false);
+    const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+  
+    const openLoader = (row) => {
+        setIsSendModalOpen(true);
+        handleApprove(row);
+      };
+    
+      const closeRequestModal = () => {
+        setIsSendModalOpen(false);
+      };
+    
+      const openDenyLoader = (rowID) => {
+        setDenyModalOpen(true);
+        handleDeny(rowID);
+      }
+    
+      const closeDenyRequest = () => {
+        setDenyModalOpen(false);
+      };
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -157,20 +179,13 @@ function PurchaseSupervisor() {
         {
             name: 'Approve',
             cell: row => (
-                <button className='buttonStyle3' onClick={() => handleApprove(row)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
+                <button className='buttonStyle3' onClick={() => openLoader(row)}><img src={Approve} style={svgStyle} alt="Approve" /></button>
             )
         },
-       
-        // {
-        //     name: 'View Quotation',
-        //     cell: row => (
-        //         <button className='buttonStyle3' onClick={() => handleViewQuotation(row.quotation)}><img src={View} style={svgStyle} alt="Deny" /></button>
-        //     )
-        // },
         {
             name: 'Deny',
             cell: row => (
-                <button className='buttonStyle3' onClick={() => handleDeny(row.id)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
+                <button className='buttonStyle3' onClick={() => openDenyLoader(row.id)}><img src={Deny} style={svgStyle} alt="Deny" /></button>
             )
         }
     ]
@@ -181,30 +196,38 @@ function PurchaseSupervisor() {
 
         const response = await axios.put(`http://localhost:5500/change-status/${id}`);
         console.log("Response Data: ", response.data);
-     
+
         try {
 
+            setInterval(() => {
+                setIsSendModalOpen(false);
+              }, 2600);
+           
             const id = notifications.id;
             const imageRef = ref(storage, `images/${id}`);
             const imageURL = await getDownloadURL(imageRef);
 
             const response = await fetch(imageURL);
             const blob = await response.blob();
-            
-           const HrImageRef = ref(storage, `images-for-hr/${notifications.id}`);
-           await uploadBytes(HrImageRef, blob)
+
+            const HrImageRef = ref(storage, `images-for-hr/${notifications.id}`);
+            await uploadBytes(HrImageRef, blob);
+
 
             const supervisorID = localStorage.getItem("userID");
             await axios.post(`http://localhost:5500/add-purchase-supervisor-hr/${supervisorID}`, notifications);
         } catch (error) {
             console.error('Error', error);
         }
-        window.alert("Request Sent to HR for Second-tier Approval");
     };
 
     const handleDeny = async (index) => {
         console.log("Notifications id :", index);
-        window.alert("Request Denied Successfully");
+
+        setInterval(() => {
+            setDenyModalOpen(false);
+          }, 2600);
+
         try {
             await axios.put(`http://localhost:5500/deny-by-supervisor-purchase/${index}`);
             console.log("Denied for ID", index);
@@ -257,8 +280,8 @@ function PurchaseSupervisor() {
             backgroundColor: 'black',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'center', 
-            alignItems: 'center', 
+            justifyContent: 'center',
+            alignItems: 'center',
         },
     };
 
@@ -288,6 +311,27 @@ function PurchaseSupervisor() {
                                     <FadeLoader color={'#D0031B'} loading={loading} size={200} />
                                 </div>
                             )}
+                        </div>
+                    </Modal>
+                    <Modal isOpen={isSendModalOpen} onRequestClose={closeRequestModal} className={modal}>
+                        <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+                            <PropagateLoader color={'green'} loading={loading} size={19} />
+                            <div>
+                                <br />
+                                <br />
+                                <p>Request Sent to HR for Second-tier Approval</p>
+                            </div>
+                        </div>
+                    </Modal>
+
+                    <Modal isOpen={denyModalOpen} onRequestClose={closeDenyRequest} className={modal}>
+                        <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+                            <ScaleLoader color={'red'} loading={loading} size={19} />
+                            <div>
+                                <br />
+                                <br />
+                                <p>Denying Request...</p>
+                            </div>
                         </div>
                     </Modal>
                 </div>
