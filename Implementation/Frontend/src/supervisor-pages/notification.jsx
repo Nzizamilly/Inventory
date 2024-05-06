@@ -10,7 +10,7 @@ function NotificationReviewSupervisor() {
   useEffect(() => {
     const fetchData = async () => {
       const id = localStorage.getItem('userID');
-      const response = await axios.get(`http://localhost:5500/get-all-requests/${id}`);
+      const response = await axios.get(`/get-all-requests/${id}`);
       setNotifications(response.data)
     }
     fetchData();

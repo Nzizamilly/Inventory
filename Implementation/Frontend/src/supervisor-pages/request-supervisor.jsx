@@ -13,7 +13,6 @@ import NavbarHome from './NavbarHome';
 
 function RequestSupervisor() {
 
-
   const [amount, setAmount] = useState({
     amount: '',
   });
@@ -34,9 +33,6 @@ function RequestSupervisor() {
   const [loading, setLoading] = useState(true);
   const [imageApproval, setImageApproval] = useState(false);
 
-  const closeImageApproval = () => {
-    setImageApproval(false);
-  }
 
   const openLoader = () => {
     setIsSendModalOpen(true);
@@ -73,14 +69,16 @@ function RequestSupervisor() {
     backgroundColor: 'black',
     border: 'none',
     borderRadius: '14px'
-  }
+  };
 
-  const socket = io.connect("http://localhost:5001");
+  const ioPort = process.env.REACT_APP_SOCKET_PORT;
+
+  const socket = io.connect(`${ioPort}`);
 
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const res = await axios.get(`http://localhost:5500/category`);
+        const res = await axios.get(`/category`);
         setCategory(res.data);
       } catch (error) {
         console.error("Error: ", error)
@@ -93,7 +91,7 @@ function RequestSupervisor() {
     const fetchItem = async (categoryID) => {
       console.log("CategoryID: ", categoryID);
       try {
-        const response = await axios.get(`http://localhost:5500/items/${categoryID}`);
+        const response = await axios.get(`/items/${categoryID}`);
         setItem(response.data);
         setOptions(response.data);
 
@@ -115,7 +113,7 @@ function RequestSupervisor() {
     const fetchCount = async (itemID) => {
       try {
         const itemId = itemID;
-        const response = await axios.get(`http://localhost:5500/get-total-number/${itemId}`);
+        const response = await axios.get(`/get-total-number/${itemId}`);
         setBackCount(response.data);
         console.log(response.data);
       } catch (error) {
@@ -158,7 +156,7 @@ function RequestSupervisor() {
     const get = localStorage.getItem('username');
     const email = localStorage.getItem('email')
     const date = Date.now();
-    const response = await axios.get('http://localhost:5500/get-number');
+    const response = await axios.get('/get-number');
     const idTaker = response.data.latestId + 1;
     setTaker(idTaker);
 
@@ -188,7 +186,7 @@ function RequestSupervisor() {
 
     socket.emit("Employee_Message_Supervisor(1)", messageData);
     try {
-      const response = await axios.post('http://localhost:5500/add-request-employee-supervisor', messageData);
+      const response = await axios.post('/add-request-employee-supervisor', messageData);
       messageData.id = id;
       const id = response.id;
       console.log("Response", response);
@@ -308,7 +306,7 @@ function RequestSupervisor() {
   useEffect(() => {
     const showSupervisor = async () => {
       try {
-        const response = await axios.get("http://localhost:5500/show-supervisor");
+        const response = await axios.get("/show-supervisor");
         console.log("Data: ", response.data);
         setSupervisorId(response.data);
       } catch (error) {

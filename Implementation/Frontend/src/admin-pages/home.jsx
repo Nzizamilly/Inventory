@@ -6,7 +6,6 @@ import Employees from '../images/employees-white.svg';
 import Items from '../images/items-white.svg';
 import NavbarAdmin from './navbarAdmin';
 import Supplier from '../images/supplier-white.svg';
-import Notification from '../images/notification.svg';
 import Transaction from '../images/transaction-white.svg';
 import axios from 'axios';
 import { useEffect } from 'react';
@@ -17,7 +16,6 @@ function Home() {
     const [categoryCount, setCategoryCount] = useState(null);
     const [itemCount, setItemCount] = useState(null);
     const [employeeCount, setEmployeeCount] = useState(null);
-    const [requestCount, setRequestCount] = useState(null);
     const [supplierCount, setSupplierCount] = useState(null);
 
     const navigate = useNavigate();
@@ -25,7 +23,7 @@ function Home() {
     axios.defaults.withCredentials = true;
 
     useEffect(() => {
-        axios.get('http://localhost:5500')
+        axios.get('/home-employee')
             .then(res => {
                 if (res.data.valid) {
                     setName(res.data.username);
@@ -37,7 +35,7 @@ function Home() {
     }, []);
 
     useEffect(() => {
-        axios.get('http://localhost:5500/number-category')
+        axios.get('/number-category')
             .then(res => {
                 setCategoryCount(res.data.categoryCount);
 
@@ -49,7 +47,7 @@ function Home() {
     }, [])
 
     useEffect(() => {
-        axios.get('http://localhost:5500/number-item')
+        axios.get('/number-item')
             .then(res => {
                 setItemCount(res.data.itemCount);
 
@@ -61,7 +59,7 @@ function Home() {
     }, [])
 
     useEffect(() => {
-        axios.get('http://localhost:5500/number-employee')
+        axios.get('/number-employee')
             .then(res => {
                 setEmployeeCount(res.data.employeeCount);
 
@@ -73,7 +71,7 @@ function Home() {
     }, [])
 
     useEffect(() => {
-        axios.get('http://localhost:5500/number-supplier')
+        axios.get('/number-supplier')
             .then(res => {
                 setSupplierCount(res.data.supplierCount);
 

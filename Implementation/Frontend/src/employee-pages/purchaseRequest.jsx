@@ -14,7 +14,6 @@ import { ref, uploadBytes } from "firebase/storage";
 
 function PurchaseRequest() {
 
-
   const [description, setDescription] = useState('');
   const [endGoalValue, setEndGoalValue] = useState('');
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
@@ -130,7 +129,7 @@ function PurchaseRequest() {
   useEffect(() => {
     const showSupervisor = async () => {
       try {
-        const response = await axios.get("http://localhost:5500/show-supervisor");
+        const response = await axios.get("/show-supervisor");
         console.log("Data: ", response.data);
         setSupervisorId(response.data);
       } catch (error) {
@@ -230,7 +229,7 @@ function PurchaseRequest() {
 
   const sendMessages = async (message) => {
 
-    const response = await axios.get('http://localhost:5500/get-number-purchase');
+    const response = await axios.get('/get-number-purchase');
     const idTaker = response.data.latestId + 1;
     setTaker(idTaker);
 
@@ -246,7 +245,7 @@ function PurchaseRequest() {
     });
 
     try {
-      const response = await axios.post('http://localhost:5500/add-employee-supervisor-purchase', message);
+      const response = await axios.post('/add-employee-supervisor-purchase', message);
       message.id = id;
       const id = response.id;
       console.log("Response", response);
@@ -258,7 +257,7 @@ function PurchaseRequest() {
   useEffect(() => {
     const fetchIDs = async () => {
       try {
-        const response = await axios.get("http://localhost:5500/get-purchase-id");
+        const response = await axios.get("/get-purchase-id");
         const latestID = response.data[0].id
         setLatestID(latestID);
       } catch (error) {
@@ -335,7 +334,6 @@ function PurchaseRequest() {
               <label htmlFor='file'>
                 <img style={{ width: '92%', marginLeft: '12px' }} src={imageUrl || ImgAdd} alt='Add' />
               </label>
-              {/* <button className='buttonStyle2' onClick={() => sendMessages(messageForDown)}>Send</button> */}
               <button className='buttonStyle2' onClick={openLoader}>Send</button>
             </div>
           </Modal>

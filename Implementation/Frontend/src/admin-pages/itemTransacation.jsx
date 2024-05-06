@@ -32,7 +32,7 @@ function ItemTransactionsAdmin() {
   useEffect(() => {
     const fetchMonthlyReport = async () => {
       try {
-        const response = await axios.get(`http://localhost:5500/monthly-report/${startDate}/${endDate}`,);
+        const response = await axios.get(`/monthly-report/${startDate}/${endDate}`,);
         setReport(response.data);
         setRecords(response.data);
       } catch (error) {
@@ -97,30 +97,6 @@ function ItemTransactionsAdmin() {
     color: 'black',
   };
 
- 
-  // const handleOneExport = async (records) => {
-  //  const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-  //  const fileExtension = '.xlsx';
-
-  //  const userHeaders = Object.keys(records[0]);
-  //  console.log("UserHeaders: ",userHeaders);
-
-  //  const ws = XLSX.utils.json_to_sheet(records);
-
-  //  const headerStyle = { font: { bold: true }};
-  //  userHeaders.forEach((key, colIndex) => { 
-  //   console.log(key,colIndex);
-  //   ws[XLSX.utils.encode_col(colIndex) + '1'].s = headerStyle;
-  //  });
-
-  //  const wb = { Sheets: { 'data': ws }, SheetNames: ['data']};
-
-  //  const excelBuffer = await XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-
-  //  const data = new Blob([excelBuffer], {type: fileType} );
-  //  FileSaver.saveAs(data, 'Users Data '+ fileExtension)
-  // }
-
   const fileName = `Transaction Report From ${startDate} to ${endDate}`;
 
   return (
@@ -136,16 +112,14 @@ function ItemTransactionsAdmin() {
           <div>
             From: <input type="date" onChange={(e) => setStartDate(e.target.value)} className='' />
             To: <input type="date" onChange={(e) => setEndDate(e.target.value)} className='' />
-            {/* <button onClick={handleDateFilter}>Apply Filter</button> */}
           </div>
           <br />
           <div style={{ display: 'flex', gap: '9px', flexDirection: 'inline' }}>
             <button className='buttonStyle2' onClick={handlePrint}>Print</button>
-           <CSVLink data={records} filename= {fileName}> <button className='buttonStyle2'>Export</button></CSVLink>
+            <CSVLink data={records} filename={fileName}> <button className='buttonStyle2'>Export</button></CSVLink>
           </div>
-
           <br />
-          <DataTable columns={columns} data={records} pagination/>
+          <DataTable columns={columns} data={records} pagination />
         </div>
       </div>
     </div>

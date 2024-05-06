@@ -39,7 +39,7 @@ function Account() {
   useEffect(() => {
     const fetchEmp = async () => {
       try {
-        const res = await axios.get(`http://localhost:5500/employee/${EmpID}`);
+        const res = await axios.get(`/employee/${EmpID}`);
         setEmps(res.data);
       } catch (error) {
       }

@@ -14,7 +14,7 @@ function Home() {
     axios.defaults.withCredentials = true;
 
     useEffect(() => {
-        axios.get('http://localhost:5500')
+        axios.get('/home-employee')
             .then(res => {
                 if (res.data.valid) {
                     setName(res.data.username);

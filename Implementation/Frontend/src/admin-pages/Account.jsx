@@ -15,7 +15,6 @@ function AccountAdmin() {
     content: {
       width: '29%',
       marginLeft: '495px',
-      // marginTop: '99px',
       height: '64vh',
       backgroundColor: 'rgb(56, 59, 61)',
       color: 'white',
@@ -53,7 +52,7 @@ function AccountAdmin() {
   useEffect(() => {
     const fetchEmp = async () => {
       try {
-        const res = await axios.get(`http://localhost:5500/employee/${EmpID}`);
+        const res = await axios.get(`/employee/${EmpID}`);
         setEmps(res.data);
       } catch (error) {
       }
@@ -68,7 +67,6 @@ function AccountAdmin() {
 
   const location = useLocation();
 
-  // console.log("This is EmpID", EmpID);
 
   const handleChange = (event) => {
     setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));
@@ -76,7 +74,7 @@ function AccountAdmin() {
   const EmpID = localStorage.getItem("userID");
   const handleUpdate = async (event) => {
     try {
-      await axios.put(`http://localhost:5500/employee/${EmpID}`, update);
+      await axios.put(`/employee/${EmpID}`, update);
       setEmps((prevEmps) => {
         prevEmps.forEach((emp, index) => {
           if (emp.id === EmpID) {
@@ -92,7 +90,6 @@ function AccountAdmin() {
   };
 
   const [visible, setVisible] = useState(false);
-  // console.log('Is modal visible', visible);
 
   return (
     <div className='account-container-admin'>

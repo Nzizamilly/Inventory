@@ -64,7 +64,7 @@ function NavbarHome() {
             const EmpID = localStorage.getItem("userID");
             try {
                 if (EmpID) {
-                    const response = await axios.get(`http://localhost:5500/employee/${EmpID}`);
+                    const response = await axios.get(`/employee/${EmpID}`);
                     setData(response.data[0]);
                     // console.log("Data", response.data[0]);
                 } else {

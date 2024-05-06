@@ -49,7 +49,7 @@ function CategoryAdmin() {
 
   const handleMake = async (event) => {
     try {
-      await axios.post(`http://localhost:5500/category`, category);
+      await axios.post(`/category`, category);
       console.log("Category added successfully")
       setAddVisible(false);
     } catch {
@@ -60,14 +60,14 @@ function CategoryAdmin() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:5500/category');
+        const response = await axios.get('/category');
         setCategories(response.data);
       } catch (error) {
         console.error('Error fetching categories: ', error);
       }
     };
     fetchCategories();
-  }, [categories]);
+  }, []);
 
   const handleChange2 = (event) => {
     setCategory((prev) => ({ ...prev, [event.target.name]: event.target.value }));
@@ -85,40 +85,62 @@ function CategoryAdmin() {
 
   const handleSerialDelete = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:5500/delete-category/${id}`);
+      const response = await axios.delete(`/delete-category/${id}`);
       window.alert("Deleted successfully");
       console.log("Response from deletion ", response.data);
     } catch (error) {
       console.error('Error fetching items: ', error);
     }
-  }
+  };
+
+  const [filteredCategories, setFilteredCategories] = useState([]);
+
+  const handleFilter = (event) => {
+    const newData = categories.filter((row) => {
+      return row.category_name.toLowerCase().includes(event.target.value.toLowerCase());
+    });
+    setFilteredCategories(newData);
+  };
+
+  useEffect(()=>{
+    setFilteredCategories(categories);
+  },[categories]);
 
 
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div style={kain}>
-        <h1>Add A New Category</h1>
+        <h1>Category Tab</h1>
       </div>
       <div className="category-container">
-        <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Category</p></button>
+        <div>
+          <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Category</p></button>
+        </div>
+        <br />
         <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
           <h1>Add Category</h1>
           <input type='text' placeholder='Category Name' name='category_name' onChange={handleChange2} />
           <input type='text' placeholder='Description' name='description' onChange={handleChange2} />
           <button onClick={handleMake}>Submit</button>
         </Model>
-        {categories.map((category) => (
-          <div key={category.id} className="category">
-            <h2>{category.category_name}</h2>
-            <br />
-            <div style={{display: 'flex', flexDirection: 'inline', gap: '9px'}}>
-              <p>{category.description}</p>
-              <button className='addItem-btn' onClick={() => handleSerialDelete(category.id)}><img src={Delete} style={svgStyle} /></button>
-            </div>
 
+        <div style={{ display: 'flex', flexWrap: 'wrap', backgroundColor: 'rgb(185, 185, 234)', marginLeft: '14%', gap: '12px', width: '60%', height: '65%', padding: ' 8px', borderRadius: '15px', overflow: 'auto' }}>
+          <div style={{backgroundColor: 'rgb(185, 185, 234)', height: '12%', width: '100%', display: 'flex', justifyContent: 'right', alignItems: 'center'}}>
+            
+            <input type = 'text' placeholder = 'Search...' onChange={handleFilter}/>
           </div>
-        ))}
+          {filteredCategories.map((category) => (
+            <div key={category.id} className="category">
+              <h2>{category.category_name}</h2>
+              <br />
+              <div style={{ display: 'flex', flexDirection: 'inline', gap: '9px' }}>
+                <p>{category.description}</p>
+                <button className='addItem-btn' onClick={() => handleSerialDelete(category.id)}><img src={Delete} style={svgStyle} /></button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

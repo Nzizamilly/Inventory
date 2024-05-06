@@ -55,7 +55,7 @@ function TransactionsSupervisor() {
     useEffect(() => {
         const fetchMonthlyReport = async () => {
             try {
-                const response = await axios.get('http://localhost:5500/monthly-report');
+                const response = await axios.get('/monthly-report');
                 setReport(response.data);
             } catch (error) {
                 console.error('Error fetching Data', error);

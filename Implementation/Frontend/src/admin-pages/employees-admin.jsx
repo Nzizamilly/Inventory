@@ -50,10 +50,8 @@ function EmployeesAdmin() {
   }
 
   const [emps, setEmps] = useState([]);
-
   const [visible, setVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
-  const location = useLocation();
   const [switchStates, setSwitchStates] = useState({});
   const [department, setDepartment] = useState([]);
   const [role, setRole] = useState([]);
@@ -79,7 +77,7 @@ function EmployeesAdmin() {
   useEffect(() => {
     const fetchEmp = async () => {
       try {
-        const res = await axios.get(`http://localhost:5500/employees`);
+        const res = await axios.get(`/employees`);
         setEmps(res.data);
       } catch (error) {
       }
@@ -98,7 +96,7 @@ function EmployeesAdmin() {
 
     try {
       console.log("Emp ID: ", empID);
-      const response = await axios.put(`http://localhost:5500/deactivate-employee/${empID}`, {
+      const response = await axios.put(`/deactivate-employee/${empID}`, {
         status,
         employee
       });
@@ -135,7 +133,7 @@ function EmployeesAdmin() {
     console.log("SELECTED EMPLOYEE ID: ", EmpID);
     try {
       console.log("Selected Employee ID",)
-      await axios.put(`http://localhost:5500/employee/${EmpID}`, update);
+      await axios.put(`/employee/${EmpID}`, update);
       setEmps((prevEmps) => {
         prevEmps.forEach((emp, index) => {
           if (emp.id === EmpID) {
@@ -157,7 +155,7 @@ function EmployeesAdmin() {
 
   const bringOneEmployee = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5500/employee/${id}`);
+      const response = await axios.get(`/employee/${id}`);
       setSumOne(response.data);
     } catch (error) {
       console.error("Error: ", error);
@@ -218,7 +216,7 @@ function EmployeesAdmin() {
   useEffect(() => {
     const getDept = async () => {
 
-      const response = await axios.get("http://localhost:5500/get-department/");
+      const response = await axios.get("/get-department/");
       setDepartment(response.data);
     }
     getDept()
@@ -236,7 +234,6 @@ function EmployeesAdmin() {
     setSelectedUpdateDepartment(selectedValue);
   }
 
-
   const Select = {
     width: '65%',
     height: '28%',
@@ -249,7 +246,7 @@ function EmployeesAdmin() {
 
   useEffect(() => {
     const fetchRole = async (selectedDepartment) => {
-      const response = await axios.get(`http://localhost:5500/get-role/${selectedDepartment}`);
+      const response = await axios.get(`/get-role/${selectedDepartment}`);
       setRole(response.data);
       console.log("DATA: ", response.data)
     }
@@ -260,7 +257,7 @@ function EmployeesAdmin() {
 
   useEffect(() => {
     const fetchRole = async (selectedUpdateDepartment) => {
-      const response = await axios.get(`http://localhost:5500/get-role/${selectedUpdateDepartment}`);
+      const response = await axios.get(`/get-role/${selectedUpdateDepartment}`);
       setRoleUpdate(response.data);
       console.log("DATA: ", response.data)
     }
@@ -311,7 +308,7 @@ function EmployeesAdmin() {
   const handleMake = async (event) => {
     try {
       console.log("Passing Data: ", employee)
-      await axios.post(`http://localhost:5500/employee`, employee);
+      await axios.post(`/employee`, employee);
       window.alert("Employee added successfully");
       setAddVisible(false);
     } catch (error) {

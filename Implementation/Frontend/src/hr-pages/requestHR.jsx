@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
-// import Navbar from './navbar';
+import NavbarMain from './navbarMain';
 import axios from 'axios';
 import { Multiselect } from 'multiselect-react-dropdown';
 import Red from '../images/red-circle.svg';
 import Green from '../images/green-circle.svg';
 import Cyan from '../images/cyan-circle.svg';
 import Select from 'react-select';
-import Modal from 'react-modal'
-import NavbarMain from './navbarMain';
+import Modal from 'react-modal';
+import PulseLoader from "react-spinners/PulseLoader";
+import RequestSent from '../images/request-sent.svg'
+
+
 
 function RequestHr() {
-
   const [amount, setAmount] = useState({
     amount: '',
   });
@@ -28,6 +30,22 @@ function RequestHr() {
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [messageDataForDown, setMessageDataForDown] = useState([]);
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [imageApproval, setImageApproval] = useState(false);
+
+  const closeImageApproval = () => {
+    setImageApproval(false);
+  }
+
+  const openLoader = () => {
+    setIsSendModalOpen(true);
+    sendMessage();
+  }
+
+  const closeRequestModal = () => {
+    setIsSendModalOpen(false);
+  }
 
 
   const openModal = () => {
@@ -55,14 +73,16 @@ function RequestHr() {
     backgroundColor: 'black',
     border: 'none',
     borderRadius: '14px'
-  }
+  };
 
-  const socket = io.connect("http://localhost:5001");
+  const ioPort = process.env.REACT_APP_SOCKET_PORT;
+
+  const socket = io.connect(`${ioPort}`);
 
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const res = await axios.get(`http://localhost:5500/category`);
+        const res = await axios.get(`/category`);
         setCategory(res.data);
       } catch (error) {
         console.error("Error: ", error)
@@ -75,7 +95,7 @@ function RequestHr() {
     const fetchItem = async (categoryID) => {
       console.log("CategoryID: ", categoryID);
       try {
-        const response = await axios.get(`http://localhost:5500/items/${categoryID}`);
+        const response = await axios.get(`/items/${categoryID}`);
         setItem(response.data);
         setOptions(response.data);
 
@@ -97,7 +117,7 @@ function RequestHr() {
     const fetchCount = async (itemID) => {
       try {
         const itemId = itemID;
-        const response = await axios.get(`http://localhost:5500/get-total-number/${itemId}`);
+        const response = await axios.get(`/get-total-number/${itemId}`);
         setBackCount(response.data);
         console.log(response.data);
       } catch (error) {
@@ -140,7 +160,7 @@ function RequestHr() {
     const get = localStorage.getItem('username');
     const email = localStorage.getItem('email')
     const date = Date.now();
-    const response = await axios.get('http://localhost:5500/get-number');
+    const response = await axios.get('/get-number');
     const idTaker = response.data.latestId + 1;
     setTaker(idTaker);
 
@@ -164,10 +184,14 @@ function RequestHr() {
     console.log("SelectedPriority", selectedPriority);
     console.log("MessageData Data: ", messageData);
 
-    window.alert("Request sent....");
+    setInterval(() => {
+      setIsSendModalOpen(false);
+    }, 2000);
+
     socket.emit("Employee_Message_Supervisor(1)", messageData);
+    
     try {
-      const response = await axios.post('http://localhost:5500/add-request-employee-supervisor', messageData);
+      const response = await axios.post('/add-request-employee-supervisor', messageData);
       messageData.id = id;
       const id = response.id;
       console.log("Response", response);
@@ -224,7 +248,6 @@ function RequestHr() {
       ...provided,
       backgroundColor: 'black',
       display: 'flex',
-      // justifyContent: 'center',
       '&:hover': {
         backgroundColor: 'lightgrey'
       }
@@ -250,7 +273,7 @@ function RequestHr() {
       display: 'flex',
       alignItems: 'center'
     }),
-    option: (provided, state) => ({
+    option: (provided) => ({
       ...provided,
       backgroundColor: 'black',
       display: 'flex',
@@ -287,7 +310,7 @@ function RequestHr() {
   useEffect(() => {
     const showSupervisor = async () => {
       try {
-        const response = await axios.get("http://localhost:5500/show-supervisor");
+        const response = await axios.get("/show-supervisor");
         console.log("Data: ", response.data);
         setSupervisorId(response.data);
       } catch (error) {
@@ -322,13 +345,27 @@ function RequestHr() {
 
   console.log("MessageData FOR DOWN: ", messageDataForDown);
 
+  const No = {
+    width: '10%',
+    height: '10vh',
+    display: 'flex',
+    textAlign: 'center',
+    fontWeight: '100px',
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    backgroundColor: 'Black',
+    color: 'rgb(12, 193, 199)',
+    fontFamily: 'Arial, sans-serif',
+  }
+
   return (
     <div>
       <NavbarMain></NavbarMain>
       <div style={kain}>
         <h1>Requisition Tab</h1>
       </div>
-      <div className='request-container'>
+      <section className='request-container'>
         <div className='request'>
           <select onChange={handleCategoryChange} value={selectedCategory} style={Selects}>
             <option value='' disabled>Select Category</option>
@@ -373,13 +410,27 @@ function RequestHr() {
               <br />
               <p>Date of Request: {message.date}</p>
               <br />
-              <button className='buttonStyle2' onClick={sendMessage}>Send</button>
+              <button className='buttonStyle2' onClick={openLoader}>Send</button>
             </div>
           </Modal>
+          <Modal isOpen={isSendModalOpen} onRequestClose={closeRequestModal} className={modal}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+              <PulseLoader color={'green'} loading={loading} size={19} />
+              <div>
+                <p>Processing Request...</p>
+              </div>
+            </div>
+          </Modal>
+          <Modal isOpen={imageApproval} onRequestClose={closeImageApproval} className={modal}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'black' }}>
+              <img src={RequestSent} style={{ maxWidth: '18%', maxHeight: '18vh' }} />
+              <p>Request Sent well...</p>
+            </div>
+
+          </Modal>
         </div>
-      </div>
+      </section>
     </div>
   );
 };
-
 export default RequestHr;

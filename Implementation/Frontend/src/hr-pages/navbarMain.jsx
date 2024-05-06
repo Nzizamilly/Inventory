@@ -61,7 +61,7 @@ function NavbarMain() {
             const EmpID = localStorage.getItem("userID");
             try {
                 if (EmpID) {
-                    const response = await axios.get(`http://localhost:5500/employee/${EmpID}`);
+                    const response = await axios.get(`/employee/${EmpID}`);
                     setData(response.data[0]);
                 } else {
                     console.error("EmpID Not found in localStorage")
@@ -162,7 +162,6 @@ function NavbarMain() {
             <ul className='ul1' style={color}>
                 <li style={{ float: 'left', marginLeft: '193px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
                 <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
-                {/* <li className='li1'><Link to={'/notification-hr'}>Requests</Link></li> */}
                 <select onChange={handleTransactionChange} value={transactionType} style={select}>
                     <option value="" disabled >Notifications</option>
                     <option value="item" >Item</option>
@@ -172,7 +171,6 @@ function NavbarMain() {
             </ul>
             <ul className='ul2Admin'>
                 <li className='lisupervisor'><Link to={'/account-hr'} onMouseOver={openModal}>Account</Link></li>
-                {/* <li className='lisupervisor'><Link to={'/request-hr'}>Request</Link></li> */}
                 <Select
                     options={option}
                     styles={customStyles}

@@ -34,14 +34,11 @@ function SupplierAdmin() {
   }
 
   const employeeContainer = {
-    // gap: '51px',
     width: '100%',
-    height: '120vh',
+    height: '100vh',
     display: 'flex',
     flexWrap: 'wrap',
     overFlow: 'auto',
-    alignItems: 'center',
-    // justifyContent: 'center',
     fontFamily: 'Arial, sans-serif',
     backgroundColor: 'rgb(163, 187, 197)',
   }
@@ -67,6 +64,7 @@ function SupplierAdmin() {
     address: '',
     phone: '',
     email: '',
+    product: '',
     status: ''
   });
   const [supp, setSupp] = useState({
@@ -74,12 +72,13 @@ function SupplierAdmin() {
     address: '',
     phone: '',
     email: '',
-    status: ''
+    product: '',
+    status: '',
   });
 
   const openInfoModal = (ID) => {
-    setOneEmployee(true)
-    bringOneSupplier(ID)
+    setOneEmployee(true);
+    bringOneSupplier(ID);
   }
 
   const closeOneEmployee = () => {
@@ -89,7 +88,7 @@ function SupplierAdmin() {
   useEffect(() => {
     const fetchSupplier = async () => {
       try {
-        const res = await axios.get(`http://localhost:5500/supplier`);
+        const res = await axios.get(`/supplier`);
         setSuppliers(res.data);
       } catch (error) {
       }
@@ -105,7 +104,7 @@ function SupplierAdmin() {
   const handleUpdate = async (id) => {
     try {
       console.log("Updatiess: ", update);
-      const response = await axios.put(`http://localhost:5500/supplier/${id}`);
+      const response = await axios.put(`/supplier/${id}`);
       console.log("Updated Well!", response.info);
     } catch (error) {
       console.error("Error: ", error)
@@ -115,32 +114,34 @@ function SupplierAdmin() {
   const handleChange2 = (event) => {
     setSupp((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
+
   const handleMake = async () => {
     try {
-      await axios.post(`http://localhost:5500/supplier`, supp);
-      console.log("Supplier added successfully")
+      await axios.post(`/supplier`, supp);
+      console.log("Supplier added successfully");
       setAddVisible(false);
     } catch {
       console.log('Error')
-    }
-  }
+    };
+  };
+
   const kain = {
+    gap: '12px',
+    color: 'black',
+    display: 'flex',
+    paddingTop: '70px',
+    marginLeft: '23px',
     marginLeft: '20px',
+    alignContent: 'center',
+    justifyContent: 'center',
     fontFamily: 'Arial, sans-serif',
     backgroundColor: 'rgb(163, 187, 197)',
-    paddingTop: '70px',
-    display: 'flex',
-    marginLeft: '23px',
-    justifyContent: 'center',
-    alignContent: 'center',
-    color: 'black',
-    gap: '12px'
   }
 
   const bringOneSupplier = async (ID) => {
     console.log("ID: ", ID);
     try {
-      const response = await axios.get(`http://localhost:5500/supplier/${ID}`);
+      const response = await axios.get(`/supplier/${ID}`);
       setSuppliers(response.data)
       setSingleSupplier(response.data);
     } catch (error) {
@@ -156,35 +157,42 @@ function SupplierAdmin() {
     {
       name: 'Address',
       selector: row => row.address
-    }, {
+    },
+    {
+      name: 'Product',
+      selector: row => row.product
+    },
+    {
       name: 'More Info',
       cell: row => (
         <button className='addItem-btn' onClick={() => openInfoModal(row.id)}><img src={Info} style={svgStyle} /></button>
       )
     },
-  ]
+  ];
 
+ 
 
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div style={kain}>
-        <h1>List Of Suppliers</h1>
+        <h1>List Of Local Suppliers</h1>
         <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Supplier</p></button>
       </div>
       <div style={employeeContainer}>
 
         <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
           <h1>Add Supplier</h1>
-          <input type='text' placeholder='First Name' name='first_name' onChange={handleChange2} />
+          <input type='text' placeholder='Name' name='first_name' onChange={handleChange2} />
           <input type='text' placeholder='Address' name='address' onChange={handleChange2} />
           <input type='text' placeholder='Phone' name='phone' onChange={handleChange2} />
           <input type='text' placeholder='Email' name='email' onChange={handleChange2} />
+          <input type='text' placeholder='Product' name='product' onChange={handleChange2} />
           <input type='text' placeholder='Status' name='status' onChange={handleChange2} />
           <button onClick={handleMake}>Submit</button>
         </Model>
 
-        <div style={{backgroundColor: "black",width: '90%', marginTop: '12px', overFlow: 'auto', marginLeft: '220px'}}>
+        <div style={{backgroundColor: "rgb(163, 187, 197)", width: '90%', marginTop: '12px', overFlow: 'auto', marginLeft: '220px'}}>
           <DataTable
             data={suppliers}
             columns={columns}
@@ -201,6 +209,7 @@ function SupplierAdmin() {
                 <p>Address: {supplier.address}</p>
                 <p>Phone: {supplier.phone}</p>
                 <p>Email: {supplier.email}</p>
+                <p>Product: {supplier.product}</p>
                 <p>Status:  <span style={color}>{supplier.status}</span></p>
                 <button onClick={() => setVisible(true)}>Update</button>
                 <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
@@ -209,6 +218,7 @@ function SupplierAdmin() {
                   <input type='text' placeholder='Address' name='address' onChange={handleChange} />
                   <input type='text' placeholder='Phone' name='phone' onChange={handleChange} />
                   <input type='text' placeholder='Email' name='email' onChange={handleChange} />
+                  <input type='text' placeholder='Product' name='product' onChange={handleChange} />
                   <input type='text' placeholder='Status' name='status' onChange={handleChange} />
                   <button onClick={() => handleUpdate(supplier.id)}>Submit</button>
                 </Model>
@@ -216,7 +226,6 @@ function SupplierAdmin() {
             ))}
           </Modal>
         </div>
-
       </div>
     </div>
   );

@@ -10,6 +10,8 @@ function Navbar() {
 
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedNotification, setSelectedNotification] = useState(null);
   const modalStyles = {
     content: {
       top: '18%',
@@ -57,7 +59,7 @@ function Navbar() {
     const fetchData = async () => {
       const EmpID = localStorage.getItem("userID");
       try {
-        const response = await axios.get(`http://localhost:5500/employee/${EmpID}`);
+        const response = await axios.get(`/employee/${EmpID}`);
         setData(response.data[0]);
       } catch (error) {
         console.error("Error", error);
@@ -91,7 +93,6 @@ function Navbar() {
       ...provided,
       backgroundColor: 'black',
       display: 'flex',
-      // justifyContent: 'center',
       '&:hover': {
         backgroundColor: 'lightgrey',
         color: 'black'
@@ -106,9 +107,7 @@ function Navbar() {
       backgroundColor: 'black',
       color: 'white',
     })
-  }
-  const [selectedRequest, setSelectedRequest] = useState(null);
-  const [selectedNotification, setSelectedNotification] = useState(null);
+  };
 
   const handleRequestChange = (event) => {
     setSelectedRequest(event.value);

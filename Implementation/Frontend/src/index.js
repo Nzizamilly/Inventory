@@ -37,6 +37,7 @@ import NotificationReviewSupervisor from './supervisor-pages/notification';
 import PurchaseNotificationEmployee from './employee-pages/purchase-notification';
 import PurchaseNotificationHR from './hr-pages/purchaseNotifications';
 import PurchaseNotificationSupervisor from './supervisor-pages/purchaseNotifications';
+import TrustedSuppliers from './admin-pages/trustedSupplier';
 
 const router = createBrowserRouter([
   {
@@ -84,7 +85,7 @@ const router = createBrowserRouter([
     element: <TransactionsAdmin />
   },
   {
-    path: "supplier-admin",
+    path: "local-supplier-admin",
     element: <SupplierAdmin />
   },
   {
@@ -178,6 +179,10 @@ const router = createBrowserRouter([
   {
     path: 'purchase-notifications-supervisor',
     element: <PurchaseNotificationSupervisor />
+  },
+  {
+    path: 'trusted-suppliers',
+    element: <TrustedSuppliers />
   }
 
 

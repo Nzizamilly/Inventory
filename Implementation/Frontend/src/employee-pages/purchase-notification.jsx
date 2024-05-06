@@ -4,8 +4,6 @@ import DataTable from 'react-data-table-component';
 import axios from 'axios';
 import Red from '../images/red-circle.svg';
 import FadeLoader from "react-spinners/FadeLoader";
-import Approve from '../images/approve.svg';
-import Deny from '../images/deny.png';
 import View from '../images/info.svg';
 import Modal from 'react-modal';
 import Green from '../images/green-circle.svg';
@@ -41,9 +39,11 @@ function PurchaseNotificationEmployee() {
 
     const closeModal = () => {
         setViewQuotation(false);
-    }
+    };
 
-    const socket = io.connect("http://localhost:5001");
+    const ioPort = process.env.REACT_APP_SOCKET_PORT;
+
+    const socket = io.connect(`${ioPort}`);
 
     socket.on("connect", () => {
         console.log("Connected to the server");
@@ -58,7 +58,7 @@ function PurchaseNotificationEmployee() {
         const fetchData = async () => {
             try {
                 const employeeID = localStorage.getItem("userID");
-                const response = await axios.get(`http://localhost:5500/get-purchase-notification-employee/${employeeID}`);
+                const response = await axios.get(`/get-purchase-notification-employee/${employeeID}`);
                 const result = response.data;
                 console.log("Quotation: ", typeof result[0].quotation);
                 setAllRequests(result);
@@ -156,7 +156,7 @@ function PurchaseNotificationEmployee() {
     const handlePending = async () => {
         console.log("HandlePending is Hit");
         const employeeID = localStorage.getItem("userID");
-        const response = await axios.get(`http://localhost:5500/get-purchase-notification-employee/${employeeID}`);
+        const response = await axios.get(`/get-purchase-notification-employee/${employeeID}`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setAllRequests(result);
@@ -165,7 +165,7 @@ function PurchaseNotificationEmployee() {
     const handleApprovedRequest = async () => {
         console.log("HandleApproved is Hit");
         const employeeID = localStorage.getItem('userID');
-        const response = await axios.get(`http://localhost:5500/get-approved-purchase-notification-employee/${employeeID}`);
+        const response = await axios.get(`/get-approved-purchase-notification-employee/${employeeID}`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setAllRequests(result)
@@ -174,7 +174,7 @@ function PurchaseNotificationEmployee() {
     const handleDenyRequest = async () => {
         console.log("HandleDenied is Hit");
         const employeeID = localStorage.getItem('userID');
-        const response = await axios.get(`http://localhost:5500/get-denied-notification-purchase-employee/${employeeID}`);
+        const response = await axios.get(`/get-denied-notification-purchase-employee/${employeeID}`);
         const result = response.data;
         console.log("DATA For Denied: ", result);
         setAllRequests(result);

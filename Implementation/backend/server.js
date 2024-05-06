@@ -3,14 +3,11 @@ const mysql = require("mysql2");
 const cors = require("cors");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
 const { Server } = require("socket.io");
 const http = require("http");
-const fs = require('fs');
 const moment = require('moment');
 const nodemailer = require('nodemailer');
 const { EMAIL, PASSWORD } = require('./env.js');
-const { Blob } = require("buffer");
 
 
 const app = express();
@@ -142,6 +139,10 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("Show Some", (sender) => {
+    console.log(sender);
+  })
+
   socket.on("HandleDelete", (object) => {
     console.log("Object Shown", object);
   })
@@ -191,7 +192,7 @@ JOIN
     category ON supervisor_hr_request.categoryID = category.id
 JOIN 
     item ON supervisor_hr_request.itemID = item.id
-    WHERE supervisor_hr_request.status = 'Pending'
+   -- WHERE supervisor_hr_request.status = 'Pending'
 ORDER BY 
     supervisor_hr_request.id DESC;
  `
@@ -203,7 +204,7 @@ ORDER BY
         return res.json(result);
         // return res.json(result);
       }
-    })
+    });
   })
 
   socket.on('get-some', () => {
@@ -245,9 +246,7 @@ ORDER BY
 
     db.query(sql, values, (error, result) => {
       result ? console.log("Done Well: ", result) : console.error("Error: ", error);
-    })
-
-
+    });
 
     io.emit("Supervisor_Message_HR(2)", messageData, supervisorName)
   })
@@ -336,7 +335,7 @@ ORDER BY
     const id = messageData.id;
 
     const sql = `UPDATE supervisor_hr_purchase SET status = 'Approved' WHERE id = ?`;
-    db.query(sql, [ id], (error, result) => {
+    db.query(sql, [id], (error, result) => {
       result ? console.log("Done") : console.error("Error: ", error);
     });
   })
@@ -382,7 +381,7 @@ ORDER BY
     const sqli = `UPDATE employee_supervisor_purchase SET status = ? WHERE id = ?`;
 
     db.query(sqli, [status, id], (error, result) => {
-     result ? console.log("Updated Well") : console.error("Error: ", error);
+      result ? console.log("Updated Well") : console.error("Error: ", error);
     });
   })
 
@@ -520,6 +519,7 @@ app.post("/add-employee", (req, res) => {
 });
 
 app.post('/add-items', (req, res) => {
+  
   const categoryId = req.body.category;
 
   console.log("Category", categoryId);
@@ -579,21 +579,6 @@ app.put("/employee/:id", (req, res) => {
       }
     })
   }
-
-  function getDepartmentId(department) {
-    const q = 'SELECT department_name FROM department WHERE id = ?'
-    const value = [department];
-    db.query(q, value, (error, result) => {
-      if (error) {
-        console.error("Error: ", error);
-      } else {
-        console.log("Done", result);
-        return result;
-      }
-    })
-  }
-
-
 
   const q = "UPDATE employees SET username = ?, password = ?, roleID = ?, departmentID = ?, status = ?, email = ? WHERE id = ?";
   const values = [
@@ -656,14 +641,15 @@ app.post('/login', (req, res) => {
       req.session.user_id = userID;
       req.session.role_id = roleID;
       req.session.email = email
+
       console.log(req.session.username);
-      console.log("Port: ", req.session.port);
+
       return res.json({ Login: true, username: req.session.username, id: req.session.user_id, roleID: req.session.role_id, email: req.session.email })
     } else {
-      return res.json({ Login: false })
-    }
-  })
-})
+      return res.json({ Login: false });
+    };
+  });
+});
 
 app.get('/category', (req, res) => {
   const sql = 'SELECT * FROM category';
@@ -739,7 +725,7 @@ app.get('/number-category', (req, res) => {
   });
 });
 
-app.get('/', (req, res) => {
+app.get('/home-employee', (req, res) => {
   // console.log("Session", req.session.username);
   if (req.session.username) {
     return res.json({ valid: true, username: req.session.username });
@@ -819,12 +805,13 @@ app.post('/category', (req, res) => {
 })
 
 app.post('/supplier', (req, res) => {
-  const q = 'INSERT INTO supplier (first_name, address, phone, email, status) VALUES (?)';
+  const q = 'INSERT INTO supplier (first_name, address, phone, email, product, status) VALUES (?)';
   const values = [
     req.body.first_name,
     req.body.address,
     req.body.phone,
     req.body.email,
+    req.body.product,
     req.body.status
   ]
   db.query(q, [values], (err, data) => {
@@ -853,13 +840,14 @@ app.get('/supplier', (req, res) => {
 app.put('/supplier/:id', (req, res) => {
   const id = req.params.id;
 
-  const query = `UPDATE supplier SET supplier first_name = ?, address = ?, phone = ?, email = ?, status = ? WHERE id = ?`;
+  const query = `UPDATE supplier SET supplier first_name = ?, address = ?, phone = ?, email = ?, product = ?, status = ? WHERE id = ?`;
 
   const values = [
     req.body.first_name,
     req.body.address.
       req.body.phone,
     req.body.email,
+    req.body.product,
     req.body.status,
     id
   ];
@@ -1023,12 +1011,7 @@ app.delete('/delete-item/:itemID', (req, res) => {
   const itemID = req.params.itemID;
   const q = `DELETE FROM item WHERE id = ?`;
   db.query(q, [itemID], (err, result) => {
-    if (err) {
-      console.error("Error", err);
-    } else {
-      console.log("Result :", result);
-      return result;
-    }
+    result ? res.json(result) : console.error("Error :", err);
   })
 });
 
@@ -1130,7 +1113,7 @@ app.get('/items/:categoryID', (req, res) => {
     error ? console.error("Error: ", error) : res.json(result);
     console.log("This passed successfully");
   })
-})
+});
 
 app.get('/serial-number', (req, res) => {
   const q = 'SELECT * FROM serial_number';
@@ -1730,6 +1713,23 @@ app.get('/get-number-purchase', (req, res) => {
   });
 });
 
+app.get('/get-number-trusted-suppliers', (req, res) => {
+  const sql = "SELECT id FROM trustedsupplier ORDER BY id DESC LIMIT 1";
+  db.query(sql, (error, result) => {
+    if (error) {
+      console.error("Error", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    } else {
+      if (result.length > 0) {
+        const latestId = result[0].id;
+        return res.json({ latestId });
+      } else {
+        return res.json({ latestId: null });
+      }
+    }
+  });
+});
+
 app.get('/get-all-requests/:id', (req, res) => {
   const id = req.params.id;
   const sql = `SELECT item.name, category.category_name, employees.username, employee_supervisor_request.date_of_request, employee_supervisor_request.id,employee_supervisor_request.status
@@ -1864,7 +1864,7 @@ app.post('/insert-doer/:itemID/:employeeID', (req, res) => {
   const employeeID = req.params.employeeID;
   const action = "Updated";
 
-  const sql = `INSERT INTO item_deletion_or_updation (itemID,employeeID,action) VALUES (?, ?, ?)`;
+  const sql = `INSERT INTO item_deletion_or_updation(itemID,employeeID,action) VALUES (?, ?, ?)`;
 
   const values = [itemID, employeeID, action];
 
@@ -1886,10 +1886,8 @@ app.post('/insert-deletion-doer/:itemID/:employeeID', (req, res) => {
   const values = [itemID, employeeID, action];
 
   db.query(sql, values, (error, result) => {
-    if (error) {
-      console.error("Error", error)
-    }
-  })
+    result ? res.json(result) : console.error("Error :", error);
+  });
 });
 
 app.get('/get-action-transaction', (req, res) => {
@@ -2278,9 +2276,7 @@ app.put('/change-status/:id', (req, res) => {
   db.query(query, values, (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
   });
-})
-
-
+});
 
 app.post('/add-purchase-supervisor-hr/:supervisorID', async (req, res) => {
 
@@ -2338,7 +2334,6 @@ app.post('/add-purchase-supervisor-hr/:supervisorID', async (req, res) => {
       } else {
         res.status(200).send("Request successfully inserted");
       };
-
     });
   } catch (error) {
     console.error(error);
@@ -2349,7 +2344,14 @@ app.post('/add-purchase-supervisor-hr/:supervisorID', async (req, res) => {
 app.get('/get-purchase-id', (req, res) => {
   const q = `SELECT id FROM employee_supervisor_purchase ORDER BY id DESC LIMIT 1;`;
   db.query(q, (error, data) => {
-    console.log("Data: ", data);
+    // console.log("Data: ", data);
+    data ? res.json(data) : console.error("Error: ", error);
+  })
+});
+
+app.get('/get-trusted-supplier-id', (req, res) => {
+  const q = `SELECT id FROM trustedsupplier ORDER BY id DESC LIMIT 1;`;
+  db.query(q, (error, data) => {
     data ? res.json(data) : console.error("Error: ", error);
   })
 });
@@ -2382,14 +2384,217 @@ app.put('/deny-by-hr-purchase/:id', (req, res) => {
   });
 });
 
-const ssh = `ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxKBPLSQ1E9SJG7podhvZjH3dP34GXWA5jW0i1jClVsSjN9BrByfKUeiq6E1KsdpXLmxXhMsrlNRugCKSnBfkIaDeobFackhkCv3v9O6KH6lPTHBbWMTT6Ah/5/8RQw5Xk4MOqmhvL6u0H8fJcDg7w3fRB/igSC1Irxe1DDjy/dCwMeAW8OJu4530FdIJ79F/7xWiEvlzx+bRbyaR8AwpBXZBQ/Wfox2frUxevW6ZXOYPu5eaT+UhMC5x4z+7HFl28d/OdDOfQLjgp1mghla/gHBr414qMKqlCWyyDIxpYNe4FjQVac7UUtRTP20ZIF/FL31GDGZOZ21j3yA34tib+yawIfrZa7f66Z1M/HiiPJcGGqoKJz5nddvIOl3F8An+ZyKJ3A2BcE8VnfowJ77WH3X3GN1vg6BpCpUkT/xzJge+U1wcK5bREDjpYeU1l5eo2eiHckjLh0W/jgU0YtGmVAnLBj/v/gxtVwMlnEZ22NrWODhCQDw+G2/xD0BF5Trs= cnziza@centrika-test02`
+const ssh = `ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxKBPLSQ1E9SJG7podhvZjH3dP34GXWA5jW0i1jClVsSjN9BrByfKUeiq6E1KsdpXLmxXhMsrlNRugCKSnBfkIaDeobFackhkCv3v9O6KH6lPTHBbWMTT6Ah/5/8RQw5Xk4MOqmhvL6u0H8fJcDg7w3fRB/igSC1Irxe1DDjy/dCwMeAW8OJu4530FdIJ79F/7xWiEvlzx+bRbyaR8AwpBXZBQ/Wfox2frUxevW6ZXOYPu5eaT+UhMC5x4z+7HFl28d/OdDOfQLjgp1mghla/gHBr414qMKqlCWyyDIxpYNe4FjQVac7UUtRTP20ZIF/FL31GDGZOZ21j3yA34tib+yawIfrZa7f66Z1M/HiiPJcGGqoKJz5nddvIOl3F8An+ZyKJ3A2BcE8VnfowJ77WH3X3GN1vg6BpCpUkT/xzJge+U1wcK5bREDjpYeU1l5eo2eiHckjLh0W/jgU0YtGmVAnLBj/v/gxtVwMlnEZ22NrWODhCQDw+G2/xD0BF5Trs= cnziza@centrika-test02`;
 
-// const PORT = process.env.PORT || 5500;
-// httpServer.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });
+app.get('/get-trusted-suppliers', (req, res) => {
+  const q = ` SELECT * FROM trustedsupplier; `;
 
+  db.query(q, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.post('/new-trusted-supplier', (req, res) => {
+  const name = req.body.name;
+  const dateEntered = req.body.dateEntered;
+  const endEntered = req.body.endEntered;
+  const product = req.body.product;
+  const email = req.body.email;
+  const address = req.body.address;
+
+  const sql = "INSERT INTO trustedsupplier(name, date_entered, end_of_contract, product, email, address) VALUES (?, ?, ?, ?, ?, ? );";
+
+  const values = [
+    name,
+    dateEntered,
+    endEntered,
+    product,
+    email,
+    address
+  ];
+
+  db.query(sql, values, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.get('/get-one-trusted-supplier/:id', (req, res) => {
+
+  const id = req.params.id;
+  const sql = 'SELECT * FROM trustedSupplier WHERE id = ?';
+
+  db.query(sql, [id], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.get('/trustedSuppliers-dates/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = 'SELECT date_entered , end_of_contract FROM trustedsupplier WHERE id = ?';
+  db.query(sql, [id], (error, result) => {
+    result ? res.json(result[0]) : console.error("Error: ", error);
+  });
+});
+
+
+
+app.put('/change-status-from-notifications/:requestor/:item/:amount/:rowID', async (req, res) => {
+
+  const requestor = req.params.requestor;
+  const item = req.params.item;
+  const requiredAmount = parseInt(req.params.amount);
+
+  const getEmployeeID = (id) => {
+    return new Promise((resolve, reject) => {
+      const q = `SELECT id FROM employees WHERE username = ?`;
+      const value = [id];
+
+      db.query(q, value, (error, result) => {
+        if (error) {
+          console.error("error", error);
+          reject(error);
+        } else {
+          console.log("Result", result);
+          resolve(result[0].id);
+        }
+      });
+    });
+  };
+
+  const getItemID = (id) => {
+    return new Promise((resolve, reject) => {
+      const q = `SELECT id FROM item WHERE name = ?`;
+      const value = [id];
+
+      db.query(q, value, (error, result) => {
+        if (error) {
+          console.error("error", error);
+          reject(error);
+        } else {
+          console.log("Result", result);
+          resolve(result[0].id);
+        }
+      });
+    });
+  };
+
+  const requestorID = await getEmployeeID(requestor);
+
+  const itemID = await getItemID(item);
+
+  const getExactAmount = (itemID) => {
+    return new Promise((resolve, reject) => {
+      const q = `SELECT COUNT(*) AS count FROM serial_number WHERE status = 'In' AND itemID = ?;`;
+      const value = [itemID];
+  
+      db.query(q, value, (error, result) => {
+        if (error) {
+          console.error("Error:", error);
+          reject(error);
+        } else {
+          console.log("Result:", result);
+          // Ensure that result is an array and has at least one element
+          if (Array.isArray(result) && result.length > 0) {
+            // Resolve with the count value
+            resolve(result[0].count);
+          } else {
+            reject(new Error("No result found"));
+          }
+        }
+      });
+    });
+  };
+
+  const exactAmount = await getExactAmount(itemID);
+
+  if (exactAmount >= requiredAmount) {
+
+    const updateQuery = `UPDATE serial_number SET status = 'Out',  taker = ?  WHERE itemID = ? AND status = 'In' LIMIT ?;`;
+    const updateValues = [requestorID, itemID, requiredAmount];
+  
+    db.query(updateQuery, updateValues, (error, result) => {
+    result ? res.json("Given Out") : console.error("Error: ", error);
+    });
+  } else {
+    res.json("Not enough items to give out.");
+  }
+});
+
+
+app.put('/change-request-stockStatus/:rowID', (req, res) => {
+
+  const rowID = req.params.rowID;
+  const stockStatus = "Given Out";
+
+  const sql = "UPDATE hr_admin_request SET stockStatus = ? WHERE id = ?";
+
+  db.query(sql , [stockStatus, rowID], (error, result) => {
+    result ? res.json(result[0]) : console.error("Error: ", error);
+  });
+});
+
+app.get('/get-hr-admin-pending-requests', (req, res) => {
+
+  const sql = `SELECT 
+  employees.username AS employee_username, 
+  supervisor.username AS supervisor_username,
+  hr_admin_request.amount, 
+  hr_admin_request.description, 
+  hr_admin_request.id, 
+  hr_admin_request.supervisorID,
+  hr_admin_request.email,
+  category.category_name,
+  item.name
+FROM 
+  hr_admin_request
+JOIN 
+  employees ON hr_admin_request.employeeID = employees.id
+JOIN 
+  employees AS supervisor ON hr_admin_request.supervisorID = supervisor.id
+JOIN 
+  category ON hr_admin_request.categoryID = category.id
+JOIN 
+  item ON hr_admin_request.itemID = item.id
+  WHERE hr_admin_request.stockStatus = ''
+ORDER BY 
+  hr_admin_request.id DESC`;
+
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.get('/get-hr-admin-given-requests', (req, res) => {
+
+  const sql = `SELECT 
+  employees.username AS employee_username, 
+  supervisor.username AS supervisor_username,
+  hr_admin_request.amount, 
+  hr_admin_request.description, 
+  hr_admin_request.id, 
+  hr_admin_request.supervisorID,
+  hr_admin_request.email,
+  category.category_name,
+  item.name
+FROM 
+  hr_admin_request
+JOIN 
+  employees ON hr_admin_request.employeeID = employees.id
+JOIN 
+  employees AS supervisor ON hr_admin_request.supervisorID = supervisor.id
+JOIN 
+  category ON hr_admin_request.categoryID = category.id
+JOIN 
+  item ON hr_admin_request.itemID = item.id
+  WHERE hr_admin_request.stockStatus = 'Given Out'
+ORDER BY 
+  hr_admin_request.id DESC`;
+
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
 
 app.listen(5500, () => {
-  console.log("Connected to backend")
+  console.log("Connected to backend");
 })

@@ -624,7 +624,7 @@ li a:hover {
     flex-wrap: wrap;
     justify-content: center;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(201, 225, 231);
+    background-color: rgb(163, 187, 197);
 }
 
 ;
@@ -703,7 +703,8 @@ li a:hover {
     /* gap: 2px; */
     height: 100vh;
     display: flex;
-    overflow: auto;
+    /* overflow: auto; */
+    /* margin-bottom: 32%; */
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
@@ -741,16 +742,15 @@ li a:hover {
     width: 290px;
     height: 98px;
     padding: 8px;
-    display: flex;
+    display: inline-block;
     color: black;
-    border-radius: 15px;
+    flex-shrink: 0;
     margin-left: 15px;
+    border-radius: 15px;
     align-items: center;
-    flex-direction: column;
+    /* flex-direction: column; */
     background-color: rgb(206, 206, 236);
-}
-
-;
+};
 
 .notification-admin {
     width: 23%;
@@ -771,7 +771,7 @@ li a:hover {
     height: 53px;
     text-align: center;
     border-radius: 15px;
-    background-color: rgb(67, 67, 179);
+    background-color: rgb(48, 48, 205);
 }
 
 .add-btn1 {

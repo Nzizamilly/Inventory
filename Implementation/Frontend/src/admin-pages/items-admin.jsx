@@ -9,15 +9,14 @@ import Addy from '../images/addy.svg'
 import Info from '../images/info.svg'
 import NavbarAdmin from './navbarAdmin';
 import DataTable from 'react-data-table-component';
+import HashLoader from "react-spinners/HashLoader";
 import io from 'socket.io-client';
 
 function ItemsAdmin() {
 
-  const socket = io.connect("http://localhost:5001");
+  const ioPort = process.env.REACT_APP_SOCKET_PORT;
 
-
-
-
+  const socket = io.connect(`${ioPort}`);
   socket.on("disconnect", () => {
     console.log("Disconnect from the server");
   });
@@ -35,7 +34,6 @@ function ItemsAdmin() {
       opacity: 0.9,
       fontFamily: 'Your Custom Font, sans-serif',
       fontSize: '16px',
-      // backgroundColor: 'blue',
       fontWeight: 'bold',
       border: 'none',
       lineHeight: '1.5',
@@ -51,7 +49,10 @@ function ItemsAdmin() {
     left: '50%',
     gap: '18px',
     marginBottom: '990px',
+    borderRadius: '12px',
+    flexWrap: 'wrap',
     display: 'flex',
+    backgroundColor: 'rgb(185, 185, 234)',
     padding: '12px 12px'
   }
 
@@ -81,6 +82,7 @@ function ItemsAdmin() {
   const [serialNumbers, setSerialNumbers] = useState([]);
   const [totalSerialCount, setTotalSerialCount] = useState(0);
   const [getEm, setGetEm] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [getNom, setGetNom] = useState([]);
   const [records, setRecords] = useState(getEm);
   const [isUpdateSerial, setIsUpdateSerial] = useState(false);
@@ -92,11 +94,37 @@ function ItemsAdmin() {
   const [selectedSupplier, setSelectedSupplier] = useState('');
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(null);
-  const [confirm, setConfirmed] = useState(null);
-  const [forDown, setForDown] = useState(null);
   const [selectedUpdateSupplier, setSelectedUpdateSupplier] = useState('');
-  const [selectedUpdateCategory, setSelectedUpdateCategory] = useState('')
+  const [selectedUpdateCategory, setSelectedUpdateCategory] = useState('');
+  const [isCreatingNewItemOpen, setIsCreatingNewItemOpen] = useState(false);
+  const [isCreatingSerialNumberOpen, setIsCreatingSerialNumberOpen] = useState(false);
+  const [isDeletingOpen, setIsDeletingOpen] = useState(false);
 
+  const openDeletingItem = (itemID) => {
+    handleDelete(itemID);
+  };
+
+  const closeDeletingItem = () => {
+    setIsDeletingOpen(false);
+  };
+
+  const openCreatingSerialNumber = (takenItemId) => {
+    setIsCreatingSerialNumberOpen(true);
+    handleAddSerialNumberClick(takenItemId)
+  }
+
+  const closeCreatingSerialNumber = () => {
+    setIsCreatingSerialNumberOpen(false);
+  }
+
+  const openCreatingItem = () => {
+    setIsCreatingNewItemOpen(true);
+    handleAddSimpleItemClick();
+  };
+
+  const closeCreatingNewItem = () => {
+    setIsCreatingNewItemOpen(false);
+  }
 
   const openComfirmModal = () => {
     setIsConfirmModalOpen(true);
@@ -116,19 +144,21 @@ function ItemsAdmin() {
 
   const openSerialModal = (itemId) => {
     setSelectedItemID(itemId);
-    setIsSerialModalOpen(true, itemId);
-    handleAddSerialNumberClick(itemId)
+    setIsSerialModalOpen(true);
   };
 
   const openUpdateModal = (itemID) => {
     setTakeUpdateID(itemID);
     setIsUpdateModalOpen(true);
-    // handleUpdateClick(itemID)
   }
 
   const closeUpdateModal = () => {
     setIsUpdateModalOpen(false);
-  }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const openUpdateSerial = (row) => {
     setIsUpdateSerial(true);
@@ -147,8 +177,6 @@ function ItemsAdmin() {
       fetchNumberOfItems(itemId);
       fetchNumberOfItemss(itemId);
       fetchNom(itemId);
-      // setIsInfoModalOpen(true);
-      // setLoadingInfo(false)
     } catch (error) {
       console.error('Error fetching data: ', error);
       setLoadingInfo(false);
@@ -159,13 +187,20 @@ function ItemsAdmin() {
     }
   }
 
+  const handleCategoryClick = (categoryId, category_name) => {
+    setSelectedCategory(categoryId);
+    setSomeCategoryName(category_name)
+    fetchItemsByCategory(categoryId);
+    setIsModalOpen(true);
+  };
+
   const closeInfoModal = () => {
     setIsInfoModalOpen(false)
   }
 
   const closeSerialModal = () => {
     setIsSerialModalOpen(false);
-    setSerialNumber('')
+    setSerialNumber('');
   }
 
   const openSimpleModal = () => {
@@ -179,7 +214,6 @@ function ItemsAdmin() {
       state_of_item: '',
       depreciation_rate: '',
       supplier: selectedSupplier,
-      // category: '',
     })
   }
 
@@ -195,16 +229,17 @@ function ItemsAdmin() {
     category: selectedCategory
   }
 
-  // console.log("Selected Supplier ID", selectedSupplier)
-
   const handleAddSimpleItemClick = async () => {
     try {
       console.log(newItem);
       console.log("Type of category", typeof newItemObj.category);
       console.log("Type of supplier", typeof newItemObj.supplier);
       const categoryId = selectedCategory;
-      await axios.post('http://localhost:5500/add-items', newItemObj);
+      await axios.post('/add-items', newItemObj);
 
+      setInterval(() => {
+        setIsCreatingNewItemOpen(false);
+      }, 2700);
 
       fetchItemsByCategory(categoryId);
       closeSimpleModal();
@@ -221,7 +256,7 @@ function ItemsAdmin() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:5500/category');
+        const response = await axios.get('/category');
         setCategories(response.data);
       } catch (error) {
         console.error('Error fetching categories: ', error);
@@ -233,8 +268,7 @@ function ItemsAdmin() {
 
   const fetchItemsByCategory = async (categoryId) => {
     try {
-      const response = await axios.get(`http://localhost:5500/items?category=${categoryId}`);
-      console.log("ALL DATA INCLUDING UPDATED AT", response.data)
+      const response = await axios.get(`/items?category=${categoryId}`);
       setItems(response.data);
     } catch (error) {
       console.error('Error fetching items: ', error);
@@ -254,19 +288,23 @@ function ItemsAdmin() {
         ...serialNumber,
         itemID: takeItemID
       });
-      console.log("Check...", serialNumber)
-      await axios.post(`http://localhost:5500/add-serial-number/${takeItemID}`, serialNumber);
+      console.log("Check...", serialNumber);
+      const response = await axios.post(`/add-serial-number/${takeItemID}`, serialNumber);
+      console.log("Response: ", response.data);
+      setInterval(() => {
+        setIsCreatingSerialNumberOpen(false);
+      }, 2700);
       closeSerialModal();
     } catch (error) {
       console.error('Error adding serial number', error);
-    }
+    };
   };
 
 
   const fetchNumberOfItems = async (itemID) => {
     try {
       setLoadingInfo(true);
-      const response = await axios.get(`http://localhost:5500/serial-number/${itemID}`);
+      const response = await axios.get(`/serial-number/${itemID}`);
       const result = await response.data;
       console.log('Fetched data:', result);
       setItemName(result.itemName);
@@ -282,7 +320,7 @@ function ItemsAdmin() {
 
   const fetchNumberOfItemss = async (itemID) => {
     try {
-      const response = await axios.get(`http://localhost:5500/get-serial-number/${itemID}`);
+      const response = await axios.get(`/get-serial-number/${itemID}`);
       const result = await response.data;
       setGetEm(result);
     } catch (error) {
@@ -292,23 +330,12 @@ function ItemsAdmin() {
 
   const fetchNom = async (itemID) => {
     try {
-      const response = await axios.get(`http://localhost:5500/get-name-serial-number/${itemID}`);
+      const response = await axios.get(`/get-name-serial-number/${itemID}`);
       const result = await response.data;
       setGetNom(result);
     } catch (error) {
       console.error('Error fetching Nom: ', error)
     }
-  }
-
-  const handleCategoryClick = (categoryId, category_name) => {
-    setSelectedCategory(categoryId);
-    setSomeCategoryName(category_name)
-    fetchItemsByCategory(categoryId);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
   }
 
   const [serialNumber, setSerialNumber] = useState({
@@ -333,39 +360,32 @@ function ItemsAdmin() {
   }
 
   socket.on("connection", (socket) => {
-  })
+  });
 
-  const someKind = async (itemID) => {
-    console.log("SomeKIND Hit~~~~~~~");
-    const employeeID = localStorage.getItem('userID');
-    const response = await axios.post(`http://localhost:5500/insert-deletion-doer/${itemID}/${employeeID}`)
-  }
   const HandleConfirm = async (itemID) => {
-    setConfirmed(true);
-    setForDown(itemID);
+
+    const employeeID = localStorage.getItem('userID');
+
+    const responsee = await axios.post(`/insert-deletion-doer/${itemID}/${employeeID}`);
+    console.log(responsee.data);
+    const response = await axios.delete(`/delete-item/${itemID}`);
+    console.log(response.data);
+    console.log("Item was deleted Successfully...");
+    setIsDeletingOpen(true);
+    setInterval(() => {
+      setIsDeletingOpen(false);
+    }, 2700);
     console.log("ITEMID :", itemID);
 
-    if (confirm) {
-      someKind(itemID);
-      try {
-        const response = await axios.delete(`http://localhost:5500/delete-item/${itemID}`);
-        console.log(response);
-        // alert("Item Deleted Successfully");
-        // const responsee = await axios.post(`http://localhost:5500/insert-deletion-doer/${itemID}/${employeeID}`);
-        // console.log("Insertion of deletie", responsee);
 
-      } catch (error) {
-        console.error('Error deleting item: ', error);
-      } finally {
-        setConfirmed(null);
-        closeConfirmModal();
-      };
-    }
   };
+
+  const [handleConfirmID, setHandleConfirmID] = useState(null);
 
   const handleDelete = async (itemID) => {
     openComfirmModal();
-    HandleConfirm(itemID);
+    setHandleConfirmID(itemID);
+    // setHandleConfirmID(itemID);
   };
 
   const employeeUpdateName = localStorage.getItem('username')
@@ -379,19 +399,34 @@ function ItemsAdmin() {
     }))
   }, [selectedUpdateSupplier, selectedUpdateCategory]);
 
+  const [isUpdatedOpen, setIsUpdatedOpen] = useState(false);
+
+  const openUpdateItem = (itemID) => {
+    setIsUpdatedOpen(true);
+    handleUpdateClick(itemID);
+  };
+
+  const closeUpdateItem = () => {
+    setIsUpdatedOpen(false);
+  }
+
   const handleUpdateClick = async (itemID) => {
     try {
       console.log("Updaties:", update);
-      const response = await axios.put(`http://localhost:5500/update-item/${itemID}`, update);
-      alert("Updated successfully");
+      const response = await axios.put(`/update-item/${itemID}`, update);
       console.log(response);
       const employeeID = localStorage.getItem('userID')
-      const responsee = await axios.post(`http://localhost:5500/insert-doer/${itemID}/${employeeID}`);
-      console.log("The post responsee was made", responsee)
+      const responsee = await axios.post(`/insert-doer/${itemID}/${employeeID}`);
+      console.log("The post responsee was made", responsee);
       closeUpdateModal();
+    
+      setInterval(() => {
+        closeUpdateItem();
+      }, 2700);
+
     } catch (error) {
       console.error('Error fetching items: ', error);
-    }
+    };
   };
 
   const columns = [
@@ -443,7 +478,7 @@ function ItemsAdmin() {
       try {
         console.log("Status: ", status);
         console.log("ID: ", row);
-        const response = await axios.put(`http://localhost:5500/update-serial-status/${row}/${status}`);
+        const response = await axios.put(`/update-serial-status/${row}/${status}`);
         console.log(response)
       } catch (error) {
         console.error("Error", error);
@@ -455,13 +490,12 @@ function ItemsAdmin() {
         console.log("Status: ", status);
         console.log("ID: ", row);
         console.log("Taker: ", taker);
-        const response = await axios.put(`http://localhost:5500/update-serial-status/${row}/${status}/${taker}`);
+        const response = await axios.put(`/update-serial-status/${row}/${status}/${taker}`);
         console.log(response)
       } catch (error) {
         console.error("Error", error);
       }
     }
-
   }
 
   const getUserInput = (promptText) => {
@@ -505,7 +539,7 @@ function ItemsAdmin() {
     {
       name: 'Delete',
       selector: row => (
-        <button className='addItem-btn' onClick={() => handleDelete(row.id)}><img src={Delete} style={svgStyle} /></button>
+        <button className='addItem-btn' onClick={() => openDeletingItem(row.id)}><img src={Delete} style={svgStyle} /></button>
       ),
     },
     {
@@ -515,7 +549,7 @@ function ItemsAdmin() {
       )
     },
     {
-      name: 'View',
+      name: 'Serial Numbers',
       selector: row => (
         <button className='addItem-btn' onClick={() => openInfoModal(row.id)}><img src={Info} style={svgStyle} /></button>
       )
@@ -535,7 +569,7 @@ function ItemsAdmin() {
 
   const handleSerialUpdate = async (getUpdateSerialID) => {
     try {
-      const response = await axios.put(`http://localhost:5500/update-serial-item/${getUpdateSerialID}`, serialUpdateData);
+      const response = await axios.put(`/update-serial-item/${getUpdateSerialID}`, serialUpdateData);
       window.alert("Updated successfully");
       console.log(response);
       closeUpdateSerialModal();
@@ -549,34 +583,13 @@ function ItemsAdmin() {
       if (row.status === "Out") {
         openWarningModal();
       } else {
-        const response = await axios.delete(`http://localhost:5500/delete-serial-item/${row.id}`);
+        const response = await axios.delete(`/delete-serial-item/${row.id}`);
         console.log("Response from deletion ", response.data);
       }
 
     } catch (error) {
       console.error('Error fetching items: ', error);
     }
-  }
-
-  function handleFilter(event) {
-    const newData = getEm.filter(row => {
-      return row.serial_number.toLowerCase().includes(event.target.value.toLowerCase())
-    })
-    setRecords(newData);
-  }
-
-  useEffect(() => {
-    setRecords(getEm);
-  }, [getEm]);
-
-  const handleSearch = (event) => {
-    const searchTerm = event.target.value.toLowerCase();
-    setSeachInput(searchTerm);
-
-    const filtered = categories.filter((category) =>
-      category.category_name.toLowerCase().includes(searchTerm)
-    );
-    setFilteredCategories(filtered);
   };
 
   const display = {
@@ -586,13 +599,13 @@ function ItemsAdmin() {
     justifyContent: 'center',
     alignItems: 'center',
     gap: '92px'
-  }
+  };
 
   useEffect(() => {
     const supplierG = async () => {
       try {
 
-        const response = await axios.get(`http://localhost:5500/supplier`);
+        const response = await axios.get(`/supplier`);
         setSupplier(response.data);
       } catch (error) {
         console.error("Error: ", error);
@@ -631,7 +644,7 @@ function ItemsAdmin() {
 
   const Dash = {
     color: 'black',
-    marginLeft: '235px',
+    marginLeft: '90px',
     display: 'flex',
     marginTop: '55px',
     gap: '745px',
@@ -647,6 +660,7 @@ function ItemsAdmin() {
       justifyContent: 'center',
       alignItems: 'center',
       border: 'none',
+      gap: '12px',
       borderRadius: '12px',
       backgroundColor: 'rgb(153, 235, 240)',
       marginLeft: '480px',
@@ -671,25 +685,57 @@ function ItemsAdmin() {
     setSelectedUpdateCategory(selectedValue);
   }
 
+  const modal = {
+    overlay: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    content: {
+      width: '23%',
+      marginLeft: '495px',
+      height: '72vh',
+      // backgroundColor: 'rgb(94, 120, 138)',
+      border: 'none',
+      borderRadius: '12px',
+      gap: '23px',
+      color: "black",
+      padding: '12px 0px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  };
+
+  const handleFilter = (event) => {
+    const newData = categories.filter((row)=>{
+      return row.category_name.toLowerCase().includes(event.target.value.toLowerCase());
+    });
+    setFilteredCategories(newData);
+  };
+
+ useEffect(()=>{
+    setFilteredCategories(categories);
+  },[categories]);
+
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div className='items-container'>
         <div style={Dash}>
           <h1>Items</h1>
-          <input type='text' placeholder='Search by Category...' onChange={handleSearch} value={searchInput} />
+          <input type='text' placeholder='Search by Category...' onChange={handleFilter}/>
         </div>
         <div>
-          {filteredCategories.map((category) => (
-            <button key={category.id}
-              onClick={() => handleCategoryClick(category.id)}>{category.name}
-            </button>
-          ))}
+         
         </div>
+        
         <div style={itemstyle}>
-          {categories.map(category => (
+          {filteredCategories.map(category => (
             <button key={category.id} onClick={() => handleCategoryClick(category.id, category.category_name)} className='buttonStyle2'>{category.category_name}</button>
           ))}
+
           <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
             <div style={display}>
               <h1>Items for {someCategoryName}</h1>
@@ -723,7 +769,7 @@ function ItemsAdmin() {
               </select>
               <br />
               <br />
-              <button onClick={() => handleUpdateClick(takeUpdateId)}>Add </button>
+              <button onClick={() => openUpdateItem(takeUpdateId)}>Add </button>
             </div>
           </Modal>
           <Modal isOpen={isSimpleModalOpen} onRequestClose={closeSimpleModal} style={modalStyles}>
@@ -737,7 +783,7 @@ function ItemsAdmin() {
               ))}
             </select>
             <br />
-            <button onClick={handleAddSimpleItemClick}>Send</button>
+            <button onClick={openCreatingItem}>Send</button>
           </Modal>
           <Modal isOpen={isSerialModalOpen} onRequestClose={closeSerialModal} style={modalStyles}>
             <h1>Add Serial Number</h1>
@@ -747,7 +793,7 @@ function ItemsAdmin() {
             <br />
             <input placeholder='Depreciation Rate' name='depreciation_rate' type='text' onChange={handleSerialNumber} />
             <br />
-            <button onClick={() => handleAddSerialNumberClick(takenItemId)}>Add</button>
+            <button onClick={() => openCreatingSerialNumber(selectedItemID)}>Add</button>
           </Modal>
           <Modal isOpen={isInfoModalOpen} onRequestClose={closeInfoModal} style={modalStyles}>
             <h1>
@@ -775,9 +821,47 @@ function ItemsAdmin() {
             <p>Admin Can't Delete an Item Which is Out</p>
           </Modal>
           <Modal isOpen={isConfirmModalOpen} onRequestClose={closeConfirmModal} style={kindaStyle}>
-            <span>Are You Sure You Want To Delete this Item</span>
+            <span>Are You Sure You Want To Delete this Item ?</span>
             <br />
-            <button onClick={() => HandleConfirm(forDown)}>Yes</button>
+            <button onClick={() => HandleConfirm(handleConfirmID)}>Yes</button>
+          </Modal>
+          <Modal isOpen={isCreatingNewItemOpen} onRequestClose={closeCreatingNewItem} style={modal}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
+              <HashLoader color={'green'} loading={loading} size={59} />
+              <div>
+                <br />
+                <p>Creating A New Item...</p>
+              </div>
+            </div>
+          </Modal>
+          <Modal isOpen={isCreatingSerialNumberOpen} onRequestClose={closeCreatingSerialNumber} style={modal}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
+              <HashLoader color={'blue'} loading={loading} size={59} />
+              <div>
+                <br />
+                <p>Assigning A New Serial Number To Item...</p>
+              </div>
+            </div>
+          </Modal>
+
+          <Modal isOpen={isDeletingOpen} onRequestClose={closeDeletingItem} style={modal}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
+              <HashLoader color={'red'} loading={loading} size={59} />
+              <div>
+                <br />
+                <p>Deleting Item & It's Serial Numbers...</p>
+              </div>
+            </div>
+          </Modal>
+
+          <Modal isOpen={isUpdatedOpen} onRequestClose={closeUpdateItem} style={modal}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
+              <HashLoader color={'cyan'} loading={loading} size={59} />
+              <div>
+                <br />
+                <p>Updating Info About Selected Item...</p>
+              </div>
+            </div>
           </Modal>
         </div>
       </div >

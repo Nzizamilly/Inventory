@@ -13,8 +13,7 @@ const Container = {
   justifyContent: 'center',
   fontFamily: "'Arial', sans-serif",
   backgroundColor:' rgb(163, 187, 197)',
-}
-
+};
 
 
 function TermsAdmin() {

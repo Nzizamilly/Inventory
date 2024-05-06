@@ -64,9 +64,11 @@ function PurchaseSupervisor() {
 
     const closeModal = () => {
         setViewQuotation(false);
-    }
+    };
 
-    const socket = io.connect("http://localhost:5001");
+    const ioPort = process.env.REACT_APP_SOCKET_PORT;
+
+    const socket = io.connect(`${ioPort}`);
 
     socket.on("connect", () => {
         console.log("Connected to the server");
@@ -81,7 +83,7 @@ function PurchaseSupervisor() {
         const fetchData = async () => {
             try {
                 const supervisorID = localStorage.getItem("userID");
-                const response = await axios.get(`http://localhost:5500/get-purchase-notification/${supervisorID}`);
+                const response = await axios.get(`/get-purchase-notification/${supervisorID}`);
                 const result = response.data;
                 console.log("Quotation: ", typeof result[0].quotation);
                 setAllRequests(result);
@@ -194,7 +196,7 @@ function PurchaseSupervisor() {
         console.log("Notification: ", notifications.quotation);
         const id = notifications.id
 
-        const response = await axios.put(`http://localhost:5500/change-status/${id}`);
+        const response = await axios.put(`/change-status/${id}`);
         console.log("Response Data: ", response.data);
 
         try {
@@ -215,7 +217,7 @@ function PurchaseSupervisor() {
 
 
             const supervisorID = localStorage.getItem("userID");
-            await axios.post(`http://localhost:5500/add-purchase-supervisor-hr/${supervisorID}`, notifications);
+            await axios.post(`/add-purchase-supervisor-hr/${supervisorID}`, notifications);
         } catch (error) {
             console.error('Error', error);
         }
@@ -229,7 +231,7 @@ function PurchaseSupervisor() {
           }, 2600);
 
         try {
-            await axios.put(`http://localhost:5500/deny-by-supervisor-purchase/${index}`);
+            await axios.put(`/deny-by-supervisor-purchase/${index}`);
             console.log("Denied for ID", index);
         } catch (error) {
             console.log('Error', error);
@@ -239,7 +241,7 @@ function PurchaseSupervisor() {
     const handlePending = async () => {
         console.log("HandlePending is Hit");
         const supervisorID = localStorage.getItem("userID");
-        const response = await axios.get(`http://localhost:5500/get-purchase-notification/${supervisorID}`);
+        const response = await axios.get(`/get-purchase-notification/${supervisorID}`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setAllRequests(result);
@@ -248,7 +250,7 @@ function PurchaseSupervisor() {
     const handleApprovedRequest = async () => {
         console.log("HandleApproved is Hit");
         const supervisorID = localStorage.getItem('userID');
-        const response = await axios.get(`http://localhost:5500/get-approved-purchase-notification/${supervisorID}`);
+        const response = await axios.get(`/get-approved-purchase-notification/${supervisorID}`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setAllRequests(result)
@@ -257,7 +259,7 @@ function PurchaseSupervisor() {
     const handleDenyRequest = async () => {
         console.log("HandleDenied is Hit");
         const supervisorID = localStorage.getItem('userID');
-        const response = await axios.get(`http://localhost:5500/get-denied-notification-purchase-supervisor/${supervisorID}`);
+        const response = await axios.get(`/get-denied-notification-purchase-supervisor/${supervisorID}`);
         const result = response.data;
         console.log("DATA For Denied: ", result);
         setAllRequests(result);

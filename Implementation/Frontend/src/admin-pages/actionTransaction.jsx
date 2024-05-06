@@ -65,7 +65,7 @@ function ActionTransactionsAdmin() {
   useEffect(() => {
     const fetchMonthlyReport = async () => {
       try {
-        const response = await axios.get('http://localhost:5500/monthly-report');
+        const response = await axios.get('/monthly-report');
         setReport(response.data);
       } catch (error) {
         console.error('Error fetching Data', error);
@@ -136,7 +136,7 @@ function ActionTransactionsAdmin() {
     const Func = async () => {
       try {
 
-        const response = await axios.get("http://localhost:5500/get-action-transaction");
+        const response = await axios.get("/get-action-transaction");
         setAction(response.data)
 
       } catch (error) {

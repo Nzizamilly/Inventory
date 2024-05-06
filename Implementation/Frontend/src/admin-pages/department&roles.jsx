@@ -19,14 +19,15 @@ function Departments_Roles() {
         role: '',
         status: '',
         status: takenDeptID
-    })
+    });
+
     const [department, setDepartment] = useState({
         department_name: '',
         status: '',
     });
+
     const modal = {
         overlay: {
-            // backgroundColor: 'rgb(163, 187, 197)',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -34,7 +35,6 @@ function Departments_Roles() {
         content: {
             width: '23%',
             marginLeft: '495px',
-            // marginTop: '99px',
             height: '72vh',
             backgroundColor: 'rgb(163, 187, 197)',
             border: 'none',
@@ -49,11 +49,9 @@ function Departments_Roles() {
         },
     }
     const svgStyle = {
-        // backgroundColor: 'green',
         width: '30px',
         height: '30px',
         borderRadius: '14px',
-        // marginTop: '2px'
     }
     const modalStyles = {
         content: {
@@ -101,7 +99,7 @@ function Departments_Roles() {
     }
 
     const closeAddModal = () => {
-        setIsAddModalOpen(false)
+        setIsAddModalOpen(false);
     }
 
     const closeRoleViewModal = () => {
@@ -132,7 +130,7 @@ function Departments_Roles() {
 
     const handleViewRole = async (row) => {
         try {
-            const response = await axios.get(`http://localhost:5500/get-role/${row.id}`);
+            const response = await axios.get(`/get-role/${row.id}`);
             console.log("Rolees", response);
             const result = await response.data;
             setViewRole(result)
@@ -143,7 +141,8 @@ function Departments_Roles() {
 
     const addDepartment = async () => {
         try {
-            const response = await axios.post('http://localhost:5500/add-department', department);
+            const response = await axios.post('/add-department', department);
+            closeAddModal();
 
         } catch (error) {
             console.error("Error", error);
@@ -152,7 +151,7 @@ function Departments_Roles() {
 
     const handleAddRole = async (row) => {
         try {
-            const response = await axios.post(`http://localhost:5500/add-role/${row.id}`, role);
+            const response = await axios.post(`/add-role/${row.id}`, role);
             console.log("response", response);
             window.alert("Role Added Well");
             closeAddRoleModal()
@@ -168,7 +167,7 @@ function Departments_Roles() {
 
             try {
                 console.log("Dept", gotDepartment);
-                const response = await axios.get('http://localhost:5500/get-department');
+                const response = await axios.get('/get-department');
                 setGotDepartment(response.data);
             } catch (error) {
                 console.error("Error", error);
@@ -176,7 +175,7 @@ function Departments_Roles() {
         }
 
         fetchDept();
-    }, [])
+    }, [gotDepartment]);
 
     const columns = [
         {

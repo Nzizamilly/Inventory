@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
-import { Multiselect } from 'multiselect-react-dropdown';
 import Red from '../images/red-circle.svg';
 import Green from '../images/green-circle.svg';
 import Cyan from '../images/cyan-circle.svg';
@@ -12,7 +11,6 @@ import Modal from 'react-modal'
 import { storage } from '../firebase';
 import { ref, uploadBytes } from "firebase/storage";
 import NavbarHome from './NavbarHome';
-import { v4 } from "uuid"
 
 function PurchaseRequestSupervisor() {
 
@@ -132,7 +130,7 @@ function PurchaseRequestSupervisor() {
   useEffect(() => {
     const showSupervisor = async () => {
       try {
-        const response = await axios.get("http://localhost:5500/show-supervisor");
+        const response = await axios.get("/show-supervisor");
         console.log("Data: ", response.data);
         setSupervisorId(response.data);
       } catch (error) {
@@ -232,7 +230,7 @@ function PurchaseRequestSupervisor() {
 
   const sendMessages = async (message) => {
 
-    const response = await axios.get('http://localhost:5500/get-number-purchase');
+    const response = await axios.get('/get-number-purchase');
     const idTaker = response.data.latestId + 1;
     setTaker(idTaker);
 
@@ -248,7 +246,7 @@ function PurchaseRequestSupervisor() {
     });
 
     try {
-      const response = await axios.post('http://localhost:5500/add-employee-supervisor-purchase', message);
+      const response = await axios.post('/add-employee-supervisor-purchase', message);
       message.id = id;
       const id = response.id;
       console.log("Response", response);
@@ -263,7 +261,7 @@ function PurchaseRequestSupervisor() {
   useEffect(() => {
     const fetchIDs = async () => {
       try {
-        const response = await axios.get("http://localhost:5500/get-purchase-id");
+        const response = await axios.get("/get-purchase-id");
         const latestID = response.data[0].id
         setLatestID(latestID);
       } catch (error) {

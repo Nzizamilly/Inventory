@@ -19,7 +19,9 @@ function NotificationSupervisor() {
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const socket = io.connect("http://localhost:5001");
+  const ioPort = process.env.REACT_APP_SOCKET_PORT;
+
+  const socket = io.connect(`${ioPort}`);
 
   const openLoader = (row, rowId) => {
     setIsSendModalOpen(true);
@@ -67,7 +69,7 @@ function NotificationSupervisor() {
 
       socket.emit("Supervisor_Message_HR(1)", notifications, supervisorName);
 
-      await axios.post(`http://localhost:5500/add-request-supervisor-hr/${supervisorID}`, notifications);
+      await axios.post(`/add-request-supervisor-hr/${supervisorID}`, notifications);
 
     } catch (error) {
       console.error('Error', error);
@@ -84,7 +86,7 @@ function NotificationSupervisor() {
 
     socket.emit("Denied_By_Either(1)", notification);
     try {
-      await axios.put(`http://localhost:5500/deny-by-supervisor/${index}`);
+      await axios.put(`/deny-by-supervisor/${index}`);
       console.log("Denied for ID", index);
       window.alert("Request Denied")
     } catch (error) {
@@ -96,7 +98,7 @@ function NotificationSupervisor() {
     const fetch = async () => {
       try {
         const supervisorID = localStorage.getItem("userID");
-        const response = await axios.get(`http://localhost:5500/get-notification/${supervisorID}`);
+        const response = await axios.get(`/get-notification/${supervisorID}`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setNotifications(result);
@@ -184,7 +186,7 @@ function NotificationSupervisor() {
   const handlePending = async () => {
     console.log("HandlePending is Hit");
     const supervisorID = localStorage.getItem("userID");
-    const response = await axios.get(`http://localhost:5500/get-notification/${supervisorID}`);
+    const response = await axios.get(`/get-notification/${supervisorID}`);
     const result = response.data;
     console.log("DATA FROM ENDPOINT: ", result);
     setNotifications(result);
@@ -192,14 +194,14 @@ function NotificationSupervisor() {
 
   const handleApprovedRequest = async () => {
     console.log("HandleApproved is Hit");
-    const response = await axios.get("http://localhost:5500/get-approved-notification");
+    const response = await axios.get("/get-approved-notification");
     const result = response.data;
     console.log("DATA FROM ENDPOINT: ", result);
     setNotifications(result)
   }
   const handleDenyRequest = async () => {
     console.log("HandleDenied is Hit");
-    const response = await axios.get("http://localhost:5500/get-denied-notification");
+    const response = await axios.get("/get-denied-notification");
     const result = response.data;
     console.log("DATA FROM ENDPOINT: ", result);
     setNotifications(result)

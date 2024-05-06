@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+
 import axios from 'axios'
 
 function Login() {
@@ -11,7 +12,7 @@ function Login() {
         justifyContent: 'center',
         display: 'flex',
         alignItems: 'center',
-    }
+    };
     const login = {
         width: '24%',
         height: '46vh',
@@ -25,7 +26,7 @@ function Login() {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    };
 
     const username = useRef();
     const password = useRef();
@@ -42,7 +43,7 @@ function Login() {
     axios.defaults.withCredentials = true;
 
     const handleSubmit = (event) => {
-        axios.post("http://localhost:5500/login", values)
+        axios.post( '/login', values)
             .then(res => {
                 if (res.data.Login) {
                     localStorage.setItem("username", username.current.value);
