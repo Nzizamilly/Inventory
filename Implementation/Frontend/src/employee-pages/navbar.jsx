@@ -41,14 +41,14 @@ function Navbar() {
       alignItems: 'center',
       justifyContent: 'center',
     },
-  }
+  };
   const openModal = () => {
     setIsModalOpen(true);
-  }
+  };
 
   const closeModal = () => {
     setIsModalOpen(false);
-  }
+  };
 
   const handleLogout = () => {
     localStorage.clear();

@@ -6,12 +6,9 @@ import axios from 'axios';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import Modal from 'react-modal';
-import { format } from 'date-fns';
-import * as XLSX from 'sheetjs-style';
-import * as FileSaver from 'file-saver';
 import { CSVLink } from 'react-csv'
 
-function ItemTransactionsAdmin() {
+function ItemTransactionsAdmins() {
 
   const [report, setReport] = useState([]);
   const [records, setRecords] = useState([]);
@@ -124,6 +121,6 @@ function ItemTransactionsAdmin() {
       </div>
     </div>
   );
-}
+};
 
-export default ItemTransactionsAdmin;
+export default ItemTransactionsAdmins;

@@ -15,6 +15,7 @@ function Home() {
     const [name, setName] = useState('');
     const [categoryCount, setCategoryCount] = useState(null);
     const [itemCount, setItemCount] = useState(null);
+    const [requestNumber, setRequestNumber] = useState(null);
     const [employeeCount, setEmployeeCount] = useState(null);
     const [supplierCount, setSupplierCount] = useState(null);
 
@@ -68,6 +69,16 @@ function Home() {
                 console.error('Error fetching category count:', err);
 
             })
+    }, []);
+
+    useEffect(() => {
+        axios.get('/get-number-of-requests')
+            .then(res => {
+                setRequestNumber(res.data.requestCount);
+            })
+            .catch(err => {
+                console.error('Error fetching Request count:', err);
+            })
     }, [])
 
     useEffect(() => {
@@ -113,7 +124,7 @@ function Home() {
                 </div>
                 <div className="icons4-admin">
                     <img className='img1' src={Request} alt='img3' />
-                    <p>Requests: ---</p>
+                    <p>Requests: {requestNumber}</p>
                 </div>
                 <div className="icons5-admin">
                     <img className='img1' src={Transaction} alt='img3' />

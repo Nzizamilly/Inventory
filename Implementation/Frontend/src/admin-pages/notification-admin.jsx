@@ -155,7 +155,7 @@ function NotificationAdmin() {
     const response = await axios.get(`/get-hr-admin-given-requests`);
     const result = response.data;
     console.log("DATA FROM ENDPOINT: ", result);
-    setNotifications(result)
+    setNotifications(result);
   };
 
   return (
@@ -167,6 +167,7 @@ function NotificationAdmin() {
             <button style={buttons} onClick={handlePending}>Pending</button>
             <button style={buttons} onClick={handleApprovedRequest}>Given Out</button>
           </div>
+          
           <DataTable
             data={notifications}
             columns={column}
@@ -179,10 +180,10 @@ function NotificationAdmin() {
               <div style={{fontFamily: 'sans-serif'}}>
                 <br />
                <p>Giving {amount} {item} to {name}</p>
-
               </div>
             </div>
           </Modal>
+
         </div>
       </div>
     </div>

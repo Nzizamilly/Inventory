@@ -25,6 +25,8 @@ function Terms() {
 
   }, []);
 
+
+
   return (
     <div>
       <Navbar></Navbar>

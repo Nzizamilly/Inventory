@@ -166,8 +166,8 @@ function NavbarAdmin() {
       </ul>
       <ul className='ul2Admin'>
         <li className='liAdmin'><Link to={'/account-admin'} onMouseOver={openModal}>Account</Link></li>
-        <li className='liAdmin'><Link to={'/items-admin'}>Items</Link></li>
         <li className='liAdmin'><Link to={'/employees-admin'}>Employees</Link></li>
+        <li className='liAdmin'><Link to={'/items-admin'}>Items</Link></li>
         <li className='liAdmin'><Link to={'/category-admin'}>Category</Link></li>
         <li className='liAdmin'><Link to={'/notification-admin'}>Notification</Link></li>
         

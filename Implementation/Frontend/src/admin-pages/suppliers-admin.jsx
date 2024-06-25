@@ -177,7 +177,7 @@ function SupplierAdmin() {
       <NavbarAdmin></NavbarAdmin>
       <div style={kain}>
         <h1>List Of Local Suppliers</h1>
-        <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p>Add Supplier</p></button>
+        <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /><p style={{color: 'white'}}>Add Supplier</p></button>
       </div>
       <div style={employeeContainer}>
 

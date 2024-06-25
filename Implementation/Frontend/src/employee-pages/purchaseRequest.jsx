@@ -74,7 +74,6 @@ function PurchaseRequest() {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-
   const kain = {
     marginLeft: '20px',
     fontFamily: 'Arial, sans-serif',
@@ -154,7 +153,7 @@ function PurchaseRequest() {
       display: 'flex',
       alignItems: 'center'
     }),
-    option: (provided, state) => ({
+    option: (provided) => ({
       ...provided,
       backgroundColor: 'black',
       display: 'flex',
@@ -263,9 +262,9 @@ function PurchaseRequest() {
       } catch (error) {
         console.log("Error: ", error);
       };
-    }
+    };
     fetchIDs();
-  }, [])
+  }, []);
 
   return (
     <div>
@@ -346,7 +345,6 @@ function PurchaseRequest() {
               </div>
             </div>
           </Modal>
-
         </div>
       </div>
     </div>

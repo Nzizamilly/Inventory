@@ -38,6 +38,8 @@ import PurchaseNotificationEmployee from './employee-pages/purchase-notification
 import PurchaseNotificationHR from './hr-pages/purchaseNotifications';
 import PurchaseNotificationSupervisor from './supervisor-pages/purchaseNotifications';
 import TrustedSuppliers from './admin-pages/trustedSupplier';
+import ItemTransactionsAdmin2 from './admin-pages/itemTransaction2';
+import ItemTransactionsAdmins from './admin-pages/itemTransacation';
 
 const router = createBrowserRouter([
   {
@@ -141,8 +143,12 @@ const router = createBrowserRouter([
     element: <TermsHR />
   },
   {
+    path: 'item-transactions',
+    element: <ItemTransactionsAdmins />
+  },
+  {
     path: 'item-transaction',
-    element: <ItemTransactionsAdmin />
+    element: <ItemTransactionsAdmin2 />
   },
   {
     path: 'action-transaction',
@@ -184,9 +190,7 @@ const router = createBrowserRouter([
     path: 'trusted-suppliers',
     element: <TrustedSuppliers />
   }
-
-
-])
+]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

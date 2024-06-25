@@ -3,13 +3,19 @@ import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import DataTable from 'react-data-table-component';
 import Model from 'react-modal';
-import Modal from 'react-modal'
+import Modal from 'react-modal';
+import ImgAdd from '../images/add-photo.svg';
 import Switch from 'react-switch'
+import ClipLoader from "react-spinners/ClipLoader";
 import Add from '../images/add.svg'
 import Info from '../images/info.svg'
+import ProfilePicture from '../images/profile-picture.svg';
 import '../style.css'
 import NavbarAdmin from './navbarAdmin';
-import Update from '../images/update.svg'
+import Update from '../images/update.svg';
+import { storage } from '../firebase';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 
 function EmployeesAdmin() {
 
@@ -20,7 +26,7 @@ function EmployeesAdmin() {
       alignItems: 'center',
     },
     content: {
-      width: '23%',
+      width: '33%',
       marginLeft: '495px',
       height: '72vh',
       backgroundColor: 'rgb(206, 206, 236)',
@@ -29,6 +35,7 @@ function EmployeesAdmin() {
       gap: '23px',
       color: "black",
       padding: '12px 0px',
+      fontFamily: 'Arial, sans- serif',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
@@ -52,7 +59,12 @@ function EmployeesAdmin() {
   const [emps, setEmps] = useState([]);
   const [visible, setVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
+  const [imageURL, setImageURL] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [switchStates, setSwitchStates] = useState({});
+  const [file, setFile] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [imageUpload, setImageUpload] = useState(null);
   const [department, setDepartment] = useState([]);
   const [role, setRole] = useState([]);
   const [roleUpdate, setRoleUpdate] = useState([]);
@@ -71,8 +83,6 @@ function EmployeesAdmin() {
     status: '',
     email: ''
   });
-
-  console.log("Update OBJECT: ", update);
 
   useEffect(() => {
     const fetchEmp = async () => {
@@ -114,7 +124,7 @@ function EmployeesAdmin() {
       console.error('Error updating data: ', error);
     }
 
-  }
+  };
 
   const handleChange = (event) => {
     setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));
@@ -165,12 +175,13 @@ function EmployeesAdmin() {
 
   const openInfoModal = (id) => {
     bringOneEmployee(id);
+    fetchImageURL(id)
     setOneEmployee(true);
-  }
+  };
 
   const closeInfoModal = () => {
     setOneEmployee(false);
-  }
+  };
 
   const empsColumn = [
     {
@@ -188,7 +199,7 @@ function EmployeesAdmin() {
         <button className='addItem-btn' onClick={() => openInfoModal(row.id)}><img src={Info} style={svgStyle} /></button>
       )
     },
-  ]
+  ];
 
   const some = {
     fontFamily: 'Arial, sans-serif',
@@ -211,11 +222,10 @@ function EmployeesAdmin() {
     justifyContent: 'center',
     alignContent: 'center',
     color: 'black'
-  }
+  };
 
   useEffect(() => {
     const getDept = async () => {
-
       const response = await axios.get("/get-department/");
       setDepartment(response.data);
     }
@@ -270,13 +280,13 @@ function EmployeesAdmin() {
     const selectedValue = event.target.value;
     console.log("TYPE OF SELECTED VALUE DOWN for role", typeof selectedValue);
     setSelectedRole(selectedValue);
-  }
+  };
 
   const handleUpdateRoleChange = (event) => {
     const selectedValue = event.target.value;
     console.log("TYPE OF SELECTED VALUE DOWN for role", typeof selectedValue);
     setSelectedUpdatedRole(selectedValue);
-  }
+  };
 
   const OptionColor = {
     width: '39%',
@@ -306,32 +316,104 @@ function EmployeesAdmin() {
 
 
   const handleMake = async (event) => {
+
     try {
       console.log("Passing Data: ", employee)
-      await axios.post(`/employee`, employee);
-      window.alert("Employee added successfully");
+      const response = await axios.post(`/employee`, employee);
+      const newEmployeeID = response.data;
+
+      if (imageUpload == null) return;
+      const IdForQuotation = newEmployeeID;
+      console.log("ID FOR QUOTATION: ", IdForQuotation);
+      const imageRef = ref(storage, `employeesProfilePictures/${imageUpload.name, IdForQuotation}`);
+      uploadBytes(imageRef, imageUpload).then(() => {
+      });
+
+      setInterval(() => {
+        closeCreateModal();
+      }, 2700);
+
       setAddVisible(false);
+
     } catch (error) {
       console.log('Error', error)
-    }
-  }
+    };
+  };
+
   const Kaine = {
     width: '100%',
     height: '100vh',
     backgroundColor: 'rgb(163, 187, 197)'
-  }
+  };
 
-  console.log("Type of Emp: ", typeof sumOne);
+  // console.log("Type of Emp: ", typeof sumOne);
 
   const MakeBig = {
     width: '90%',
     marginLeft: '15%'
-  }
+  };
+
   const One = {
     display: 'flex',
     justifyContent: 'center',
     flexDirection: 'inline'
-  }
+  };
+
+  const updateFileName = (event) => {
+    const selectedFile = event.target.files[0];
+    setImageUpload(event.target.files[0]);
+    const fileName = selectedFile ? selectedFile.name : 'No file Chosen';
+    setFile(fileName);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageUrl(reader.result);
+    };
+    if (selectedFile) {
+      reader.readAsDataURL(selectedFile)
+    };
+  };
+
+  const [createModal, setCreateModal] = useState(false);
+
+  const openCreateModal = () => {
+    setCreateModal(true);
+    handleMake();
+  };
+
+  const closeCreateModal = () => {
+    setCreateModal(false);
+  };
+
+  const fetchImageURL = async (ID) => {
+    try {
+      if (ID) {
+        console.log("ID PROVIDED: ", ID)
+        const imageRef = ref(storage, `employeesProfilePictures/${ID}`);
+        const imageURL = await getDownloadURL(imageRef);
+        setImageURL(imageURL);
+      };
+    } catch (error) {
+      if (error) {
+        setImageURL('');
+        console.error("Error: ", error);
+      }
+    };
+  };
+
+  const [trial, setTrial] = useState('');
+
+  useEffect(()=>{
+   const functions = () => {
+    try{
+      const sumn = 'sumn';
+      setTrial(sumn);
+    }catch(error){
+      console.error("Error: ", error);
+    };
+   };
+   functions();
+  },[]);
+  
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
@@ -339,8 +421,8 @@ function EmployeesAdmin() {
         <div style={kain}>
           <div style={MakeBig}>
             <div style={One}>
-            <h1>List OF Employees</h1>
-            <button onClick={() => setAddVisible(true)} className='add-btn1'><img src={Add} style={svgStyle} /></button>
+              <h1>List OF Employees</h1>
+              <button onClick={() => setAddVisible(true)} className='add-btn1'><img src={Add} style={svgStyle} /></button>
             </div>
             <DataTable
               columns={empsColumn}
@@ -371,14 +453,29 @@ function EmployeesAdmin() {
               ))}
             </select>
             <input type='email' placeholder='Work-Related email' name='email' onChange={handleChange2} />
-            <button className='buttonStyle2' onClick={handleMake}>Submit</button>
+
+            <div style={{ display: 'flex', flexDirection: 'inline', gap: '9px', justifyContent: 'center' }}>
+              <p>Attach Parforma (Not required)</p>
+              <label htmlFor="file" id="customButton" style={{ width: '35%', backgroundColor: 'black', display: 'flex', justifyContent: 'center', borderRadius: '23px', gap: '9px', cursor: 'pointer' }}>
+                <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName} />
+                {file || 'No file chosen'} <img style={{ width: '12%', display: 'inline' }} src={ImgAdd} alt="Add" />
+              </label>
+            </div>
+
+            <button className='buttonStyle2' onClick={openCreateModal}>Submit</button>
           </Model >
+
           <Modal isOpen={oneEmployee} onRequestClose={closeInfoModal} style={modal}>
             {sumOne.map((emp) => (
-              console.log("Type of Emp: ", typeof emp),
               <div key={emp.id} className="employee">
                 <h1>{emp.username}</h1>
-                <img src={emp.profile_picture} id='profile_picture' alt="" />
+                {/* <img src={emp.profile_picture} id='profile_picture' alt="" /> */}
+
+                {imageURL ? (
+                  <img src={imageURL} style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }} />
+
+                ) : <img src={ProfilePicture} style={{ maxWidth: '90%', maxHeight: '15vh', borderRadius: '60px' }} />}
+
                 <p>Username: {emp.username}</p>
                 <p>Password: *******</p>
                 <p>Position: {emp.role_name}</p>
@@ -390,7 +487,7 @@ function EmployeesAdmin() {
                   <Switch onChange={(checked) => handleSwitchChange(checked, emp.id)} checked={switchStates[emp.id] || false} />
                 </div>
 
-                <Model isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
+                <Modal isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
                   <h1>Update</h1>
                   <input type='text' placeholder='Username' name="username" onChange={handleChange} />
                   <input type='text' placeholder='Password' name="password" onChange={handleChange} />
@@ -408,11 +505,28 @@ function EmployeesAdmin() {
                     ))}
                   </select>
                   <input type='email' placeholder='Work-related Email' name='email' onChange={handleChange} />
-                  <input type='text' placeholder='Status' name="status" onChange={handleChange} />
+
+                  <input type='text' placeholder='Status' name="status" value={trial} onChange={handleChange} />
+
+                  <div style={{ color: 'black', display: 'flex', flexDirection: 'inline', gap: '9px', justifyContent: 'center' }}>
+                    <p>Attach Parforma (Not required)</p>
+                    <label htmlFor="file" id="customButton" style={{ width: '35%', backgroundColor: 'black', display: 'flex', justifyContent: 'center', borderRadius: '23px', gap: '9px', cursor: 'pointer' }}>
+                      <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName} />
+                      {file || 'No file chosen'} <img style={{ width: '12%', display: 'inline' }} src={ImgAdd} alt="Add" />
+                    </label>
+                  </div>
                   <button onClick={() => handleUpdate(emp.id)}>Submit</button>
-                </Model>
+                </Modal>
               </div>
             ))}
+          </Modal>
+          <Modal isOpen={createModal} onRequestClose={closeCreateModal} className={modal}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+              <ClipLoader color={'green'} loading={loading} size={89} />
+              <div>
+                <p>Creating An Employee...</p>
+              </div>
+            </div>
           </Modal>
         </div>
       </div>

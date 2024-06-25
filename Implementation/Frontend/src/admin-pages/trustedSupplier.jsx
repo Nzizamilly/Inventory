@@ -3,21 +3,23 @@ import React, { useEffect, useState } from 'react';
 import Info from '../images/info.svg'
 import axios from "axios";
 import NavbarAdmin from './navbarAdmin';
+import { ReactPDF, Document, PDFViewer, Page } from '@react-pdf/renderer';
 import ImgAdd from '../images/add-photo.svg';
 import Modal from 'react-modal';
 import { Socket, io } from 'socket.io-client';
+import DocViewer, {DocViewerRenderers} from '@cyntler/react-doc-viewer';
 import DataTable from 'react-data-table-component';
 import AddItem from '../images/addItem.svg'
 import PulseLoader from "react-spinners/PulseLoader";
 import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL, listAll, list, } from "firebase/storage";
-import { Worker, Viewer } from '@react-pdf-viewer/core';
+// import { Worker, Viewer } from '@react-pdf-viewer/core';
 
 function TrustedSuppliers() {
 
     const ioPort = process.env.REACT_APP_SOCKET_PORT;
 
-    const socket = io.connect(`${ioPort}`);
+    // const socket = io.connect(`${ioPort}`);
 
     const [imageUrl, setImageUrl] = useState('');
     const [dates, setDates] = useState({ date1: '', date2: '' });
@@ -53,7 +55,6 @@ function TrustedSuppliers() {
     const openOneSupplier = (ID) => {
         setOneSupplier(true);
         getDates(ID);
-        // setTimer();
         bringOneSupplier(ID);
     };
 
@@ -79,14 +80,13 @@ function TrustedSuppliers() {
         setIsTrustedSupplierModalOpen(false);
     };
 
-    socket.on("connect", () => {
+    // socket.on("connect", () => {
 
-    });
+    // });
 
-    socket.on("disconnect", () => {
-        console.log("Disconnected from the server");
-
-    })
+    // socket.on("disconnect", () => {
+    //     console.log("Disconnected from the server");
+    // })
 
     const kain = {
         gap: '12px',
@@ -114,7 +114,6 @@ function TrustedSuppliers() {
     const smallTable = {
         width: '65%',
         height: '76%',
-        // paddingBottom: '92%',
         backgroundColor: 'white',
         display: 'flex',
         borderRadius: '23px',
@@ -231,13 +230,13 @@ function TrustedSuppliers() {
 
         if (imageUpload == null) return;
         const IdForQuotation = latestId + 1;
-        console.log("ID FOR PDF: ", IdForQuotation);
+        // console.log("ID FOR PDF: ", IdForQuotation);
         const imageRef = ref(storage, `SuppliersPDF/${imageUpload.name, IdForQuotation}`);
         uploadBytes(imageRef, imageUpload).then(() => {
         });
 
         try {
-            console.log("Passing Data: ", newTrustedSupplier)
+            // console.log("Passing Data: ", newTrustedSupplier)
             await axios.post(`/new-trusted-supplier`, newTrustedSupplier);
             setIsTrustedSupplierModalOpen(false);
         } catch (error) {
@@ -326,9 +325,10 @@ function TrustedSuppliers() {
     const fetchPDF = async (ID) => {
         try {
             if (ID) {
-                console.log("ID PROVIDED: ", ID);
+                // console.log("ID PROVIDED: ", ID);
                 const PDFRef = ref(storage, `SuppliersPDF/${ID}`);
                 const PDFURL = await getDownloadURL(PDFRef);
+                console.log('PDF URL: ', PDFURL);
                 setImageUrl(PDFURL);
             };
         } catch (error) {
@@ -338,14 +338,14 @@ function TrustedSuppliers() {
 
 
     const getDates = async (ID) => {
-        console.log("Dates Function Being Hit");
+        // console.log("Dates Function Being Hit");
         const response = await axios.get(`/trustedSuppliers-dates/${ID}`);
         setDates(response.data);
     };
 
     useEffect(() => {
-        console.log("Date Entered: ", dates.date_entered);
-        console.log("Date Of End: ", dates.end_of_contract);
+        // console.log("Date Entered: ", dates.date_entered);
+        // console.log("Date Of End: ", dates.end_of_contract);
 
         if (dates.date_entered && dates.end_of_contract) {
             const startDate = new Date(dates.date_entered);
@@ -367,23 +367,27 @@ function TrustedSuppliers() {
     const countdownString = `${countDown.months} months and ${countDown.days} days`;
     const lowOnTheDays = '0 months and 29 days';
 
-    const messageData = {
-        
-    }
-    
- 
-    useEffect(() => {
+    // useEffect(() => {
 
-        const warningMessage = () => {
+    //     const warningMessage = () => {
 
-            if (countdownString === lowOnTheDays) {
-                io.emit("SendWarning", )
-            };
-        };
+    //         if (countdownString === lowOnTheDays) {
+    //             io.emit("SendWarning",)
+    //         };
+    //     };
 
-        warningMessage();
+    //     warningMessage();
 
-    }, [])
+    // }, []);
+
+  const docs = [
+    {
+        uri: imageUrl,
+        fileType: 'pdf',
+    },
+  ];
+
+
 
 
     return (
@@ -448,15 +452,16 @@ function TrustedSuppliers() {
                 </Modal>
 
                 <Modal isOpen={isPDFViewOpen} onRequestClose={closePDFViewer} style={modal3}>
-                    <div style={{ width: "100%", height: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {/* <div style={{ width: "100%", height: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         {imageUrl && (
                             <Worker workerUrl='https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js'>
                                 <Viewer fileUrl={imageUrl}></Viewer>
                             </Worker>
                         )}
-                    </div>
+                    </div> */}
+                 {imageUrl && <DocViewer documents={docs} pluginRenderers={DocViewerRenderers} />}
+                 
                 </Modal>
-
             </div>
         </div>
     );
