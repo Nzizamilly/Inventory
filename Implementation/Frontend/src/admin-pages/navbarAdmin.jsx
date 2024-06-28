@@ -3,12 +3,20 @@ import Centrika from '../images/centrika-removebg.png';
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import axios from 'axios';
-import Modal from 'react-modal'
+import AccountIcon from '../images/accountSVG.svg';
+import Employees from '../images/employeesSVG.svg'
+import Modal from 'react-modal';
+import ItemSVG from '../images/ItemSVG.svg';
+import CategorySVG from '../images/CategorySVG.svg';
+import NotificationSVG from '../images/notificationSVG.svg';
+import DepartmentRolesSVG from '../images/DepartmentsRolesSVG.svg';
+import PolicySVG from '../images/policySVG.svg';
 
 function NavbarAdmin() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [transactionType, setTransactionType] = useState('');
   const [selectedSupplier, setSelectedSupplier] = useState(null);
 
   const modalStyles = {
@@ -55,22 +63,21 @@ function NavbarAdmin() {
     navigate('/');
   };
 
-  const [transactionType, setTransactionType] = useState('');
 
   const handleTransactionChange = (event) => {
     setTransactionType(event.value);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     const changeTransaction = (transactionType) => {
-      if(transactionType === 'item') {
+      if (transactionType === 'item') {
         navigate('/item-transaction')
-      }else if(transactionType){
-      navigate('/action-transaction')
+      } else if (transactionType) {
+        navigate('/action-transaction')
       };
     }
     changeTransaction(transactionType);
-  },[transactionType]);
+  }, [transactionType]);
 
   const select = {
     display: 'block',
@@ -102,7 +109,7 @@ function NavbarAdmin() {
   }, []);
 
   const options = [
-    { value: 'trusted', label: "Trusted Suppliers" },
+    { value: 'trusted', label: "Trusted Suppliers", icon: <Employees /> },
     { value: 'local', label: "Local Suppliers" },
   ];
 
@@ -159,32 +166,37 @@ function NavbarAdmin() {
 
   return (
     <div >
+
       <ul className='ul1Admin'>
         <li className='li1Admin' onClick={handleLogout}><Link to={'/'}>Log Out</Link></li>
         <li className='li1Admin'><Link to={'/home-admin'}>Home</Link></li>
-        <li style={{ float: 'left', marginLeft: '193px' }} className='li1Admin'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+        <li style={{ float: 'left', marginLeft: '193px' }} className='li1Admin'><img style={{ maxWidth: '100%', marginTop: '1px', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+        {/* <li style={{ float: 'left', marginLeft: '193px' }} ><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li> */}
       </ul>
+
       <ul className='ul2Admin'>
-        <li className='liAdmin'><Link to={'/account-admin'} onMouseOver={openModal}>Account</Link></li>
-        <li className='liAdmin'><Link to={'/employees-admin'}>Employees</Link></li>
-        <li className='liAdmin'><Link to={'/items-admin'}>Items</Link></li>
-        <li className='liAdmin'><Link to={'/category-admin'}>Category</Link></li>
-        <li className='liAdmin'><Link to={'/notification-admin'}>Notification</Link></li>
-        
-         <Select
+        <li className='liAdmin'><Link to={'/account-admin'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li>
+        <li className='liAdmin'><Link to={'/employees-admin'} ><img src={Employees} style={{ maxWidth: '20%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Employees</p></Link></li>
+        <li className='liAdmin'><Link to={'/items-admin'}><img src={ItemSVG} style={{ maxWidth: '16%', maxHeight: '50vh' }} /><p style={{ marginTop: '6px' }}>Items</p></Link></li>
+        <li className='liAdmin'><Link to={'/category-admin'}><img src={CategorySVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Category</p></Link></li>
+        <li className='liAdmin'><Link to={'/notification-admin'}><img src={NotificationSVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Notification</p></Link></li>
+
+        <Select
           options={option}
           styles={customStyles}
           placeholder="Transactions"
           onChange={handleTransactionChange}
         />
+
         <Select
           options={options}
           styles={customStyles}
           placeholder="Suppliers"
           onChange={handleSupplierChange}
         />
-        <li className='liAdmin'><Link to={'/departments-and-roles-admin'}>Department & Roles</Link></li>
-        <li className='liAdmin'><Link to={'/terms-admin'}>Terms and Conditions</Link></li>
+
+        <li className='liAdmin'><Link to={'/departments-and-roles-admin'}><img src={DepartmentRolesSVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }} /><p>Department & Roles</p></Link></li>
+        <li className='liAdmin'><Link to={'/terms-admin'}><img src={PolicySVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Terms and Conditions</p></Link></li>
       </ul>
 
       <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>

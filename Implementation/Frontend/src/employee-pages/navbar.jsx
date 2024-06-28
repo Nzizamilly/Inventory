@@ -1,9 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import AccountIcon from '../images/accountSVG.svg';
 import Modal from 'react-modal';
 import Centrika from '../images/centrika-removebg.png';
 import Select from 'react-select';
+import PolicySVG from '../images/policySVG.svg';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -147,7 +149,8 @@ function Navbar() {
         <li style={{ float: 'left', marginLeft: '193px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
       </ul>
       <ul className='ul2Admin'>
-        <li><Link to={'/account-employee'} onMouseOver={openModal}>Account</Link></li>
+        {/* <li style={{display: 'flex', flexDirection: 'inline', gap: '12px', backgroundColor: 'blue'}}><Link to={'/account-employee'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li> */}
+        <li className='liAdmin'><Link to={'/account-employee'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li>
         <Select
           options={option}
           styles={customStyles}
@@ -160,7 +163,7 @@ function Navbar() {
           placeholder="Notifications"
           onChange={handleNotificationChange}
         />
-        <li><Link to={'/terms-employee'}>Terms and Conditions</Link></li>
+        <li  className='liAdmin'><Link to={'/terms-employee'}><img src={PolicySVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Terms and Conditions</p></Link></li>
       </ul>
       <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
         {data && (

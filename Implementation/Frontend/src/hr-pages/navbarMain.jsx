@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Centrika from '../images/centrika-removebg.png';
+import AccountIcon from '../images/accountSVG.svg';
 import axios from 'axios';
-import Modal from 'react-modal'
+import PolicySVG from '../images/policySVG.svg';
+import Modal from 'react-modal';
 import Select from 'react-select';
 
 function NavbarMain() {
@@ -159,6 +161,7 @@ function NavbarMain() {
 
     return (
         <div className="navbar">
+
             <ul className='ul1' style={color}>
                 <li style={{ float: 'left', marginLeft: '193px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
                 <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
@@ -169,16 +172,17 @@ function NavbarMain() {
                 </select>
                 <li className='li1'><Link to={'/home-hr'}>Home</Link></li>
             </ul>
+
             <ul className='ul2Admin'>
-                <li className='lisupervisor'><Link to={'/account-hr'} onMouseOver={openModal}>Account</Link></li>
+                <li className='liAdmin'><Link to={'/account-hr'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li>
                 <Select
                     options={option}
                     styles={customStyles}
                     placeholder="Request"
                     onChange={handleRequestChange}
                 />
-                <li className='lisupervisor'><Link to={'/transaction-hr'}>Transactions</Link></li>
-                <li className='lisupervisor'><Link to={'/terms-hr'}>Terms & Conditions</Link></li>
+                {/* <li className='lisupervisor'><Link to={'/transaction-hr'}>Transactions</Link></li> */}
+                <li className='liAdmin'><Link to={'/terms-hr'}><img src={PolicySVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Terms and Conditions</p></Link></li>
             </ul>
             <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
                 {data && (

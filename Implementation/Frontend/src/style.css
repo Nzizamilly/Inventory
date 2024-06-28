@@ -220,7 +220,7 @@ input[type="password"] {
     border-bottom: 2px rgb(23, 219, 170);
 }
 
-input[type="date"] {
+/* input[type="date"] {
     height: 2%;
     border: none;
     padding: 15px;
@@ -228,6 +228,12 @@ input[type="date"] {
     border-radius: 49px;
     background-color: black;
     font-family: "Roboto Mono", monospace;
+} */
+
+#smallDate{
+    height: 1;
+    width: 5%;
+    /* background-color: blue; */
 }
 
 ::-webkit-calendar-picker-indicator {
@@ -284,7 +290,7 @@ li a:hover {
     width: 100%;
     overflow: hidden;
     list-style-type: none;
-    background-color: rgb(52, 209, 91);
+    background-color: rgb(8, 81, 26);
 }
 
 .li1 {
@@ -292,9 +298,9 @@ li a:hover {
     width: 99px;
     height: 82px;
     color: white;
-    background-color: rgb(52, 209, 91);
+    background-color: rgb(8, 81, 26);
     justify-content: center;
-}
+};
 
 .li1 a {
     color: white;
@@ -411,7 +417,7 @@ li a:hover {
     width: 100%;
     overflow: hidden;
     list-style-type: none;
-    background-color: rgb(52, 209, 91);
+    background-color: rgb(8, 81, 26);
 }
 
 /* ============================================== */
@@ -454,8 +460,8 @@ li a:hover {
     float: right;
     border-radius: 8px;
     justify-content: center;
-    background-color: rgb(52, 209, 91);
-}
+    background-color: rgb(8, 81, 26);
+};
 
 .li1Admin a {
     color: white;
@@ -480,20 +486,30 @@ li a:hover {
     list-style-type: none;
     flex-direction: column;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(52, 209, 91);
+    background-color: rgb(8, 81, 26);
 }
 
+/* .liAdmin{
+    background-color: black;
+    display: flex;
+    gap: '12px'
+} */
+
 .liAdmin a {
-    display: block;
-    padding: 8px 16px;
+    display: flex;
+    /* background-color: red; */
+    /* padding: 8px 16px; */
+    gap: 12px;
+    justify-content: left;
+    align-content: center;
     border-radius: 12px;
-    text-decoration: none;
+    /* text-decoration: none; */
     color: white;
 }
 
 .liAdmin a:hover {
-    color: black;
-    background-color: #f5f4f4;
+    color: white;
+    background-color: #0f0f0f;
 }
 
 .icon-container-admin {
@@ -1044,7 +1060,7 @@ li a:hover {
     list-style-type: none;
     flex-direction: column;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(52, 209, 91);
+    background-color: rgb(8, 81, 26);
 }
 
 /* .lisupervisor a:hover {

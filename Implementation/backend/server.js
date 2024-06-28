@@ -849,7 +849,7 @@ app.put('/supplier/:id', (req, res) => {
 })
 
 app.post('/add-serial-number/:takeItemID', (req, res) => {
-  34 
+  34
   const itemID = req.params.takeItemID;
   const status = 'In';
   console.log("Status is: ", status);
@@ -2423,9 +2423,9 @@ app.get('/get-Total-Number-Of-Serials-For-single/:ID', (req, res) => {
   const ID = req.params.ID;
   const sql = `SELECT COUNT(*) AS total_serial_count FROM serial_number WHERE itemID = ?`;
   db.query(sql, ID, (error, result) => {
-    if(error){
+    if (error) {
       console.error("Error: ", error);
-    }else{
+    } else {
       res.json([total_serial_count = result[0].total_serial_count]);
     };
   });
@@ -2435,9 +2435,9 @@ app.get('/get-serial-In/:ID', (req, res) => {
   const ID = req.params.ID;
   const sql = `SELECT COUNT(*) AS total_serial_in FROM serial_number WHERE status = 'In' AND itemID = ?`;
   db.query(sql, ID, (error, result) => {
-    if(error){
+    if (error) {
       console.error('Error: ', error);
-    }else{
+    } else {
       res.json([total_serial_in = result[0].total_serial_in]);
     };
   });
@@ -2447,10 +2447,31 @@ app.get('/get-serial-Out/:ID', (req, res) => {
   const ID = req.params.ID;
   const sql = `SELECT COUNT(*) AS total_serial_out FROM serial_number WHERE status = 'Out' AND itemID = ?`;
   db.query(sql, ID, (error, result) => {
-    if(error){
+    if (error) {
       console.error('Error: ', error);
-    }else{
+    } else {
       res.json([total_serial_out = result[0].total_serial_out]);
+    };
+  });
+});
+
+app.get('/get-serial-number-in-different-time/:start/:end/:ID', (req, res) => {
+  const start = req.params.start;
+  const end = req.params.end;
+  const ID = req.params.ID;
+
+  console.log("End: ", end);
+  console.log("start: ", start);
+  console.log("ID: ", ID);
+
+
+  const sql = "SELECT * FROM serial_number WHERE date BETWEEN ? AND ? AND itemID = ?";
+
+  db.query(sql, [start, end, ID], (error, result) => {
+    if(result) {
+      res.json(result);
+    }else{
+      console.error("Error: ", error);
     }
   })
 })

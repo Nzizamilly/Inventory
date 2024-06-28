@@ -7,6 +7,7 @@ import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import Modal from 'react-modal';
 import { CSVLink } from 'react-csv'
+import { set } from 'firebase/database';
 
 function ItemTransactionsAdmin2() {
 
@@ -47,9 +48,9 @@ function ItemTransactionsAdmin2() {
             alignItems: 'center',
         },
         content: {
-            width: '76%',
-            marginLeft: '193px',
-            height: '72vh',
+            width: '95%',
+            marginLeft: '43px',
+            height: '75vh',
             backgroundColor: 'white',
             border: 'none',
             borderRadius: '12px',
@@ -70,9 +71,22 @@ function ItemTransactionsAdmin2() {
     const [totalSerialsOut, setTotalSerialsOut] = useState([]);
     const [serialNumbersForSingleItems, setSerialNumbersForSingleItem] = useState([]);
     const [totalNumberForSingleItem, setTotalNumberForSingleItem] = useState([]);
-    const [count, setCount] = useState();
     const [isSingleItemModalOpen, setIsSingleItemModalOpen] = useState(false);
-    const [itemName, setItemName] = useState()
+    const [isAllDataOpen, setIsAllOpen] = useState(false);
+    const [IDForSerialCount, setIDForSerialCount] = useState()
+    const [itemName, setItemName] = useState();
+    const [IDForDates, setIDForDates] = useState('');
+    const [count, setCount] = useState();
+    const [endSingleItem, setEndSingleItem] = useState('');
+    const [startSingleItem, setStartSingleItem] = useState('');
+
+    const openAllModalOpen = () => {
+        setIsAllOpen(true);
+    };
+
+    const closeAllDataModal = () => {
+        setIsAllOpen(false);
+    }
 
     useEffect(() => {
         const fetchAllItems = async () => {
@@ -107,7 +121,6 @@ function ItemTransactionsAdmin2() {
         setFilteredItems(smallData);
     }, [smallData]);
 
-    const [IDForSerialCount, setIDForSerialCount] = useState()
 
     const handleItemClick = (ID, name) => {
         setIsSingleItemModalOpen(true);
@@ -122,9 +135,9 @@ function ItemTransactionsAdmin2() {
 
     const bringAllSerialsFor = async (ID) => {
         try {
-
+            setIDForDates(ID);
             const response = await axios.get(`/get-serial-numbers-for-item/${ID}`);
-            setSerialNumbersForSingleItem(response.data)
+            setSerialNumbersForSingleItem(response.data);
 
         } catch (error) {
             console.error("Error: ", error);
@@ -141,8 +154,8 @@ function ItemTransactionsAdmin2() {
             selector: row => row.state_of_item
         },
         {
-            name: 'Serial Number',
-            selector: row => row.serial_number
+            name: 'Date',
+            selector: row => row.date
         },
         {
             name: 'In / Out',
@@ -196,6 +209,21 @@ function ItemTransactionsAdmin2() {
         window.print();
     };
 
+    useEffect(() => {
+        const dates = async () => {
+            try {
+                const responsee = await axios.get(`/get-serial-number-in-different-time/${startSingleItem}/${endSingleItem}/${IDForDates}`);
+                console.log("Dates Response: ", responsee.data);
+                setSerialNumbersForSingleItem(responsee.data);
+
+            } catch (error) {
+                // console.error("Error: ", error);
+            };
+        };
+
+        dates();
+    }, [endSingleItem, startSingleItem, IDForDates]);
+
     const fileName = `Report of ${itemName}`;
 
     return (
@@ -209,7 +237,7 @@ function ItemTransactionsAdmin2() {
                 <div style={itemstyle}>
                     <div style={{ width: '95%', height: '25%', gap: '12px', display: 'flex', justifyContent: 'center', float: 'right' }}>
                         <input type='text' placeholder='Search For A Specific Item....' onChange={handleFilter} />
-                        <p>Total Items: {count}</p>
+                        <p style={{ marginTop: '12px' }}>Total Items: {count}</p>
                     </div>
                     <br />
                     <br />
@@ -221,21 +249,24 @@ function ItemTransactionsAdmin2() {
                 <Modal isOpen={isSingleItemModalOpen} onRequestClose={closeSingleItemModal} style={modal}>
                     <div style={{ backgroundColor: 'white', width: '100%', height: '100%', }}>
                         <div style={{ backgroundColor: 'white', marginLeft: '12px', display: 'flex', gap: '14px', width: '100%' }}>
-                            <input type='text' style={{ backgroundColor: 'black', width: '34%' }} placeholder='Search For A Serial Number...' />
-                            <p style={{marginTop: '12px'}}>{itemName} 's Serial Numbers</p>
+                            <input type='text' style={{ backgroundColor: 'black', width: '15%' }} placeholder='Search For A Serial Number...' />
+                            <p style={{ marginTop: '12px' }}>From: </p> <input type='date' id='smallDate' style={{ width: '10%', display: 'flex', justifyContent: 'center', border: 'none' }} onChange={(e) => setStartSingleItem(e.target.value)} />
+                            <p style={{ marginTop: '12px' }}>To: </p> <input type='date' id='smallDate' style={{ width: '10%', display: 'flex', justifyContent: 'center', border: 'none' }} onChange={(e) => setEndSingleItem(e.target.value)} />
+                            <p style={{ marginTop: '12px' }}>{itemName} 's Serial Numbers</p>
 
                             {totalNumberForSingleItem.map(total => (
-                                <p style={{marginTop: '12px'}}>Total: {total},</p>
+                                <p style={{ marginTop: '12px' }}>Total: {total},</p>
                             ))}
                             {totalSerialsIn.map(total => (
-                                <p style={{marginTop: '12px'}}>Total In: {total},</p>
+                                <p style={{ marginTop: '12px' }}>Total In: {total},</p>
                             ))} {totalSerialsOut.map(total => (
-                                <p style={{marginTop: '12px'}}>Total Out: {total},</p>
+                                <p style={{ marginTop: '12px' }}>Total Out: {total},</p>
                             ))}
 
                             <button style={{ width: '6%', backgroundColor: 'blue', color: 'white' }} onClick={(handlePrint)}>Print</button>
-                            <CSVLink data={serialNumbersForSingleItems} filename={fileName}> <button style={{color: 'white', backgroundColor: 'blue'}}>Export</button></CSVLink>
+                            <CSVLink data={serialNumbersForSingleItems} filename={fileName}> <button style={{ color: 'white', backgroundColor: 'blue' }}>Export</button></CSVLink>
                         </div>
+                        <br />
                         <div style={{ backgroundColor: 'rgb(163, 187, 197)', height: '90%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', borderRadius: '33px' }}>
                             <DataTable
                                 data={serialNumbersForSingleItems}
@@ -244,6 +275,10 @@ function ItemTransactionsAdmin2() {
                             ></DataTable>
                         </div>
                     </div>
+                </Modal>
+
+                <Modal isOpen={isAllDataOpen} onRequestClose={closeAllDataModal}>
+
                 </Modal>
 
             </div>

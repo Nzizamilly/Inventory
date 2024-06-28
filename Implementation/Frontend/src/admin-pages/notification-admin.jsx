@@ -14,7 +14,7 @@ function NotificationAdmin() {
 
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isGivingOutModalOpen, setIsGivingOutModalOpen] = useState(false); 
+  const [isGivingOutModalOpen, setIsGivingOutModalOpen] = useState(false);
   const [name, setName] = useState('');
   const [item, setItem] = useState('');
   const [amount, setAmount] = useState('');
@@ -43,23 +43,25 @@ function NotificationAdmin() {
 
   const column = [
     {
+      name: 'Item',
+      selector: row => row.name
+    },
+    {
       name: 'Requestor',
       selector: row => row.employee_username
     },
     {
       name: 'Supervisor',
       selector: row => row.supervisor_username
-    }, {
-      name: 'Item',
-      selector: row => row.name
-    }, {
+    },
+    {
       name: 'Category',
       selector: row => row.category_name
     }, {
-      name: 'Amount',
+      name: 'Quantity Requested',
       selector: row => row.amount
     }, {
-      name: 'description',
+      name: 'Description',
       selector: row => row.description
     },
     {
@@ -67,9 +69,9 @@ function NotificationAdmin() {
       selector: row => row.date_approved
     },
     {
-      name: 'Give Out',
+      name: 'Issue Out',
       cell: row => (
-        <button style={{ width: '59%', backgroundColor: 'green', color: 'white' }} onClick={() => openGvingOutModal(row)} >Give Out</button>
+        <button style={{ width: '59%', backgroundColor: 'green', color: 'white' }} onClick={() => openGvingOutModal(row)} >Issue to</button>
       ),
     },
   ];
@@ -90,11 +92,11 @@ function NotificationAdmin() {
 
       if (result === "Given Out") {
 
-      const responsee = await axios.put(`/change-request-stockStatus/${rowID}`);
-      console.log("Responsee: ", responsee.data);
+        const responsee = await axios.put(`/change-request-stockStatus/${rowID}`);
+        console.log("Responsee: ", responsee.data);
 
       } else {
-      window.alert("Insuffiencient Amount To Give Out");
+        window.alert("Insuffiencient Amount To Give Out");
       }
 
       setInterval(() => {
@@ -161,25 +163,27 @@ function NotificationAdmin() {
   return (
     <div> <NavbarAdmin></NavbarAdmin>
       <div className="random-container">
-        <div style={{ width: '74%', marginLeft: '53px' }}>
+        <div style={{ width: '84%', marginLeft: '193px' }}>
           <h1 style={{ color: 'white' }}>Notifications</h1>
           <div style={smaller}>
             <button style={buttons} onClick={handlePending}>Pending</button>
-            <button style={buttons} onClick={handleApprovedRequest}>Given Out</button>
+            <button style={buttons} onClick={handleApprovedRequest}>Issued</button>
           </div>
-          
-          <DataTable
-            data={notifications}
-            columns={column}
-            pagination
-          ></DataTable>
+
+          <div style={{ width: '100%' }}>
+            <DataTable
+              data={notifications}
+              columns={column}
+              pagination
+            ></DataTable>
+          </div>
 
           <Modal isOpen={isGivingOutModalOpen} onRequestClose={closeGivingOutModal} style={modal} >
             <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
               <RiseLoader color={'#3444e5'} loading={loading} size={11} />
-              <div style={{fontFamily: 'sans-serif'}}>
+              <div style={{ fontFamily: 'sans-serif' }}>
                 <br />
-               <p>Giving {amount} {item} to {name}</p>
+                <p>Issuing {amount} {item} to {name}</p>
               </div>
             </div>
           </Modal>
