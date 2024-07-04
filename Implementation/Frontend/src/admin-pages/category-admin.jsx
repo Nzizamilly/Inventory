@@ -6,7 +6,6 @@ import Add from '../images/add.svg'
 import Delete from '../images/delete.svg'
 import Modal from 'react-modal'
 import HashLoader from "react-spinners/HashLoader";
-import { Scrollbars } from 'react-custom-scrollbars';
 
 function CategoryAdmin() {
 
@@ -83,6 +82,9 @@ function CategoryAdmin() {
   const [categories, setCategories] = useState([]);
   const [isDeletingOpen, setIsDeletingOpen] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
+  const [handleConfirmID, setHandleConfirmID] = useState();
+  const [handleConfirmName, setHandleConfirmName] = useState();
+
   const [category, setCategory] = useState({
     category_name: '',
     description: ''
@@ -92,8 +94,6 @@ function CategoryAdmin() {
     setIsConfirmModalOpen(false);
   };
 
-  const [handleConfirmID, setHandleConfirmID] = useState();
-  const [handleConfirmName, setHandleConfirmName] = useState();
 
   const openDeletingWarning = (categoryId, category_name) => {
     setHandleConfirmID(categoryId);
@@ -138,16 +138,14 @@ function CategoryAdmin() {
 
   const HandleConfirm = async (id) => {
     try {
-      // const response = await axios.delete(`/delete-category/${id}`);
-      // console.log("Response from deletion ", response.data);
+      const response = await axios.delete(`/delete-category/${id}`);
+      setInterval(() => {
+        setIsDeletingOpen(false);
+      }, 2700);
+
     } catch (error) {
       console.error('Error fetching items: ', error);
-    }
-
-    setInterval(() => {
-      closeDeletingItem();
-    }, 2700);
-
+    };
   };
 
   const handleFilter = (event) => {
@@ -171,7 +169,7 @@ function CategoryAdmin() {
       </div>
       <div className="category-container">
         <div>
-          <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /> <p style={{color: 'white'}}>Add Category</p></button>
+          <button onClick={() => setAddVisible(true)} className='add-btn'><img src={Add} style={svgStyle} /> <p style={{ color: 'white' }}>Add Category</p></button>
         </div>
         <br />
 

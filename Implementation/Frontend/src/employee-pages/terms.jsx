@@ -1,31 +1,8 @@
 import { Link } from 'react-router-dom';
 import Navbar from './navbar';
 import React, { useEffect } from 'react';
-import io from 'socket.io-client';
-
-const somePort = process.env.REACT_APP_SOCKET_PORT;
-
-const socket = io.connect(`${somePort}`);
-
-socket.on("connect", () => {
-
-});
-
-socket.on("disconnect", () => {
-  console.log("Disconnected from socket server")
-});
-
 
 function Terms() {
-
-  useEffect(() => {
-    const sender = "Point To Me...";
-
-    socket.emit("Show Some", sender);
-
-  }, []);
-
-
 
   return (
     <div>

@@ -35,11 +35,19 @@ app.use(session({
 
 const db = mysql.createPool({
   host: "localhost",
+  port: 3306,
   user: "root",
   password: "",
   database: "inventory",
 });
 
+db.getConnection((err, connection) => {
+  if (err) {
+    console.error('Error connecting to MySQL:', err.stack);
+    return;
+  }
+  console.log('Connected to MySQL as ID:', connection.threadId);
+});
 //-----------------Socket---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 const io = new Server(server, {
@@ -626,16 +634,19 @@ WHERE
 app.post('/login', (req, res) => {
   const sql = "SELECT * FROM employees WHERE username = ? and password = ? ";
   db.query(sql, [req.body.username, req.body.password], (err, result) => {
-    if (err) return res.json({ Message: "Error inside server" })
+    if (err) {
+      console.log("Error happ:",err);
+      return res.json({ Message: "Error inside server", err });
+    }
     if (result.length > 0) {
       const userID = result[0].id;
       const roleID = result[0].roleID;
-      const email = result[0].email
+      const email = result[0].email;
 
       req.session.username = result[0].username;
       req.session.user_id = userID;
       req.session.role_id = roleID;
-      req.session.email = email
+      req.session.email = email;
 
       console.log(req.session.username);
 

@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios'
 
 function Login() {
+
     const loginContainer = {
         fontFamily: 'Arial, sans-serif',
         width: '100%',
@@ -27,6 +28,20 @@ function Login() {
         alignItems: 'center',
     };
 
+    useEffect(() => {
+        const func = async () => {
+            try {
+                const response = await axios.get('/category');
+                console.log("Response: ", response.data);
+            } catch (error) {
+                console.error("Error Occured: ", error)
+            }
+        }
+
+        func();
+
+    }, [])
+
     const username = useRef();
     const password = useRef();
 
@@ -39,10 +54,17 @@ function Login() {
     const handleInput = (event) => {
         setValues(prev => ({ ...prev, [event.target.name]: event.target.value }))
     };
+
     axios.defaults.withCredentials = true;
 
     const handleSubmit = (event) => {
-        axios.post( '/login', values)
+        event.preventDefault();
+        const data = {
+            "username": values.username,
+            "password": values.password
+        }
+        console.log("VALUES: ", values.password);
+        axios.post('/login', data)
             .then(res => {
                 if (res.data.Login) {
                     localStorage.setItem("username", username.current.value);
@@ -63,7 +85,7 @@ function Login() {
                             navigate('/home-supervisor');
                             break;
                         case 6:
-                            navigate('home-hr');
+                            navigate('/home-hr');
                             break;
                         case 4:
                             navigate('/home-employee');
