@@ -14,6 +14,8 @@ import { ref, uploadBytes } from "firebase/storage";
 
 function PurchaseRequest() {
 
+  const url = process.env.REACT_APP_BACKEND;
+
   const [description, setDescription] = useState('');
   const [endGoalValue, setEndGoalValue] = useState('');
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
@@ -128,7 +130,7 @@ function PurchaseRequest() {
   useEffect(() => {
     const showSupervisor = async () => {
       try {
-        const response = await axios.get("/show-supervisor");
+        const response = await axios.get(`${url}/show-supervisor`);
         console.log("Data: ", response.data);
         setSupervisorId(response.data);
       } catch (error) {
@@ -196,6 +198,8 @@ function PurchaseRequest() {
   const employeeName = localStorage.getItem('username');
   const employeeEmail = localStorage.getItem('email');
 
+  const timestamp = Date.now();
+
   const messageForDown = {
     id: taker,
     employeeName: employeeName,
@@ -208,7 +212,7 @@ function PurchaseRequest() {
     supervisorName: selectedSupervisorName,
     endGoalValue: endGoalValue,
     file: file,
-    date: Date.now(),
+    date: formatDate(timestamp),
     priority: selectedPriority
   };
 
@@ -228,7 +232,7 @@ function PurchaseRequest() {
 
   const sendMessages = async (message) => {
 
-    const response = await axios.get('/get-number-purchase');
+    const response = await axios.get(`${url}/get-number-purchase`);
     const idTaker = response.data.latestId + 1;
     setTaker(idTaker);
 
@@ -244,7 +248,7 @@ function PurchaseRequest() {
     });
 
     try {
-      const response = await axios.post('/add-employee-supervisor-purchase', message);
+      const response = await axios.post(`${url}/add-employee-supervisor-purchase`, message);
       message.id = id;
       const id = response.id;
       console.log("Response", response);
@@ -256,7 +260,7 @@ function PurchaseRequest() {
   useEffect(() => {
     const fetchIDs = async () => {
       try {
-        const response = await axios.get("/get-purchase-id");
+        const response = await axios.get(`${url}/get-purchase-id`);
         const latestID = response.data[0].id
         setLatestID(latestID);
       } catch (error) {
@@ -326,14 +330,15 @@ function PurchaseRequest() {
               <br />
               <p>Supervisor: {messageForDown.supervisorName}</p>
               <br />
-              <p>Date {messageForDown.date}</p>
-              <br />
-              <p>Quotation: {messageForDown.file}</p>
+              <p>Date {messageForDown.date}</p>            
               <br />
               <label htmlFor='file'>
                 <img style={{ width: '92%', marginLeft: '12px' }} src={imageUrl || ImgAdd} alt='Add' />
               </label>
+              <div style={{width: '50%', display: 'flex', gap: '12px'}}>
               <button className='buttonStyle2' onClick={openLoader}>Send</button>
+              <button className='buttonStyle2' onClick={closeReviewModal}>Cancel</button>
+              </div>
             </div>
           </Modal>
 

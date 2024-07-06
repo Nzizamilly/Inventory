@@ -76,13 +76,15 @@ function Request() {
   };
 
   const ioPort = process.env.REACT_APP_SOCKET_PORT;
+  const url = process.env.REACT_APP_BACKEND;
+
 
   const socket = io.connect(`${ioPort}`);
 
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const res = await axios.get(`/category`);
+        const res = await axios.get(`${url}/category`);
         setCategory(res.data);
       } catch (error) {
         console.error("Error: ", error)
@@ -95,7 +97,7 @@ function Request() {
     const fetchItem = async (categoryID) => {
       console.log("CategoryID: ", categoryID);
       try {
-        const response = await axios.get(`/items/${categoryID}`);
+        const response = await axios.get(`${url}/items/${categoryID}`);
         setItem(response.data);
         setOptions(response.data);
 
@@ -117,7 +119,7 @@ function Request() {
     const fetchCount = async (itemID) => {
       try {
         const itemId = itemID;
-        const response = await axios.get(`/get-total-number/${itemId}`);
+        const response = await axios.get(`${url}/get-total-number/${itemId}`);
         setBackCount(response.data);
         console.log(response.data);
       } catch (error) {
@@ -160,7 +162,7 @@ function Request() {
     const get = localStorage.getItem('username');
     const email = localStorage.getItem('email')
     const date = Date.now();
-    const response = await axios.get('/get-number');
+    const response = await axios.get(`${url}/get-number`);
     const idTaker = response.data.latestId + 1;
     setTaker(idTaker);
 
@@ -190,7 +192,7 @@ function Request() {
 
     socket.emit("Employee_Message_Supervisor(1)", messageData);
     try {
-      const response = await axios.post('/add-request-employee-supervisor', messageData);
+      const response = await axios.post(`${url}/add-request-employee-supervisor`, messageData);
       messageData.id = id;
       const id = response.id;
       console.log("Response", response);
@@ -309,7 +311,7 @@ function Request() {
   useEffect(() => {
     const showSupervisor = async () => {
       try {
-        const response = await axios.get("/show-supervisor");
+        const response = await axios.get(`${url}/show-supervisor`);
         console.log("Data: ", response.data);
         setSupervisorId(response.data);
       } catch (error) {
@@ -326,9 +328,9 @@ function Request() {
       alignItems: 'center',
     },
     content: {
-      width: '23%',
+      width: '25%',
       marginLeft: '495px',
-      height: '72vh',
+      height: '76vh',
       backgroundColor: 'rgb(94, 120, 138)',
       border: 'none',
       borderRadius: '12px',
@@ -409,7 +411,10 @@ function Request() {
               <br />
               <p>Date of Request: {message.date}</p>
               <br />
-              <button className='buttonStyle2' onClick={openLoader}>Send</button>
+              <div style={{width: '50%', display: 'flex', gap: '12px'}}>
+                <button className='buttonStyle2' onClick={openLoader}>Send</button>
+                <button className='buttonStyle2' onClick={closeModal}>Cancel</button>
+              </div>
             </div>
           </Modal>
           <Modal isOpen={isSendModalOpen} onRequestClose={closeRequestModal} className={modal}>

@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios'
 
+const url = process.env.REACT_APP_BACKEND;
+
 function Login() {
 
     const loginContainer = {
@@ -28,11 +30,13 @@ function Login() {
         alignItems: 'center',
     };
 
+
     useEffect(() => {
         const func = async () => {
             try {
                 const response = await axios.get('/category');
-                console.log("Response: ", response.data);
+                // const serverUrl=process.env.REACT_APP_BACKEND;
+                console.log("Response: ", url);
             } catch (error) {
                 console.error("Error Occured: ", error)
             }
@@ -64,7 +68,7 @@ function Login() {
             "password": values.password
         }
         console.log("VALUES: ", values.password);
-        axios.post('/login', data)
+        axios.post(`${url}/login`, data)
             .then(res => {
                 if (res.data.Login) {
                     localStorage.setItem("username", username.current.value);

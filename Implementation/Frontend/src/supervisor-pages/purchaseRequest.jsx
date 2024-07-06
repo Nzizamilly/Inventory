@@ -14,6 +14,8 @@ import NavbarHome from './NavbarHome';
 
 function PurchaseRequestSupervisor() {
 
+  const url = process.env.REACT_APP_BACKEND;
+
   const [description, setDescription] = useState('');
   const [endGoalValue, setEndGoalValue] = useState('');
   const [selectedSupervisor, setSelectedSupervisor] = useState(null);
@@ -130,7 +132,7 @@ function PurchaseRequestSupervisor() {
   useEffect(() => {
     const showSupervisor = async () => {
       try {
-        const response = await axios.get("/show-supervisor");
+        const response = await axios.get(`${url}/show-supervisor`);
         console.log("Data: ", response.data);
         setSupervisorId(response.data);
       } catch (error) {
@@ -230,7 +232,7 @@ function PurchaseRequestSupervisor() {
 
   const sendMessages = async (message) => {
 
-    const response = await axios.get('/get-number-purchase');
+    const response = await axios.get(`${url}/get-number-purchase`);
     const idTaker = response.data.latestId + 1;
     setTaker(idTaker);
 
@@ -246,7 +248,7 @@ function PurchaseRequestSupervisor() {
     });
 
     try {
-      const response = await axios.post('/add-employee-supervisor-purchase', message);
+      const response = await axios.post(`${url}/add-employee-supervisor-purchase`, message);
       message.id = id;
       const id = response.id;
       console.log("Response", response);
@@ -261,7 +263,7 @@ function PurchaseRequestSupervisor() {
   useEffect(() => {
     const fetchIDs = async () => {
       try {
-        const response = await axios.get("/get-purchase-id");
+        const response = await axios.get(`${url}/get-purchase-id`);
         const latestID = response.data[0].id
         setLatestID(latestID);
       } catch (error) {

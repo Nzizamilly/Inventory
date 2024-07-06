@@ -19,6 +19,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 function EmployeesAdmin() {
 
+const url = process.env.REACT_APP_BACKEND;
+
   const modal = {
     overlay: {
       display: 'flex',
@@ -87,7 +89,7 @@ function EmployeesAdmin() {
   useEffect(() => {
     const fetchEmp = async () => {
       try {
-        const res = await axios.get(`/employees`);
+        const res = await axios.get(`${url}/employees`);
         setEmps(res.data);
       } catch (error) {
       }
@@ -106,7 +108,7 @@ function EmployeesAdmin() {
 
     try {
       console.log("Emp ID: ", empID);
-      const response = await axios.put(`/deactivate-employee/${empID}`, {
+      const response = await axios.put(`${url}/deactivate-employee/${empID}`, {
         status,
         employee
       });
@@ -143,7 +145,7 @@ function EmployeesAdmin() {
     console.log("SELECTED EMPLOYEE ID: ", EmpID);
     try {
       console.log("Selected Employee ID",)
-      await axios.put(`/employee/${EmpID}`, update);
+      await axios.put(`${url}/employee/${EmpID}`, update);
       setEmps((prevEmps) => {
         prevEmps.forEach((emp, index) => {
           if (emp.id === EmpID) {
@@ -165,7 +167,7 @@ function EmployeesAdmin() {
 
   const bringOneEmployee = async (id) => {
     try {
-      const response = await axios.get(`/employee/${id}`);
+      const response = await axios.get(`${url}/employee/${id}`);
       setSumOne(response.data);
     } catch (error) {
       console.error("Error: ", error);
@@ -226,9 +228,9 @@ function EmployeesAdmin() {
 
   useEffect(() => {
     const getDept = async () => {
-      const response = await axios.get("/get-department/");
+      const response = await axios.get(`${url}/get-department/`);
       setDepartment(response.data);
-    }
+    };
     getDept()
   }, []);
 
@@ -256,7 +258,7 @@ function EmployeesAdmin() {
 
   useEffect(() => {
     const fetchRole = async (selectedDepartment) => {
-      const response = await axios.get(`/get-role/${selectedDepartment}`);
+      const response = await axios.get(`${url}/get-role/${selectedDepartment}`);
       setRole(response.data);
       console.log("DATA: ", response.data)
     }
@@ -267,7 +269,7 @@ function EmployeesAdmin() {
 
   useEffect(() => {
     const fetchRole = async (selectedUpdateDepartment) => {
-      const response = await axios.get(`/get-role/${selectedUpdateDepartment}`);
+      const response = await axios.get(`${url}/get-role/${selectedUpdateDepartment}`);
       setRoleUpdate(response.data);
       console.log("DATA: ", response.data)
     }
@@ -319,7 +321,7 @@ function EmployeesAdmin() {
 
     try {
       console.log("Passing Data: ", employee)
-      const response = await axios.post(`/employee`, employee);
+      const response = await axios.post(`${url}/employee`, employee);
       const newEmployeeID = response.data;
 
       if (imageUpload == null) return;
@@ -345,8 +347,6 @@ function EmployeesAdmin() {
     height: '100vh',
     backgroundColor: 'rgb(163, 187, 197)'
   };
-
-  // console.log("Type of Emp: ", typeof sumOne);
 
   const MakeBig = {
     width: '90%',
@@ -455,7 +455,7 @@ function EmployeesAdmin() {
             <input type='email' placeholder='Work-Related email' name='email' onChange={handleChange2} />
 
             <div style={{ display: 'flex', flexDirection: 'inline', gap: '9px', justifyContent: 'center' }}>
-              <p>Attach Parforma (Not required)</p>
+              <p>Attach Picture ID (Not required)</p>
               <label htmlFor="file" id="customButton" style={{ width: '35%', backgroundColor: 'black', display: 'flex', justifyContent: 'center', borderRadius: '23px', gap: '9px', cursor: 'pointer' }}>
                 <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName} />
                 {file || 'No file chosen'} <img style={{ width: '12%', display: 'inline' }} src={ImgAdd} alt="Add" />

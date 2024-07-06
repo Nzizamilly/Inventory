@@ -10,7 +10,11 @@ import Select from 'react-select';
 function NavbarMain() {
     const color = {
         color: 'green'
-    }
+    };
+
+    const url = process.env.REACT_APP_BACKEND;
+
+
     const navigate = useNavigate();
     const [data, setData] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,7 +67,7 @@ function NavbarMain() {
             const EmpID = localStorage.getItem("userID");
             try {
                 if (EmpID) {
-                    const response = await axios.get(`/employee/${EmpID}`);
+                    const response = await axios.get(`${url}/employee/${EmpID}`);
                     setData(response.data[0]);
                 } else {
                     console.error("EmpID Not found in localStorage")

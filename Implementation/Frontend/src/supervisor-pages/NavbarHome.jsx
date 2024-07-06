@@ -8,9 +8,9 @@ import Modal from 'react-modal';
 import Select from 'react-select';
 
 function NavbarHome() {
-    const color = {
-        color: 'green'
-    }
+
+    const url = process.env.REACT_APP_BACKEND;
+
     const navigate = useNavigate();
     const [data, setData] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,6 +48,9 @@ function NavbarHome() {
             justifyContent: 'center',
         },
     }
+    const color = {
+        color: 'green'
+    }
     const openModal = () => {
         setIsModalOpen(true);
     }
@@ -66,7 +69,7 @@ function NavbarHome() {
             const EmpID = localStorage.getItem("userID");
             try {
                 if (EmpID) {
-                    const response = await axios.get(`/employee/${EmpID}`);
+                    const response = await axios.get(`${url}/employee/${EmpID}`);
                     setData(response.data[0]);
                     // console.log("Data", response.data[0]);
                 } else {

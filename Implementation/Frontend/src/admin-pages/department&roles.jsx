@@ -8,6 +8,8 @@ import axios from 'axios';
 
 function Departments_Roles() {
 
+const url = process.env.REACT_APP_BACKEND;
+
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isDepartmentViewOpen, setIsDepartmentViewOpen] = useState(false);
     const [gotDepartment, setGotDepartment] = useState([]);
@@ -141,7 +143,7 @@ function Departments_Roles() {
 
     const addDepartment = async () => {
         try {
-            const response = await axios.post('/add-department', department);
+            const response = await axios.post(`${url}/add-department`, department);
             closeAddModal();
 
         } catch (error) {
@@ -167,7 +169,7 @@ function Departments_Roles() {
 
             try {
                 console.log("Dept", gotDepartment);
-                const response = await axios.get('/get-department');
+                const response = await axios.get(`${url}/get-department`);
                 setGotDepartment(response.data);
             } catch (error) {
                 console.error("Error", error);

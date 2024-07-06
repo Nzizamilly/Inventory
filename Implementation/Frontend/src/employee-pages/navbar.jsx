@@ -8,6 +8,9 @@ import Select from 'react-select';
 import PolicySVG from '../images/policySVG.svg';
 
 function Navbar() {
+
+  const url = process.env.REACT_APP_BACKEND;
+
   const navigate = useNavigate();
 
   const [data, setData] = useState([]);
@@ -61,7 +64,7 @@ function Navbar() {
     const fetchData = async () => {
       const EmpID = localStorage.getItem("userID");
       try {
-        const response = await axios.get(`/employee/${EmpID}`);
+        const response = await axios.get(`${url}/employee/${EmpID}`);
         setData(response.data[0]);
       } catch (error) {
         console.error("Error", error);
@@ -163,7 +166,7 @@ function Navbar() {
           placeholder="Notifications"
           onChange={handleNotificationChange}
         />
-        <li  className='liAdmin'><Link to={'/terms-employee'}><img src={PolicySVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Terms and Conditions</p></Link></li>
+        <li className='liAdmin'><Link to={'/terms-employee'}><img src={PolicySVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Terms and Conditions</p></Link></li>
       </ul>
       <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
         {data && (

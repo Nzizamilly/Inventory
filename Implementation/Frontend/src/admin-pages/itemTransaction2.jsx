@@ -80,6 +80,10 @@ function ItemTransactionsAdmin2() {
     const [endSingleItem, setEndSingleItem] = useState('');
     const [startSingleItem, setStartSingleItem] = useState('');
 
+    const url = process.env.REACT_APP_BACKEND;
+
+
+
     const openAllModalOpen = () => {
         setIsAllOpen(true);
     };
@@ -91,7 +95,7 @@ function ItemTransactionsAdmin2() {
     useEffect(() => {
         const fetchAllItems = async () => {
             try {
-                const response = await axios.get('/get-all-items');
+                const response = await axios.get(`${url}/get-all-items`);
                 setSmallData(response.data);
             } catch (error) {
                 console.error('Error fetching Data', error);
@@ -103,7 +107,7 @@ function ItemTransactionsAdmin2() {
 
     useEffect(() => {
         const fetchCount = async () => {
-            const response = await axios.get('/get-count-for-all-serial-numbers');
+            const response = await axios.get(`${url}/get-count-for-all-serial-numbers`);
             setCount(response.data);
         };
         fetchCount();
@@ -136,7 +140,7 @@ function ItemTransactionsAdmin2() {
     const bringAllSerialsFor = async (ID) => {
         try {
             setIDForDates(ID);
-            const response = await axios.get(`/get-serial-numbers-for-item/${ID}`);
+            const response = await axios.get(`${url}/get-serial-numbers-for-item/${ID}`);
             setSerialNumbersForSingleItem(response.data);
 
         } catch (error) {
@@ -184,7 +188,7 @@ function ItemTransactionsAdmin2() {
     useEffect(() => {
         const fetchSerialsIn = async () => {
             try {
-                const response = await axios.get(`/get-serial-In/${IDForSerialCount}`);
+                const response = await axios.get(`${url}/get-serial-In/${IDForSerialCount}`);
                 setTotalSerialsIn(response.data)
             } catch (error) {
                 console.error("Error: ", error);
@@ -196,7 +200,7 @@ function ItemTransactionsAdmin2() {
     useEffect(() => {
         const fetchSerialsOut = async () => {
             try {
-                const response = await axios.get(`/get-serial-Out/${IDForSerialCount}`);
+                const response = await axios.get(`${url}/get-serial-Out/${IDForSerialCount}`);
                 setTotalSerialsOut(response.data)
             } catch (error) {
                 console.error("Error: ", error);
@@ -212,7 +216,7 @@ function ItemTransactionsAdmin2() {
     useEffect(() => {
         const dates = async () => {
             try {
-                const responsee = await axios.get(`/get-serial-number-in-different-time/${startSingleItem}/${endSingleItem}/${IDForDates}`);
+                const responsee = await axios.get(`${url}/get-serial-number-in-different-time/${startSingleItem}/${endSingleItem}/${IDForDates}`);
                 console.log("Dates Response: ", responsee.data);
                 setSerialNumbersForSingleItem(responsee.data);
 

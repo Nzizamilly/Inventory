@@ -9,6 +9,9 @@ import HashLoader from "react-spinners/HashLoader";
 
 function CategoryAdmin() {
 
+const url = process.env.REACT_APP_BACKEND;
+
+
   const svgStyle = {
     width: '30px',
     height: '30px',
@@ -107,7 +110,7 @@ function CategoryAdmin() {
 
   const handleMake = async (event) => {
     try {
-      await axios.post(`/category`, category);
+      await axios.post(`${url}/category`, category);
       console.log("Category added successfully")
       setAddVisible(false);
     } catch {
@@ -118,7 +121,7 @@ function CategoryAdmin() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('/category');
+        const response = await axios.get(`${url}/category`);
         setCategories(response.data);
       } catch (error) {
         console.error('Error fetching categories: ', error);
@@ -138,7 +141,7 @@ function CategoryAdmin() {
 
   const HandleConfirm = async (id) => {
     try {
-      const response = await axios.delete(`/delete-category/${id}`);
+      const response = await axios.delete(`${url}/delete-category/${id}`);
       setInterval(() => {
         setIsDeletingOpen(false);
       }, 2700);

@@ -155,27 +155,6 @@ io.on("connection", (socket) => {
     console.log("Object Shown", object);
   })
 
-  app.get('/get-notification/:supervisorID', (req, res) => {
-    const sql = `
-    SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount,employee_supervisor_request.priority, employee_supervisor_request.description, employee_supervisor_request.date_of_request,employee_supervisor_request.email ,employee_supervisor_request.status , employee_supervisor_request.id
-    FROM employee_supervisor_request
-    JOIN employees ON employee_supervisor_request.employeeID = employees.id
-    JOIN category ON employee_supervisor_request.categoryID = category.id
-    JOIN item ON employee_supervisor_request.itemID = item.id
-   WHERE employee_supervisor_request.status = 'Pending' AND employee_supervisor_request.supervisor_concerned = ? 	
-    ORDER BY employee_supervisor_request.id DESC;
-    `;
-    const supervisorID = req.params.supervisorID;
-
-    db.query(sql, [supervisorID], (error, result) => {
-      if (error) {
-        console.error("Error", error);
-      } else {
-        return res.json(result);
-      }
-    })
-  })
-
   app.get('/get-notifications', (req, res) => {
     const sql = `SELECT 
     employees.username AS employee_username, 
@@ -404,11 +383,19 @@ ORDER BY
       }
     });
 
+    const formatDate = (dateString) => {
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    };
+
+    const date = Date.now();
+    const formatedDate = formatDate(date);
+
     const mailOption = {
       from: 'Centrika Inventory System',
       to: messageData.email,
       subject: 'Item Requested Approved',
-      text: `Item you requested ${messageData.name} was successfully approved on ${messageData.date_approved}`
+      text: `Item you requested ${messageData.name} was successfully approved on ${formatedDate}`
     };
 
     transporter.sendMail(mailOption, function (error, info) {
@@ -1207,6 +1194,24 @@ ORDER BY serial_number.date DESC; -- Order by date in descending order
   });
 });
 
+app.get('/getor/:supervisorID', (req, res) => {
+  const supervisorID = req.params.supervisorID
+
+  const sql = `
+  SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount,employee_supervisor_request.priority, employee_supervisor_request.description, employee_supervisor_request.date_of_request,employee_supervisor_request.email ,employee_supervisor_request.status , employee_supervisor_request.id
+  FROM employee_supervisor_request
+  JOIN employees ON employee_supervisor_request.employeeID = employees.id
+  JOIN category ON employee_supervisor_request.categoryID = category.id
+  JOIN item ON employee_supervisor_request.itemID = item.id
+ WHERE employee_supervisor_request.status = 'Pending' AND employee_supervisor_request.supervisor_concerned = ? 	
+  ORDER BY employee_supervisor_request.id DESC;
+  `;
+
+  db.query(sql, [supervisorID],  (error, result) => {
+   result ? res.json(result) : console.error("Error: ", error);
+  })
+})
+
 
 app.post('/add-department', (req, res) => {
   const q = 'INSERT INTO department(department_name, status) VALUES (?,?)';
@@ -1544,7 +1549,7 @@ app.get('/get-supervisor-name/:supervisorID', (req, res) => {
 
 app.post('/post-by-hr', async (req, res) => {
 
-  console.log("Endppoint hit~~~!!!");
+  console.log("Endpoint hit~~~!!!");
 
   const getEmployeeID = (employeeName) => {
     return new Promise((resolve, reject) => {
@@ -1613,15 +1618,16 @@ app.post('/post-by-hr', async (req, res) => {
   const categoryName = req.body.category_name;
   const employeeName = req.body.employee_username;
   const supervisorName = req.body.supervisor_username;
+  const email = req.body.email;
 
   const employee = await getEmployeeID(employeeName);
   const item = await getItemID(itemName);
   const category = await getCategoryID(categoryName);
   const supervisor = await getSupervisorID(supervisorName);
 
-  const sql = `INSERT INTO hr_admin_request (id,categoryID,itemID,amount,supervisorID,description,employeeID) VALUES (?, ?, ?, ?, ?, ?, ? )`;
+  const sql = `INSERT INTO hr_admin_request (id,categoryID,itemID,amount,supervisorID,description,employeeID, email) VALUES (?, ?, ?, ?, ?, ?, ?, ? )`;
 
-  const values = [id, category, item, amount, supervisor, description, employee];
+  const values = [id, category, item, amount, supervisor, description, employee, email];
 
   db.query(sql, values, (error, result) => {
     if (error) {

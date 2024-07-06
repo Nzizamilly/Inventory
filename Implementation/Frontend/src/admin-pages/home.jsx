@@ -12,6 +12,9 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Home() {
+
+    const url = process.env.REACT_APP_BACKEND;
+
     const [name, setName] = useState('');
     const [categoryCount, setCategoryCount] = useState(null);
     const [itemCount, setItemCount] = useState(null);
@@ -24,7 +27,7 @@ function Home() {
     axios.defaults.withCredentials = true;
 
     useEffect(() => {
-        axios.get('/home-employee')
+        axios.get(`${url}/home-employee`)
             .then(res => {
                 if (res.data.valid) {
                     setName(res.data.username);
@@ -36,7 +39,7 @@ function Home() {
     }, []);
 
     useEffect(() => {
-        axios.get('/number-category')
+        axios.get(`${url}/number-category`)
             .then(res => {
                 setCategoryCount(res.data.categoryCount);
 
@@ -48,7 +51,7 @@ function Home() {
     }, [])
 
     useEffect(() => {
-        axios.get('/number-item')
+        axios.get(`${url}/number-item`)
             .then(res => {
                 setItemCount(res.data.itemCount);
 
@@ -60,7 +63,7 @@ function Home() {
     }, [])
 
     useEffect(() => {
-        axios.get('/number-employee')
+        axios.get(`${url}/number-employee`)
             .then(res => {
                 setEmployeeCount(res.data.employeeCount);
 
@@ -72,7 +75,7 @@ function Home() {
     }, []);
 
     useEffect(() => {
-        axios.get('/get-number-of-requests')
+        axios.get(`${url}/get-number-of-requests`)
             .then(res => {
                 setRequestNumber(res.data.requestCount);
             })
@@ -82,7 +85,7 @@ function Home() {
     }, [])
 
     useEffect(() => {
-        axios.get('/number-supplier')
+        axios.get(`${url}/number-supplier`)
             .then(res => {
                 setSupplierCount(res.data.supplierCount);
 

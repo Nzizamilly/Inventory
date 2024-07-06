@@ -13,6 +13,9 @@ import DepartmentRolesSVG from '../images/DepartmentsRolesSVG.svg';
 import PolicySVG from '../images/policySVG.svg';
 
 function NavbarAdmin() {
+
+const url = process.env.REACT_APP_BACKEND;
+
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);

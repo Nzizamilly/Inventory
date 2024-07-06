@@ -9,6 +9,7 @@ import Add from '../images/add.svg'
 import Info from '../images/info.svg'
 
 function SupplierAdmin() {
+  const url = process.env.REACT_APP_BACKEND;
 
   const modal = {
     overlay: {
@@ -88,7 +89,7 @@ function SupplierAdmin() {
   useEffect(() => {
     const fetchSupplier = async () => {
       try {
-        const res = await axios.get(`/supplier`);
+        const res = await axios.get(`${url}/supplier`);
         setSuppliers(res.data);
       } catch (error) {
       }
@@ -104,7 +105,7 @@ function SupplierAdmin() {
   const handleUpdate = async (id) => {
     try {
       console.log("Updatiess: ", update);
-      const response = await axios.put(`/supplier/${id}`);
+      const response = await axios.put(`${url}/supplier/${id}`);
       console.log("Updated Well!", response.info);
     } catch (error) {
       console.error("Error: ", error)
@@ -117,7 +118,7 @@ function SupplierAdmin() {
 
   const handleMake = async () => {
     try {
-      await axios.post(`/supplier`, supp);
+      await axios.post(`${url}/supplier`, supp);
       console.log("Supplier added successfully");
       setAddVisible(false);
     } catch {
@@ -141,7 +142,7 @@ function SupplierAdmin() {
   const bringOneSupplier = async (ID) => {
     console.log("ID: ", ID);
     try {
-      const response = await axios.get(`/supplier/${ID}`);
+      const response = await axios.get(`${url}/supplier/${ID}`);
       setSuppliers(response.data)
       setSingleSupplier(response.data);
     } catch (error) {

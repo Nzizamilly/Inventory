@@ -5,6 +5,8 @@ import Model from 'react-modal'
 
 function AccountAdmin() {
 
+const url = process.env.REACT_APP_BACKEND;
+
   const modal = {
     overlay: {
       backgroundColor: 'rgba(34, 41, 44, 0.8)',
@@ -52,7 +54,7 @@ function AccountAdmin() {
   useEffect(() => {
     const fetchEmp = async () => {
       try {
-        const res = await axios.get(`/employee/${EmpID}`);
+        const res = await axios.get(`${url}/employee/${EmpID}`);
         setEmps(res.data);
       } catch (error) {
       }
@@ -74,7 +76,7 @@ function AccountAdmin() {
   const EmpID = localStorage.getItem("userID");
   const handleUpdate = async (event) => {
     try {
-      await axios.put(`/employee/${EmpID}`, update);
+      await axios.put(`${url}/employee/${EmpID}`, update);
       setEmps((prevEmps) => {
         prevEmps.forEach((emp, index) => {
           if (emp.id === EmpID) {

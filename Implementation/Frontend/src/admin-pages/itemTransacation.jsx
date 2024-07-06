@@ -26,10 +26,12 @@ function ItemTransactionsAdmins() {
     flexDirection: 'column',
   };
 
+  const url = process.env.REACT_APP_BACKEND;
+
   useEffect(() => {
     const fetchMonthlyReport = async () => {
       try {
-        const response = await axios.get(`/monthly-report/${startDate}/${endDate}`,);
+        const response = await axios.get(`${url}/monthly-report/${startDate}/${endDate}`);
         setReport(response.data);
         setRecords(response.data);
       } catch (error) {

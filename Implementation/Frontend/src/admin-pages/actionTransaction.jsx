@@ -8,6 +8,8 @@ import Modal from 'react-modal'
 
 function ActionTransactionsAdmin() {
 
+const url = process.env.REACT_APP_BACKEND;
+
   const [report, setReport] = useState([]);
   const [records, setRecords] = useState(report);
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
@@ -65,7 +67,7 @@ function ActionTransactionsAdmin() {
   useEffect(() => {
     const fetchMonthlyReport = async () => {
       try {
-        const response = await axios.get('/monthly-report');
+        const response = await axios.get(`${url}/monthly-report`);
         setReport(response.data);
       } catch (error) {
         console.error('Error fetching Data', error);
@@ -136,7 +138,7 @@ function ActionTransactionsAdmin() {
     const Func = async () => {
       try {
 
-        const response = await axios.get("/get-action-transaction");
+        const response = await axios.get(`${url}/get-action-transaction`);
         setAction(response.data)
 
       } catch (error) {

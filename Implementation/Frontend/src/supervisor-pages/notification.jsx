@@ -5,12 +5,14 @@ import axios from 'axios';
 import DataTable from 'react-data-table-component';
 
 function NotificationReviewSupervisor() {
+  const url = process.env.REACT_APP_BACKEND;
+
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       const id = localStorage.getItem('userID');
-      const response = await axios.get(`/get-all-requests/${id}`);
+      const response = await axios.get(`${url}/get-all-requests/${id}`);
       setNotifications(response.data)
     }
     fetchData();
@@ -45,13 +47,13 @@ function NotificationReviewSupervisor() {
     <div>
       <NavbarHome></NavbarHome>
       <div className="notification-container">
-        <div style={{width: '64%'}}>
-        <DataTable
-          data={notifications}
-          columns={column}
-          pagination
-        >
-        </DataTable>
+        <div style={{ width: '64%' }}>
+          <DataTable
+            data={notifications}
+            columns={column}
+            pagination
+          >
+          </DataTable>
         </div>
       </div>
     </div>

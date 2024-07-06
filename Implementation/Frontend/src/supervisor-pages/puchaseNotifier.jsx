@@ -24,30 +24,32 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 
 function PurchaseSupervisor() {
 
+    const url = process.env.REACT_APP_BACKEND;
+
     const [viewQuotation, setViewQuotation] = useState(false);
     const [allRequests, setAllRequests] = useState([]);
     const [imageURL, setImageURL] = useState('');
     const [loading, setLoading] = useState(true);
     const [denyModalOpen, setDenyModalOpen] = useState(false);
     const [isSendModalOpen, setIsSendModalOpen] = useState(false);
-  
+
     const openLoader = (row) => {
         setIsSendModalOpen(true);
         handleApprove(row);
-      };
-    
-      const closeRequestModal = () => {
+    };
+
+    const closeRequestModal = () => {
         setIsSendModalOpen(false);
-      };
-    
-      const openDenyLoader = (rowID) => {
+    };
+
+    const openDenyLoader = (rowID) => {
         setDenyModalOpen(true);
         handleDeny(rowID);
-      }
-    
-      const closeDenyRequest = () => {
+    }
+
+    const closeDenyRequest = () => {
         setDenyModalOpen(false);
-      };
+    };
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -83,7 +85,7 @@ function PurchaseSupervisor() {
         const fetchData = async () => {
             try {
                 const supervisorID = localStorage.getItem("userID");
-                const response = await axios.get(`/get-purchase-notification/${supervisorID}`);
+                const response = await axios.get(`${url}/get-purchase-notification/${supervisorID}`);
                 const result = response.data;
                 console.log("Quotation: ", typeof result[0].quotation);
                 setAllRequests(result);
@@ -196,15 +198,15 @@ function PurchaseSupervisor() {
         console.log("Notification: ", notifications.quotation);
         const id = notifications.id
 
-        const response = await axios.put(`/change-status/${id}`);
+        const response = await axios.put(`${url}/change-status/${id}`);
         console.log("Response Data: ", response.data);
 
         try {
 
             setInterval(() => {
                 setIsSendModalOpen(false);
-              }, 2600);
-           
+            }, 2600);
+
             const id = notifications.id;
             const imageRef = ref(storage, `images/${id}`);
             const imageURL = await getDownloadURL(imageRef);
@@ -217,7 +219,7 @@ function PurchaseSupervisor() {
 
 
             const supervisorID = localStorage.getItem("userID");
-            await axios.post(`/add-purchase-supervisor-hr/${supervisorID}`, notifications);
+            await axios.post(`${url}/add-purchase-supervisor-hr/${supervisorID}`, notifications);
         } catch (error) {
             console.error('Error', error);
         }
@@ -228,10 +230,10 @@ function PurchaseSupervisor() {
 
         setInterval(() => {
             setDenyModalOpen(false);
-          }, 2600);
+        }, 2600);
 
         try {
-            await axios.put(`/deny-by-supervisor-purchase/${index}`);
+            await axios.put(`${url}/deny-by-supervisor-purchase/${index}`);
             console.log("Denied for ID", index);
         } catch (error) {
             console.log('Error', error);
@@ -241,7 +243,7 @@ function PurchaseSupervisor() {
     const handlePending = async () => {
         console.log("HandlePending is Hit");
         const supervisorID = localStorage.getItem("userID");
-        const response = await axios.get(`/get-purchase-notification/${supervisorID}`);
+        const response = await axios.get(`${url}/get-purchase-notification/${supervisorID}`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setAllRequests(result);
@@ -250,7 +252,7 @@ function PurchaseSupervisor() {
     const handleApprovedRequest = async () => {
         console.log("HandleApproved is Hit");
         const supervisorID = localStorage.getItem('userID');
-        const response = await axios.get(`/get-approved-purchase-notification/${supervisorID}`);
+        const response = await axios.get(`${url}/get-approved-purchase-notification/${supervisorID}`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setAllRequests(result)
@@ -259,7 +261,7 @@ function PurchaseSupervisor() {
     const handleDenyRequest = async () => {
         console.log("HandleDenied is Hit");
         const supervisorID = localStorage.getItem('userID');
-        const response = await axios.get(`/get-denied-notification-purchase-supervisor/${supervisorID}`);
+        const response = await axios.get(`${url}/get-denied-notification-purchase-supervisor/${supervisorID}`);
         const result = response.data;
         console.log("DATA For Denied: ", result);
         setAllRequests(result);

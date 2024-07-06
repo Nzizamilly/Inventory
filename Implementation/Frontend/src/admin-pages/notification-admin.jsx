@@ -9,6 +9,7 @@ import DataTable from 'react-data-table-component'
 function NotificationAdmin() {
 
   const ioPort = process.env.REACT_APP_SOCKET_PORT;
+  const url = process.env.REACT_APP_BACKEND;
 
   const socket = io.connect(`${ioPort}`);
 
@@ -31,7 +32,7 @@ function NotificationAdmin() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const response = await axios.get("/get-hr-admin-pending-requests");
+        const response = await axios.get(`${url}/get-hr-admin-pending-requests`);
         setNotifications(response.data)
       } catch (error) {
         console.error("Error: ", error);
@@ -87,12 +88,14 @@ function NotificationAdmin() {
 
     try {
 
-      const response = await axios.put(`/change-status-from-notifications/${requestor}/${item}/${amount}/${rowID}`);
+      const response = await axios.put(`${url}/change-status-from-notifications/${requestor}/${item}/${amount}/${rowID}`);
       const result = response.data;
 
       if (result === "Given Out") {
 
-        const responsee = await axios.put(`/change-request-stockStatus/${rowID}`);
+        socket.emit("Send Approved Email", row);
+
+        const responsee = await axios.put(`${url}/change-request-stockStatus/${rowID}`);
         console.log("Responsee: ", responsee.data);
 
       } else {
@@ -146,7 +149,7 @@ function NotificationAdmin() {
 
   const handlePending = async () => {
     console.log("HandlePending is Hit");
-    const response = await axios.get(`/get-hr-admin-pending-requests`);
+    const response = await axios.get(`${url}/get-hr-admin-pending-requests`);
     const result = response.data;
     console.log("DATA FROM ENDPOINT: ", result);
     setNotifications(result);
@@ -154,7 +157,7 @@ function NotificationAdmin() {
 
   const handleApprovedRequest = async () => {
     console.log("HandleApproved is Hit");
-    const response = await axios.get(`/get-hr-admin-given-requests`);
+    const response = await axios.get(`${url}/get-hr-admin-given-requests`);
     const result = response.data;
     console.log("DATA FROM ENDPOINT: ", result);
     setNotifications(result);

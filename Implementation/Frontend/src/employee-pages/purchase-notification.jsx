@@ -19,6 +19,9 @@ import {
 import { storage } from "../firebase";
 
 function PurchaseNotificationEmployee() {
+
+    const url = process.env.REACT_APP_BACKEND;
+
     const [viewQuotation, setViewQuotation] = useState(false);
     const [allRequests, setAllRequests] = useState([]);
     const [imageURL, setImageURL] = useState('');
@@ -58,7 +61,7 @@ function PurchaseNotificationEmployee() {
         const fetchData = async () => {
             try {
                 const employeeID = localStorage.getItem("userID");
-                const response = await axios.get(`/get-purchase-notification-employee/${employeeID}`);
+                const response = await axios.get(`${url}/get-purchase-notification-employee/${employeeID}`);
                 const result = response.data;
                 console.log("Quotation: ", typeof result[0].quotation);
                 setAllRequests(result);
@@ -149,14 +152,14 @@ function PurchaseNotificationEmployee() {
                 <button className='buttonStyle3' onClick={() => handleViewQuotation(row.id)}><img src={View} style={svgStyle} alt="Deny" /></button>
             )
         },
-      
+
     ]
 
 
     const handlePending = async () => {
         console.log("HandlePending is Hit");
         const employeeID = localStorage.getItem("userID");
-        const response = await axios.get(`/get-purchase-notification-employee/${employeeID}`);
+        const response = await axios.get(`${url}/get-purchase-notification-employee/${employeeID}`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setAllRequests(result);
@@ -165,7 +168,7 @@ function PurchaseNotificationEmployee() {
     const handleApprovedRequest = async () => {
         console.log("HandleApproved is Hit");
         const employeeID = localStorage.getItem('userID');
-        const response = await axios.get(`/get-approved-purchase-notification-employee/${employeeID}`);
+        const response = await axios.get(`${url}/get-approved-purchase-notification-employee/${employeeID}`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setAllRequests(result)
@@ -174,7 +177,7 @@ function PurchaseNotificationEmployee() {
     const handleDenyRequest = async () => {
         console.log("HandleDenied is Hit");
         const employeeID = localStorage.getItem('userID');
-        const response = await axios.get(`/get-denied-notification-purchase-employee/${employeeID}`);
+        const response = await axios.get(`${url}/get-denied-notification-purchase-employee/${employeeID}`);
         const result = response.data;
         console.log("DATA For Denied: ", result);
         setAllRequests(result);
@@ -197,8 +200,8 @@ function PurchaseNotificationEmployee() {
             backgroundColor: 'black',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'center', 
-            alignItems: 'center', 
+            justifyContent: 'center',
+            alignItems: 'center',
         },
     };
 

@@ -7,11 +7,12 @@ import DataTable from 'react-data-table-component';
 function Notification() {
   
   const [notifications, setNotifications] = useState([]);
+  const url = process.env.REACT_APP_BACKEND;
 
   useEffect(() => {
     const fetchData = async () => {
       const id = localStorage.getItem('userID');
-      const response = await axios.get(`/get-all-requests/${id}`);
+      const response = await axios.get(`${url}/get-all-requests/${id}`);
       setNotifications(response.data)
     }
     fetchData();

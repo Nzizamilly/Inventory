@@ -12,9 +12,11 @@ function Home() {
     const navigate = useNavigate();
 
     axios.defaults.withCredentials = true;
+    const url = process.env.REACT_APP_BACKEND;
+
 
     useEffect(() => {
-        axios.get('/home-employee')
+        axios.get(`${url}/home-employee`)
             .then(res => {
                 if (res.data.valid) {
                     setName(res.data.username);
@@ -41,24 +43,24 @@ function Home() {
     }
     return (
         <div style={start}>
-        <Navbar></Navbar> 
-        <div>
-        <h1 style={kain}>Dashboard</h1>
-        <div className="icon-container">
-            <div className="icons">
-                <img className='img1' src={User} alt='img1' />
-                <p>Account: {name}</p>
+            <Navbar></Navbar>
+            <div>
+                <h1 style={kain}>Dashboard</h1>
+                <div className="icon-container">
+                    <div className="icons">
+                        <img className='img1' src={User} alt='img1' />
+                        <p>Account: {name}</p>
+                    </div>
+                    <div className="icons1">
+                        <img className='img1' src={Request} alt='img2' />
+                        <p>Requests: ---</p>
+                    </div>
+                    <div className="icons2">
+                        <img className='img1' src={Notification} alt='img3' />
+                        <p>Notifications: ---</p>
+                    </div>
+                </div>
             </div>
-            <div className="icons1">
-                <img className='img1' src={Request} alt='img2' />
-                <p>Requests: ---</p>
-            </div>
-            <div className="icons2">
-                <img className='img1' src={Notification} alt='img3' />
-                <p>Notifications: ---</p>
-            </div>
-        </div>
-        </div>
         </div>
     );
 }

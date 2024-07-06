@@ -14,6 +14,9 @@ import RequestSent from '../images/request-sent.svg'
 
 
 function RequestHr() {
+
+  const url = process.env.REACT_APP_BACKEND;
+
   const [amount, setAmount] = useState({
     amount: '',
   });
@@ -82,7 +85,7 @@ function RequestHr() {
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const res = await axios.get(`/category`);
+        const res = await axios.get(`${url}/category`);
         setCategory(res.data);
       } catch (error) {
         console.error("Error: ", error)
@@ -95,7 +98,7 @@ function RequestHr() {
     const fetchItem = async (categoryID) => {
       console.log("CategoryID: ", categoryID);
       try {
-        const response = await axios.get(`/items/${categoryID}`);
+        const response = await axios.get(`${url}/items/${categoryID}`);
         setItem(response.data);
         setOptions(response.data);
 
@@ -117,7 +120,7 @@ function RequestHr() {
     const fetchCount = async (itemID) => {
       try {
         const itemId = itemID;
-        const response = await axios.get(`/get-total-number/${itemId}`);
+        const response = await axios.get(`${url}/get-total-number/${itemId}`);
         setBackCount(response.data);
         console.log(response.data);
       } catch (error) {
@@ -160,7 +163,7 @@ function RequestHr() {
     const get = localStorage.getItem('username');
     const email = localStorage.getItem('email')
     const date = Date.now();
-    const response = await axios.get('/get-number');
+    const response = await axios.get(`${url}/get-number`);
     const idTaker = response.data.latestId + 1;
     setTaker(idTaker);
 
@@ -189,9 +192,9 @@ function RequestHr() {
     }, 2000);
 
     socket.emit("Employee_Message_Supervisor(1)", messageData);
-    
+
     try {
-      const response = await axios.post('/add-request-employee-supervisor', messageData);
+      const response = await axios.post(`${url}/add-request-employee-supervisor`, messageData);
       messageData.id = id;
       const id = response.id;
       console.log("Response", response);
@@ -310,7 +313,7 @@ function RequestHr() {
   useEffect(() => {
     const showSupervisor = async () => {
       try {
-        const response = await axios.get("/show-supervisor");
+        const response = await axios.get(`${url}/show-supervisor`);
         console.log("Data: ", response.data);
         setSupervisorId(response.data);
       } catch (error) {

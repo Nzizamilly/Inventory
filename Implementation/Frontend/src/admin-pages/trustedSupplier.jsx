@@ -18,6 +18,7 @@ import { ref, uploadBytes, getDownloadURL, listAll, list, } from "firebase/stora
 function TrustedSuppliers() {
 
     const ioPort = process.env.REACT_APP_SOCKET_PORT;
+    const url = process.env.REACT_APP_BACKEND;
 
     // const socket = io.connect(`${ioPort}`);
 
@@ -199,7 +200,7 @@ function TrustedSuppliers() {
     useEffect(() => {
 
         const getTrustedSuppliers = async () => {
-            const response = await axios.get('/get-trusted-suppliers');
+            const response = await axios.get(`${url}/get-trusted-suppliers`);
             setTrustedSuppliers(response.data);
         }
         getTrustedSuppliers();
@@ -237,7 +238,7 @@ function TrustedSuppliers() {
 
         try {
             // console.log("Passing Data: ", newTrustedSupplier)
-            await axios.post(`/new-trusted-supplier`, newTrustedSupplier);
+            await axios.post(`${url}/new-trusted-supplier`, newTrustedSupplier);
             setIsTrustedSupplierModalOpen(false);
         } catch (error) {
             console.log('Error', error)
@@ -301,7 +302,7 @@ function TrustedSuppliers() {
 
     const bringOneSupplier = async (ID) => {
         try {
-            const response = await axios.get(`/get-one-trusted-supplier/${ID}`);
+            const response = await axios.get(`${url}/get-one-trusted-supplier/${ID}`);
             setOneTrustedSupplier(response.data);
         } catch (error) {
             console.error("Error: ", error);
@@ -339,7 +340,7 @@ function TrustedSuppliers() {
 
     const getDates = async (ID) => {
         // console.log("Dates Function Being Hit");
-        const response = await axios.get(`/trustedSuppliers-dates/${ID}`);
+        const response = await axios.get(`${url}/trustedSuppliers-dates/${ID}`);
         setDates(response.data);
     };
 

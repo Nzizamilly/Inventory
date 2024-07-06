@@ -20,6 +20,7 @@ function NotificationSupervisor() {
   const [loading, setLoading] = useState(true);
 
   const ioPort = process.env.REACT_APP_SOCKET_PORT;
+  const url = process.env.REACT_APP_BACKEND;
 
   const socket = io.connect(`${ioPort}`);
 
@@ -69,7 +70,7 @@ function NotificationSupervisor() {
 
       socket.emit("Supervisor_Message_HR(1)", notifications, supervisorName);
 
-      await axios.post(`/add-request-supervisor-hr/${supervisorID}`, notifications);
+      await axios.post(`${url}/add-request-supervisor-hr/${supervisorID}`, notifications);
 
     } catch (error) {
       console.error('Error', error);
@@ -86,7 +87,7 @@ function NotificationSupervisor() {
 
     socket.emit("Denied_By_Either(1)", notification);
     try {
-      await axios.put(`/deny-by-supervisor/${index}`);
+      await axios.put(`${url}/deny-by-supervisor/${index}`);
       console.log("Denied for ID", index);
       window.alert("Request Denied")
     } catch (error) {
@@ -95,19 +96,18 @@ function NotificationSupervisor() {
   }
 
   useEffect(() => {
-    const fetch = async () => {
-      try {
+    const bring = async () => {
+      try{
         const supervisorID = localStorage.getItem("userID");
-        const response = await axios.get(`/get-notification/${supervisorID}`);
-        const result = response.data;
-        console.log("DATA FROM ENDPOINT: ", result);
-        setNotifications(result);
-      } catch (error) {
-        console.error(error);
+        const response = await axios.get(`${url}/getor/${supervisorID}`);
+        setNotifications(response.data);
+
+      }catch(error){
+        console.error("Error: ", error);
       }
-    };
-    fetch();
-  }, [])
+    }
+    bring();
+  },[])
 
   console.log("type in Upper logger", typeof notifications);
 
@@ -169,7 +169,7 @@ function NotificationSupervisor() {
   const div = {
     width: '90%',
     marginLeft: '13%'
-  }
+  };
   const buttons = {
     width: '65px',
     color: 'black',
@@ -181,31 +181,33 @@ function NotificationSupervisor() {
   const smaller = {
     display: 'flex',
     flexDirection: 'inline',
-  }
+  };
 
   const handlePending = async () => {
-    console.log("HandlePending is Hit");
-    const supervisorID = localStorage.getItem("userID");
-    const response = await axios.get(`/get-notification/${supervisorID}`);
+    try{
+      console.log("HandlePending is Hit");
+      const supervisorID = localStorage.getItem("userID");
+      const response = await axios.get(`${url}/getor/${supervisorID}`);
+      setNotifications(response.data);
+    }catch(error){console.error("Error: ", error)}
+  };
+
+  const handleApprovedRequest = async () => {
+    console.log("HandleApproved is Hit");
+    const response = await axios.get(`${url}/get-approved-notification`);
     const result = response.data;
     console.log("DATA FROM ENDPOINT: ", result);
     setNotifications(result);
   };
 
-  const handleApprovedRequest = async () => {
-    console.log("HandleApproved is Hit");
-    const response = await axios.get("/get-approved-notification");
-    const result = response.data;
-    console.log("DATA FROM ENDPOINT: ", result);
-    setNotifications(result)
-  }
   const handleDenyRequest = async () => {
     console.log("HandleDenied is Hit");
-    const response = await axios.get("/get-denied-notification");
+    const response = await axios.get(`${url}/get-denied-notification`);
     const result = response.data;
     console.log("DATA FROM ENDPOINT: ", result);
     setNotifications(result)
-  }
+  };
+
 
   const modal = {
     overlay: {

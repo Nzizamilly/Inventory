@@ -6,6 +6,8 @@ import Model from 'react-modal'
 function Account() {
 
   axios.defaults.withCredentials = true;
+  const url = process.env.REACT_APP_BACKEND;
+
 
   const modal = {
     overlay: {
@@ -32,14 +34,14 @@ function Account() {
     },
   }
 
-  const color ={
+  const color = {
     color: 'green'
   }
   const [emps, setEmps] = useState([]);
   useEffect(() => {
     const fetchEmp = async () => {
       try {
-        const res = await axios.get(`/employee/${EmpID}`);
+        const res = await axios.get(`${url}/employee/${EmpID}`);
         setEmps(res.data);
       } catch (error) {
       }
@@ -58,10 +60,10 @@ function Account() {
     setUpdate((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
   const EmpID = localStorage.getItem("userID");
-  
+
   const handleUpdate = async (event) => {
     try {
-      await axios.put(`http://localhost:5500/employee/${EmpID}`, update);
+      await axios.put(`${url}/employee/${EmpID}`, update);
       setEmps((prevEmps) => {
         prevEmps.forEach((emp, index) => {
           if (emp.id === EmpID) {

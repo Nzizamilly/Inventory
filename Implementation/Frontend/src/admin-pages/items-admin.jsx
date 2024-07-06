@@ -17,6 +17,8 @@ import RiseLoader from "react-spinners/RiseLoader";
 function ItemsAdmin() {
 
   const ioPort = process.env.REACT_APP_SOCKET_PORT;
+  const url = process.env.REACT_APP_BACKEND;
+
 
   const socket = io.connect(`${ioPort}`);
   socket.on("disconnect", () => {
@@ -387,7 +389,7 @@ function ItemsAdmin() {
       console.log("Type of category", typeof newItemObj.category);
       console.log("Type of supplier", typeof newItemObj.supplier);
       const categoryId = selectedCategory;
-      await axios.post('/add-items', newItemObj);
+      await axios.post(`${url}/add-items`, newItemObj);
 
       setInterval(() => {
         setIsCreatingNewItemOpen(false);
@@ -408,7 +410,7 @@ function ItemsAdmin() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('/category');
+        const response = await axios.get(`${url}/category`);
         setCategories(response.data);
       } catch (error) {
         console.error('Error fetching categories: ', error);
@@ -420,7 +422,7 @@ function ItemsAdmin() {
 
   const fetchItemsByCategory = async (categoryId) => {
     try {
-      const response = await axios.get(`/items?category=${categoryId}`);
+      const response = await axios.get(`${url}/items?category=${categoryId}`);
       setItems(response.data);
     } catch (error) {
       console.error('Error fetching items: ', error);
@@ -440,7 +442,7 @@ function ItemsAdmin() {
         itemID: takeItemID
       });
       console.log("Check...", serialNumber);
-      const response = await axios.post(`/add-serial-number/${takeItemID}`, serialNumber);
+      const response = await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber);
       console.log("Response: ", response.data);
       setInterval(() => {
         setIsCreatingSerialNumberOpen(false);
@@ -454,7 +456,7 @@ function ItemsAdmin() {
   const fetchNumberOfItems = async (itemID) => {
     try {
       setLoadingInfo(true);
-      const response = await axios.get(`/serial-number/${itemID}`);
+      const response = await axios.get(`${url}/serial-number/${itemID}`);
       const result = await response.data;
       console.log('Fetched data:', result);
       setItemName(result.itemName);
@@ -470,7 +472,7 @@ function ItemsAdmin() {
 
   const fetchNumberOfItemss = async (itemID) => {
     try {
-      const response = await axios.get(`/get-serial-number/${itemID}`);
+      const response = await axios.get(`${url}/get-serial-number/${itemID}`);
       const result = await response.data;
       setGetEm(result);
     } catch (error) {
@@ -480,7 +482,7 @@ function ItemsAdmin() {
 
   const fetchNom = async (itemID) => {
     try {
-      const response = await axios.get(`/get-name-serial-number/${itemID}`);
+      const response = await axios.get(`${url}/get-name-serial-number/${itemID}`);
       const result = await response.data;
       setGetNom(result);
     } catch (error) {
@@ -514,9 +516,9 @@ function ItemsAdmin() {
 
     const employeeID = localStorage.getItem('userID');
 
-    const responsee = await axios.post(`/insert-deletion-doer/${itemID}/${employeeID}`);
+    const responsee = await axios.post(`${url}/insert-deletion-doer/${itemID}/${employeeID}`);
     console.log(responsee.data);
-    const response = await axios.delete(`/delete-item/${itemID}`);
+    const response = await axios.delete(`${url}/delete-item/${itemID}`);
     console.log(response.data);
     console.log("Item was deleted Successfully...");
     setIsDeletingOpen(true);
@@ -557,10 +559,10 @@ function ItemsAdmin() {
   const handleUpdateClick = async (itemID) => {
     try {
       console.log("Updaties:", update);
-      const response = await axios.put(`/update-item/${itemID}`, update);
+      const response = await axios.put(`${url}/update-item/${itemID}`, update);
       console.log(response);
       const employeeID = localStorage.getItem('userID')
-      const responsee = await axios.post(`/insert-doer/${itemID}/${employeeID}`);
+      const responsee = await axios.post(`${url}/insert-doer/${itemID}/${employeeID}`);
       console.log("The post responsee was made", responsee);
       closeUpdateModal();
 
@@ -579,7 +581,7 @@ function ItemsAdmin() {
     setUsername(taker);
     console.log("Status: ", status);
     console.log("Taker: ", taker);
-    const response = await axios.put(`/update-serial-status/${IDTaken}/${status}/${username}`);
+    const response = await axios.put(`${url}/update-serial-status/${IDTaken}/${status}/${username}`);
     console.log("Response: ", response.data);
 
     setInterval(() => {
@@ -594,7 +596,7 @@ function ItemsAdmin() {
       try {
         console.log("Status: ", status);
         console.log("ID: ", row);
-        const response = await axios.put(`/update-serial-status/${row}/${status}`);
+        const response = await axios.put(`${url}/update-serial-status/${row}/${status}`);
         console.log(response);
       } catch (error) {
         console.error("Error", error);
@@ -715,7 +717,7 @@ function ItemsAdmin() {
 
   const handleSerialUpdate = async (getUpdateSerialID) => {
     try {
-      const response = await axios.put(`/update-serial-item/${getUpdateSerialID}`, serialUpdateData);
+      const response = await axios.put(`${url}/update-serial-item/${getUpdateSerialID}`, serialUpdateData);
       window.alert("Updated successfully");
       console.log(response);
       closeUpdateSerialModal();
@@ -729,19 +731,20 @@ function ItemsAdmin() {
       if (row.status === "Out") {
         openWarningModal();
       } else {
-        const response = await axios.delete(`/delete-serial-item/${row.id}`);
+        const response = await axios.delete(`${url}/delete-serial-item/${row.id}`);
         console.log("Response from deletion ", response.data);
       }
 
     } catch (error) {
       console.error('Error fetching items: ', error);
-    }};
+    }
+  };
 
   useEffect(() => {
     const supplierG = async () => {
       try {
 
-        const response = await axios.get(`/supplier`);
+        const response = await axios.get(`${url}/supplier`);
         setSupplier(response.data);
       } catch (error) {
         console.error("Error: ", error);
@@ -783,7 +786,7 @@ function ItemsAdmin() {
 
   useEffect(() => {
     const fetchAllEmployees = async () => {
-      const response = await axios.get('/get-employees-4-items');
+      const response = await axios.get(`${url}/get-employees-4-items`);
       setAllEmployees(response.data);
     };
     fetchAllEmployees()
@@ -963,7 +966,7 @@ function ItemsAdmin() {
                   <p>Position: {employee.role_name}</p>
                   <p>Department: {employee.department_name}</p>
                   <p>Address: {employee.address}</p>
-                  <button onClick={() => { openListLoader(employee.username)}} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
+                  <button onClick={() => { openListLoader(employee.username) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
                 </div>
               </div>
             ))}

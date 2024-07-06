@@ -22,7 +22,7 @@ function NotificationHR() {
     const [loading, setLoading] = useState(true);
 
     const ioPort = process.env.REACT_APP_SOCKET_PORT;
-
+    const url = process.env.REACT_APP_BACKEND;
 
     const socket = io.connect(`${ioPort}`);
 
@@ -65,12 +65,12 @@ function NotificationHR() {
           }, 2600);
 
         socket.emit("Take This", notifications);
-        socket.emit("Send Approved Email", notifications);
+        // socket.emit("Send Approved Email", notifications);
         socket.emit("change-status-approve", notifications);
         try {
             console.log("Notifications to be passed: ", notifications);
 
-            const putResponse = await axios.post('/post-by-hr', notifications);
+            const postResponse = await axios.post(`${url}/post-by-hr`, notifications);
         } catch (error) {
             console.error('Error', error);
         }
@@ -86,7 +86,7 @@ function NotificationHR() {
         socket.emit("change-status-deny", notification);
         socket.emit("change-status-deny-for-employee", notification);
         try {
-            await axios.put(`/deny-by-supervisor/${index}`);
+            await axios.put(`${url}/deny-by-supervisor/${index}`);
         } catch (error) {
         }
     };
@@ -94,7 +94,7 @@ function NotificationHR() {
     useEffect(() => {
         const fetch = async () => {
             try {
-                const response = await axios.get("/get-pending-notifications");
+                const response = await axios.get(`${url}/get-pending-notifications`);
                 const result = response.data;
                 const supervisorID = result.supervisorID;
                 setTakeSupervisorID(supervisorID);
@@ -151,7 +151,7 @@ function NotificationHR() {
 
     const handlePending = async () => {
         console.log("HandlePending is Hit");
-        const response = await axios.get("/get-pending-notifications");
+        const response = await axios.get(`${url}/get-pending-notifications`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setNotifications(result);
@@ -159,14 +159,14 @@ function NotificationHR() {
 
     const handleApprovedRequest = async () => {
         console.log("HandleApproved is Hit");
-        const response = await axios.get("/get-approved-notifications");
+        const response = await axios.get(`${url}/get-approved-notifications`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setNotifications(result)
     }
     const handleDenyRequest = async () => {
         console.log("HandleDenied is Hit");
-        const response = await axios.get("/get-denied-notifications");
+        const response = await axios.get(`${url}/get-denied-notifications`);
         const result = response.data;
         console.log("DATA FROM ENDPOINT: ", result);
         setNotifications(result)
