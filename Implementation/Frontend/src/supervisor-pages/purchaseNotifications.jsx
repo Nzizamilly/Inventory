@@ -17,10 +17,11 @@ import {
     list,
 } from "firebase/storage";
 import { storage } from "../firebase";
+import Keys from '../keys';
 
 function PurchaseNotificationSupervisor() {
 
-    const url = process.env.REACT_APP_BACKEND;
+    const url = Keys.REACT_APP_BACKEND;
 
     const [viewQuotation, setViewQuotation] = useState(false);
     const [allRequests, setAllRequests] = useState([]);
@@ -44,7 +45,7 @@ function PurchaseNotificationSupervisor() {
         setViewQuotation(false);
     };
 
-    const ioPort = process.env.REACT_APP_SOCKET_PORT;
+    const ioPort = Keys.REACT_APP_SOCKET_PORT;
 
     const socket = io.connect(`${ioPort}`);
 

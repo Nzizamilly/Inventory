@@ -9,7 +9,8 @@ import Cyan from '../images/cyan-circle.svg';
 import Select from 'react-select';
 import Modal from 'react-modal';
 import PulseLoader from "react-spinners/PulseLoader";
-import RequestSent from '../images/request-sent.svg'
+import RequestSent from '../images/request-sent.svg';
+import Keys from '../keys';
 
 
 function Request() {
@@ -75,8 +76,8 @@ function Request() {
     borderRadius: '14px'
   };
 
-  const ioPort = process.env.REACT_APP_SOCKET_PORT;
-  const url = process.env.REACT_APP_BACKEND;
+  const ioPort = Keys.REACT_APP_SOCKET_PORT;
+  const url = Keys.REACT_APP_BACKEND;
 
 
   const socket = io.connect(`${ioPort}`);

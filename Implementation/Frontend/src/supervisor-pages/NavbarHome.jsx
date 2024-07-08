@@ -6,10 +6,11 @@ import PolicySVG from '../images/policySVG.svg';
 import axios from 'axios';
 import Modal from 'react-modal';
 import Select from 'react-select';
+import Keys from '../keys';
 
 function NavbarHome() {
 
-    const url = process.env.REACT_APP_BACKEND;
+    const url = Keys.REACT_APP_BACKEND;
 
     const navigate = useNavigate();
     const [data, setData] = useState([]);

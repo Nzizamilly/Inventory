@@ -6,13 +6,14 @@ import axios from 'axios';
 import PolicySVG from '../images/policySVG.svg';
 import Modal from 'react-modal';
 import Select from 'react-select';
+import Keys from '../keys';
 
 function NavbarMain() {
     const color = {
         color: 'green'
     };
 
-    const url = process.env.REACT_APP_BACKEND;
+    const url = Keys.REACT_APP_BACKEND;
 
 
     const navigate = useNavigate();

@@ -13,12 +13,13 @@ import AddItem from '../images/addItem.svg'
 import PulseLoader from "react-spinners/PulseLoader";
 import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL, listAll, list, } from "firebase/storage";
+import Keys from '../keys';
 // import { Worker, Viewer } from '@react-pdf-viewer/core';
 
 function TrustedSuppliers() {
 
-    const ioPort = process.env.REACT_APP_SOCKET_PORT;
-    const url = process.env.REACT_APP_BACKEND;
+    const ioPort = Keys.REACT_APP_SOCKET_PORT;
+    const url = Keys.REACT_APP_BACKEND;
 
     // const socket = io.connect(`${ioPort}`);
 

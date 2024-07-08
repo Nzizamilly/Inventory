@@ -1,12 +1,13 @@
 import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
-import Model from 'react-modal'
+import Model from 'react-modal';
+import Keys from '../keys';
 
 function Account() {
 
   axios.defaults.withCredentials = true;
-  const url = process.env.REACT_APP_BACKEND;
+  const url = Keys.REACT_APP_BACKEND;
 
 
   const modal = {

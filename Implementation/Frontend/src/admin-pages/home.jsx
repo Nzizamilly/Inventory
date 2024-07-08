@@ -10,10 +10,11 @@ import Transaction from '../images/transaction-white.svg';
 import axios from 'axios';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Keys from '../keys';
 
 function Home() {
 
-    const url = process.env.REACT_APP_BACKEND;
+    const url = Keys.REACT_APP_BACKEND;
 
     const [name, setName] = useState('');
     const [categoryCount, setCategoryCount] = useState(null);

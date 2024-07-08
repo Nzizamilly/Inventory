@@ -3,9 +3,10 @@ import io from 'socket.io-client';
 import NavbarHome from './NavbarHome';
 import axios from 'axios';
 import DataTable from 'react-data-table-component';
+import Keys from '../keys';
 
 function NotificationReviewSupervisor() {
-  const url = process.env.REACT_APP_BACKEND;
+  const url = Keys.REACT_APP_BACKEND;
 
   const [notifications, setNotifications] = useState([]);
 

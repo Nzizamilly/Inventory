@@ -11,10 +11,11 @@ import CategorySVG from '../images/CategorySVG.svg';
 import NotificationSVG from '../images/notificationSVG.svg';
 import DepartmentRolesSVG from '../images/DepartmentsRolesSVG.svg';
 import PolicySVG from '../images/policySVG.svg';
+import Keys from '../keys';
 
 function NavbarAdmin() {
 
-const url = process.env.REACT_APP_BACKEND;
+const url = Keys.REACT_APP_BACKEND;
 
   const navigate = useNavigate();
   const [data, setData] = useState([]);

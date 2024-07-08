@@ -4,11 +4,12 @@ import NavbarAdmin from './navbarAdmin';
 import '../style.css';
 import axios from 'axios';
 import Modal from 'react-modal'
+import keys from '../keys';
 
 
 function ActionTransactionsAdmin() {
 
-const url = process.env.REACT_APP_BACKEND;
+const url = keys.REACT_APP_BACKEND;
 
   const [report, setReport] = useState([]);
   const [records, setRecords] = useState(report);

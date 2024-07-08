@@ -6,10 +6,11 @@ import Add from '../images/add.svg'
 import Delete from '../images/delete.svg'
 import Modal from 'react-modal'
 import HashLoader from "react-spinners/HashLoader";
+import Keys from '../keys';
 
 function CategoryAdmin() {
 
-const url = process.env.REACT_APP_BACKEND;
+const url = Keys.REACT_APP_BACKEND;
 
 
   const svgStyle = {

@@ -4,12 +4,13 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import Modal from 'react-modal';
 import RiseLoader from "react-spinners/RiseLoader";
-import DataTable from 'react-data-table-component'
+import DataTable from 'react-data-table-component';
+import Keys from '../keys';
 
 function NotificationAdmin() {
 
-  const ioPort = process.env.REACT_APP_SOCKET_PORT;
-  const url = process.env.REACT_APP_BACKEND;
+  const ioPort = Keys.REACT_APP_SOCKET_PORT;
+  const url = Keys.REACT_APP_BACKEND;
 
   const socket = io.connect(`${ioPort}`);
 

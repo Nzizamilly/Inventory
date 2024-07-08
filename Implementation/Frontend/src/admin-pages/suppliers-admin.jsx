@@ -7,9 +7,10 @@ import Modal from 'react-modal';
 import DataTable from 'react-data-table-component';
 import Add from '../images/add.svg'
 import Info from '../images/info.svg'
+import Keys from '../keys';
 
 function SupplierAdmin() {
-  const url = process.env.REACT_APP_BACKEND;
+  const url = Keys.REACT_APP_BACKEND;
 
   const modal = {
     overlay: {

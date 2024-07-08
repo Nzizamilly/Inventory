@@ -11,10 +11,11 @@ import Modal from 'react-modal'
 import { storage } from '../firebase';
 import { ref, uploadBytes } from "firebase/storage";
 import NavbarHome from './NavbarHome';
+import Keys from '../keys';
 
 function PurchaseRequestSupervisor() {
 
-  const url = process.env.REACT_APP_BACKEND;
+  const url = Keys.REACT_APP_BACKEND;
 
   const [description, setDescription] = useState('');
   const [endGoalValue, setEndGoalValue] = useState('');

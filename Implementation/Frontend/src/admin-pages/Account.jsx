@@ -2,10 +2,11 @@ import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import Model from 'react-modal'
+import Keys from '../keys';
 
 function AccountAdmin() {
 
-const url = process.env.REACT_APP_BACKEND;
+const url = Keys.REACT_APP_BACKEND;
 
   const modal = {
     overlay: {

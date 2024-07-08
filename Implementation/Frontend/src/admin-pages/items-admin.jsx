@@ -13,11 +13,12 @@ import DataTable from 'react-data-table-component';
 import HashLoader from "react-spinners/HashLoader";
 import io from 'socket.io-client';
 import RiseLoader from "react-spinners/RiseLoader";
+import Keys from '../keys';
 
 function ItemsAdmin() {
 
-  const ioPort = process.env.REACT_APP_SOCKET_PORT;
-  const url = process.env.REACT_APP_BACKEND;
+  const ioPort = Keys.REACT_APP_SOCKET_PORT;
+  const url = Keys.REACT_APP_BACKEND;
 
 
   const socket = io.connect(`${ioPort}`);

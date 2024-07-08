@@ -21,6 +21,7 @@ import { io } from 'socket.io-client';
 import { storage } from "../firebase";
 import PropagateLoader from "react-spinners/PropagateLoader";
 import ScaleLoader from "react-spinners/ScaleLoader";
+import Keys from '../keys';
 
 function PurchaseNotificationHR() {
     const [viewQuotation, setViewQuotation] = useState(false);
@@ -30,8 +31,8 @@ function PurchaseNotificationHR() {
     const [denyModalOpen, setDenyModalOpen] = useState(false);
     const [isSendModalOpen, setIsSendModalOpen] = useState(false);
 
-    const ioPort = process.env.REACT_APP_SOCKET_PORT;
-    const url = process.env.REACT_APP_BACKEND;
+    const ioPort = Keys.REACT_APP_SOCKET_PORT;
+    const url = Keys.REACT_APP_BACKEND;
 
     const socket = io.connect(`${ioPort}`);
 

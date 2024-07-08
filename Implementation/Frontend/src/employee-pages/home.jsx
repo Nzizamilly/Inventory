@@ -6,13 +6,14 @@ import Notification from '../images/notification.svg';
 import axios from 'axios';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Keys from '../keys';
 
 function Home() {
     const [name, setName] = useState('');
     const navigate = useNavigate();
 
     axios.defaults.withCredentials = true;
-    const url = process.env.REACT_APP_BACKEND;
+    const url = Keys.REACT_APP_BACKEND;
 
 
     useEffect(() => {

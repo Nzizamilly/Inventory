@@ -1,11 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios'
-import Dotenv from 'dotenv'
+import Keys from '../keys.js'
 
-Dotenv.config();
 
-const url = process.env.REACT_APP_BACKEND;
+const url = Keys.REACT_APP_BACKEND;
 
 function Login() {
 
@@ -71,6 +70,7 @@ function Login() {
             "password": values.password
         }
         console.log("VALUES: ", values.password);
+        console.log("KEYS: ", url);
         axios.post(`${url}/login`, data)
             .then(res => {
                 if (res.data.Login) {

@@ -11,7 +11,8 @@ import Green from '../images/green-circle.svg';
 import Cyan from '../images/cyan-circle.svg';
 import PropagateLoader from "react-spinners/PropagateLoader";
 import ScaleLoader from "react-spinners/ScaleLoader";
-import Modal from 'react-modal'
+import Modal from 'react-modal';
+import Keys from '../keys.js';
 
 
 function NotificationHR() {
@@ -21,8 +22,8 @@ function NotificationHR() {
     const [isSendModalOpen, setIsSendModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const ioPort = process.env.REACT_APP_SOCKET_PORT;
-    const url = process.env.REACT_APP_BACKEND;
+    const ioPort = Keys.REACT_APP_SOCKET_PORT;
+    const url = Keys.REACT_APP_BACKEND;
 
     const socket = io.connect(`${ioPort}`);
 

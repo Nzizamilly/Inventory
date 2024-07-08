@@ -9,6 +9,7 @@ import Select from 'react-select';
 import Modal from 'react-modal'
 import PulseLoader from "react-spinners/PulseLoader";
 import NavbarHome from './NavbarHome';
+import Keys from '../keys';
 
 
 function RequestSupervisor() {
@@ -31,8 +32,6 @@ function RequestSupervisor() {
   const [messageDataForDown, setMessageDataForDown] = useState([]);
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [imageApproval, setImageApproval] = useState(false);
-
 
   const openLoader = () => {
     setIsSendModalOpen(true);
@@ -71,8 +70,8 @@ function RequestSupervisor() {
     borderRadius: '14px'
   };
 
-  const ioPort = process.env.REACT_APP_SOCKET_PORT;
-  const url = process.env.REACT_APP_BACKEND;
+  const ioPort = Keys.REACT_APP_SOCKET_PORT;
+  const url = Keys.REACT_APP_BACKEND;
 
   const socket = io.connect(ioPort);
 

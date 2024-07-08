@@ -6,10 +6,11 @@ import Modal from 'react-modal';
 import Centrika from '../images/centrika-removebg.png';
 import Select from 'react-select';
 import PolicySVG from '../images/policySVG.svg';
+import Keys from '../keys';
 
 function Navbar() {
 
-  const url = process.env.REACT_APP_BACKEND;
+  const url = Keys.REACT_APP_BACKEND;
 
   const navigate = useNavigate();
 

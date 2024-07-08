@@ -8,6 +8,7 @@ import 'react-date-range/dist/theme/default.css';
 import Modal from 'react-modal';
 import { CSVLink } from 'react-csv'
 import { set } from 'firebase/database';
+import Keys from '../keys';
 
 function ItemTransactionsAdmin2() {
 
@@ -80,7 +81,7 @@ function ItemTransactionsAdmin2() {
     const [endSingleItem, setEndSingleItem] = useState('');
     const [startSingleItem, setStartSingleItem] = useState('');
 
-    const url = process.env.REACT_APP_BACKEND;
+    const url = Keys.REACT_APP_BACKEND;
 
 
 

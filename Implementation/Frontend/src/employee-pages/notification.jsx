@@ -3,11 +3,12 @@ import io from 'socket.io-client';
 import Navbar from './navbar';
 import axios from 'axios';
 import DataTable from 'react-data-table-component';
+import Keys from '../keys';
 
 function Notification() {
   
   const [notifications, setNotifications] = useState([]);
-  const url = process.env.REACT_APP_BACKEND;
+  const url = Keys.REACT_APP_BACKEND;
 
   useEffect(() => {
     const fetchData = async () => {

@@ -21,10 +21,11 @@ import {
 import { storage } from "../firebase";
 import PropagateLoader from "react-spinners/PropagateLoader";
 import ScaleLoader from "react-spinners/ScaleLoader";
+import Keys from '../keys';
 
 function PurchaseSupervisor() {
 
-    const url = process.env.REACT_APP_BACKEND;
+    const url = Keys.REACT_APP_BACKEND;
 
     const [viewQuotation, setViewQuotation] = useState(false);
     const [allRequests, setAllRequests] = useState([]);
@@ -68,7 +69,7 @@ function PurchaseSupervisor() {
         setViewQuotation(false);
     };
 
-    const ioPort = process.env.REACT_APP_SOCKET_PORT;
+    const ioPort = Keys.REACT_APP_SOCKET_PORT;
 
     const socket = io.connect(`${ioPort}`);
 

@@ -7,6 +7,7 @@ import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import Modal from 'react-modal';
 import { CSVLink } from 'react-csv'
+import Keys from '../keys';
 
 function ItemTransactionsAdmins() {
 
@@ -26,7 +27,7 @@ function ItemTransactionsAdmins() {
     flexDirection: 'column',
   };
 
-  const url = process.env.REACT_APP_BACKEND;
+  const url = Keys.REACT_APP_BACKEND;
 
   useEffect(() => {
     const fetchMonthlyReport = async () => {

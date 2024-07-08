@@ -15,11 +15,12 @@ import NavbarAdmin from './navbarAdmin';
 import Update from '../images/update.svg';
 import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import keys from '../keys';
 
 
 function EmployeesAdmin() {
 
-const url = process.env.REACT_APP_BACKEND;
+const url = keys.REACT_APP_BACKEND;
 
   const modal = {
     overlay: {

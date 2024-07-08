@@ -11,10 +11,11 @@ import Select from 'react-select';
 import Modal from 'react-modal'
 import { storage } from '../firebase';
 import { ref, uploadBytes } from "firebase/storage";
+import Keys from '../keys';
 
 function PurchaseRequest() {
 
-  const url = process.env.REACT_APP_BACKEND;
+  const url = Keys.REACT_APP_BACKEND;
 
   const [description, setDescription] = useState('');
   const [endGoalValue, setEndGoalValue] = useState('');
