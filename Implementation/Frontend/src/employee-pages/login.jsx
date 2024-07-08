@@ -1,6 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios'
+import Dotenv from 'dotenv'
+
+Dotenv.config();
 
 const url = process.env.REACT_APP_BACKEND;
 
@@ -34,7 +37,7 @@ function Login() {
     useEffect(() => {
         const func = async () => {
             try {
-                const response = await axios.get('/category');
+                const response = await axios.get(`${url}/category`);
                 // const serverUrl=process.env.REACT_APP_BACKEND;
                 console.log("Response: ", url);
             } catch (error) {
