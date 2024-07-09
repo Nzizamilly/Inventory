@@ -501,10 +501,10 @@ app.post("/employee", (req, res) => {
 
   db.query(query, values, (error, result) => {
     if (error) {
-      console.error("Error: ".error);
+      console.error("Error: ",error);
     } else {
-      // res.json(result.insertId);
-      console.log("Data Returned: ",  result);
+      res.json(result.insertId);
+      // console.log("Data Returned: ",  result);
     };
   });
 });
