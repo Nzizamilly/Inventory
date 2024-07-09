@@ -1625,9 +1625,11 @@ app.post('/post-by-hr', async (req, res) => {
   const category = await getCategoryID(categoryName);
   const supervisor = await getSupervisorID(supervisorName);
 
-  const sql = `INSERT INTO hr_admin_request (id,categoryID,itemID,amount,supervisorID,description,employeeID, email) VALUES (?, ?, ?, ?, ?, ?, ?, ? )`;
+  const pending = "Not Issued";
 
-  const values = [id, category, item, amount, supervisor, description, employee, email];
+  const sql = `INSERT INTO hr_admin_request (id,categoryID,itemID,amount,supervisorID,description,employeeID, email, stockStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? )`;
+
+  const values = [id, category, item, amount, supervisor, description, employee, email, pending];
 
   db.query(sql, values, (error, result) => {
     if (error) {
@@ -2323,6 +2325,8 @@ app.put('/change-request-stockStatus/:rowID', (req, res) => {
 
 app.get('/get-hr-admin-pending-requests', (req, res) => {
 
+  const pending = "Not Issued";
+
   const sql = `SELECT
   employees.username AS employee_username, 
   supervisor.username AS supervisor_username,
@@ -2343,11 +2347,11 @@ JOIN
   category ON hr_admin_request.categoryID = category.id
 JOIN 
   item ON hr_admin_request.itemID = item.id
-  WHERE hr_admin_request.stockStatus = ''
+  WHERE hr_admin_request.stockStatus = ? OR hr_admin_request.stockStatus = ''
 ORDER BY 
   hr_admin_request.id DESC`;
 
-  db.query(sql, (error, result) => {
+  db.query(sql, [pending], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
   });
 });
