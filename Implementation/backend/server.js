@@ -503,7 +503,8 @@ app.post("/employee", (req, res) => {
     if (error) {
       console.error("Error: ".error);
     } else {
-      res.json(result.insertId);
+      // res.json(result.insertId);
+      console.log("Data Returned: ",  result);
     };
   });
 });
