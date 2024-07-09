@@ -120,7 +120,7 @@ function Login() {
         <div style={loginContainer}>
             <div style={login}>
                 <h1>Login</h1>
-                <input placeholder='Username' type='text' name='username' onChange={handleInput} ref={username} />
+                <input placeholder='Username' type='text' className='inputTest' name='username' onChange={handleInput} ref={username} />
                 <input placeholder='Password' type='password' name='password' onChange={handleInput} ref={password} />
                 <button style={button} onClick={handleSubmit}>Enter</button>
             </div>

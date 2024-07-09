@@ -170,6 +170,18 @@ input[type="text"] {
     border-bottom: 2px rgb(23, 219, 170);
 };
 
+.inputTest {
+    width: 66%;
+    height: 23%;
+    border: none;
+    color: white;
+    padding: 12px 0px;
+    padding-left: 12px;
+    border-radius: 12px;
+    background-color: #000000;
+    border-bottom: 2px rgb(23, 219, 170);
+}
+
 #hein {
     width: 66%;
     height: 80%;
