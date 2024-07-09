@@ -18,7 +18,7 @@ app.use(cookieParser());
 // app.use(bodyParser.json());
 
 app.use(cors({
-  origin: ["http://localhost:3000"],
+  origin: ["http://10.10.74.88:89"],
   methods: ["POST", "GET", "PUT", "DELETE"],
   credentials: true
 }));
@@ -52,7 +52,7 @@ db.getConnection((err, connection) => {
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://10.10.74.88:89",
     methods: ["POST", "GET"]
   },
   debug: true
