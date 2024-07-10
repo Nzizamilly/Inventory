@@ -18,7 +18,7 @@ app.use(cookieParser());
 // app.use(bodyParser.json());
 
 app.use(cors({
-  origin: ["http://10.10.74.88:89"],
+  origin: ["http://localhost:3000"],
   methods: ["POST", "GET", "PUT", "DELETE"],
   credentials: true
 }));
@@ -52,7 +52,7 @@ db.getConnection((err, connection) => {
 
 const io = new Server(server, {
   cors: {
-    origin: "http://10.10.74.88:89",
+    origin: "http://localhost:3000",
     methods: ["POST", "GET"]
   },
   debug: true
@@ -2494,9 +2494,16 @@ app.get('/get-serial-number-in-different-time/:start/:end/:ID', (req, res) => {
       res.json(result);
     }else{
       console.error("Error: ", error);
-    }
-  })
-})
+    };
+  });
+});
+
+app.get('/pending-numbers', (req, res) => {
+  const sql = `SELECT COUNT(*) AS pending_count FROM hr_admin_request WHERE stockStatus = ''`;
+  db.query(sql , (error, result) => {
+    result ? res.json({pending_count: result[0].pending_count}) : console.error("Error: ", error);
+  });
+});
 
 
 app.listen(5500, () => {

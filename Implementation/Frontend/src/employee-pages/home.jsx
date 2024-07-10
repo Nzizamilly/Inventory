@@ -56,7 +56,7 @@ function Home() {
                         <img className='img1' src={Request} alt='img2' />
                         <p>Requests: ---</p>
                     </div>
-                    <div className="icons2">
+                    <div className="iconsx2">
                         <img className='img1' src={Notification} alt='img3' />
                         <p>Notifications: ---</p>
                     </div>

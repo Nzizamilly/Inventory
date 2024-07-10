@@ -15,7 +15,7 @@ import Keys from '../keys';
 
 function NavbarAdmin() {
 
-const url = Keys.REACT_APP_BACKEND;
+  const url = Keys.REACT_APP_BACKEND;
 
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -100,7 +100,7 @@ const url = Keys.REACT_APP_BACKEND;
       const EmpID = localStorage.getItem("userID");
       try {
         if (EmpID) {
-          const response = await axios.get(`http://localhost:5500/employee/${EmpID}`);
+          const response = await axios.get(`${url}/employee/${EmpID}`);
           setData(response.data[0]);
         } else {
           console.error("EmpID Not found in localStorage")
@@ -167,6 +167,15 @@ const url = Keys.REACT_APP_BACKEND;
     changeSupplier(selectedSupplier);
   }, [selectedSupplier]);
 
+  const [count, setCount] =useState([]);
+
+  useEffect(() => {
+    const bringPendingNumbers = async () => {
+      const response = await axios.get(`${url}/pending-numbers`);
+      setCount(response.data);
+    }
+    bringPendingNumbers();
+  }, [count])
 
   return (
     <div >
@@ -183,8 +192,12 @@ const url = Keys.REACT_APP_BACKEND;
         <li className='liAdmin'><Link to={'/employees-admin'} ><img src={Employees} style={{ maxWidth: '20%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Employees</p></Link></li>
         <li className='liAdmin'><Link to={'/items-admin'}><img src={ItemSVG} style={{ maxWidth: '16%', maxHeight: '50vh' }} /><p style={{ marginTop: '6px' }}>Items</p></Link></li>
         <li className='liAdmin'><Link to={'/category-admin'}><img src={CategorySVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Category</p></Link></li>
-        <li className='liAdmin'><Link to={'/notification-admin'}><img src={NotificationSVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Notification</p></Link></li>
-
+        <div>
+          <span style={{ backgroundColor: 'red', position: 'absolute', zIndex: '2', borderRadius: '45px', padding: '4px 4px 4px 4px' }}>{count.pending_count}</span>
+          <li className='liAdmin' style={{ position: 'absolute', zIndex: '1' }}><Link to={'/notification-admin'}><img src={NotificationSVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Notification</p></Link></li>
+        </div>
+        <br />
+        <br />
         <Select
           options={option}
           styles={customStyles}
