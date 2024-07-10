@@ -2499,7 +2499,7 @@ app.get('/get-serial-number-in-different-time/:start/:end/:ID', (req, res) => {
 });
 
 app.get('/pending-numbers', (req, res) => {
-  const sql = `SELECT COUNT(*) AS pending_count FROM hr_admin_request WHERE stockStatus = ''`;
+  const sql = `SELECT COUNT(*) AS pending_count FROM hr_admin_request WHERE stockStatus = '' OR stockStatus = 'Not Issued'`;
   db.query(sql , (error, result) => {
     result ? res.json({pending_count: result[0].pending_count}) : console.error("Error: ", error);
   });

@@ -314,12 +314,12 @@ li a:hover {
     justify-content: center;
 };
 
-.li1 a {
+/* .li1 a {
     color: white;
     padding: 14px 16px;
     text-align: center;
     text-decoration: none;
-}
+} */
 
 .li1 a:hover {
     background-color: #f5f4f4;
@@ -1299,10 +1299,7 @@ li a:hover {
     align-items: center;
     justify-content: center;
     background-color: rgb(153, 235, 240);
-}
-
-;
-
+};
 
 .PendingBtn {
     width: 65px;
@@ -1311,4 +1308,37 @@ li a:hover {
     padding: 12px 0px;
     border-radius: 1px;
     background-color: white;
+};
+
+.someKind {
+    height: 70%;
+    width: 100%;
+    overflow: hidden;
+    list-style-type: none;
+    background-color: rgb(8, 85, 28);
+}
+
+.righter {
+    display: flex;
+    width: 100%;
+    float: right;   
+
+};
+
+.lefter {
+    float: left;    
+};
+
+.selectin {
+    width: 209px;
+    color: white;
+    display: block;
+    padding: 8px 16px;
+    border-radius: 12px;
+    color: white;
+    margin-top: 7px;
+    text-decoration: none;
+    background-color: white;
+    float: right;
+    justify-content: center;
 }
