@@ -185,13 +185,13 @@ function NavbarHome() {
         <div className="navbar">
             <ul className='ul1' style={color}>
                 <li style={{ float: 'left', marginTop: '-1px', marginLeft: '174px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
-                <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
+                <li style = {{ float: 'right',  width: '99px', height: '82px', color: 'white', backgroundColor: 'rgb(8, 81, 26)',  justifyContent: 'center'}} onClick={handleLogout}><Link>Log Out</Link></li>
                 <select onChange={handleTransactionChange} value={transactionType} style={select}>
                     <option value="" disabled >Requests</option>
                     <option value="item" >Item</option>
                     <option value="purchase" >Purchase</option>
                 </select>
-                <li className='li1'><Link to={'/home-supervisor'}>Home</Link></li>
+                <li style = {{ float: 'right',  width: '99px', height: '82px', color: 'white', backgroundColor: 'rgb(8, 81, 26)',  justifyContent: 'center'  }}><Link to={'/home-supervisor'}>Home</Link></li>
             </ul>
             <ul className='ul2supervisor'>
                 <li className='liAdmin'><Link to={'/account-admin'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li>
