@@ -181,12 +181,12 @@ function NavbarHome() {
     }, [selectedRequest]);
 
     const li1 = {
-        float: 'right',
         width: '99px',
-        height: '82px',
         color: 'white',
+        height: '82px' ,
+        float: 'right',
+        justifyContent: 'center',
         backgroundColor: 'rgb(8, 81, 26)',
-        justifyContent: 'center'
     }
 
 
