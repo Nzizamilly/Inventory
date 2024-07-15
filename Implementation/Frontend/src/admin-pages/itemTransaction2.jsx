@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
+import ProfilePicture from '../images/profile-picture.svg';
 import NavbarAdmin from './navbarAdmin';
 import '../style.css';
 import axios from 'axios';
@@ -9,6 +10,9 @@ import Modal from 'react-modal';
 import { CSVLink } from 'react-csv'
 import { set } from 'firebase/database';
 import Keys from '../keys';
+import { storage } from '../firebase';
+import { ref, getDownloadURL } from "firebase/storage";
+
 
 function ItemTransactionsAdmin2() {
 
@@ -39,6 +43,37 @@ function ItemTransactionsAdmin2() {
     const buttonStyle12 = {
         width: '25%',
         height: '25%'
+    };
+
+    const modalStyles = {
+        content: {
+            top: '18%',
+            width: '20%',
+            left: '86%',
+            right: 'auto',
+            gap: '12px',
+            borderRadius: '12px',
+            height: '35%',
+            marginRight: '-20%',
+            transform: 'translate(-50%, -50%)',
+            opacity: 0.9,
+            fontFamily: 'Your Custom Font, sans-serif',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            border: 'none',
+            color: 'white',
+            backgroundColor: 'black',
+            display: 'flex',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            alignItems: 'center'
+        },
+        overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.0)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
     };
 
     const modal = {
@@ -77,21 +112,12 @@ function ItemTransactionsAdmin2() {
     const [IDForSerialCount, setIDForSerialCount] = useState()
     const [itemName, setItemName] = useState();
     const [IDForDates, setIDForDates] = useState('');
+    const [imageURL, setImageURL] = useState('');
     const [count, setCount] = useState();
     const [endSingleItem, setEndSingleItem] = useState('');
     const [startSingleItem, setStartSingleItem] = useState('');
 
     const url = Keys.REACT_APP_BACKEND;
-
-
-
-    const openAllModalOpen = () => {
-        setIsAllOpen(true);
-    };
-
-    const closeAllDataModal = () => {
-        setIsAllOpen(false);
-    }
 
     useEffect(() => {
         const fetchAllItems = async () => {
@@ -149,6 +175,11 @@ function ItemTransactionsAdmin2() {
         };
     };
 
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    };
+
     const column = [
         {
             name: 'Serial Number',
@@ -160,7 +191,7 @@ function ItemTransactionsAdmin2() {
         },
         {
             name: 'Date',
-            selector: row => row.date
+            selector: row => formatDate(row.date)
         },
         {
             name: 'In / Out',
@@ -168,15 +199,43 @@ function ItemTransactionsAdmin2() {
         },
         {
             name: 'Taker',
-            selector: row => row.username
+            selector: row => (
+                <p onMouseOver={() => openModal(row.taker)}>{row.username}</p>
+            ),
         },
     ];
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = (ID) => {
+        setIsModalOpen(true);
+        fetchTakerInfo(ID);
+    };
+
+    const closeTakerModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const [taker, setTaker] = useState([]);
+
+    const fetchTakerInfo = async (ID) => {
+        try {
+            const response = await axios.get(`${url}/employees-for-transaction/${ID}`);
+            setTaker(response.data);
+            console.log("ID PROVIDED: ", ID)
+            const imageRef = ref(storage, `employeesProfilePictures/${ID}`);
+            const imageURL = await getDownloadURL(imageRef);
+            setImageURL(imageURL);
+        } catch (error) {
+            setImageURL('');
+            console.error("Error: ", error);
+        };
+    };
 
     useEffect(() => {
         const fetchTotalNumberOfSerials = async () => {
             try {
-                const response = await axios.get(`get-Total-Number-Of-Serials-For-single/${IDForSerialCount}`);
+                const response = await axios.get(`${url}/get-Total-Number-Of-Serials-For-single/${IDForSerialCount}`);
                 setTotalNumberForSingleItem(response.data);
             } catch (error) {
                 console.error("Error: ", error);
@@ -222,7 +281,7 @@ function ItemTransactionsAdmin2() {
                 setSerialNumbersForSingleItem(responsee.data);
 
             } catch (error) {
-                // console.error("Error: ", error);
+                console.error("Error: ", error);
             };
         };
 
@@ -230,6 +289,20 @@ function ItemTransactionsAdmin2() {
     }, [endSingleItem, startSingleItem, IDForDates]);
 
     const fileName = `Report of ${itemName}`;
+
+    const [records, setRecords] = useState([]);
+
+    const handleFilterx = (event) => {
+        const newData = serialNumbersForSingleItems.filter((row) => {
+            return row.serial_number.toLowerCase().includes(event.target.value.toLowerCase());
+        });
+        setRecords(newData);
+    };
+
+    useEffect(() => {
+        setRecords(serialNumbersForSingleItems);
+    }, [serialNumbersForSingleItems]);
+
 
     return (
         <div>
@@ -254,7 +327,7 @@ function ItemTransactionsAdmin2() {
                 <Modal isOpen={isSingleItemModalOpen} onRequestClose={closeSingleItemModal} style={modal}>
                     <div style={{ backgroundColor: 'white', width: '100%', height: '100%', }}>
                         <div style={{ backgroundColor: 'white', marginLeft: '12px', display: 'flex', gap: '14px', width: '100%' }}>
-                            <input type='text' style={{ backgroundColor: 'black', width: '15%' }} placeholder='Search For A Serial Number...' />
+                            <input type='text' style={{ backgroundColor: 'black', width: '15%' }} placeholder='Search For A Serial Number...' onChange={handleFilterx} />
                             <p style={{ marginTop: '12px' }}>From: </p> <input type='date' id='smallDate' style={{ width: '10%', display: 'flex', justifyContent: 'center', border: 'none' }} onChange={(e) => setStartSingleItem(e.target.value)} />
                             <p style={{ marginTop: '12px' }}>To: </p> <input type='date' id='smallDate' style={{ width: '10%', display: 'flex', justifyContent: 'center', border: 'none' }} onChange={(e) => setEndSingleItem(e.target.value)} />
                             <p style={{ marginTop: '12px' }}>{itemName} 's Serial Numbers</p>
@@ -264,7 +337,8 @@ function ItemTransactionsAdmin2() {
                             ))}
                             {totalSerialsIn.map(total => (
                                 <p style={{ marginTop: '12px' }}>Total In: {total},</p>
-                            ))} {totalSerialsOut.map(total => (
+                            ))}
+                            {totalSerialsOut.map(total => (
                                 <p style={{ marginTop: '12px' }}>Total Out: {total},</p>
                             ))}
 
@@ -274,7 +348,7 @@ function ItemTransactionsAdmin2() {
                         <br />
                         <div style={{ backgroundColor: 'rgb(163, 187, 197)', height: '90%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', borderRadius: '33px' }}>
                             <DataTable
-                                data={serialNumbersForSingleItems}
+                                data={records}
                                 columns={column}
                                 pagination
                             ></DataTable>
@@ -282,8 +356,22 @@ function ItemTransactionsAdmin2() {
                     </div>
                 </Modal>
 
-                <Modal isOpen={isAllDataOpen} onRequestClose={closeAllDataModal}>
+                <Modal isOpen={isModalOpen} onRequestClose={closeTakerModal} style={modalStyles}>
+                    {imageURL ? (
+                        <img src={imageURL} style={{ width: '25%', objectFit: 'cover', maxHeight: '10vh', borderRadius: '60px' }} />
 
+                    ) : <img src={ProfilePicture} style={{ maxWidth: '90%', maxHeight: '15vh', borderRadius: '60px' }} />}
+
+                    {taker.map((take) => (
+                        <div>
+                            <p>Username: {take.username}</p>
+                            <p>Department: {take.department_name}</p>
+                            <p>Role: {take.role_name}</p>
+                            <p>Status: {take.status}</p>
+                            <p>Address: {take.address}</p>
+                        </div>
+                    ))}
+                    <p>{taker.username}</p>
                 </Modal>
 
             </div>

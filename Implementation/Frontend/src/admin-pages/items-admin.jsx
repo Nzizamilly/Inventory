@@ -22,6 +22,7 @@ function ItemsAdmin() {
 
 
   const socket = io.connect(`${ioPort}`);
+
   socket.on("disconnect", () => {
     console.log("Disconnect from the server");
   });
@@ -164,6 +165,28 @@ function ItemsAdmin() {
     },
   };
 
+  const bulkModal = {
+    overlay: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    content: {
+      width: '43%',
+      marginLeft: '385px',
+      height: '72vh',
+      border: 'none',
+      borderRadius: '12px',
+      gap: '23px',
+      color: "black",
+      padding: '12px 0px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  };
+
   const modal5 = {
     overlay: {
       display: 'flex',
@@ -230,12 +253,21 @@ function ItemsAdmin() {
   const [isCreatingSerialNumberOpen, setIsCreatingSerialNumberOpen] = useState(false);
   const [isDeletingOpen, setIsDeletingOpen] = useState(false);
   const [takerUserName, setTakerUserName] = useState('');
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [takerModalOpen, isTakerModalOpen] = useState(false);
   const [serialUpdateData, setSerialUpdateData] = useState({
     serial_number: '',
     state_of_item: '',
     depreciation_rate: '',
   });
+
+  const openBulkModal = () => {
+    setIsBulkModalOpen(true);
+  }
+
+  const closeBulkModal = () => {
+    setIsBulkModalOpen(false);
+  };
 
   const openDeletingItem = (itemID) => {
     handleDelete(itemID);
@@ -801,10 +833,22 @@ function ItemsAdmin() {
     setFilteredEmployees(newData);
   };
 
+  const handleFilterY = (event) => {
+    const newData = allEmployees.filter((row) => {
+      return row.username.toLowerCase().includes(event.target.value.toLowerCase());
+    });
+    setFilteredEmployees(newData);
+  };
+
+  const [filteredEmployeesBulk, setFilteredEmployeesBulk] = useState([]);
+
+  useEffect(() => {
+    setFilteredEmployeesBulk(allEmployees);
+  }, [allEmployees]);
+
   useEffect(() => {
     setFilteredEmployees(allEmployees);
   }, [allEmployees])
-
 
 
   return (
@@ -889,7 +933,10 @@ function ItemsAdmin() {
             <h1>
               {getNom.length > 0 ? <span>{getNom[0].itemName}</span> : "Loading..."}: {totalSerialCount}
             </h1>
-            <input type='text' placeholder='Search By Serial Number' onChange={handleFilter} />
+            <div style={{ width: '70%', display: 'flex', justifyContent: 'center', gap: '12px', flexDirection: 'inline' }}>
+              <input type='text' placeholder='Search By Serial Number' onChange={handleFilter} />
+              <button onClick={() => openBulkModal()}>Bulk</button>
+            </div>
             <br />
             <DataTable
               columns={columns}
@@ -958,6 +1005,7 @@ function ItemsAdmin() {
             <div style={{ float: 'left', width: '69%', height: '60%', display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
               <input style={{ marginTop: '15px' }} type='text' placeholder='Search For An Employee To Give This Item...' onChange={handleFilterX} />
             </div>
+
             {filteredEmployees.map((employee) => (
               <div style={{ width: '55%', borderRadius: '12px', height: '24%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
                 {employee.profile_picture ? <img src={ProfilePicture} style={profilePicture} /> : <img src={employee.profile_picture} alt='profile_Picture' style={profilePicture} />}
@@ -982,8 +1030,29 @@ function ItemsAdmin() {
               </div>
             </div>
           </Modal>
-
         </div>
+
+        <Modal isOpen={isBulkModalOpen} onRequestClose={closeBulkModal} style={bulkModal}>
+          <div>
+            <h1>Give Out Multiple Items</h1>
+            <input type='text' placeholder='Number' />
+            <p>To</p>
+            <input type='text' placeholder='Search...' onChange={handleFilterY} />
+          </div>
+
+              <div style={{ width: '55%', borderRadius: '12px', height: '34%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
+                {filteredEmployeesBulk.profile_picture ? <img src={ProfilePicture} style={profilePicture} /> : <img src={filteredEmployeesBulk.profile_picture} alt='profile_Picture' style={profilePicture} />}
+                <br />
+                <div style={{ color: 'black', flexDirection: 'column', justifyContent: 'center', display: 'flex', backgroundColor: 'rgb(163, 187, 197)', width: '75%', fontFamily: 'san-serif', marginTop: '3px', paddingLeft: '12px', borderRadius: '12px', height: '97%' }}>
+                  <p>Name: {filteredEmployeesBulk.username}</p>
+                  <p>Position: {filteredEmployeesBulk.role_name}</p>
+                  <p>Department: {filteredEmployeesBulk.department_name}</p>
+                  <p>Address: {filteredEmployeesBulk.address}</p>
+                  <button onClick={() => { openListLoader(filteredEmployeesBulk.username) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
+                </div>
+              </div>
+
+        </Modal>
       </div>
     </div>
   );

@@ -488,11 +488,12 @@ app.post("/employee", (req, res) => {
   console.log("role ID", role);
   const status = 'ACTIVE';
 
-  const query = "INSERT INTO employees (username, password, roleID, departmentID, status, email) VALUES (?, ?, ?, ?, ?, ?)";
+  const query = "INSERT INTO employees (username, password, address, roleID, departmentID, status, email) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
   const values = [
     req.body.username,
     req.body.password,
+    req.body.address,
     roleID,
     departmentID,
     status,
@@ -501,10 +502,9 @@ app.post("/employee", (req, res) => {
 
   db.query(query, values, (error, result) => {
     if (error) {
-      console.error("Error: ",error);
+      console.error("Error: ", error);
     } else {
       res.json(result.insertId);
-      // console.log("Data Returned: ",  result);
     };
   });
 });
@@ -547,6 +547,7 @@ app.put("/employee/:id", (req, res) => {
   const departmentName = req.body.departmentName;
   const username = req.body.username;
   const password = req.body.password;
+  const address = req.body.address;
   const status = req.body.status;
   const email = req.body.email;
 
@@ -557,6 +558,7 @@ app.put("/employee/:id", (req, res) => {
   console.log("FROM BODY: ", password);
   console.log("FROM BODY: ", status);
   console.log("FROM BODY: ", email);
+  console.log("FROM BODY: ", address);
 
   function getRoleId(role) {
     const q = 'SELECT role_name FROM role WHERE id = ?'
@@ -571,10 +573,11 @@ app.put("/employee/:id", (req, res) => {
     })
   }
 
-  const q = "UPDATE employees SET username = ?, password = ?, roleID = ?, departmentID = ?, status = ?, email = ? WHERE id = ?";
+  const q = "UPDATE employees SET username = ?, password = ?, address = ?,  roleID = ?, departmentID = ?, status = ?, email = ? WHERE id = ?";
   const values = [
     username,
     password,
+    address,
     roleName,
     departmentName,
     status,
@@ -585,7 +588,7 @@ app.put("/employee/:id", (req, res) => {
     if (err) {
       console.error("Error updating: ", err);
       return res.status(500).json({ error: "Internal Server Error" })
-    }
+    };
     console.log("Employee Update Successfully", data);
     return res.json(data)
   });
@@ -597,6 +600,7 @@ app.get("/employee/:id", (req, res) => {
     employees.id,
     employees.username,
     employees.password,
+    employees.address,
     employees.profile_picture,
     employees.roleID,
     employees.departmentID,
@@ -623,7 +627,7 @@ app.post('/login', (req, res) => {
   const sql = "SELECT * FROM employees WHERE username = ? and password = ? ";
   db.query(sql, [req.body.username, req.body.password], (err, result) => {
     if (err) {
-      console.log("Error happ:",err);
+      console.log("Error happ:", err);
       return res.json({ Message: "Error inside server", err });
     }
     if (result.length > 0) {
@@ -663,6 +667,26 @@ employees
 JOIN role ON employees.roleID = role.id 
 JOIN department ON employees.departmentID = department.id`;
   db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error executing query: ', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+    res.json(results);
+  });
+});
+
+app.get('/employees-for-transaction/:ID', (req, res) => {
+
+  const ID = req.params.ID;
+
+  const sql = ` SELECT employees.id, employees.username, employees.address, employees.password, employees.profile_picture, employees.roleID, employees.departmentID, employees.status, role.role_name, employees.email, department.department_name 
+FROM 
+employees 
+JOIN role ON employees.roleID = role.id 
+JOIN department ON employees.departmentID = department.id
+WHERE employees.id = ?
+`;
+  db.query(sql, [ID], (err, results) => {
     if (err) {
       console.error('Error executing query: ', err);
       return res.status(500).json({ error: 'Internal Server Error' });
@@ -1160,9 +1184,11 @@ app.put('/update-serial-status/:IDTaken/:status/:taker', async (req, res) => {
   }
 });
 
-app.get('/monthly-report/:StartDate/:EndDate', (req, res) => {
+app.get('/monthly-report/:StartDate/:EndDate/:id', (req, res) => {
   const start = req.params.StartDate;
   const end = req.params.EndDate;
+  const idi = req.params.id;
+
   console.log("Start from front: ", start);
   console.log("end from front: ", end);
   const query = `
@@ -1176,14 +1202,14 @@ app.get('/monthly-report/:StartDate/:EndDate', (req, res) => {
 FROM serial_number
 JOIN item ON serial_number.itemID = item.id
 LEFT JOIN employees ON serial_number.taker = employees.id
-WHERE serial_number.date >= ? AND serial_number.date <= ? -- Specify your date range here
+WHERE serial_number.date >= ? AND serial_number.date <= ? AND id = ? -- Specify your date range here
 GROUP BY transaction_date, item.name, employees.username, item.id
 ORDER BY serial_number.date DESC; -- Order by date in descending order
 
   `;
   const startDate = moment(req.query.start, 'DD-MM-YYYY').format('YYYY-MM-DD');
   const endDate = moment(req.query.end, 'DD-MM-YYYY').format('YYYY-MM-DD');
-  const values = [start, end];
+  const values = [start, end, idi];
   db.query(query, values, (error, result) => {
     if (error) {
       console.error("Error", error);
@@ -1208,8 +1234,8 @@ app.get('/getor/:supervisorID', (req, res) => {
   ORDER BY employee_supervisor_request.id DESC;
   `;
 
-  db.query(sql, [supervisorID],  (error, result) => {
-   result ? res.json(result) : console.error("Error: ", error);
+  db.query(sql, [supervisorID], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
   })
 })
 
@@ -2483,16 +2509,16 @@ app.get('/get-serial-number-in-different-time/:start/:end/:ID', (req, res) => {
   const ID = req.params.ID;
 
   console.log("End: ", end);
-  console.log("start: ", start);
+  console.log("Start: ", start);
   console.log("ID: ", ID);
 
 
   const sql = "SELECT * FROM serial_number WHERE date BETWEEN ? AND ? AND itemID = ?";
 
   db.query(sql, [start, end, ID], (error, result) => {
-    if(result) {
+    if (result) {
       res.json(result);
-    }else{
+    } else {
       console.error("Error: ", error);
     };
   });
@@ -2500,8 +2526,8 @@ app.get('/get-serial-number-in-different-time/:start/:end/:ID', (req, res) => {
 
 app.get('/pending-numbers', (req, res) => {
   const sql = `SELECT COUNT(*) AS pending_count FROM hr_admin_request WHERE stockStatus = '' OR stockStatus = 'Not Issued'`;
-  db.query(sql , (error, result) => {
-    result ? res.json({pending_count: result[0].pending_count}) : console.error("Error: ", error);
+  db.query(sql, (error, result) => {
+    result ? res.json({ pending_count: result[0].pending_count }) : console.error("Error: ", error);
   });
 });
 

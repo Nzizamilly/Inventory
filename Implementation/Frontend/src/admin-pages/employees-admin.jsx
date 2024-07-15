@@ -31,7 +31,31 @@ const url = keys.REACT_APP_BACKEND;
     content: {
       width: '33%',
       marginLeft: '495px',
-      height: '72vh',
+      height: '76vh',
+      backgroundColor: 'rgb(206, 206, 236)',
+      border: 'none',
+      borderRadius: '12px',
+      gap: '23px',
+      color: "black",
+      padding: '12px 0px',
+      fontFamily: 'Arial, sans- serif',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  }
+
+  const modalUpdate = {
+    overlay: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    content: {
+      width: '33%',
+      marginLeft: '495px',
+      height: '90vh',
       backgroundColor: 'rgb(206, 206, 236)',
       border: 'none',
       borderRadius: '12px',
@@ -80,6 +104,7 @@ const url = keys.REACT_APP_BACKEND;
   const [update, setUpdate] = useState({
     username: '',
     password: '',
+    address: '',
     department: '',
     role: '',
     profile_pricture: '',
@@ -96,7 +121,7 @@ const url = keys.REACT_APP_BACKEND;
       }
     };
     fetchEmp();
-  }, [emps]);
+  }, []);;
 
 
   const handleSwitchChange = async (checked, empID) => {
@@ -145,7 +170,6 @@ const url = keys.REACT_APP_BACKEND;
   const handleUpdate = async (EmpID) => {
     console.log("SELECTED EMPLOYEE ID: ", EmpID);
     try {
-      console.log("Selected Employee ID",)
       await axios.put(`${url}/employee/${EmpID}`, update);
       setEmps((prevEmps) => {
         prevEmps.forEach((emp, index) => {
@@ -305,6 +329,7 @@ const url = keys.REACT_APP_BACKEND;
   const [employee, setEmployee] = useState({
     username: '',
     password: '',
+    address: '',
     departmentName: '',
     roleName: '',
     email: ''
@@ -357,7 +382,8 @@ const url = keys.REACT_APP_BACKEND;
   const One = {
     display: 'flex',
     justifyContent: 'center',
-    flexDirection: 'inline'
+    flexDirection: 'inline',
+    gap: '12px'
   };
 
   const updateFileName = (event) => {
@@ -414,6 +440,25 @@ const url = keys.REACT_APP_BACKEND;
    };
    functions();
   },[]);
+
+  const style = { 
+    backgroundColor : 'black',
+    width: '1%',
+    height: '1%'
+  };
+
+  const [records, setRecords] = useState([]);
+
+  const handleFilter = (event) => {
+    const newData = emps.filter((row) => {
+      return row.username.toLowerCase().includes(event.target.value.toLowerCase());
+    });
+    setRecords(newData);
+  };
+
+  useEffect(() => {
+    setRecords(emps);
+  }, [emps]);
   
   return (
     <div>
@@ -423,11 +468,12 @@ const url = keys.REACT_APP_BACKEND;
           <div style={MakeBig}>
             <div style={One}>
               <h1>List OF Employees</h1>
-              <button onClick={() => setAddVisible(true)} className='add-btn1'><img src={Add} style={svgStyle} /></button>
+              <button className='addItem-btn1' onClick={() => setAddVisible(true)} ><img src={Add} style={svgStyle} /></button>
+              <input type='text' placeholder='Search For An Employee' onChange={handleFilter} />
             </div>
             <DataTable
               columns={empsColumn}
-              data={emps}
+              data={records}
               pagination
             ></DataTable>
           </div>
@@ -439,6 +485,7 @@ const url = keys.REACT_APP_BACKEND;
             <h2>Adding a new Employee</h2>
             <input type='text' placeholder='Username' name='username' onChange={handleChange2} />
             <input type='text' placeholder='Password' name='password' onChange={handleChange2} />
+            <input type='text' placeholder='Address eg: Kigali - Kicukiro' name='address' onChange={handleChange2} />
 
             <select onChange={handleDepartmentChange} value={selectedDepartment} style={Select}>
               <option value='' disabled>Select Department</option>
@@ -479,6 +526,7 @@ const url = keys.REACT_APP_BACKEND;
 
                 <p>Username: {emp.username}</p>
                 <p>Password: *******</p>
+                <p>Address: {emp.address}</p>
                 <p>Position: {emp.role_name}</p>
                 <p>Department: {emp.department_name}</p>
                 <p>Email: {emp.email}</p>
@@ -488,10 +536,11 @@ const url = keys.REACT_APP_BACKEND;
                   <Switch onChange={(checked) => handleSwitchChange(checked, emp.id)} checked={switchStates[emp.id] || false} />
                 </div>
 
-                <Modal isOpen={visible} onRequestClose={() => setVisible(false)} style={modal}>
+                <Modal isOpen={visible} onRequestClose={() => setVisible(false)} style={modalUpdate}>
                   <h1>Update</h1>
                   <input type='text' placeholder='Username' name="username" onChange={handleChange} />
                   <input type='text' placeholder='Password' name="password" onChange={handleChange} />
+                  <input type='text' placeholder='Address eg: Kigali - Kicukiro' name="address" onChange={handleChange} />
                   <select onChange={handleUpdateDepartmentChange} value={selectedUpdateDepartment} style={Select}>
                     <option value='' disabled >Select Department</option>
                     {department.map(departments => (
@@ -507,10 +556,8 @@ const url = keys.REACT_APP_BACKEND;
                   </select>
                   <input type='email' placeholder='Work-related Email' name='email' onChange={handleChange} />
 
-                  <input type='text' placeholder='Status' name="status" value={trial} onChange={handleChange} />
-
                   <div style={{ color: 'black', display: 'flex', flexDirection: 'inline', gap: '9px', justifyContent: 'center' }}>
-                    <p>Attach Parforma (Not required)</p>
+                    <p>Attach New Picture ID (Not required)</p>
                     <label htmlFor="file" id="customButton" style={{ width: '35%', backgroundColor: 'black', display: 'flex', justifyContent: 'center', borderRadius: '23px', gap: '9px', cursor: 'pointer' }}>
                       <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName} />
                       {file || 'No file chosen'} <img style={{ width: '12%', display: 'inline' }} src={ImgAdd} alt="Add" />

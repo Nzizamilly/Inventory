@@ -865,6 +865,20 @@ li a:hover {
     background-color: rgb(230, 245, 236);
 }
 
+.addItem-btn1 {
+    gap: 9px;
+    width: 30px;
+    height: 26px;
+    display: flex;
+    margin-top: 2px;
+    text-align: center;
+    align-items: center;
+    border-radius: 16px;
+    flex-direction: column;
+    justify-content: center;
+    background-color: rgb(19, 20, 19);
+}
+
 .status-btn {
     gap: 9px;
     width: 40px;
