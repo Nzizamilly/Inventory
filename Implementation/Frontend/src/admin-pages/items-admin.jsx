@@ -863,7 +863,7 @@ function ItemsAdmin() {
         <div style={itemstyle}>
           {filteredCategories.map(category => (
             <button key={category.id} onClick={() => handleCategoryClick(category.id, category.category_name)} className='buttonStyle2'>{category.category_name}</button>
-          ))}
+          ))};
 
           <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>
             <div style={display}>

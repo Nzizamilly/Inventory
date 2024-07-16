@@ -138,6 +138,11 @@ function PurchaseSupervisor() {
         backgroundColor: 'white'
     };
 
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+      };
+
     const column = [
         {
             name: 'Requestor',
@@ -157,7 +162,7 @@ function PurchaseSupervisor() {
         },
         {
             name: 'Date',
-            selector: row => row.date
+            selector: row => formatDate(row.date)
         },
         {
             name: 'Status',

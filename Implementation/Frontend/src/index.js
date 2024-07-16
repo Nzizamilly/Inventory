@@ -40,6 +40,7 @@ import PurchaseNotificationSupervisor from './supervisor-pages/purchaseNotificat
 import TrustedSuppliers from './admin-pages/trustedSupplier';
 import ItemTransactionsAdmin2 from './admin-pages/itemTransaction2';
 import ItemTransactionsAdmins from './admin-pages/itemTransacation';
+import Company from './admin-pages/company';
 
 const router = createBrowserRouter([
   {
@@ -189,6 +190,10 @@ const router = createBrowserRouter([
   {
     path: 'trusted-suppliers',
     element: <TrustedSuppliers />
+  },
+  {
+    path: 'company',
+    element: <Company />
   }
 ]);
 

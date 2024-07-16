@@ -103,7 +103,7 @@ function PurchaseNotificationSupervisor() {
     const smaller = {
         display: 'flex',
         flexDirection: 'inline',
-    }
+    };
 
     const buttons = {
         width: '65px',
@@ -113,6 +113,11 @@ function PurchaseNotificationSupervisor() {
         borderRadius: '1px',
         backgroundColor: 'white'
     };
+
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+      };
 
     const column = [
         {
@@ -129,7 +134,7 @@ function PurchaseNotificationSupervisor() {
         },
         {
             name: 'Date',
-            selector: row => row.date
+            selector: row => formatDate(row.date)
         },
         {
             name: 'Status',
@@ -154,8 +159,7 @@ function PurchaseNotificationSupervisor() {
             )
         },
 
-    ]
-
+    ];
 
     const handlePending = async () => {
         console.log("HandlePending is Hit");

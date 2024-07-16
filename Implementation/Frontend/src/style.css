@@ -144,7 +144,9 @@ button {
     display: flex;
     border-radius: 850px;
     background-color: aqua;
-};
+}
+
+;
 
 #profile_pictures {
     width: 111px;
@@ -152,7 +154,9 @@ button {
     display: flex;
     border-radius: 850px;
     background-color: rgb(0, 255, 255);
-};
+}
+
+;
 
 Link {
     text-decoration: none;
@@ -168,7 +172,9 @@ input[type="text"] {
     border-radius: 12px;
     background-color: #000000;
     border-bottom: 2px rgb(23, 219, 170);
-};
+}
+
+;
 
 .inputTest {
     width: 66%;
@@ -242,7 +248,7 @@ input[type="password"] {
     font-family: "Roboto Mono", monospace;
 } */
 
-#smallDate{
+#smallDate {
     height: 1;
     width: 5%;
     /* background-color: blue; */
@@ -312,7 +318,9 @@ li a:hover {
     color: white;
     background-color: rgb(8, 81, 26);
     justify-content: center;
-};
+}
+
+;
 
 /* .li1 a {
     color: white;
@@ -473,7 +481,9 @@ li a:hover {
     border-radius: 8px;
     justify-content: center;
     background-color: rgb(8, 81, 26);
-};
+}
+
+;
 
 .li1Admin a {
     color: white;
@@ -487,7 +497,7 @@ li a:hover {
 }
 
 .ul2Admin {
-    gap:4px;
+    gap: 4px;
     margin: 0;
     padding: 0;
     width: 14%;
@@ -658,7 +668,9 @@ li a:hover {
     justify-content: center;
     font-family: 'Arial', sans-serif;
     background-color: rgb(163, 187, 197);
-};
+}
+
+;
 
 .employee-container {
     width: 100%;
@@ -670,7 +682,9 @@ li a:hover {
     justify-content: center;
     font-family: 'Arial', sans-serif;
     background-color: rgb(163, 187, 197);
-};
+}
+
+;
 
 .profilePictures {
     max-width: 100%;
@@ -787,7 +801,9 @@ li a:hover {
     align-items: center;
     /* flex-direction: column; */
     background-color: rgb(206, 206, 236);
-};
+}
+
+;
 
 .notification-admin {
     width: 23%;
@@ -812,14 +828,16 @@ li a:hover {
     background-color: rgb(48, 48, 205);
 }
 
-.buttonStyle3{
+.buttonStyle3 {
     width: 98px;
     height: 53px;
     color: white;
     text-align: center;
     border-radius: 15px;
     background-color: rgb(48, 48, 205);
-};
+}
+
+;
 
 .add-btn1 {
     gap: 9px;
@@ -925,10 +943,10 @@ li a:hover {
     text-align: left;
     padding: 12px 0px;
     margin-left: 220px;
-    margin-top: -178px;
+    margin-top: -278px;
     padding-left: 12px;
     border-radius: 12px;
-    flex-direction: column;
+    flex-direction: inline;
     color: rgb(29, 27, 27);
     font-family: 'Arial', sans-serif;
     background-color: rgb(206, 206, 236);
@@ -1005,7 +1023,9 @@ li a:hover {
     background-color: Black;
     color: rgb(12, 193, 199);
     font-family: 'Arial', sans-serif;
-};
+}
+
+;
 
 .NoPage {
     width: 100%;
@@ -1145,7 +1165,7 @@ li a:hover {
     align-items: center;
     justify-content: center;
     font-family: 'Arial', sans-serif;
-    background-color:  rgb(163, 187, 197);
+    background-color: rgb(163, 187, 197);
 }
 
 .notification-container-supervisor {
@@ -1313,7 +1333,9 @@ li a:hover {
     align-items: center;
     justify-content: center;
     background-color: rgb(153, 235, 240);
-};
+}
+
+;
 
 .PendingBtn {
     width: 65px;
@@ -1322,7 +1344,9 @@ li a:hover {
     padding: 12px 0px;
     border-radius: 1px;
     background-color: white;
-};
+}
+
+;
 
 .someKind {
     height: 70%;
@@ -1335,13 +1359,17 @@ li a:hover {
 .righter {
     display: flex;
     width: 100%;
-    float: right;   
+    float: right;
 
-};
+}
+
+;
 
 .lefter {
-    float: left;    
-};
+    float: left;
+}
+
+;
 
 .selectin {
     width: 209px;
@@ -1355,4 +1383,11 @@ li a:hover {
     background-color: white;
     float: right;
     justify-content: center;
+}
+
+;
+
+.companyButton {
+    height: 28%;
+    width: 20%
 }

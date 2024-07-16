@@ -479,7 +479,9 @@ const url = keys.REACT_APP_BACKEND;
           </div>
 
         </div>
+
         <br />
+
         <div style={some}>
           <Model isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
             <h2>Adding a new Employee</h2>
@@ -517,7 +519,6 @@ const url = keys.REACT_APP_BACKEND;
             {sumOne.map((emp) => (
               <div key={emp.id} className="employee">
                 <h1>{emp.username}</h1>
-                {/* <img src={emp.profile_picture} id='profile_picture' alt="" /> */}
 
                 {imageURL ? (
                   <img src={imageURL} style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }} />
@@ -568,6 +569,7 @@ const url = keys.REACT_APP_BACKEND;
               </div>
             ))}
           </Modal>
+
           <Modal isOpen={createModal} onRequestClose={closeCreateModal} className={modal}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
               <ClipLoader color={'green'} loading={loading} size={89} />
@@ -576,6 +578,7 @@ const url = keys.REACT_APP_BACKEND;
               </div>
             </div>
           </Modal>
+
         </div>
       </div>
     </div>

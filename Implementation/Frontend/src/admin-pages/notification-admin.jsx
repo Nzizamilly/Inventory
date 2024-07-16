@@ -169,6 +169,7 @@ function NotificationAdmin() {
       <div className="random-container">
         <div style={{ width: '84%', marginLeft: '193px' }}>
           <h1 style={{ color: 'white' }}>Notifications</h1>
+          
           <div style={smaller}>
             <button style={buttons} onClick={handlePending}>Pending</button>
             <button style={buttons} onClick={handleApprovedRequest}>Issued</button>

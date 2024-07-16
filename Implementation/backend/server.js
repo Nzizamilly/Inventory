@@ -2158,6 +2158,14 @@ app.get('/get-purchase-id', (req, res) => {
   })
 });
 
+app.get('/get-company-id', (req, res) => {
+  const q = `SELECT id FROM company ORDER BY id DESC LIMIT 1;`;
+  db.query(q, (error, data) => {
+    // console.log("Data: ", data);
+    data ? res.json(data) : console.error("Error: ", error);
+  })
+});
+
 app.get('/get-employee-id', (req, res) => {
   const q = `SELECT id FROM employees ORDER BY id DESC LIMIT 1;`;
   db.query(q, (error, data) => {
@@ -2531,6 +2539,28 @@ app.get('/pending-numbers', (req, res) => {
   });
 });
 
+app.post('/add-company', (req, res) => {
+  const name = req.body.name;
+  const number = req.body.number;
+  const email = req.body.email;
+
+  console.log("name: ", name);
+  console.log("number: ", number);
+  console.log("email: ", email);
+
+  const sql = 'INSERT INTO company (name, number, email ) VALUES (?,?,? )';
+
+  db.query(sql, [name, number, email], (error, result) => {
+    result ? console.log("INSERTED", result) : console.error("Error: ", error);
+  });
+});
+
+app.get('/get-company', (req, res) => {
+  const sql = 'SELECT * FROM company';
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
 
 app.listen(5500, () => {
   console.log("Connected to backend");

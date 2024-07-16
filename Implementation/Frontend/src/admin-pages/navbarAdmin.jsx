@@ -12,6 +12,7 @@ import NotificationSVG from '../images/notificationSVG.svg';
 import DepartmentRolesSVG from '../images/DepartmentsRolesSVG.svg';
 import PolicySVG from '../images/policySVG.svg';
 import Keys from '../keys';
+import Company from '../images/company.svg'
 
 function NavbarAdmin() {
 
@@ -192,6 +193,7 @@ function NavbarAdmin() {
         <li className='liAdmin'><Link to={'/employees-admin'} ><img src={Employees} style={{ maxWidth: '20%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Employees</p></Link></li>
         <li className='liAdmin'><Link to={'/items-admin'}><img src={ItemSVG} style={{ maxWidth: '16%', maxHeight: '50vh' }} /><p style={{ marginTop: '6px' }}>Items</p></Link></li>
         <li className='liAdmin'><Link to={'/category-admin'}><img src={CategorySVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Category</p></Link></li>
+        <li className='liAdmin'><Link to={'/company'}><img src={Company} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Company</p></Link></li>
         <div>
           <span style={{ backgroundColor: 'red', marginLeft: '6px', position: 'absolute', zIndex: '2', borderRadius: '45px', padding: '4px 4px 4px 4px' }}>{count.pending_count}</span>
           <li className='liAdmin' style={{ position: 'absolute', zIndex: '1' }}><Link to={'/notification-admin'}><img src={NotificationSVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Notification</p></Link></li>
