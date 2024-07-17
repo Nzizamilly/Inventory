@@ -41,12 +41,13 @@ function Company() {
     };
 
     const buttons = {
+        borderRadius: '12px',
         width: '65px',
         color: 'black',
         cursor: 'pointer',
         padding: '12px 0px',
         borderRadius: '1px',
-        backgroundColor: 'white'
+        backgroundColor: 'rgb(163, 187, 197)'
     };
 
     const CompanyButton = {
@@ -59,9 +60,19 @@ function Company() {
 
 
     const smaller = {
+        width: '20%',
+        height: '15%',
         display: 'flex',
         flexDirection: 'inline',
-        gap: '2px'
+        gap: '9px',
+        alignItems: 'center',
+        justifyContent: 'center'
+    };
+
+    const allDiv = {
+        width: '90%',
+        height: '97%',
+        backgroundColor: 'rgb(163, 187, 197)'
     }
 
     useEffect(() => {
@@ -87,8 +98,6 @@ function Company() {
             width: '50%',
             height: '43%',
             display: 'flex',
-            // justifyContent: 'center',
-            // alignItems: 'center',
             border: 'none',
             gap: '12px',
             borderRadius: '12px',
@@ -109,8 +118,7 @@ function Company() {
             width: '70%',
             height: '73%',
             display: 'flex',
-            // justifyContent: 'center',
-            // alignItems: 'center',
+            flexDirection: 'column',
             border: 'none',
             gap: '12px',
             borderRadius: '12px',
@@ -142,21 +150,6 @@ function Company() {
     const [logo, setLogo] = useState();
     const [latestId, setLatestID] = useState('');
 
-    // const updateFileName = (event) => {
-    //     const selectedFile = event.target.files[0];
-    //     setImageUpload(event.target.files[0]);
-    //     const fileName = selectedFile ? selectedFile.name : 'No file Chosen';
-    //     setFile(fileName);
-    //     const reader = new FileReader();
-    //     reader.onload = () => {
-    //       setImageUrl(reader.result);
-    //     };
-    //     if (selectedFile) {
-    //       reader.readAsDataURL(selectedFile)
-    //     }
-    //   };
-
-
     const updateFileName = (event) => {
         const selectedLogo = event.target.files[0];
         setLogo(selectedLogo);
@@ -183,6 +176,9 @@ function Company() {
 
         try {
             const response = await axios.post(`${url}/add-company`, company);
+
+
+            closeAddModal();
 
         } catch (error) {
             console.error("Error: ", error);
@@ -211,8 +207,9 @@ function Company() {
             try {
                 const response = await axios.get(`${url}/get-company`);
                 setInfoCompany(response.data);
-                console.log("Data: ", infoCompany[0].id);
-                const imageRef = ref(storage, `companyLogos/${infoCompany[0].id}`);
+                const sum = response.data;
+                console.log("Data: ", sum[0].id);
+                const imageRef = ref(storage, `companyLogos/${sum[0].id}`);
                 const imageURL = await getDownloadURL(imageRef);
                 setImage(imageURL);
             } catch (error) {
@@ -223,14 +220,116 @@ function Company() {
     }, []);
 
     const [companyModalOpen, isCompanyModalOpen] = useState(false);
+    const [oneCompanyID, setOneCompanyID] = useState('');
 
-    const openCompanyModal = () => {
+    const openCompanyModal = (ID) => {
         isCompanyModalOpen(true);
+        setOneCompanyID(ID)
+        fetchOneCompany(ID)
     };
 
     const closeCompanyModal = () => {
         isCompanyModalOpen(false);
     };
+
+    const [tab, setTab] = useState(0);
+
+    const info = {
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgb(163, 187, 197)',
+        display: 'flex',
+        flexDirection: 'inline'
+    };
+
+    const issue = {
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgb(163, 187, 197)',
+        display: 'flex',
+        flexDirection: 'inline'
+    }
+
+    const [oneCompany, setOneCompany] = useState([]);
+    const [imageForOneCompany, setImageForOneCompany] = useState('');
+
+    const fetchOneCompany = async (ID) => {
+
+        const imageRef = ref(storage, `companyLogos/${ID}`);
+        const imageURL = await getDownloadURL(imageRef);
+        setImageForOneCompany(imageURL);
+
+        try {
+            const response = await axios.get(`${url}/get-one-company/${ID}`);
+            setOneCompany(response.data);
+        } catch (error) {
+            console.error("Error: ", error)
+        };
+    };
+
+    const [category, setCategory] = useState([]);
+
+    useEffect(() => {
+        const fetchCategory = async () => {
+            try {
+                const response = await axios.get(`${url}/category`);
+                setCategory(response.data);
+            } catch (error) {
+                console.error("Error: ", error);
+            };
+        };
+        fetchCategory();
+    }, []);
+
+    const Selects = {
+        width: '43%',
+        height: '18%',
+        color: 'black',
+        border: 'none',
+        borderRadius: '21px'
+    };
+
+    const [selectedCategory, setSelectedCategory] = useState('');
+
+    const handleCategoryChange = (event) => {
+        const selectedValue = event.target.value;
+        setSelectedCategory(selectedValue);
+    };
+
+    const Option = {
+        width: '39%',
+        height: '25%',
+        display: 'flex',
+        gap: '12px',
+        color: 'white',
+        backgroundColor: 'black',
+        border: 'none',
+        borderRadius: '14px'
+    };
+
+    const [item, setItem] = useState([]);
+
+    useEffect(() => {
+        const fetchItem = async (selectedCategory) => {
+            try {
+                const response = await axios.get(`${url}/items/${selectedCategory}`);
+                setItem(response.data);
+            } catch (error) {
+                console.error("Error: ", error);
+            };
+        };
+        if (selectedCategory) {
+            fetchItem(selectedCategory);
+        };
+    }, [selectedCategory]);
+
+    const [selectedItem, setSelectedItem] = useState([]);
+
+    const handleItemChange = (event) => {
+        const selectedValue = event.target.value;
+        setSelectedItem(selectedValue);
+
+    }
 
     return (
         <div>
@@ -243,7 +342,7 @@ function Company() {
             <div style={Container}>
                 <div className="terms-admin">
                     {infoCompany.map(company => (
-                        <button style={CompanyButton} onClick={() => openCompanyModal()}>
+                        <button style={CompanyButton} onClick={() => openCompanyModal(company.id)}>
                             <img src={image} style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }} />
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                 <p>{company.name}</p>
@@ -278,8 +377,71 @@ function Company() {
 
             <Modal isOpen={companyModalOpen} onRequestClose={closeCompanyModal} style={companyModal}>
                 <div style={smaller}>
-                    <button style={buttons}>Pending</button>
-                    <button style={buttons}>Issued</button>
+                    <button style={buttons} onClick={() => setTab(0)}>Info</button>
+                    <button style={buttons} onClick={() => setTab(1)}>Issue</button>
+                    <button style={buttons} onClick={() => setTab(2)}>Report</button>
+                </div>
+                <div style={allDiv}>
+                    {tab === 0 && <div style={info}>
+                        <div style={{ width: '20%', height: '100%', display: 'flex', marginLeft: '12px', alignItems: 'center' }}>
+
+                            {imageForOneCompany ? (
+                                <img src={imageForOneCompany} style={{ maxWidth: '90%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '20px' }} />
+
+                            ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh', backgroundColor: 'white' }} />}
+                        </div>
+
+                        <div style={{ width: '40%', height: '70%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            {oneCompany.map(one => (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    <p>Name:{one.name}</p>
+                                    <p>Email:{one.email}</p>
+                                    <p>Number:{one.number}</p>
+                                    <div style={{ width: '100%', height: '20%', display: 'flex', flexDirection: 'inline', gap: '12px' }}>
+                                        <button style={{ borderRadius: '12px', width: '76%', backgroundColor: 'white' }}>Update</button>
+                                        <button style={{ borderRadius: '12px', width: '75%', backgroundColor: 'red' }}>Delete</button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    }
+
+
+                    {tab === 1 && <div style={issue}>
+                        <div style={{ width: '20%', height: '100%', display: 'flex', marginLeft: '12px', alignItems: 'center' }}>
+                            {imageForOneCompany ? (
+                                <img src={imageForOneCompany} style={{ maxWidth: '90%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '20px' }} />
+
+                            ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh' }} />}
+                        </div>
+
+                        <div style={{ width: '40%', height: '70%', display: 'flex', justifyContent: 'center', gap: '12px', alignItems: 'center', flexDirection: 'column' }}>
+                            <select onChange={handleCategoryChange} value={selectedCategory} style={Selects}>
+                                <option value='' disabled>Select Category</option>
+                                {category.map(categories => (
+                                    <option key={categories.id} value={categories.id} style={Option} >{categories.category_name}</option>
+                                ))}
+                            </select>
+
+                            <select onChange={handleItemChange} value={selectedItem} style={Selects}>
+                                <option value='' disabled>Select Item</option>
+                                {item.map(items => (
+                                    <option key={items.id} value={items.id} style={Option} >{items.name}</option>
+                                ))}
+                            </select>
+
+                            <input type='text' style={{ width: '45%' }} placeholder='Quantity' />
+
+                            <select>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+                    }
+
                 </div>
             </Modal>
 

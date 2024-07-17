@@ -2562,6 +2562,14 @@ app.get('/get-company', (req, res) => {
   });
 });
 
+app.get('/get-one-company/:id', (req, res) => {
+  const ID = req.params.id;
+  const sql =  `SELECT * FROM company WHERE id = ?`;
+  db.query(sql, [ID], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+})
+
 app.listen(5500, () => {
   console.log("Connected to backend");
 });
