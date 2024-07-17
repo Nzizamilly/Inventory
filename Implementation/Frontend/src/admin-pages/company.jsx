@@ -323,12 +323,32 @@ function Company() {
         };
     }, [selectedCategory]);
 
-    const [selectedItem, setSelectedItem] = useState([]);
+    const [ selectedItem , setSelectedItem ] = useState([]);
 
     const handleItemChange = (event) => {
         const selectedValue = event.target.value;
         setSelectedItem(selectedValue);
+    };
 
+    const [ supervisor , setSupervisor ] = useState([]);
+
+    useEffect(() => {
+        const fetchSuper = async () => {
+            try {
+                const response = await axios.get(`${url}/get-supervisor`);
+                setSupervisor(response.data);
+            } catch (error) {
+                console.error("Error: ", error);
+            };
+        };
+        fetchSuper();
+    }, []);
+
+    const [ selectedSupervisor , setSelectedSupervisor ] = useState('');
+
+    const handleSupervisorChange = (event) => {
+       const selectedValue = event.target.value;
+       setSelectedSupervisor(selectedValue);
     }
 
     return (
@@ -433,8 +453,11 @@ function Company() {
 
                             <input type='text' style={{ width: '45%' }} placeholder='Quantity' />
 
-                            <select>
-
+                            <select onChange={handleSupervisorChange} value={selectedSupervisor} style={Selects}>
+                                <option value='' disabled> Select Supervisor</option>
+                                { supervisor.map(super  (
+                                    <option key={super.id} value={super.id} style={Option} >{super.name}</option>
+                                ))}
                             </select>
 
                         </div>

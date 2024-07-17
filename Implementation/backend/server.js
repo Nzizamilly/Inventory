@@ -1570,8 +1570,19 @@ app.get('/get-supervisor-name/:supervisorID', (req, res) => {
       console.error("Error", error);
     } else {
       return res.json(result);
-    }
-  })
+    };
+  });
+});
+
+app.get('/get-supervisor', (req, res) => {
+  const sql = 'SELECT * FROM employees WHERE roleID = 5'
+  db.query(sql, [supervisorID], (error, result) => {
+    if (error) {
+      console.error("Error", error);
+    } else {
+      return res.json(result);
+    };
+  });
 });
 
 app.post('/post-by-hr', async (req, res) => {
