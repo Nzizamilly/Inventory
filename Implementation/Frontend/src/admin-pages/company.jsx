@@ -208,7 +208,6 @@ function Company() {
                 const response = await axios.get(`${url}/get-company`);
                 setInfoCompany(response.data);
                 const sum = response.data;
-                console.log("Data: ", sum[0].id);
                 const imageRef = ref(storage, `companyLogos/${sum[0].id}`);
                 const imageURL = await getDownloadURL(imageRef);
                 setImage(imageURL);
@@ -349,7 +348,31 @@ function Company() {
     const handleSupervisorChange = (event) => {
        const selectedValue = event.target.value;
        setSelectedSupervisor(selectedValue);
+    };
+
+    const [ quantity, setQuantity ] = useState('');
+
+    const handleQuantity = (event) => {
+        setQuantity((prev) => ({ ...prev, [event.target.name]: event.target.value }));
+      };
+
+const handleIssue = async(ID) => {
+    try{
+        const requestor = selectedSupervisor;
+        const item = selectedItem;
+        const amount = quantity.quantity;
+        const company = ID;
+
+        console.log("DATA: ", requestor, item, amount, company)
+
+        const response = await axios.put(`${url}/change-status-from-notifications-for-company/${requestor}/${item}/${amount}/${company}`);
+        console.log("Response: ", response.data);
+
+    }catch(error){
+        console.error("Error: ", error);
     }
+
+}
 
     return (
         <div>
@@ -436,7 +459,7 @@ function Company() {
                             ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh' }} />}
                         </div>
 
-                        <div style={{ width: '40%', height: '70%', display: 'flex', justifyContent: 'center', gap: '12px', alignItems: 'center', flexDirection: 'column' }}>
+                        <div style={{ width: '40%', marginTop: '40px', height: '70%', display: 'flex', justifyContent: 'center', gap: '12px', alignItems: 'center', flexDirection: 'column' }}>
                             <select onChange={handleCategoryChange} value={selectedCategory} style={Selects}>
                                 <option value='' disabled>Select Category</option>
                                 {category.map(categories => (
@@ -451,14 +474,16 @@ function Company() {
                                 ))}
                             </select>
 
-                            <input type='text' style={{ width: '45%' }} placeholder='Quantity' />
+                            <input type='text' style={{ width: '45%', color: 'black', backgroundColor: 'white' }} placeholder='Quantity'  name='quantity' onChange={handleQuantity} />
 
                             <select onChange={handleSupervisorChange} value={selectedSupervisor} style={Selects}>
-                                <option value='' disabled> Select Supervisor</option>
-                                { supervisor.map(super  (
-                                    <option key={super.id} value={super.id} style={Option} >{super.name}</option>
+                                <option value='' disabled>Select Issuer</option>
+                                {supervisor.map(supers => (
+                                    <option key={supers.id} value={supers.id} style={Option} >{supers.username}</option>
                                 ))}
                             </select>
+
+                            <button style={{backgroundColor: 'white', width: '20%'}} onClick={() => handleIssue(oneCompanyID)}>Issue Out</button>
 
                         </div>
 

@@ -1576,7 +1576,7 @@ app.get('/get-supervisor-name/:supervisorID', (req, res) => {
 
 app.get('/get-supervisor', (req, res) => {
   const sql = 'SELECT * FROM employees WHERE roleID = 5'
-  db.query(sql, [supervisorID], (error, result) => {
+  db.query(sql,  (error, result) => {
     if (error) {
       console.error("Error", error);
     } else {
@@ -2355,6 +2355,90 @@ app.put('/change-status-from-notifications/:requestor/:item/:amount/:rowID', asy
     res.json("Not enough items to give out.");
   }
 });
+
+app.put('/change-status-from-notifications-for-company/:requestor/:item/:amount/:company', async (req, res) => {
+
+  const requestor = req.params.requestor;
+  const item = req.params.item;
+  const company = req.params.company
+  const requiredAmount = parseInt(req.params.amount);
+
+  // const getEmployeeID = (id) => {
+  //   return new Promise((resolve, reject) => {
+  //     const q = `SELECT id FROM employees WHERE username = ?`;
+  //     const value = [id];
+
+  //     db.query(q, value, (error, result) => {
+  //       if (error) {
+  //         console.error("error", error);
+  //         reject(error);
+  //       } else {
+  //         console.log("Result", result);
+  //         resolve(result[0].id);
+  //       }
+  //     });
+  //   });
+  // };
+
+  // const getItemID = (id) => {
+  //   return new Promise((resolve, reject) => {
+  //     const q = `SELECT id FROM item WHERE name = ?`;
+  //     const value = [id];
+
+  //     db.query(q, value, (error, result) => {
+  //       if (error) {
+  //         console.error("error", error);
+  //         reject(error);
+  //       } else {
+  //         console.log("Result", result);
+  //         resolve(result[0].id);
+  //       }
+  //     });
+  //   });
+  // };
+
+  // const requestorID = await getEmployeeID(requestor);
+
+  // const itemID = await getItemID(item);
+
+  const getExactAmount = (itemID) => {
+    return new Promise((resolve, reject) => {
+      const q = `SELECT COUNT(*) AS count FROM serial_number WHERE status = 'In' AND itemID = ?;`;
+      const value = [itemID];
+
+      db.query(q, value, (error, result) => {
+        if (error) {
+          console.error("Error:", error);
+          reject(error);
+        } else {
+          console.log("Result:", result);
+          // Ensure that result is an array and has at least one element
+          if (Array.isArray(result) && result.length > 0) {
+            // Resolve with the count value
+            resolve(result[0].count);
+          } else {
+            reject(new Error("No result found"));
+          }
+        }
+      });
+    });
+  };
+
+  const exactAmount = await getExactAmount(item);
+
+  if (exactAmount >= requiredAmount) {
+
+    const updateQuery = `UPDATE serial_number SET status = 'Out',  taker = ?, companyID = ?  WHERE itemID = ? AND status = 'In' LIMIT ?;`;
+    const updateValues = [requestor, company, item, requiredAmount];
+
+    db.query(updateQuery, updateValues, (error, result) => {
+      result ? res.json("Given Out") : console.error("Error: ", error);
+    });
+  } else {
+    res.json("Not enough items to give out.");
+  }
+});
+
 
 
 app.put('/change-request-stockStatus/:rowID', (req, res) => {
