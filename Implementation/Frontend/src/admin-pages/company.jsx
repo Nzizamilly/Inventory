@@ -432,7 +432,12 @@ function Company() {
             }
         }
         bring();
-    }, [data]);
+    }, [oneCompanyID]);
+
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+      };
 
     const column = [
         {
@@ -445,7 +450,7 @@ function Company() {
         },
         {
             name: 'Date',
-            selector: row => row.date
+            selector: row => formatDate(row.date)
         },
         {
             name: 'Amount',
@@ -542,7 +547,7 @@ function Company() {
                             ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh' }} />}
                         </div>
 
-                        <div style={{ width: '40%', display: 'flex', justifyContent: 'center', gap: '12px', alignItems: 'center', flexDirection: 'column' }}>
+                        <div style={{ width: '40%', height: '60%', display: 'flex', justifyContent: 'center', marginTop: '60px', gap: '12px', alignItems: 'center', flexDirection: 'column' }}>
                             <select onChange={handleCategoryChange} value={selectedCategory} style={Selects}>
                                 <option value='' disabled>Select Category</option>
                                 {category.map(categories => (
@@ -581,12 +586,14 @@ function Company() {
                             ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh' }} />}
                         </div>
 
-                        <div style={{ width: '60%', height: '80%', display: 'flex', borderRadius: '26px', marginTop: '42px', marginLeft: '109px', backgroundColor: 'blue' }}>
-                            <DataTable
-                                columns={column}
-                                data={data}
-                                pagination
-                            ></DataTable>
+                        <div style={{ width: '80%', backgroundColor: 'rgb(163, 187, 197)', height: '80%', display: 'flex', borderRadius: '26px', justifyContent: 'center', alignItems: 'center', marginTop: '42px', marginLeft: '109px', flexDirection: 'column' }}>
+                            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', }}>
+                                <DataTable
+                                    columns={column}
+                                    data={data}
+                                    pagination
+                                ></DataTable>
+                            </div>
                         </div>
 
                     </div>

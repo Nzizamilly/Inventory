@@ -2654,7 +2654,7 @@ app.get('/get-total-in/:itemID', (req, res) => {
 app.get('/get-one/:oneCompanyID', (req, res) => {
   const companyID = req.params.oneCompanyID;
   const sql = `
-   SELECT company_records.*, company.name, item.name, employees.username
+   SELECT company_records.*, company.CompanyName, item.name, employees.username
    FROM company_records
    JOIN company ON company_records.companyID = company.id
    JOIN item ON company_records.itemID = item.id
