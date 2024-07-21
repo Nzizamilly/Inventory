@@ -4,15 +4,19 @@ import NavbarAdmin from './navbarAdmin';
 import AddItem from '../images/addItem.svg'
 import Modal from 'react-modal';
 import Logo from '../images/logo.svg';
+import { io } from 'socket.io-client';
 import axios from 'axios';
 import Keys from '../keys';
 import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import DataTable from 'react-data-table-component';
 
 function Company() {
 
     const ioPort = Keys.REACT_APP_SOCKET_PORT;
     const url = Keys.REACT_APP_BACKEND;
+
+    const socket = io.connect(`${ioPort}`);
 
     const Container = {
         width: '100%',
@@ -247,6 +251,14 @@ function Company() {
         backgroundColor: 'rgb(163, 187, 197)',
         display: 'flex',
         flexDirection: 'inline'
+    };
+
+    const report = {
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgb(163, 187, 197)',
+        display: 'flex',
+        flexDirection: 'inline'
     }
 
     const [oneCompany, setOneCompany] = useState([]);
@@ -322,14 +334,14 @@ function Company() {
         };
     }, [selectedCategory]);
 
-    const [ selectedItem , setSelectedItem ] = useState([]);
+    const [selectedItem, setSelectedItem] = useState([]);
 
     const handleItemChange = (event) => {
         const selectedValue = event.target.value;
         setSelectedItem(selectedValue);
     };
 
-    const [ supervisor , setSupervisor ] = useState([]);
+    const [supervisor, setSupervisor] = useState([]);
 
     useEffect(() => {
         const fetchSuper = async () => {
@@ -343,36 +355,107 @@ function Company() {
         fetchSuper();
     }, []);
 
-    const [ selectedSupervisor , setSelectedSupervisor ] = useState('');
+    const [selectedSupervisor, setSelectedSupervisor] = useState('');
 
     const handleSupervisorChange = (event) => {
-       const selectedValue = event.target.value;
-       setSelectedSupervisor(selectedValue);
+        const selectedValue = event.target.value;
+        setSelectedSupervisor(selectedValue);
     };
 
-    const [ quantity, setQuantity ] = useState('');
+    const [quantity, setQuantity] = useState('');
 
     const handleQuantity = (event) => {
         setQuantity((prev) => ({ ...prev, [event.target.name]: event.target.value }));
-      };
+    };
 
-const handleIssue = async(ID) => {
-    try{
-        const requestor = selectedSupervisor;
-        const item = selectedItem;
-        const amount = quantity.quantity;
-        const company = ID;
+    const [totalIn, setTotalIn] = useState([]);
 
-        console.log("DATA: ", requestor, item, amount, company)
+    useEffect(() => {
+        const bring = async () => {
+            try {
+                const response = await axios.get(`${url}/get-total-in/${selectedItem}`);
+                setTotalIn(response.data);
+            } catch (error) {
+                console.error("Error: ", error);
+            }
+        };
+        bring();
+    }, [selectedItem]);
 
-        const response = await axios.put(`${url}/change-status-from-notifications-for-company/${requestor}/${item}/${amount}/${company}`);
-        console.log("Response: ", response.data);
 
-    }catch(error){
-        console.error("Error: ", error);
-    }
 
-}
+    const handleIssue = async (ID) => {
+
+        try {
+            const requestor = selectedSupervisor;
+            const item = selectedItem;
+            const amount = quantity.quantity;
+            const company = ID;
+
+            console.log("Numbers: ", totalIn.totalIn, amount)
+
+            if (totalIn.totalIn >= amount) {
+
+                const messageData = {
+                    requestor: selectedSupervisor,
+                    item: selectedItem,
+                    amount: quantity.quantity,
+                    company: ID,
+                };
+
+                socket.emit("Company Insert", (messageData));
+
+                // console.log("DATA: ", requestor, item, amount, company)
+
+                // const response = await axios.put(`${url}/change-status-from-notifications-for-company/${requestor}/${item}/${amount}/${company}`);
+                // console.log("Response: ", response.data);
+            }
+
+
+
+        } catch (error) {
+            console.error("Error: ", error);
+        };
+    };
+
+
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+
+        const bring = async () => {
+            try {
+                const response = await axios.get(`${url}/get-one/${oneCompanyID}`);
+                setData(response.data);
+            } catch (error) {
+                console.error("Error: ", error);
+            }
+        }
+        bring();
+    }, [data]);
+
+    const column = [
+        {
+            name: 'Item',
+            selector: row => row.name
+        },
+        {
+            name: 'Issuer',
+            selector: row => row.username
+        },
+        {
+            name: 'Date',
+            selector: row => row.date
+        },
+        {
+            name: 'Amount',
+            selector: row => row.amount
+        },
+        {
+            name: 'Status',
+            selector: row => row.status
+        }
+    ]
 
     return (
         <div>
@@ -388,7 +471,7 @@ const handleIssue = async(ID) => {
                         <button style={CompanyButton} onClick={() => openCompanyModal(company.id)}>
                             <img src={image} style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }} />
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                <p>{company.name}</p>
+                                <p>{company.CompanyName}</p>
                                 <p>{company.email}</p>
                                 <p>{company.number}</p>
                             </div>
@@ -452,14 +535,14 @@ const handleIssue = async(ID) => {
 
 
                     {tab === 1 && <div style={issue}>
-                        <div style={{ width: '20%', height: '100%', display: 'flex', marginLeft: '12px', alignItems: 'center' }}>
+                        <div style={{ width: '20%', display: 'flex', marginLeft: '12px', alignItems: 'center' }}>
                             {imageForOneCompany ? (
                                 <img src={imageForOneCompany} style={{ maxWidth: '90%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '20px' }} />
 
                             ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh' }} />}
                         </div>
 
-                        <div style={{ width: '40%', marginTop: '40px', height: '70%', display: 'flex', justifyContent: 'center', gap: '12px', alignItems: 'center', flexDirection: 'column' }}>
+                        <div style={{ width: '40%', display: 'flex', justifyContent: 'center', gap: '12px', alignItems: 'center', flexDirection: 'column' }}>
                             <select onChange={handleCategoryChange} value={selectedCategory} style={Selects}>
                                 <option value='' disabled>Select Category</option>
                                 {category.map(categories => (
@@ -474,7 +557,7 @@ const handleIssue = async(ID) => {
                                 ))}
                             </select>
 
-                            <input type='text' style={{ width: '45%', color: 'black', backgroundColor: 'white' }} placeholder='Quantity'  name='quantity' onChange={handleQuantity} />
+                            <input type='text' style={{ width: '45%', color: 'black', backgroundColor: 'white' }} placeholder='Quantity' name='quantity' onChange={handleQuantity} />
 
                             <select onChange={handleSupervisorChange} value={selectedSupervisor} style={Selects}>
                                 <option value='' disabled>Select Issuer</option>
@@ -483,8 +566,27 @@ const handleIssue = async(ID) => {
                                 ))}
                             </select>
 
-                            <button style={{backgroundColor: 'white', width: '20%'}} onClick={() => handleIssue(oneCompanyID)}>Issue Out</button>
+                            <button style={{ backgroundColor: 'white', width: '20%' }} onClick={() => handleIssue(oneCompanyID)}>Issue Out</button>
 
+                        </div>
+
+                    </div>
+                    }
+
+                    {tab === 2 && <div style={report} >
+                        <div style={{ width: '20%', display: 'flex', marginLeft: '12px', alignItems: 'center' }}>
+                            {imageForOneCompany ? (
+                                <img src={imageForOneCompany} style={{ maxWidth: '90%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '20px' }} />
+
+                            ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh' }} />}
+                        </div>
+
+                        <div style={{ width: '60%', height: '80%', display: 'flex', borderRadius: '26px', marginTop: '42px', marginLeft: '109px', backgroundColor: 'blue' }}>
+                            <DataTable
+                                columns={column}
+                                data={data}
+                                pagination
+                            ></DataTable>
                         </div>
 
                     </div>

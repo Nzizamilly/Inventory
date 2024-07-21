@@ -241,7 +241,22 @@ ORDER BY
   socket.on("HR_Message_Stock(1)", (messageData, updatedNotification) => {
     console.log("From HR: to stockManager", messageData, updatedNotification);
     io.emit("HR_Message_Stock(2)", messageData, updatedNotification)
-  })
+  });
+
+  socket.on("Company Insert", (messageData) => {
+    const status = "Issued";
+    console.log("Things: ", messageData, status);
+
+    const companyID = messageData.company;
+    const itemID = messageData.item;
+    const amount = messageData.amount;
+    const requestor = messageData.requestor;
+
+    const sql = `INSERT INTO company_records (companyID,	itemID,	amount, employeeID,	status) VALUES (?, ?, ?, ?, ?)`;
+    db.query(sql, [ companyID, itemID, amount, requestor, status ], (error, result) => {
+      result ? console.log("Good: ", result) : console.error("Error: ", error);
+    });
+  });
 
   socket.on("Stock_Message_Employee(1)", (messageData) => {
     console.log("From HR: to stockManager", messageData);
@@ -2363,44 +2378,6 @@ app.put('/change-status-from-notifications-for-company/:requestor/:item/:amount/
   const company = req.params.company
   const requiredAmount = parseInt(req.params.amount);
 
-  // const getEmployeeID = (id) => {
-  //   return new Promise((resolve, reject) => {
-  //     const q = `SELECT id FROM employees WHERE username = ?`;
-  //     const value = [id];
-
-  //     db.query(q, value, (error, result) => {
-  //       if (error) {
-  //         console.error("error", error);
-  //         reject(error);
-  //       } else {
-  //         console.log("Result", result);
-  //         resolve(result[0].id);
-  //       }
-  //     });
-  //   });
-  // };
-
-  // const getItemID = (id) => {
-  //   return new Promise((resolve, reject) => {
-  //     const q = `SELECT id FROM item WHERE name = ?`;
-  //     const value = [id];
-
-  //     db.query(q, value, (error, result) => {
-  //       if (error) {
-  //         console.error("error", error);
-  //         reject(error);
-  //       } else {
-  //         console.log("Result", result);
-  //         resolve(result[0].id);
-  //       }
-  //     });
-  //   });
-  // };
-
-  // const requestorID = await getEmployeeID(requestor);
-
-  // const itemID = await getItemID(item);
-
   const getExactAmount = (itemID) => {
     return new Promise((resolve, reject) => {
       const q = `SELECT COUNT(*) AS count FROM serial_number WHERE status = 'In' AND itemID = ?;`;
@@ -2436,7 +2413,7 @@ app.put('/change-status-from-notifications-for-company/:requestor/:item/:amount/
     });
   } else {
     res.json("Not enough items to give out.");
-  }
+  };
 });
 
 
@@ -2662,8 +2639,33 @@ app.get('/get-one-company/:id', (req, res) => {
   const sql =  `SELECT * FROM company WHERE id = ?`;
   db.query(sql, [ID], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
-  })
-})
+  });
+});
+
+
+app.get('/get-total-in/:itemID', (req, res) => {
+  const get = `SELECT COUNT(*) AS count FROM serial_number WHERE status = 'In' AND itemID = ?`;
+  const itemID = req.params.itemID;
+  db.query(get, [itemID], (error, result) => {
+    result ? res.json({ totalIn: result[0].count }) : console.error("Error: ", error);
+  });
+});
+
+app.get('/get-one/:oneCompanyID', (req, res) => {
+  const companyID = req.params.oneCompanyID;
+  const sql = `
+   SELECT company_records.*, company.name, item.name, employees.username
+   FROM company_records
+   JOIN company ON company_records.companyID = company.id
+   JOIN item ON company_records.itemID = item.id
+   JOIN employees ON company_records.employeeID = employees.id
+   WHERE companyID = ?
+     `;
+     db.query(sql , [companyID], (error, result) => {
+      result ? res.json(result) : console.error("Error: ", error);
+     });
+});
+
 
 app.listen(5500, () => {
   console.log("Connected to backend");

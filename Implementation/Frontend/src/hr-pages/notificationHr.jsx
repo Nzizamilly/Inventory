@@ -66,7 +66,6 @@ function NotificationHR() {
           }, 2600);
 
         socket.emit("Take This", notifications);
-        // socket.emit("Send Approved Email", notifications);
         socket.emit("change-status-approve", notifications);
         try {
             console.log("Notifications to be passed: ", notifications);
