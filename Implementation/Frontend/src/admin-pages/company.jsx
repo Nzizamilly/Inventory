@@ -8,7 +8,7 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 import Keys from '../keys';
 import { storage } from '../firebase';
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, getStorage, listAll } from "firebase/storage";
 import DataTable from 'react-data-table-component';
 
 function Company() {
@@ -78,6 +78,26 @@ function Company() {
         height: '97%',
         backgroundColor: 'rgb(163, 187, 197)'
     }
+
+    const Selects = {
+        width: '43%',
+        height: '18%',
+        color: 'black',
+        border: 'none',
+        borderRadius: '21px'
+    };
+
+
+ const Option = {
+        width: '39%',
+        height: '25%',
+        display: 'flex',
+        gap: '12px',
+        color: 'white',
+        backgroundColor: 'black',
+        border: 'none',
+        borderRadius: '14px'
+    };
 
     useEffect(() => {
         setLogo(Logo);
@@ -204,23 +224,64 @@ function Company() {
 
     const [infoCompany, setInfoCompany] = useState([]);
     const [image, setImage] = useState();
-    const [infoCompanyID, setInfoCompanyID] = useState();
+
+    const [companyImages, setCompanyImages] = useState({});
+
+    useEffect(() => {
+        const fetchCompanies = async () => {
+            try {
+                const response = await axios.get(`${url}/get-company`);
+                setInfoCompany(response.data);
+
+                // Fetch images for each company
+                const storage = getStorage();
+                const imageFetches = response.data.map(async (company) => {
+                    const imageRef = ref(storage, `companyLogos/${company.id}`);
+                    try {
+                        const imageURL = await getDownloadURL(imageRef);
+                        return { [company.id]: imageURL };
+                    } catch (error) {
+                        console.error(`Error fetching image for company ${company.id}: `, error);
+                        return { [company.id]: console.log("No Image") };
+                    }
+                });
+
+                const images = await Promise.all(imageFetches);
+                const imagesMap = Object.assign({}, ...images);
+                setCompanyImages(imagesMap);
+            } catch (error) {
+                console.error("Error: ", error);
+            }
+        };
+        fetchCompanies();
+    }, [url]);
+
+    const [bringAll, setBringAll] = useState([]);
 
     useEffect(() => {
         const fetch = async () => {
             try {
-                const response = await axios.get(`${url}/get-company`);
-                setInfoCompany(response.data);
-                const sum = response.data;
-                const imageRef = ref(storage, `companyLogos/${sum[0].id}`);
-                const imageURL = await getDownloadURL(imageRef);
-                setImage(imageURL);
+              const storage = getStorage();
+              const listRef = ref(storage, 'companyLogos/');
+              const res = await listAll(listRef);
+              console.log("Files fetched: ", res.items)
+
+            //   const urls = await Promise.all(
+            //     res.items.map((itemRef) => getDownloadURL(itemRef.name))
+            //   );
+
+            const names = res.items.map((itemRef) => itemRef.name);
+            console.log("File names: ", names);
+
+              setBringAll(names);
             } catch (error) {
                 console.error("Error: ", error);
             };
         }
         fetch();
     }, []);
+
+    console.log("All Images from Firebase", bringAll);
 
     const [companyModalOpen, isCompanyModalOpen] = useState(false);
     const [oneCompanyID, setOneCompanyID] = useState('');
@@ -232,6 +293,7 @@ function Company() {
     };
 
     const closeCompanyModal = () => {
+        setImageForOneCompany('')
         isCompanyModalOpen(false);
     };
 
@@ -292,14 +354,6 @@ function Company() {
         fetchCategory();
     }, []);
 
-    const Selects = {
-        width: '43%',
-        height: '18%',
-        color: 'black',
-        border: 'none',
-        borderRadius: '21px'
-    };
-
     const [selectedCategory, setSelectedCategory] = useState('');
 
     const handleCategoryChange = (event) => {
@@ -307,16 +361,7 @@ function Company() {
         setSelectedCategory(selectedValue);
     };
 
-    const Option = {
-        width: '39%',
-        height: '25%',
-        display: 'flex',
-        gap: '12px',
-        color: 'white',
-        backgroundColor: 'black',
-        border: 'none',
-        borderRadius: '14px'
-    };
+
 
     const [item, setItem] = useState([]);
 
@@ -405,13 +450,9 @@ function Company() {
 
                 socket.emit("Company Insert", (messageData));
 
-                // console.log("DATA: ", requestor, item, amount, company)
-
-                // const response = await axios.put(`${url}/change-status-from-notifications-for-company/${requestor}/${item}/${amount}/${company}`);
-                // console.log("Response: ", response.data);
-            }
-
-
+                const response = await axios.put(`${url}/change-status-from-notifications-for-company/${requestor}/${item}/${amount}/${company}`);
+                console.log("Response: ", response.data);
+            };
 
         } catch (error) {
             console.error("Error: ", error);
@@ -460,7 +501,7 @@ function Company() {
             name: 'Status',
             selector: row => row.status
         }
-    ]
+    ];
 
     return (
         <div>
@@ -472,16 +513,20 @@ function Company() {
 
             <div style={Container}>
                 <div className="terms-admin">
-                    {infoCompany.map(company => (
-                        <button style={CompanyButton} onClick={() => openCompanyModal(company.id)}>
-                            <img src={image} style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }} />
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                <p>{company.CompanyName}</p>
-                                <p>{company.email}</p>
-                                <p>{company.number}</p>
-                            </div>
-                        </button>
-                    ))}
+                {infoCompany.map(company => (
+                <button key={company.id} style={CompanyButton} onClick={() => openCompanyModal(company.id)}>
+                    <img
+                        src={companyImages[company.id]}
+                        alt={`${company.CompanyName} logo`}
+                        style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }}
+                    />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <p>{company.CompanyName}</p>
+                        <p>{company.email}</p>
+                        <p>{company.number}</p>
+                    </div>
+                </button>
+            ))}
                 </div>
             </div>
 

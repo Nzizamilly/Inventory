@@ -2620,7 +2620,7 @@ app.post('/add-company', (req, res) => {
   console.log("number: ", number);
   console.log("email: ", email);
 
-  const sql = 'INSERT INTO company (name, number, email ) VALUES (?,?,? )';
+  const sql = 'INSERT INTO company (CompanyName, number, email ) VALUES ( ?, ?, ? )';
 
   db.query(sql, [name, number, email], (error, result) => {
     result ? console.log("INSERTED", result) : console.error("Error: ", error);

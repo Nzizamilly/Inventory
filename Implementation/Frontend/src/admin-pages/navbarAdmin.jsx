@@ -176,7 +176,7 @@ function NavbarAdmin() {
       setCount(response.data);
     }
     bringPendingNumbers();
-  }, [count]);
+  }, []);
 
   return (
     <div >
