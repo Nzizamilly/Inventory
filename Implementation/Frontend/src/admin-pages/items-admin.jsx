@@ -871,7 +871,7 @@ function ItemsAdmin() {
               <button className='addItem-btn' onClick={() => openSimpleModal()}><img src={AddItem} style={svgStyle} /></button>
             </div>
 
-            <DataTable
+              <DataTable
               columns={one}
               data={items}
               pagination

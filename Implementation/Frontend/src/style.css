@@ -936,13 +936,14 @@ li a:hover {
 
 .terms-admin {
     gap: 15px;
-    width: 83%;
+    width: 75%;
     height: 49%;
     border: none;
     display: flex;
+    flex-wrap: wrap;
     text-align: left;
     padding: 12px 0px;
-    margin-left: 220px;
+    margin-left: 200px;
     margin-top: -278px;
     padding-left: 12px;
     border-radius: 12px;

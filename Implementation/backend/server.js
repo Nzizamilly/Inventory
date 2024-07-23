@@ -2666,6 +2666,23 @@ app.get('/get-one/:oneCompanyID', (req, res) => {
      });
 });
 
+app.get('/get-one-company-for-delivery/:oneCompanyID/:ID', (req, res) => {
+  const companyID = req.params.oneCompanyID;
+  const ID = req.params.ID
+  const sql = `
+   SELECT company_records.*, company.CompanyName, item.name, employees.username
+   FROM company_records
+   JOIN company ON company_records.companyID = company.id
+   JOIN item ON company_records.itemID = item.id
+   JOIN employees ON company_records.employeeID = employees.id
+   WHERE companyID = ? AND company_records.id = ?
+     `;
+     db.query(sql , [companyID, ID], (error, result) => {
+      result ? res.json(result) : console.error("Error: ", error);
+     });
+});
+
+
 
 app.listen(5500, () => {
   console.log("Connected to backend");

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { React, useState, useEffect } from 'react';
+import { React, useState, useEffect, useReducer } from 'react';
 import NavbarAdmin from './navbarAdmin';
 import AddItem from '../images/addItem.svg'
 import Modal from 'react-modal';
@@ -10,8 +10,11 @@ import Keys from '../keys';
 import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL, getStorage, listAll } from "firebase/storage";
 import DataTable from 'react-data-table-component';
+import PizZip from "pizzip";
+import Docxtemplater from "docxtemplater";
+import { saveAs } from "file-saver";
 
-function Company() {
+function Company({ filePath }) {
 
     const ioPort = Keys.REACT_APP_SOCKET_PORT;
     const url = Keys.REACT_APP_BACKEND;
@@ -26,7 +29,7 @@ function Company() {
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: "'Arial', sans-serif",
+        // fontFamily: "'Arial', sans-serif",
         backgroundColor: ' rgb(163, 187, 197)',
     };
 
@@ -88,7 +91,7 @@ function Company() {
     };
 
 
- const Option = {
+    const Option = {
         width: '39%',
         height: '25%',
         display: 'flex',
@@ -145,6 +148,7 @@ function Company() {
             flexDirection: 'column',
             border: 'none',
             gap: '12px',
+            fontFamily: 'Arial, sans-serif',
             borderRadius: '12px',
             backgroundColor: 'white',
             marginLeft: '180px',
@@ -261,19 +265,14 @@ function Company() {
     useEffect(() => {
         const fetch = async () => {
             try {
-              const storage = getStorage();
-              const listRef = ref(storage, 'companyLogos/');
-              const res = await listAll(listRef);
-              console.log("Files fetched: ", res.items)
+                const storage = getStorage();
+                const listRef = ref(storage, 'companyLogos/');
+                const res = await listAll(listRef);
+                // console.log("Files fetched: ", res.items);
+                const names = res.items.map((itemRef) => itemRef.name);
+                // console.log("File names: ", names);
 
-            //   const urls = await Promise.all(
-            //     res.items.map((itemRef) => getDownloadURL(itemRef.name))
-            //   );
-
-            const names = res.items.map((itemRef) => itemRef.name);
-            console.log("File names: ", names);
-
-              setBringAll(names);
+                setBringAll(names);
             } catch (error) {
                 console.error("Error: ", error);
             };
@@ -281,10 +280,20 @@ function Company() {
         fetch();
     }, []);
 
-    console.log("All Images from Firebase", bringAll);
+    // console.log("All Images from Firebase", bringAll);
 
     const [companyModalOpen, isCompanyModalOpen] = useState(false);
     const [oneCompanyID, setOneCompanyID] = useState('');
+    const [isDeliveryNoteOpen, setIsDeliveryNoteOpen] = useState(false);
+
+    const openDeliveryNote = (ID) => {
+        setIsDeliveryNoteOpen(true);
+        handleDeliveryNoteForOneCompany(ID)
+    };
+
+    const closeDeliveryNoteModal = () => {
+        setIsDeliveryNoteOpen(false);
+    };
 
     const openCompanyModal = (ID) => {
         isCompanyModalOpen(true);
@@ -452,7 +461,9 @@ function Company() {
 
                 const response = await axios.put(`${url}/change-status-from-notifications-for-company/${requestor}/${item}/${amount}/${company}`);
                 console.log("Response: ", response.data);
-            };
+            } else {
+                window.alert("Insufficient Amount...");
+            }
 
         } catch (error) {
             console.error("Error: ", error);
@@ -478,7 +489,7 @@ function Company() {
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
-      };
+    };
 
     const column = [
         {
@@ -500,8 +511,71 @@ function Company() {
         {
             name: 'Status',
             selector: row => row.status
+        },
+        {
+            name: 'Delivery Note',
+            selector: row => (
+                <button className='addItem-btn' onClick={() => openDeliveryNote(row.id)}></button>
+            )
         }
     ];
+
+    const editWordDocument = async (templateUrl, jsonData) => {
+        try {
+
+            const response = await fetch(templateUrl);
+            const arrayBuffer = await response.arrayBuffer();
+
+            const zip = new PizZip(arrayBuffer);
+
+            const doc = new Docxtemplater(zip, {
+                paragraphLoop: true,
+                linebreaks: true,
+            });
+
+            doc.setData(jsonData);
+
+            doc.render();
+
+            const out = doc.getZip().generate({
+                type: "blob",
+                mimeType:
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            });
+
+            saveAs(out, "edited-document.docx");
+
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+    };
+
+    const templateUrl = "../docs/deliveryNote.docx";
+
+    const [itemName, setItemName] = useState('');
+    const [CompanyName, setCompanyName] = useState('');
+    const [date, setDate] = useState('');
+    const  [amount , setAmount] = useState('')
+    
+
+    const handleDeliveryNoteForOneCompany = async (ID) => {
+        try {
+            const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${ID}`);
+            const data = (response.data);
+            console.log("Data: ", data)
+            setItemName(data[0].name);
+            setCompanyName(data[0].CompanyName);
+            const date = formatDate(data[0].date);
+            setDate(date);
+            setAmount(data[0].amount);
+
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+    };
+
+    console.log("Company: ", itemName, CompanyName,date,amount);
+
 
     return (
         <div>
@@ -513,20 +587,20 @@ function Company() {
 
             <div style={Container}>
                 <div className="terms-admin">
-                {infoCompany.map(company => (
-                <button key={company.id} style={CompanyButton} onClick={() => openCompanyModal(company.id)}>
-                    <img
-                        src={companyImages[company.id]}
-                        alt={`${company.CompanyName} logo`}
-                        style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }}
-                    />
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <p>{company.CompanyName}</p>
-                        <p>{company.email}</p>
-                        <p>{company.number}</p>
-                    </div>
-                </button>
-            ))}
+                    {infoCompany.map(company => (
+                        <button key={company.id} style={CompanyButton} onClick={() => openCompanyModal(company.id)}>
+                            <img
+                                src={companyImages[company.id]}
+                                alt={`${company.CompanyName} logo`}
+                                style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }}
+                            />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <p>{company.CompanyName}</p>
+                                <p>{company.email}</p>
+                                <p>{company.number}</p>
+                            </div>
+                        </button>
+                    ))}
                 </div>
             </div>
 
@@ -570,7 +644,7 @@ function Company() {
                         <div style={{ width: '40%', height: '70%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             {oneCompany.map(one => (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    <p>Name:{one.name}</p>
+                                    <p>Name:{one.CompanyName}</p>
                                     <p>Email:{one.email}</p>
                                     <p>Number:{one.number}</p>
                                     <div style={{ width: '100%', height: '20%', display: 'flex', flexDirection: 'inline', gap: '12px' }}>
@@ -617,6 +691,7 @@ function Company() {
                             </select>
 
                             <button style={{ backgroundColor: 'white', width: '20%' }} onClick={() => handleIssue(oneCompanyID)}>Issue Out</button>
+                            {/* <button style={{ backgroundColor: 'white', width: '20%' }} onClick={() => openDeliveryNote()}>Issue Out</button> */}
 
                         </div>
 
@@ -643,6 +718,12 @@ function Company() {
 
                     </div>
                     }
+
+                    <div>
+                        <Modal isOpen={isDeliveryNoteOpen} onRequestClose={closeDeliveryNoteModal}>
+
+                        </Modal>
+                    </div>
 
                 </div>
             </Modal>
