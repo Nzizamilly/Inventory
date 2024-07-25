@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { React, useState, useEffect, useReducer } from 'react';
 import NavbarAdmin from './navbarAdmin';
 import AddItem from '../images/addItem.svg'
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import Modal from 'react-modal';
 import Logo from '../images/logo.svg';
 import { io } from 'socket.io-client';
@@ -118,6 +119,28 @@ function Company({ filePath }) {
 
     const closeAddModal = () => {
         isAddModalOpen(false);
+    };
+
+    const modal3 = {
+        overlay: {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        content: {
+            width: '80%',
+            maxWidth: '800px',
+            height: 'auto',
+            border: 'none',
+            marginLeft: '295px',
+            overflow: 'auto',
+            borderRadius: '12px',
+            backgroundColor: 'black',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
     };
 
     const kindaStyle = {
@@ -295,10 +318,11 @@ function Company({ filePath }) {
         setIsDeliveryNoteOpen(false);
     };
 
-    const openCompanyModal = (ID) => {
+    const openCompanyModal = (ID, companyName) => {
         isCompanyModalOpen(true);
-        setOneCompanyID(ID)
-        fetchOneCompany(ID)
+        setOneCompanyID(ID);
+        fetchOneCompany(ID);
+
     };
 
     const closeCompanyModal = () => {
@@ -520,47 +544,16 @@ function Company({ filePath }) {
         }
     ];
 
-    const editWordDocument = async (templateUrl, jsonData) => {
-        try {
-
-            const response = await fetch(templateUrl);
-            const arrayBuffer = await response.arrayBuffer();
-
-            const zip = new PizZip(arrayBuffer);
-
-            const doc = new Docxtemplater(zip, {
-                paragraphLoop: true,
-                linebreaks: true,
-            });
-
-            doc.setData(jsonData);
-
-            doc.render();
-
-            const out = doc.getZip().generate({
-                type: "blob",
-                mimeType:
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            });
-
-            saveAs(out, "edited-document.docx");
-
-        } catch (error) {
-            console.error("Error: ", error);
-        }
-    };
-
-    const templateUrl = "../docs/deliveryNote.docx";
-
     const [itemName, setItemName] = useState('');
     const [CompanyName, setCompanyName] = useState('');
     const [date, setDate] = useState('');
-    const  [amount , setAmount] = useState('')
-    
+    const [amount, setAmount] = useState('')
+    const [pdf, setPDF] = useState('');
 
     const handleDeliveryNoteForOneCompany = async (ID) => {
         try {
             const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${ID}`);
+
             const data = (response.data);
             console.log("Data: ", data)
             setItemName(data[0].name);
@@ -569,12 +562,46 @@ function Company({ filePath }) {
             setDate(date);
             setAmount(data[0].amount);
 
+
+
         } catch (error) {
             console.error("Error: ", error);
         }
     };
 
-    console.log("Company: ", itemName, CompanyName,date,amount);
+    useEffect(() => {
+        if (itemName && CompanyName && date && amount) {
+            const messageData = {
+                itemName: itemName,
+                CompanyName: CompanyName,
+                date: date,
+                amount: amount,
+            };
+            socket.emit("Go For Delivery", messageData);
+        }
+    }, [itemName, CompanyName, date, amount, pdf]);
+
+    useEffect(() => {
+        const fetchPDF = async () => {
+            try {
+                const response = await axios.get(`${url}/get-pdf`, {
+                    responseType: 'blob' // Ensure the response is handled as a blob
+                });
+                const pdfBlob = response.data;
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                setPDF(pdfUrl);
+                console.log("Response: ", pdfUrl);
+            } catch (error) {
+                console.error("Error: ", error);
+            }
+        }
+        fetchPDF();
+    }, [url]);
+
+    const pdfFile = [{
+        uri: pdf,
+        fileType: 'pdf',
+    }]
 
 
     return (
@@ -588,7 +615,7 @@ function Company({ filePath }) {
             <div style={Container}>
                 <div className="terms-admin">
                     {infoCompany.map(company => (
-                        <button key={company.id} style={CompanyButton} onClick={() => openCompanyModal(company.id)}>
+                        <button key={company.id} style={CompanyButton} onClick={() => openCompanyModal(company.id, company.CompanyName)}>
                             <img
                                 src={companyImages[company.id]}
                                 alt={`${company.CompanyName} logo`}
@@ -720,7 +747,12 @@ function Company({ filePath }) {
                     }
 
                     <div>
-                        <Modal isOpen={isDeliveryNoteOpen} onRequestClose={closeDeliveryNoteModal}>
+                        <Modal isOpen={isDeliveryNoteOpen} onRequestClose={closeDeliveryNoteModal} style={modal3}>
+                            {pdf ? (
+                                <iframe src={pdf} width="100%" height="600px" />
+                            ) : (
+                                <p>Loading PDF...</p>
+                            )}
 
                         </Modal>
                     </div>

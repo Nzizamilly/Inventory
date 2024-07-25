@@ -7,8 +7,12 @@ const { Server } = require("socket.io");
 const http = require("http");
 const moment = require('moment');
 const nodemailer = require('nodemailer');
+const pdf = require('html-pdf');
 const { EMAIL, PASSWORD } = require('./env.js');
 
+const port = process.env.PORT || 5500;
+
+const pdfTemplate = require('./');
 
 const app = express();
 const server = http.createServer(app);
@@ -251,12 +255,45 @@ ORDER BY
     const itemID = messageData.item;
     const amount = messageData.amount;
     const requestor = messageData.requestor;
+    const date = new Date();
 
     const sql = `INSERT INTO company_records (companyID,	itemID,	amount, employeeID,	status) VALUES (?, ?, ?, ?, ?)`;
-    db.query(sql, [ companyID, itemID, amount, requestor, status ], (error, result) => {
+    db.query(sql, [companyID, itemID, amount, requestor, status], (error, result) => {
       result ? console.log("Good: ", result) : console.error("Error: ", error);
     });
+
   });
+
+  socket.on("Go For Delivery", (messageData) => {
+
+    const CompanyName = messageData.CompanyName;
+    const date = messageData.date;
+    const itemName = messageData.itemName;
+    const amount = messageData.amount;
+
+    pdf.create(pdfTemplate(messageData), {}).toFile('result.pdf', (err) => {
+      if (err) {
+        console.error("Error PDF: ", err);
+        return Promise.reject();
+      }
+      return Promise.resolve();
+    });
+  });
+
+  app.get('/get-pdf', (req, res) => {
+    console.log("HIT!!!!!");
+    const filePath = `${__dirname}/result.pdf`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        console.error("Error sending file:", err);
+        res.status(500).send("Error sending file");
+      } else {
+        console.log("File sent successfully");
+      }
+    });
+  });
+
 
   socket.on("Stock_Message_Employee(1)", (messageData) => {
     console.log("From HR: to stockManager", messageData);
@@ -1591,7 +1628,7 @@ app.get('/get-supervisor-name/:supervisorID', (req, res) => {
 
 app.get('/get-supervisor', (req, res) => {
   const sql = 'SELECT * FROM employees WHERE roleID = 5'
-  db.query(sql,  (error, result) => {
+  db.query(sql, (error, result) => {
     if (error) {
       console.error("Error", error);
     } else {
@@ -2636,7 +2673,7 @@ app.get('/get-company', (req, res) => {
 
 app.get('/get-one-company/:id', (req, res) => {
   const ID = req.params.id;
-  const sql =  `SELECT * FROM company WHERE id = ?`;
+  const sql = `SELECT * FROM company WHERE id = ?`;
   db.query(sql, [ID], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
   });
@@ -2661,9 +2698,9 @@ app.get('/get-one/:oneCompanyID', (req, res) => {
    JOIN employees ON company_records.employeeID = employees.id
    WHERE companyID = ?
      `;
-     db.query(sql , [companyID], (error, result) => {
-      result ? res.json(result) : console.error("Error: ", error);
-     });
+  db.query(sql, [companyID], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
 });
 
 app.get('/get-one-company-for-delivery/:oneCompanyID/:ID', (req, res) => {
@@ -2677,13 +2714,13 @@ app.get('/get-one-company-for-delivery/:oneCompanyID/:ID', (req, res) => {
    JOIN employees ON company_records.employeeID = employees.id
    WHERE companyID = ? AND company_records.id = ?
      `;
-     db.query(sql , [companyID, ID], (error, result) => {
-      result ? res.json(result) : console.error("Error: ", error);
-     });
+  db.query(sql, [companyID, ID], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
 });
 
 
 
-app.listen(5500, () => {
+app.listen(port, () => {
   console.log("Connected to backend");
 });
