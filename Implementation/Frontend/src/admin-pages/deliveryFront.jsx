@@ -1,7 +1,9 @@
-module.exports = ({ CompanyName, itemName, amount, date }) => {
-    return `
+import React from 'react';
 
-<!DOCTYPE html>
+function Delivery( CompanyName, itemName, amount, date ) {
+
+    return `
+   <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -53,7 +55,7 @@ module.exports = ({ CompanyName, itemName, amount, date }) => {
             border-collapse: collapse;
             margin-bottom: 25px;
         }
-    
+
         th,
         td {
             border: 1px solid #000;
@@ -92,7 +94,7 @@ module.exports = ({ CompanyName, itemName, amount, date }) => {
         <p class="delivery-note">Delivery Note</p>
     </div>
 <div style="margin-top: 70px;">
-    <p>The following ${amount} ${itemName} have been delivered in good conditions with full configuration of <strong>Electronic
+    <p>The following ${amount}: ${itemName} have been delivered in good conditions with full configuration of <strong>Electronic
             Fare Collection System of "${CompanyName}"</strong></p>
 </div>
     <div style="width: 60%; margin-top: 70px;">
@@ -160,6 +162,7 @@ module.exports = ({ CompanyName, itemName, amount, date }) => {
     </table>
 </body>
 </html>
-`
-};
+  `;
+}
 
+export default Delivery;

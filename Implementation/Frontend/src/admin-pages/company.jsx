@@ -11,16 +11,14 @@ import Keys from '../keys';
 import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL, getStorage, listAll } from "firebase/storage";
 import DataTable from 'react-data-table-component';
-import PizZip from "pizzip";
-import Docxtemplater from "docxtemplater";
-import { saveAs } from "file-saver";
+import Delivery from './deliveryFront';
 
-function Company({ filePath }) {
+function Company() {
 
     const ioPort = Keys.REACT_APP_SOCKET_PORT;
     const url = Keys.REACT_APP_BACKEND;
 
-    const socket = io.connect(`${ioPort}`);
+    const socket = io.connect(`${ioPort}`); 
 
     const Container = {
         width: '100%',
@@ -309,9 +307,12 @@ function Company({ filePath }) {
     const [oneCompanyID, setOneCompanyID] = useState('');
     const [isDeliveryNoteOpen, setIsDeliveryNoteOpen] = useState(false);
 
+    const [IDForDeliveryUseEffect, setIDForDeliveryUseEffect] = useState('')
+
     const openDeliveryNote = (ID) => {
         setIsDeliveryNoteOpen(true);
-        handleDeliveryNoteForOneCompany(ID)
+        handleDeliveryNoteForOneCompany(ID);
+        setIDForDeliveryUseEffect(ID);
     };
 
     const closeDeliveryNoteModal = () => {
@@ -460,35 +461,54 @@ function Company({ filePath }) {
         bring();
     }, [selectedItem]);
 
-
+    const [itemName, setItemName] = useState('');
+    const [CompanyName, setCompanyName] = useState('');
+    const [date, setDate] = useState('');
+    const [amount, setAmount] = useState('')
+    const [pdf, setPDF] = useState('');
 
     const handleIssue = async (ID) => {
 
         try {
-            const requestor = selectedSupervisor;
-            const item = selectedItem;
+            // const requestor = selectedSupervisor;
+            // const item = selectedItem;
             const amount = quantity.quantity;
-            const company = ID;
+            // const company = ID;
 
             console.log("Numbers: ", totalIn.totalIn, amount)
 
             if (totalIn.totalIn >= amount) {
 
-                const messageData = {
-                    requestor: selectedSupervisor,
-                    item: selectedItem,
-                    amount: quantity.quantity,
-                    company: ID,
+                const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${ID}`);
+
+                const data = (response.data);
+                console.log("Data: ", data)
+                setItemName(data[0].name);
+                setCompanyName(data[0].CompanyName);
+                const date = formatDate(data[0].date);
+                setDate(date);
+                setAmount(data[0].amount);
+
+                const messageDatas = {
+                    itemName: itemName,
+                    CompanyName: CompanyName,
+                    date: date,
+                    amount: amount,
                 };
 
-                socket.emit("Company Insert", (messageData));
+                console.log("Passed: ", messageDatas);
 
-                const response = await axios.put(`${url}/change-status-from-notifications-for-company/${requestor}/${item}/${amount}/${company}`);
-                console.log("Response: ", response.data);
+                // socket.emit("Go For Delivery", messageData);
+
+                const post = await axios.post(`${url}/post-some`, messageDatas);
+
+                // socket.emit("Company Insert", (messageData));
+
+                // const response = await axios.put(`${url}/change-status-from-notifications-for-company/${requestor}/${item}/${amount}/${company}`);
+                // console.log("Response: ", response.data);
             } else {
                 window.alert("Insufficient Amount...");
             }
-
         } catch (error) {
             console.error("Error: ", error);
         };
@@ -508,7 +528,7 @@ function Company({ filePath }) {
             }
         }
         bring();
-    }, [oneCompanyID]);
+    }, [oneCompanyID, data]);
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -539,35 +559,43 @@ function Company({ filePath }) {
         {
             name: 'Delivery Note',
             selector: row => (
-                <button className='addItem-btn' onClick={() => openDeliveryNote(row.id)}></button>
+                <button onClick={() => openDeliveryNote(row.id)}>View</button>
             )
         }
     ];
 
-    const [itemName, setItemName] = useState('');
-    const [CompanyName, setCompanyName] = useState('');
-    const [date, setDate] = useState('');
-    const [amount, setAmount] = useState('')
-    const [pdf, setPDF] = useState('');
+    // const [itemName, setItemName] = useState('');
+    // const [CompanyName, setCompanyName] = useState('');
+    // const [date, setDate] = useState('');
+    // const [amount, setAmount] = useState('')
+    // const [pdf, setPDF] = useState('');
 
-    const handleDeliveryNoteForOneCompany = async (ID) => {
-        try {
-            const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${ID}`);
+        const handleDeliveryNoteForOneCompany = async (IDForDeliveryUseEffect) => {
+            try {
+                const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${IDForDeliveryUseEffect}`);
 
-            const data = (response.data);
-            console.log("Data: ", data)
-            setItemName(data[0].name);
-            setCompanyName(data[0].CompanyName);
-            const date = formatDate(data[0].date);
-            setDate(date);
-            setAmount(data[0].amount);
+                const data = (response.data);
 
+                console.log("Data: ", data)
+                setItemName(data[0].name);
+                setCompanyName(data[0].CompanyName);
+                const date = formatDate(data[0].date);
+                setDate(date);
+                setAmount(data[0].amount);
 
+                const messageDatas = {
+                    itemName: itemName,
+                    CompanyName: CompanyName,
+                    date: date,
+                    amount: amount,
+                };
 
-        } catch (error) {
-            console.error("Error: ", error);
-        }
-    };
+                socket.emit("Go For Delivery", messageDatas);
+
+            } catch (error) {
+                console.error("Error: ", error);
+            };
+        };
 
     useEffect(() => {
         if (itemName && CompanyName && date && amount) {
@@ -577,7 +605,7 @@ function Company({ filePath }) {
                 date: date,
                 amount: amount,
             };
-            socket.emit("Go For Delivery", messageData);
+            // socket.emit("Go For Delivery", messageData);
         }
     }, [itemName, CompanyName, date, amount, pdf]);
 
@@ -751,7 +779,7 @@ function Company({ filePath }) {
                             {pdf ? (
                                 <iframe src={pdf} width="100%" height="600px" />
                             ) : (
-                                <p>Loading PDF...</p>
+                                <p style={{color: 'white'}}>Loading PDF...</p>
                             )}
 
                         </Modal>

@@ -198,7 +198,7 @@ ORDER BY
     });
   })
 
-  socket.on('get-some', () => {
+  socket.on('/get-some', () => {
 
     try {
       const sql = `SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount, employee_supervisor_request.description, employee_supervisor_request.date_of_request, employee_supervisor_request.id, employee_supervisor_request.status 
@@ -261,15 +261,9 @@ ORDER BY
     db.query(sql, [companyID, itemID, amount, requestor, status], (error, result) => {
       result ? console.log("Good: ", result) : console.error("Error: ", error);
     });
-
   });
 
   socket.on("Go For Delivery", (messageData) => {
-
-    const CompanyName = messageData.CompanyName;
-    const date = messageData.date;
-    const itemName = messageData.itemName;
-    const amount = messageData.amount;
 
     pdf.create(pdfTemplate(messageData), {}).toFile('result.pdf', (err) => {
       if (err) {
@@ -278,7 +272,29 @@ ORDER BY
       }
       return Promise.resolve();
     });
+
   });
+
+  app.post('/post-some', (req, res) => {
+    const data = {
+     CompanyName : req.body.CompanyName,
+     date : req.body.date,
+     itemName : req.body.itemName,
+     amount : req.body.amount,
+    }
+
+    console.log("DATAS: ", data);
+
+    pdf.create(pdfTemplate(data), {}).toFile('result.pdf', (err) => {
+      if (err) {
+        console.error("Error PDF: ", err);
+        return Promise.reject();
+      }
+      return Promise.resolve();
+    });
+
+  })
+
 
   app.get('/get-pdf', (req, res) => {
     console.log("HIT!!!!!");
@@ -350,7 +366,6 @@ ORDER BY
         console.log("Status set Approved");
       }
     });
-
   })
 
   socket.on("change-status-approve", (messageData) => {
@@ -540,7 +555,7 @@ app.post("/employee", (req, res) => {
   console.log("role ID", role);
   const status = 'ACTIVE';
 
-  const query = "INSERT INTO employees (username, password, address, roleID, departmentID, status, email) VALUES (?, ?, ?, ?, ?, ?, ?)";
+  const query = "INSERT INTO employees (username, password, address, roleID, departmentID, status, email, date_of_employment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
   const values = [
     req.body.username,
@@ -550,7 +565,10 @@ app.post("/employee", (req, res) => {
     departmentID,
     status,
     req.body.email,
+    req.body.date_of_employment
   ];
+
+  console.log("DATAS: ", values);
 
   db.query(query, values, (error, result) => {
     if (error) {
@@ -644,36 +662,36 @@ app.put("/employee/:id", (req, res) => {
     console.log("Employee Update Successfully", data);
     return res.json(data)
   });
-})
+});
 
-app.get("/employee/:id", (req, res) => {
+app.get('/employee-once/:id', (req, res) => {
   const empID = req.params.id;
-  const q = ` SELECT
-    employees.id,
-    employees.username,
-    employees.password,
-    employees.address,
-    employees.profile_picture,
-    employees.roleID,
-    employees.departmentID,
-    employees.status,
-    employees.email,
-    role.role_name,
-    department.department_name
-FROM
-    employees
-JOIN
-    role ON employees.roleID = role.id
-JOIN
-    department ON employees.departmentID = department.id
-WHERE
-    employees.id = ?;
+    const q = ` SELECT
+     employees.id, 
+     employees.username, 
+     employees.password, 
+     employees.address, employees.profile_picture, 
+     employees.roleID, 
+     employees.departmentID, 
+     employees.status,
+     employees.date_of_employment, 
+     employees.email, 
+     role.role_name, 
+     department.department_name 
+
+     FROM employees
+
+     JOIN role ON employees.roleID = role.id
+     JOIN department ON employees.departmentID = department.id 
+
+     WHERE employees.id = ?;
 `
-  db.query(q, [empID], (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
+  db.query(q, [empID], (err, result) => {
+   result ? res.json(result) : console.error("Error: ", err)
   });
 });
+
+
 
 app.post('/login', (req, res) => {
   const sql = "SELECT * FROM employees WHERE username = ? and password = ? ";
@@ -713,7 +731,7 @@ app.get('/category', (req, res) => {
 });
 
 app.get('/employees', (req, res) => {
-  const sql = ` SELECT employees.id, employees.username, employees.password, employees.profile_picture,employees.roleID,employees.departmentID, employees.status, role.role_name,employees.email, department.department_name 
+  const sql = ` SELECT employees.id, employees.username, employees.password, employees.profile_picture,employees.roleID, employees.address, employees.phoneNumber, employees.departmentID, employees.status, role.role_name,employees.email, department.department_name 
 FROM 
 employees 
 JOIN role ON employees.roleID = role.id 
