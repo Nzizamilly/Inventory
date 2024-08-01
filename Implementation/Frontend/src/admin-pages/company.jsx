@@ -515,7 +515,7 @@ function Company({ filePath }) {
         {
             name: 'Delivery Note',
             selector: row => (
-                <button className='addItem-btn' onClick={() => openDeliveryNote(row.id)}></button>
+                <button onClick={() => openDeliveryNote(row.id)}></button>
             )
         }
     ];
@@ -724,7 +724,7 @@ function Company({ filePath }) {
 
                         </Modal>
                     </div>
-
+x
                 </div>
             </Modal>
 
