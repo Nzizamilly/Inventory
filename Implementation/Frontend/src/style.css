@@ -951,9 +951,26 @@ li a:hover {
     color: rgb(29, 27, 27);
     font-family: 'Arial', sans-serif;
     background-color: rgb(206, 206, 236);
-}
+};
 
-;
+.termsx {
+    gap: 15px;
+    width: 75%;
+    height: 49%;
+    border: none;
+    display: flex;
+    flex-wrap: wrap;
+    text-align: left;
+    padding: 12px 0px;
+    margin-left: 200px;
+    margin-top: 278px;
+    padding-left: 12px;
+    border-radius: 12px;
+    flex-direction: inline;
+    color: rgb(29, 27, 27);
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(206, 206, 236);
+};
 
 .th1 {
     width: 23px;

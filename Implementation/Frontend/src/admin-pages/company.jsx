@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { React, useState, useEffect, useReducer } from 'react';
 import NavbarAdmin from './navbarAdmin';
 import AddItem from '../images/addItem.svg'
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import Modal from 'react-modal';
 import Logo from '../images/logo.svg';
 import { io } from 'socket.io-client';
@@ -10,16 +11,14 @@ import Keys from '../keys';
 import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL, getStorage, listAll } from "firebase/storage";
 import DataTable from 'react-data-table-component';
-import PizZip from "pizzip";
-import Docxtemplater from "docxtemplater";
-import { saveAs } from "file-saver";
+import Delivery from './deliveryFront';
 
-function Company({ filePath }) {
+function Company() {
 
     const ioPort = Keys.REACT_APP_SOCKET_PORT;
     const url = Keys.REACT_APP_BACKEND;
 
-    const socket = io.connect(`${ioPort}`);
+    const socket = io.connect(`${ioPort}`); 
 
     const Container = {
         width: '100%',
@@ -118,6 +117,28 @@ function Company({ filePath }) {
 
     const closeAddModal = () => {
         isAddModalOpen(false);
+    };
+
+    const modal3 = {
+        overlay: {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        content: {
+            width: '80%',
+            maxWidth: '800px',
+            height: 'auto',
+            border: 'none',
+            marginLeft: '295px',
+            overflow: 'auto',
+            borderRadius: '12px',
+            backgroundColor: 'black',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
     };
 
     const kindaStyle = {
@@ -286,19 +307,23 @@ function Company({ filePath }) {
     const [oneCompanyID, setOneCompanyID] = useState('');
     const [isDeliveryNoteOpen, setIsDeliveryNoteOpen] = useState(false);
 
+    const [IDForDeliveryUseEffect, setIDForDeliveryUseEffect] = useState('')
+
     const openDeliveryNote = (ID) => {
         setIsDeliveryNoteOpen(true);
-        handleDeliveryNoteForOneCompany(ID)
+        handleDeliveryNoteForOneCompany(ID);
+        setIDForDeliveryUseEffect(ID);
     };
 
     const closeDeliveryNoteModal = () => {
         setIsDeliveryNoteOpen(false);
     };
 
-    const openCompanyModal = (ID) => {
+    const openCompanyModal = (ID, companyName) => {
         isCompanyModalOpen(true);
-        setOneCompanyID(ID)
-        fetchOneCompany(ID)
+        setOneCompanyID(ID);
+        fetchOneCompany(ID);
+
     };
 
     const closeCompanyModal = () => {
@@ -436,35 +461,54 @@ function Company({ filePath }) {
         bring();
     }, [selectedItem]);
 
-
+    const [itemName, setItemName] = useState('');
+    const [CompanyName, setCompanyName] = useState('');
+    const [date, setDate] = useState('');
+    const [amount, setAmount] = useState('')
+    const [pdf, setPDF] = useState('');
 
     const handleIssue = async (ID) => {
 
         try {
-            const requestor = selectedSupervisor;
-            const item = selectedItem;
+            // const requestor = selectedSupervisor;
+            // const item = selectedItem;
             const amount = quantity.quantity;
-            const company = ID;
+            // const company = ID;
 
             console.log("Numbers: ", totalIn.totalIn, amount)
 
             if (totalIn.totalIn >= amount) {
 
-                const messageData = {
-                    requestor: selectedSupervisor,
-                    item: selectedItem,
-                    amount: quantity.quantity,
-                    company: ID,
+                const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${ID}`);
+
+                const data = (response.data);
+                console.log("Data: ", data)
+                setItemName(data[0].name);
+                setCompanyName(data[0].CompanyName);
+                const date = formatDate(data[0].date);
+                setDate(date);
+                setAmount(data[0].amount);
+
+                const messageDatas = {
+                    itemName: itemName,
+                    CompanyName: CompanyName,
+                    date: date,
+                    amount: amount,
                 };
 
-                socket.emit("Company Insert", (messageData));
+                console.log("Passed: ", messageDatas);
 
-                const response = await axios.put(`${url}/change-status-from-notifications-for-company/${requestor}/${item}/${amount}/${company}`);
-                console.log("Response: ", response.data);
+                // socket.emit("Go For Delivery", messageData);
+
+                const post = await axios.post(`${url}/post-some`, messageDatas);
+
+                // socket.emit("Company Insert", (messageData));
+
+                // const response = await axios.put(`${url}/change-status-from-notifications-for-company/${requestor}/${item}/${amount}/${company}`);
+                // console.log("Response: ", response.data);
             } else {
                 window.alert("Insufficient Amount...");
             }
-
         } catch (error) {
             console.error("Error: ", error);
         };
@@ -484,7 +528,7 @@ function Company({ filePath }) {
             }
         }
         bring();
-    }, [oneCompanyID]);
+    }, [oneCompanyID, data]);
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -515,66 +559,77 @@ function Company({ filePath }) {
         {
             name: 'Delivery Note',
             selector: row => (
-                <button onClick={() => openDeliveryNote(row.id)}></button>
+                <button onClick={() => openDeliveryNote(row.id)}>View</button>
             )
         }
     ];
 
-    const editWordDocument = async (templateUrl, jsonData) => {
-        try {
+    // const [itemName, setItemName] = useState('');
+    // const [CompanyName, setCompanyName] = useState('');
+    // const [date, setDate] = useState('');
+    // const [amount, setAmount] = useState('')
+    // const [pdf, setPDF] = useState('');
 
-            const response = await fetch(templateUrl);
-            const arrayBuffer = await response.arrayBuffer();
+        const handleDeliveryNoteForOneCompany = async (IDForDeliveryUseEffect) => {
+            try {
+                const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${IDForDeliveryUseEffect}`);
 
-            const zip = new PizZip(arrayBuffer);
+                const data = (response.data);
 
-            const doc = new Docxtemplater(zip, {
-                paragraphLoop: true,
-                linebreaks: true,
-            });
+                console.log("Data: ", data)
+                setItemName(data[0].name);
+                setCompanyName(data[0].CompanyName);
+                const date = formatDate(data[0].date);
+                setDate(date);
+                setAmount(data[0].amount);
 
-            doc.setData(jsonData);
+                const messageDatas = {
+                    itemName: itemName,
+                    CompanyName: CompanyName,
+                    date: date,
+                    amount: amount,
+                };
 
-            doc.render();
+                socket.emit("Go For Delivery", messageDatas);
 
-            const out = doc.getZip().generate({
-                type: "blob",
-                mimeType:
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            });
+            } catch (error) {
+                console.error("Error: ", error);
+            };
+        };
 
-            saveAs(out, "edited-document.docx");
-
-        } catch (error) {
-            console.error("Error: ", error);
+    useEffect(() => {
+        if (itemName && CompanyName && date && amount) {
+            const messageData = {
+                itemName: itemName,
+                CompanyName: CompanyName,
+                date: date,
+                amount: amount,
+            };
+            // socket.emit("Go For Delivery", messageData);
         }
-    };
+    }, [itemName, CompanyName, date, amount, pdf]);
 
-    const templateUrl = "../docs/deliveryNote.docx";
-
-    const [itemName, setItemName] = useState('');
-    const [CompanyName, setCompanyName] = useState('');
-    const [date, setDate] = useState('');
-    const  [amount , setAmount] = useState('')
-    
-
-    const handleDeliveryNoteForOneCompany = async (ID) => {
-        try {
-            const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${ID}`);
-            const data = (response.data);
-            console.log("Data: ", data)
-            setItemName(data[0].name);
-            setCompanyName(data[0].CompanyName);
-            const date = formatDate(data[0].date);
-            setDate(date);
-            setAmount(data[0].amount);
-
-        } catch (error) {
-            console.error("Error: ", error);
+    useEffect(() => {
+        const fetchPDF = async () => {
+            try {
+                const response = await axios.get(`${url}/get-pdf`, {
+                    responseType: 'blob' // Ensure the response is handled as a blob
+                });
+                const pdfBlob = response.data;
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                setPDF(pdfUrl);
+                console.log("Response: ", pdfUrl);
+            } catch (error) {
+                console.error("Error: ", error);
+            }
         }
-    };
+        fetchPDF();
+    }, [url]);
 
-    console.log("Company: ", itemName, CompanyName,date,amount);
+    const pdfFile = [{
+        uri: pdf,
+        fileType: 'pdf',
+    }]
 
 
     return (
@@ -588,7 +643,7 @@ function Company({ filePath }) {
             <div style={Container}>
                 <div className="terms-admin">
                     {infoCompany.map(company => (
-                        <button key={company.id} style={CompanyButton} onClick={() => openCompanyModal(company.id)}>
+                        <button key={company.id} style={CompanyButton} onClick={() => openCompanyModal(company.id, company.CompanyName)}>
                             <img
                                 src={companyImages[company.id]}
                                 alt={`${company.CompanyName} logo`}
@@ -720,7 +775,12 @@ function Company({ filePath }) {
                     }
 
                     <div>
-                        <Modal isOpen={isDeliveryNoteOpen} onRequestClose={closeDeliveryNoteModal}>
+                        <Modal isOpen={isDeliveryNoteOpen} onRequestClose={closeDeliveryNoteModal} style={modal3}>
+                            {pdf ? (
+                                <iframe src={pdf} width="100%" height="600px" />
+                            ) : (
+                                <p style={{color: 'white'}}>Loading PDF...</p>
+                            )}
 
                         </Modal>
                     </div>

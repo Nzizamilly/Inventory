@@ -7,8 +7,12 @@ const { Server } = require("socket.io");
 const http = require("http");
 const moment = require('moment');
 const nodemailer = require('nodemailer');
+const pdf = require('html-pdf');
 const { EMAIL, PASSWORD } = require('./env.js');
 
+const port = process.env.PORT || 5500;
+
+const pdfTemplate = require('./');
 
 const app = express();
 const server = http.createServer(app);
@@ -38,7 +42,7 @@ const db = mysql.createPool({
   port: 3306,
   user: "root",
   password: "",
-  database: "inventory",
+  database: "inventorynew",
 });
 
 db.getConnection((err, connection) => {
@@ -194,7 +198,7 @@ ORDER BY
     });
   })
 
-  socket.on('get-some', () => {
+  socket.on('/get-some', () => {
 
     try {
       const sql = `SELECT employees.username, category.category_name, item.name, employee_supervisor_request.amount, employee_supervisor_request.description, employee_supervisor_request.date_of_request, employee_supervisor_request.id, employee_supervisor_request.status 
@@ -251,12 +255,61 @@ ORDER BY
     const itemID = messageData.item;
     const amount = messageData.amount;
     const requestor = messageData.requestor;
+    const date = new Date();
 
     const sql = `INSERT INTO company_records (companyID,	itemID,	amount, employeeID,	status) VALUES (?, ?, ?, ?, ?)`;
-    db.query(sql, [ companyID, itemID, amount, requestor, status ], (error, result) => {
+    db.query(sql, [companyID, itemID, amount, requestor, status], (error, result) => {
       result ? console.log("Good: ", result) : console.error("Error: ", error);
     });
   });
+
+  socket.on("Go For Delivery", (messageData) => {
+
+    pdf.create(pdfTemplate(messageData), {}).toFile('result.pdf', (err) => {
+      if (err) {
+        console.error("Error PDF: ", err);
+        return Promise.reject();
+      }
+      return Promise.resolve();
+    });
+
+  });
+
+  app.post('/post-some', (req, res) => {
+    const data = {
+      CompanyName: req.body.CompanyName,
+      date: req.body.date,
+      itemName: req.body.itemName,
+      amount: req.body.amount,
+    }
+
+    console.log("DATAS: ", data);
+
+    pdf.create(pdfTemplate(data), {}).toFile('result.pdf', (err) => {
+      if (err) {
+        console.error("Error PDF: ", err);
+        return Promise.reject();
+      }
+      return Promise.resolve();
+    });
+
+  })
+
+
+  app.get('/get-pdf', (req, res) => {
+    console.log("HIT!!!!!");
+    const filePath = `${__dirname}/result.pdf`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        console.error("Error sending file:", err);
+        res.status(500).send("Error sending file");
+      } else {
+        console.log("File sent successfully");
+      }
+    });
+  });
+
 
   socket.on("Stock_Message_Employee(1)", (messageData) => {
     console.log("From HR: to stockManager", messageData);
@@ -313,7 +366,6 @@ ORDER BY
         console.log("Status set Approved");
       }
     });
-
   })
 
   socket.on("change-status-approve", (messageData) => {
@@ -503,7 +555,7 @@ app.post("/employee", (req, res) => {
   console.log("role ID", role);
   const status = 'ACTIVE';
 
-  const query = "INSERT INTO employees (username, password, address, roleID, departmentID, status, email) VALUES (?, ?, ?, ?, ?, ?, ?)";
+  const query = "INSERT INTO employees (username, password, address, roleID, departmentID, status, email, date_of_employment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
   const values = [
     req.body.username,
@@ -513,7 +565,10 @@ app.post("/employee", (req, res) => {
     departmentID,
     status,
     req.body.email,
+    req.body.date_of_employment
   ];
+
+  console.log("DATAS: ", values);
 
   db.query(query, values, (error, result) => {
     if (error) {
@@ -607,36 +662,57 @@ app.put("/employee/:id", (req, res) => {
     console.log("Employee Update Successfully", data);
     return res.json(data)
   });
-})
+});
 
-app.get("/employee/:id", (req, res) => {
+app.get('/employee-once/:id', (req, res) => {
   const empID = req.params.id;
   const q = ` SELECT
-    employees.id,
-    employees.username,
-    employees.password,
-    employees.address,
-    employees.profile_picture,
-    employees.roleID,
-    employees.departmentID,
-    employees.status,
-    employees.email,
-    role.role_name,
-    department.department_name
-FROM
-    employees
-JOIN
-    role ON employees.roleID = role.id
-JOIN
-    department ON employees.departmentID = department.id
-WHERE
-    employees.id = ?;
+     employees.id, 
+     employees.username, 
+     employees.password, 
+     employees.address, employees.profile_picture, 
+     employees.roleID, 
+     employees.departmentID, 
+     employees.status,
+     employees.date_of_employment, 
+     employees.email, 
+     role.role_name, 
+     department.department_name 
+
+     FROM employees
+
+     JOIN role ON employees.roleID = role.id
+     JOIN department ON employees.departmentID = department.id 
+
+     WHERE employees.id = ?;
 `
-  db.query(q, [empID], (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
+  db.query(q, [empID], (err, result) => {
+    if (result) {
+      res.json(result);
+      // res.json({ date_of_employment: result[0].date_of_employment});
+    } else {
+      console.error("Error: ", err);
+    };
   });
 });
+
+
+app.get('/get-DOE/:ID', (req, res) => {
+
+  const id = req.params.ID;
+
+  const sql = `SELECT date_of_employment FROM employees WHERE id = ?`;
+
+  db.query(sql, id, (error, result) => {
+    if(result){
+      // console.log("RESULT: ", result);
+      res.json(result[0]);
+    } else {
+      console.error("Error: ", error);
+    }
+  });
+});
+
 
 app.post('/login', (req, res) => {
   const sql = "SELECT * FROM employees WHERE username = ? and password = ? ";
@@ -676,7 +752,7 @@ app.get('/category', (req, res) => {
 });
 
 app.get('/employees', (req, res) => {
-  const sql = ` SELECT employees.id, employees.username, employees.password, employees.profile_picture,employees.roleID,employees.departmentID, employees.status, role.role_name,employees.email, department.department_name 
+  const sql = ` SELECT employees.id, employees.username, employees.password, employees.profile_picture,employees.roleID, employees.address, employees.phoneNumber, employees.departmentID, employees.status, role.role_name,employees.email, department.department_name 
 FROM 
 employees 
 JOIN role ON employees.roleID = role.id 
@@ -1591,7 +1667,7 @@ app.get('/get-supervisor-name/:supervisorID', (req, res) => {
 
 app.get('/get-supervisor', (req, res) => {
   const sql = 'SELECT * FROM employees WHERE roleID = 5'
-  db.query(sql,  (error, result) => {
+  db.query(sql, (error, result) => {
     if (error) {
       console.error("Error", error);
     } else {
@@ -2636,7 +2712,7 @@ app.get('/get-company', (req, res) => {
 
 app.get('/get-one-company/:id', (req, res) => {
   const ID = req.params.id;
-  const sql =  `SELECT * FROM company WHERE id = ?`;
+  const sql = `SELECT * FROM company WHERE id = ?`;
   db.query(sql, [ID], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
   });
@@ -2661,9 +2737,9 @@ app.get('/get-one/:oneCompanyID', (req, res) => {
    JOIN employees ON company_records.employeeID = employees.id
    WHERE companyID = ?
      `;
-     db.query(sql , [companyID], (error, result) => {
-      result ? res.json(result) : console.error("Error: ", error);
-     });
+  db.query(sql, [companyID], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
 });
 
 app.get('/get-one-company-for-delivery/:oneCompanyID/:ID', (req, res) => {
@@ -2677,13 +2753,74 @@ app.get('/get-one-company-for-delivery/:oneCompanyID/:ID', (req, res) => {
    JOIN employees ON company_records.employeeID = employees.id
    WHERE companyID = ? AND company_records.id = ?
      `;
-     db.query(sql , [companyID, ID], (error, result) => {
-      result ? res.json(result) : console.error("Error: ", error);
-     });
+  db.query(sql, [companyID, ID], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
 });
 
+app.post('/take-needed-days', (req, res) => {
+  const empID = req.body.empID;
+  const workingDays = req.body.workingDays;
+  const applyingYear = req.body.applyingYear;
 
+  //  const remain = Number(18) - workingDays;
 
-app.listen(5500, () => {
+  const sql = `INSERT INTO leave_tracker (empID, days_needed, dateStamp, leave_taken) VALUES (?, ?, ?,?)`;
+
+  db.query(sql, [empID, workingDays, applyingYear, workingDays], (error, result) => {
+    result ? console.log("Success: ", result) : console.error("Error: ", error);
+  })
+});
+
+app.get('/get-all-days-taken/:ID/:currentYear', (req, res) => {
+  const id = req.params.ID;
+  const currentYear = req.params.currentYear;
+
+  const sql = `SELECT empID, SUM(CAST(days_needed AS INT)) AS days_needed
+FROM leave_tracker
+WHERE empID = ? AND dateStamp = ?
+GROUP BY empID;`;
+  db.query(sql, [id, currentYear], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+app.get('/get-leave-taken/:ID/:Year', (req, res) => {
+  const id = req.params.ID;
+  const year = req.params.Year;
+
+  const sql = `SELECT SUM(days_needed) AS total_leave_taken_in_current_year FROM leave_tracker WHERE empID = ? AND dateStamp = ?`;
+  db.query(sql, [id, year], (error, result) => {
+    result ? res.json({ total_leave_taken_in_current_year: result[0].total_leave_taken_in_current_year }): console.error("Error: ", error);
+  } )
+})
+
+app.get('/get-leaveBF/:empID/:currentYear', (req, res) => {
+  const empID = req.params.empID;
+  const currentYear = req.params.currentYear;
+
+  const sql = `SELECT empID, SUM(CAST(days_needed AS INT)) AS days_needed
+FROM leave_tracker
+WHERE empID = ? AND dateStamp <> ?
+GROUP BY empID;`;
+
+  db.query(sql, [empID, currentYear], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.get('/get-leave-bf/:ID/:DOEYear/:currentYear', (req, res) => {
+  const id = req.params.ID;
+  const DOEYear = req.params.DOEYear;
+  const currentYear = req.params.currentYear - Number(1);
+
+  const sql = `SELECT SUM(days_needed) AS total_leave_taken_past_years FROM leave_tracker WHERE empID = ? AND dateStamp BETWEEN ? AND ?;`;
+
+  db.query(sql, [id, DOEYear, currentYear], (error, result) => {
+   result ? res.json(result[0]) : console.error("Error: ", error);
+  });
+});
+
+app.listen(port, () => {
   console.log("Connected to backend");
 });

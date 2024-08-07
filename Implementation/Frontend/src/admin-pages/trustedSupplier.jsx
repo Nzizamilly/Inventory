@@ -234,6 +234,7 @@ function TrustedSuppliers() {
         const IdForQuotation = latestId + 1;
         // console.log("ID FOR PDF: ", IdForQuotation);
         const imageRef = ref(storage, `SuppliersPDF/${imageUpload.name, IdForQuotation}`);
+        const imagePDFURL = ref(storage, 'Centrikalogo/');
         uploadBytes(imageRef, imageUpload).then(() => {
         });
 

@@ -1,3 +1,4 @@
+
 import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
@@ -20,7 +21,7 @@ import keys from '../keys';
 
 function EmployeesAdmin() {
 
-const url = keys.REACT_APP_BACKEND;
+  const url = keys.REACT_APP_BACKEND;
 
   const modal = {
     overlay: {
@@ -31,7 +32,7 @@ const url = keys.REACT_APP_BACKEND;
     content: {
       width: '33%',
       marginLeft: '495px',
-      height: '76vh',
+      height: '84vh',
       backgroundColor: 'rgb(206, 206, 236)',
       border: 'none',
       borderRadius: '12px',
@@ -192,7 +193,7 @@ const url = keys.REACT_APP_BACKEND;
 
   const bringOneEmployee = async (id) => {
     try {
-      const response = await axios.get(`${url}/employee/${id}`);
+      const response = await axios.get(`${url}/employee-once/${id}`);
       setSumOne(response.data);
     } catch (error) {
       console.error("Error: ", error);
@@ -332,7 +333,8 @@ const url = keys.REACT_APP_BACKEND;
     address: '',
     departmentName: '',
     roleName: '',
-    email: ''
+    email: '',
+    date_of_employment:''
   })
   useEffect(() => {
     setEmployee(prevEmployee => ({
@@ -429,20 +431,20 @@ const url = keys.REACT_APP_BACKEND;
 
   const [trial, setTrial] = useState('');
 
-  useEffect(()=>{
-   const functions = () => {
-    try{
-      const sumn = 'sumn';
-      setTrial(sumn);
-    }catch(error){
-      console.error("Error: ", error);
+  useEffect(() => {
+    const functions = () => {
+      try {
+        const sumn = 'sumn';
+        setTrial(sumn);
+      } catch (error) {
+        console.error("Error: ", error);
+      };
     };
-   };
-   functions();
-  },[]);
+    functions();
+  }, []);
 
-  const style = { 
-    backgroundColor : 'black',
+  const style = {
+    backgroundColor: 'black',
     width: '1%',
     height: '1%'
   };
@@ -459,7 +461,11 @@ const url = keys.REACT_APP_BACKEND;
   useEffect(() => {
     setRecords(emps);
   }, [emps]);
-  
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
@@ -506,10 +512,13 @@ const url = keys.REACT_APP_BACKEND;
 
             <div style={{ display: 'flex', flexDirection: 'inline', gap: '9px', justifyContent: 'center' }}>
               <p>Attach Picture ID (Not required)</p>
-              <label htmlFor="file" id="customButton" style={{ width: '35%', backgroundColor: 'black', display: 'flex', justifyContent: 'center', borderRadius: '23px', gap: '9px', cursor: 'pointer' }}>
+              <label htmlFor="file" id="customButton" style={{ width: '35%', backgroundColor: 'black', display: 'flex', justifyContent: 'center', color: 'white', borderRadius: '23px', gap: '9px', cursor: 'pointer' }}>
                 <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName} />
                 {file || 'No file chosen'} <img style={{ width: '12%', display: 'inline' }} src={ImgAdd} alt="Add" />
               </label>
+            </div>
+            <div style={{  display: 'flex', justifyContent: 'center', gap: '14px', width: '80%' }}>
+            <p>Date Of Employment: </p>  <input type='date' name='date_of_employment'  id='smallDate' style={{ width: '40%', borderRadius: '20px', display: 'flex', justifyContent:'center', border: 'none' }} onChange={handleChange2} />
             </div>
 
             <button className='buttonStyle2' onClick={openCreateModal}>Submit</button>
@@ -531,6 +540,7 @@ const url = keys.REACT_APP_BACKEND;
                 <p>Position: {emp.role_name}</p>
                 <p>Department: {emp.department_name}</p>
                 <p>Email: {emp.email}</p>
+                <p>Date Of Employment: {formatDate(emp.date_of_employment)}</p>
                 <p>Status:  <span style={{ color: emp.status === 'DE-ACTIVATED' ? 'red' : 'green' }}>{emp.status}</span></p>
                 <div style={ThemBs}>
                   <button className='addItem-btn' onClick={() => setVisible(true)}><img src={Update} style={svgStyle} /></button>

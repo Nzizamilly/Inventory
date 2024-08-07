@@ -68,7 +68,7 @@ function NavbarMain() {
             const EmpID = localStorage.getItem("userID");
             try {
                 if (EmpID) {
-                    const response = await axios.get(`${url}/employee/${EmpID}`);
+                    const response = await axios.get(`${url}/employee-once/${EmpID}`);
                     setData(response.data[0]);
                 } else {
                     console.error("EmpID Not found in localStorage")
@@ -180,6 +180,7 @@ function NavbarMain() {
 
             <ul className='ul2Admin'>
                 <li className='liAdmin'><Link to={'/account-hr'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li>
+                <li className='liAdmin'><Link to={'/leave-page'} > <p>Leave</p></Link></li>
                 <Select
                     options={option}
                     styles={customStyles}
