@@ -99,12 +99,7 @@ function LeavePage() {
     const [DOE, setDOE] = useState({});
     const [leaveAvailable, setLeaveAvailable] = useState('');
     const [leaveTakenThisYear, setLeaveTakenThisYear] = useState('')
-    const [leaveBF, setLeaveBF] = useState('');
-
-    useEffect(() => {
-        const zero = 0;
-        setLeaveBF(zero);
-    }, []);
+    const [leaveBF, setLeaveBF] = useState(0);
 
     const holidays = [
         {
@@ -187,8 +182,6 @@ function LeavePage() {
         return workingDays;
     };
 
-
-
     const getWorkingDaysBetweenDates = (startDate, endDate, holiday) => {
 
         console.log("Received startDate: ", startDate, "endDate: ", endDate); // Debugging
@@ -223,7 +216,6 @@ function LeavePage() {
             }
         }
         return workingDaysCount;
-
     }
 
 
@@ -250,27 +242,45 @@ function LeavePage() {
         func(oneEmployeeID);
     }, [oneEmployeeID]);
 
+    const [currentDate, setCurrentDate] = useState('');
+    const [responseState, setResponseState] = useState('');
     
-
     useEffect(() => {
-        const differenceInMonth = async(DOEMonth, DOEYear) => {
+        const Dday = new Date().getDate()
+        const Mmonth = new Date().getMonth();
+        const Yyear = new Date().getFullYear();
+    
+        const today = `${Dday}/${Mmonth}/${Yyear}`;
+        console.log(`Todays Date ${today}`);
+        setCurrentDate(today);
+
+        const differenceInMonth = async(DOEMonthx, DOEYearx) => {
             try {
-                const DOEMonth = DOE.month;
-                const DOEYear = DOE.year;
+                // const DOEMonthx = DOE.month;
+                // const DOEYearx = DOE.year;
 
                 const currentMonth = new Date().getMonth() + 1;
                 const currentYear = new Date().getFullYear();
 
                 if (DOEYear === currentYear) {
-                    setLeaveAvailable(currentMonth - DOEMonth * Number(1.5));
+                    const lastMonth = currentMonth ;
+                    const diff = ((Number(lastMonth) - Number(DOEMonth)) * Number(1.5));
+                    console.log(`Difference is ${diff}`);
+                    setLeaveAvailable(diff);
                     const zero = 0;
                     setLeaveBF(zero);
                 } else if (DOEYear !== currentYear) {
                     const January = 1;
-                    setLeaveAvailable(currentMonth - January * Number(1.5));
+                    setLeaveAvailable((Number(currentMonth) - Number(January)) * Number(1.5));
                     const response = await axios.get(`${url}/get-leave-bf/${oneEmployeeID}/${DOEYear}/${currentYear}`);
-                    const leaveBF = Number(18) - response.data.total_leave_taken_past_years;
+                    const lastYear = currentYear - 1;
+                    console.log("Last Year: ", lastYear);
+                    const get = (Number(lastYear) - Number(DOEYear)) * Number(18);
+                    console.log(`${lastYear} - ${DOEYear} * 18 = ${get}`);
+                    const leaveBF = get - response.data.total_leave_taken_past_years;
+                    console.log(`${get} - ${response.data.total_leave_taken_past_years} = ${leaveBF}`)
                     setLeaveBF(leaveBF);
+
                 };
             } catch (error) {
                 console.error("Error :", error);;
@@ -280,11 +290,14 @@ function LeavePage() {
         const DOEMonth = DOE.month;
         const DOEYear = DOE.year;
 
-        differenceInMonth(DOEMonth, DOEYear)
+        differenceInMonth(DOEMonth, DOEYear, responseState)
 
     }, [DOE, oneEmployeeID]);
 
     const closeLeaveModal = () => {
+        setLeaveAvailable('');
+        setLeaveBF('');
+        setWorkingDays('');
         setIsLeaveModalOpen(false);
     };
 
@@ -333,8 +346,6 @@ function LeavePage() {
         setOneEmployee(response.data);
     };
 
-    // console.log("DAte Of Employment: ", DOE);
-
     const formatDate = (dateString) => {
 
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -352,11 +363,11 @@ function LeavePage() {
                 applyingYear: applyingYear
             };
 
-            if (leaveAvailable >= workingDays) {
-
-                const response = await axios.post(`${url}/take-needed-days`, data);
+            if (leaveBeforeThisApplication >= workingDays) {
+                window.alert(`${oneEmployee[0].username} will be on leave of ${workingDays}`);
+                // const response = await axios.post(`${url}/take-needed-days`, data);
             } else {
-                window.alert(`${oneEmployee[0].username} hasn't earned ${workingDays}`);
+                window.alert(`${oneEmployee[0].username} hasn't earned ${workingDays} days.`);
             }
 
         } catch (error) {
@@ -470,8 +481,9 @@ function LeavePage() {
                             </div>
 
                             <div style={{ width: '100%', height: '100%', backgroundColor: 'rgb(206, 206, 236)' }}>
-                                <div style={{ marginLeft: '12px' }}>
+                                <div style={{ marginLeft: '12px', display: 'flex', gap: '239px', flexDirection: 'inline' }}>
                                     <p>Date of Employment: {formatDate(employee.date_of_employment)}</p>
+                                    <p>Date of Application: {currentDate} </p>
                                 </div>
                                 <br />
 
