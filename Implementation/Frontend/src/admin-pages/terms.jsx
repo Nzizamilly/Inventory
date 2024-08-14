@@ -21,7 +21,7 @@ function TermsAdmin() {
     <div>
       <NavbarAdmin></NavbarAdmin>
     <div style={Container}>
-      <div className="terms-admin">
+      <div className="terms">
         <h1>Terms</h1>
         <p>By using the material requistion form you agree to the following terms and conditions:</p>
         <p>To properly manage the material.</p>

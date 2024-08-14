@@ -55,7 +55,7 @@ const url = Keys.REACT_APP_BACKEND;
   useEffect(() => {
     const fetchEmp = async () => {
       try {
-        const res = await axios.get(`${url}/employee/${EmpID}`);
+        const res = await axios.get(`${url}/employee-once/${EmpID}`);
         setEmps(res.data);
       } catch (error) {
       }

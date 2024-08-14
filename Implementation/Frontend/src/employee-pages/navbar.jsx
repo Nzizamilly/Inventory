@@ -65,7 +65,7 @@ function Navbar() {
     const fetchData = async () => {
       const EmpID = localStorage.getItem("userID");
       try {
-        const response = await axios.get(`${url}/employee/${EmpID}`);
+        const response = await axios.get(`${url}/employee-once/${EmpID}`);
         setData(response.data[0]);
       } catch (error) {
         console.error("Error", error);

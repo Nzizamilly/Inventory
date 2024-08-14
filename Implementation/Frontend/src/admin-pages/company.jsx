@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { React, useState, useEffect, useReducer } from 'react';
 import NavbarAdmin from './navbarAdmin';
 import AddItem from '../images/addItem.svg'
-import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
+// import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import Modal from 'react-modal';
 import Logo from '../images/logo.svg';
 import { io } from 'socket.io-client';
@@ -12,13 +12,16 @@ import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL, getStorage, listAll } from "firebase/storage";
 import DataTable from 'react-data-table-component';
 import Delivery from './deliveryFront';
+// import pdfMake from 'pdfmake/build/pdfmake';
+// import pdfFonts from 'pdfmake/build/vfs_fonts';
+// pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 function Company() {
 
     const ioPort = Keys.REACT_APP_SOCKET_PORT;
     const url = Keys.REACT_APP_BACKEND;
 
-    const socket = io.connect(`${ioPort}`); 
+    const socket = io.connect(`${ioPort}`);
 
     const Container = {
         width: '100%',
@@ -195,6 +198,44 @@ function Company() {
         backgroundColor: 'white'
     };
 
+    // const giverFunc = () => {
+
+        const datax = 'dataaaaa'
+
+    //     const docDefinition = {
+    //         content: [
+    //             { text: `This is a header ${datax}`, style: 'header' },
+    //             'No styling here, this is a standard paragraph',
+    //             { text: 'Another text', style: 'anotherStyle' },
+    //             { text: 'Multiple styles applied', style: ['header', 'anotherStyle'] },
+    //         ],
+
+    //         styles: {
+    //             header: {
+    //                 fontSize: 22,
+    //                 bold: true,
+    //             },
+    //             anotherStyle: {
+    //                 italics: true,
+    //                 alignment: 'right',
+    //             },
+    //         },
+    //     };
+
+    // //     return docDefinition
+    // // };
+
+    // const [urlForPdf, setUrlForPdf] = useState(null);
+
+    // const createPdf = () => {
+    //     const pdfGenerator = pdfMake.createPdf(docDefinition);
+    //     pdfGenerator.getBlob((blob) => {
+    //         const url = URL.createObjectURL(blob);
+    //         setUrlForPdf(url)
+    //     })
+    // }
+
+
     const [AddModalOpen, isAddModalOpen] = useState(false);
     const [logo, setLogo] = useState();
     const [latestId, setLatestID] = useState('');
@@ -248,7 +289,6 @@ function Company() {
     }, []);
 
     const [infoCompany, setInfoCompany] = useState([]);
-    const [image, setImage] = useState();
 
     const [companyImages, setCompanyImages] = useState({});
 
@@ -306,6 +346,7 @@ function Company() {
     const [companyModalOpen, isCompanyModalOpen] = useState(false);
     const [oneCompanyID, setOneCompanyID] = useState('');
     const [isDeliveryNoteOpen, setIsDeliveryNoteOpen] = useState(false);
+    const [renner, setRenner] = useState();
 
     const [IDForDeliveryUseEffect, setIDForDeliveryUseEffect] = useState('')
 
@@ -319,7 +360,7 @@ function Company() {
         setIsDeliveryNoteOpen(false);
     };
 
-    const openCompanyModal = (ID, companyName) => {
+    const openCompanyModal = (ID) => {
         isCompanyModalOpen(true);
         setOneCompanyID(ID);
         fetchOneCompany(ID);
@@ -560,42 +601,43 @@ function Company() {
             name: 'Delivery Note',
             selector: row => (
                 <button onClick={() => openDeliveryNote(row.id)}>View</button>
+                // <button onClick={createPdf}>View</button>
             )
         }
     ];
 
-    // const [itemName, setItemName] = useState('');
-    // const [CompanyName, setCompanyName] = useState('');
-    // const [date, setDate] = useState('');
-    // const [amount, setAmount] = useState('')
-    // const [pdf, setPDF] = useState('');
+    const handleDeliveryNoteForOneCompany = async (IDForDeliveryUseEffect) => {
+        try {
+            const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${IDForDeliveryUseEffect}`);
 
-        const handleDeliveryNoteForOneCompany = async (IDForDeliveryUseEffect) => {
-            try {
-                const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${IDForDeliveryUseEffect}`);
+            const data = (response.data);
 
-                const data = (response.data);
+            console.log("Data: ", data)
+            setItemName(data[0].name);
+            setCompanyName(data[0].CompanyName);
+            const date = formatDate(data[0].date);
+            setDate(date);
+            setAmount(data[0].amount);
 
-                console.log("Data: ", data)
-                setItemName(data[0].name);
-                setCompanyName(data[0].CompanyName);
-                const date = formatDate(data[0].date);
-                setDate(date);
-                setAmount(data[0].amount);
+            // const messageDatas = {
+            const itemName = itemName;
+            const CompanyName = CompanyName;
+            const amount = amount;
+            // };
 
-                const messageDatas = {
-                    itemName: itemName,
-                    CompanyName: CompanyName,
-                    date: date,
-                    amount: amount,
-                };
+            const ren = Delivery(CompanyName, itemName, amount, date);
 
-                socket.emit("Go For Delivery", messageDatas);
+            setRenner(ren);
 
-            } catch (error) {
-                console.error("Error: ", error);
-            };
+            // socket.emit("Go For Delivery", messageDatas);
+
+
+
+
+        } catch (error) {
+            console.error("Error: ", error);
         };
+    };
 
     useEffect(() => {
         if (itemName && CompanyName && date && amount) {
@@ -605,7 +647,7 @@ function Company() {
                 date: date,
                 amount: amount,
             };
-            // socket.emit("Go For Delivery", messageData);
+
         }
     }, [itemName, CompanyName, date, amount, pdf]);
 
@@ -613,7 +655,7 @@ function Company() {
         const fetchPDF = async () => {
             try {
                 const response = await axios.get(`${url}/get-pdf`, {
-                    responseType: 'blob' // Ensure the response is handled as a blob
+                    responseType: 'blob'
                 });
                 const pdfBlob = response.data;
                 const pdfUrl = URL.createObjectURL(pdfBlob);
@@ -625,12 +667,6 @@ function Company() {
         }
         fetchPDF();
     }, [url]);
-
-    const pdfFile = [{
-        uri: pdf,
-        fileType: 'pdf',
-    }]
-
 
     return (
         <div>
@@ -776,15 +812,24 @@ function Company() {
 
                     <div>
                         <Modal isOpen={isDeliveryNoteOpen} onRequestClose={closeDeliveryNoteModal} style={modal3}>
-                            {pdf ? (
+                            {/* {pdf ? (
                                 <iframe src={pdf} width="100%" height="600px" />
                             ) : (
                                 <p style={{color: 'white'}}>Loading PDF...</p>
-                            )}
+                            )} */}
+
+                            {/* <div  dangerouslySetInnerHTML={{ __html: renner }} /> */}
+
+                            {/* </div>  */}
+{/* 
+                            {urlForPdf && (
+                                <div>
+                                    {urlForPdf}
+                                </div>
+                            )} */}
 
                         </Modal>
                     </div>
-
                 </div>
             </Modal>
 

@@ -101,7 +101,7 @@ function NavbarAdmin() {
       const EmpID = localStorage.getItem("userID");
       try {
         if (EmpID) {
-          const response = await axios.get(`${url}/employee/${EmpID}`);
+          const response = await axios.get(`${url}/employee-once/${EmpID}`);
           setData(response.data[0]);
         } else {
           console.error("EmpID Not found in localStorage")
