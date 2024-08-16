@@ -238,20 +238,9 @@ input[type="password"] {
     border-bottom: 2px rgb(23, 219, 170);
 }
 
-/* input[type="date"] {
-    height: 2%;
-    border: none;
-    padding: 15px;
-    color: white;
-    border-radius: 49px;
-    background-color: black;
-    font-family: "Roboto Mono", monospace;
-} */
-
 #smallDate {
-    height: 1;
     width: 5%;
-    /* background-color: blue; */
+    height: 1;
 }
 
 ::-webkit-calendar-picker-indicator {
@@ -260,7 +249,6 @@ input[type="password"] {
     cursor: pointer;
     border-radius: 5px;
 }
-
 
 textarea {
     width: 379px;
@@ -273,6 +261,10 @@ textarea {
     border-radius: 5px;
     border: 1px solid #ccc;
     background-color: black;
+};
+
+.textiee{
+    background-color: blue;
 }
 
 ul {

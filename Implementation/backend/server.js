@@ -696,6 +696,14 @@ app.get('/employee-once/:id', (req, res) => {
   });
 });
 
+app.get('/employee-name/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = `SELECT username FROM employees WHERE id = ?`;
+  db.query(sql, [id], (error, result) => {
+    result ? res.json(result[0]) : console.error("Error: ", error);
+  })
+})
+
 
 app.get('/get-DOE/:ID', (req, res) => {
 
@@ -704,7 +712,7 @@ app.get('/get-DOE/:ID', (req, res) => {
   const sql = `SELECT date_of_employment FROM employees WHERE id = ?`;
 
   db.query(sql, id, (error, result) => {
-    if(result){
+    if (result) {
       // console.log("RESULT: ", result);
       res.json(result[0]);
     } else {
@@ -2791,8 +2799,8 @@ app.get('/get-leave-taken/:ID/:Year', (req, res) => {
 
   const sql = `SELECT SUM(days_needed) AS total_leave_taken_in_current_year FROM leave_tracker WHERE empID = ? AND dateStamp = ?`;
   db.query(sql, [id, year], (error, result) => {
-    result ? res.json({ total_leave_taken_in_current_year: result[0].total_leave_taken_in_current_year }): console.error("Error: ", error);
-  } )
+    result ? res.json({ total_leave_taken_in_current_year: result[0].total_leave_taken_in_current_year }) : console.error("Error: ", error);
+  })
 })
 
 app.get('/get-leaveBF/:empID/:currentYear', (req, res) => {
@@ -2817,8 +2825,56 @@ app.get('/get-leave-bf/:ID/:DOEYear/:currentYear', (req, res) => {
   const sql = `SELECT SUM(days_needed) AS total_leave_taken_past_years FROM leave_tracker WHERE empID = ? AND dateStamp BETWEEN ? AND ?;`;
 
   db.query(sql, [id, DOEYear, currentYear], (error, result) => {
-   result ? res.json(result[0]) : console.error("Error: ", error);
+    result ? res.json(result[0]) : console.error("Error: ", error);
   });
+});
+
+app.get('/get-all-leaves', (req, res) => {
+  const sql = `SELECT * FROM leaves`;
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.get('/get-one-leave-type/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = `SELECT * FROM leaves WHERE id = ?`;
+  db.query(sql, [id], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.post('/post-other-leave', (req, res) => {
+  const empID = req.body.empID;
+  const name = req.body.name;
+  const description = req.body.description;
+  const days_needed = req.body.days_needed;
+  const leaveStartDate = req.body.leaveStartDate;
+  const leaveEndDate = req.body.leaveEndDate;
+  const currentYear = req.body.currentYear;
+
+  const sql = `INSERT INTO otherleaves (empID, name,	description, days_needed, startDate, endDate, year) VALUES ( ?, ?, ?, ?, ?, ?, ? )`;
+  db.query(sql, [empID, name, description, days_needed, leaveStartDate, leaveEndDate, currentYear], (error, result) => {
+    result ? console.log('Result: ', result) : console.error("Error: ", error);
+  });
+});
+
+app.get('/get-other-leaves/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = `SELECT
+   otherleaves.*,
+   employees.username
+   FROM 
+   otherleaves
+   JOIN 
+   employees ON otherleaves.empID = employees.id
+   WHERE 
+otherleaves.empID = ? 
+   `;
+
+   db.query(sql, [id], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+   });
 });
 
 app.listen(port, () => {

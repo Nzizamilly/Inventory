@@ -5,8 +5,8 @@ import Keys from '../keys';
 import Modal from 'react-modal';
 import axios from 'axios';
 import ProfilePicture from '../images/centrika-removebg.png';
-// import holidays from 'date-holidays';
 import { ref, getDownloadURL, getStorage, } from "firebase/storage";
+import DataTable from 'react-data-table-component';
 
 
 function LeavePage() {
@@ -24,6 +24,7 @@ function LeavePage() {
         // fontFamily: "'Arial', sans-serif",
         backgroundColor: ' rgb(163, 187, 197)',
     };
+
     const CompanyButton = {
         height: '48%',
         width: '48%',
@@ -64,6 +65,28 @@ function LeavePage() {
         backgroundColor: 'rgb(206, 206, 236)',
     };
 
+    const LeaveModal = {
+        content: {
+            width: '70%',
+            height: '73%',
+            display: 'flex',
+            flexDirection: 'column',
+            border: 'none',
+            gap: '12px',
+            fontFamily: 'Arial, sans-serif',
+            borderRadius: '12px',
+            backgroundColor: 'white',
+            marginLeft: '180px',
+            marginTop: '20px'
+        },
+        overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.0)',
+            // display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+    };
+
     const modal = {
         overlay: {
             display: 'flex',
@@ -86,7 +109,77 @@ function LeavePage() {
             // justifyContent: 'center',
             // alignItems: 'center',
         },
+    };
+    const buttons = {
+        borderRadius: '62px',
+        width: '76%',
+        color: 'black',
+        cursor: 'pointer',
+        borderRadius: '1px',
+        backgroundColor: 'rgb(163, 187, 197)'
+    };
+
+    const button = {
+        borderRadius: '62px',
+        width: '16%',
+        color: 'black',
+        cursor: 'pointer',
+        borderRadius: '12px',
+        backgroundColor: 'white'
+    };
+    const buttonx = {
+        borderRadius: '62px',
+        width: '16%',
+        color: 'white',
+        cursor: 'pointer',
+        borderRadius: '12px',
+        backgroundColor: 'green'
+    };
+    const AllLeavesStyle = {
+        width: '99%',
+        height: '97%',
+        borderRadius: '35px',
+        backgroundColor: 'rgb(163, 187, 197)'
+    };
+
+    const textiee = {
+        width: '379px',
+        border: 'none',
+        resize: 'none',
+        height: '160%',
+        color: 'black',
+        padding: '10px',
+        fontSize: '16px',
+        borderRadius: '5px',
+        backgroundColor: 'rgb(163, 187, 197)',
     }
+
+    const leaves = {
+        width: '90%',
+        height: '50vh',
+        borderRadius: '35px',
+        backgroundColor: 'rgb(163, 187, 197)',
+    };
+
+    const report = {
+        width: '90%',
+        height: '50vh',
+        marginTop: '22px',
+        marginLeft: '22px',
+        borderRadius: '35px',
+        backgroundColor: 'white',
+    }
+
+    const smaller = {
+        width: '20%',
+        height: '15%',
+        display: 'flex',
+        flexDirection: 'inline',
+        gap: '9px',
+        alignItems: 'center',
+        justifyContent: 'center'
+    };
+
     const [employees, setEmployees] = useState([]);
     const [employeeImages, setEmployeeImages] = useState({});
     const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
@@ -100,13 +193,23 @@ function LeavePage() {
     const [leaveAvailable, setLeaveAvailable] = useState('');
     const [leaveTakenThisYear, setLeaveTakenThisYear] = useState('')
     const [leaveBF, setLeaveBF] = useState(0);
+    const [tab, setTab] = useState(0);
+    const [IDF, setIDF] = useState('');
+    const [currentDate, setCurrentDate] = useState('');
+    const [otherLeavesReport, setOtherLeavesReport] = useState([]);
+    const [allLeaves, setAllLeaves] = useState(false);
+    const [otherLeaves, setOtherLeaves] = useState(false);
+    const [leavesTypes, setLeavesTypes] = useState([]);
+    const [employeeName, setEmployeeName] = useState('');
+    const [oneLeaveType, setOneLeaveType] = useState('');
+    const [oneLeaveArray, setOneLeaveArray] = useState([]);
+    const [description, setDescription] = useState('');
 
     const holidays = [
         {
             name: 'New Years Day',
             date: '1/1/0000'
-        },
-        {
+        }, {
             name: 'National Heroes Day',
             date: '1/2/0000'
         }, {
@@ -184,11 +287,11 @@ function LeavePage() {
 
     const getWorkingDaysBetweenDates = (startDate, endDate, holiday) => {
 
-        console.log("Received startDate: ", startDate, "endDate: ", endDate); // Debugging
+        // console.log("Received startDate: ", startDate, "endDate: ", endDate); // Debugging
 
         // Ensure both are Date objects
         if (!(startDate instanceof Date) || !(endDate instanceof Date)) {
-            console.error("startDate or endDate is not a valid Date object");
+            // console.error("startDate or endDate is not a valid Date object");
             return;
         }
 
@@ -218,13 +321,6 @@ function LeavePage() {
         return workingDaysCount;
     }
 
-
-    const openLeaveModal = (ID) => {
-        setIsLeaveModalOpen(true);
-        setOneEmployeeID(ID);
-        oneEmployeeFunction(ID);
-    };
-
     useEffect(() => {
         const func = async (oneEmployeeID) => {
 
@@ -242,30 +338,26 @@ function LeavePage() {
         func(oneEmployeeID);
     }, [oneEmployeeID]);
 
-    const [currentDate, setCurrentDate] = useState('');
-    const [responseState, setResponseState] = useState('');
-    
+
+
     useEffect(() => {
         const Dday = new Date().getDate()
-        const Mmonth = new Date().getMonth();
+        const Mmonth = new Date().getMonth() + 1;
         const Yyear = new Date().getFullYear();
-    
+
         const today = `${Dday}/${Mmonth}/${Yyear}`;
-        console.log(`Todays Date ${today}`);
         setCurrentDate(today);
 
-        const differenceInMonth = async(DOEMonthx, DOEYearx) => {
+        const differenceInMonth = async (DOEMonthx, DOEYearx) => {
             try {
-                // const DOEMonthx = DOE.month;
-                // const DOEYearx = DOE.year;
 
                 const currentMonth = new Date().getMonth() + 1;
                 const currentYear = new Date().getFullYear();
 
                 if (DOEYear === currentYear) {
-                    const lastMonth = currentMonth ;
+                    const lastMonth = currentMonth - Number(1);
                     const diff = ((Number(lastMonth) - Number(DOEMonth)) * Number(1.5));
-                    console.log(`Difference is ${diff}`);
+                    console.log(`${lastMonth} - ${DOEMonth} * ${1.5} = ${diff}`);
                     setLeaveAvailable(diff);
                     const zero = 0;
                     setLeaveBF(zero);
@@ -290,14 +382,14 @@ function LeavePage() {
         const DOEMonth = DOE.month;
         const DOEYear = DOE.year;
 
-        differenceInMonth(DOEMonth, DOEYear, responseState)
+        differenceInMonth(DOEMonth, DOEYear)
 
-    }, [DOE, oneEmployeeID]);
+    }, [DOE, oneEmployeeID, leaveAvailable]);
 
     const closeLeaveModal = () => {
         setLeaveAvailable('');
         setLeaveBF('');
-        setWorkingDays('');
+        setWorkingDays(0);
         setIsLeaveModalOpen(false);
     };
 
@@ -363,9 +455,11 @@ function LeavePage() {
                 applyingYear: applyingYear
             };
 
-            if (leaveBeforeThisApplication >= workingDays) {
-                window.alert(`${oneEmployee[0].username} will be on leave of ${workingDays}`);
+
+
+            if (lastDifference >= workingDays ) {
                 // const response = await axios.post(`${url}/take-needed-days`, data);
+                window.alert(`${oneEmployee[0].username} will be on leave of ${workingDays} Days`);
             } else {
                 window.alert(`${oneEmployee[0].username} hasn't earned ${workingDays} days.`);
             }
@@ -413,31 +507,151 @@ function LeavePage() {
 
         func(oneEmployeeID);
     }, [oneEmployeeID]);
-
+const [lastDifference, setLastDifference] = useState('')
     useEffect(() => {
-        const func = (leaveBFI3, leaveAva3ilable) => {
+        const func = (leaveBFI3, leaveAva3ilab) => {
             try {
-                const sum = Number(leaveBF) + Number(leaveAvailable);
+                const sum = (Number(leaveBF) + Number(leaveAvailable));
                 setLeaveBeforeThisApplication(sum);
+
+                setLastDifference(sum - Number(leaveTakenThisYear));
 
             } catch (error) {
                 console.error("Error: ", error);
             }
         };
         func(leaveBF, leaveAvailable)
-    }, [leaveBF, leaveAvailable]);
+    }, [leaveBF, leaveAvailable, leaveTakenThisYear]);
+
+
+    const openLeaveAllModal = async (ID) => {
+        setAllLeaves(true)
+        setOneEmployeeID(ID);
+        setIDF(ID);
+    };
+
+    const openAnnualLeave = (ID) => {
+        closeAllLeaveModal();
+        setIsLeaveModalOpen(true);
+        oneEmployeeFunction(ID);
+    };
+
+    const closeAllLeaveModal = () => {
+        setAllLeaves(false);
+    };
+
+    const openOtherLeaveModal = (id) => {
+        setOtherLeaves(true);
+        setOneLeaveType(id);
+    };
+
+    const closeOtherLeavesModal = () => {
+        setOtherLeaves(false);
+        setDescription("");
+    };
 
     useEffect(() => {
-        const func = () => {
-            try{
-
-
-            }catch(error){
-                console.error("Error:", error);
-            }
-        };
+        const func = async () => {
+            try {
+                const response = await axios.get(`${url}/get-all-leaves`);
+                setLeavesTypes(response.data);
+            } catch (error) {
+                console.error("Error", error);
+            };
+        }
         func();
-    },[])
+    }, []);
+
+
+    useEffect(() => {
+        console.log("EmployeeID Passed: ", oneEmployeeID);
+        const func = async (oneEmployeeID) => {
+            try {
+                const reponsee = await axios.get(`${url}/employee-name/${oneEmployeeID}`);
+                setEmployeeName(reponsee.data.username);
+            } catch (error) {
+                console.error("Error: ", error);
+            }
+        }
+        if (oneEmployeeID) {
+            func(oneEmployeeID);
+        };
+
+    }, [oneEmployeeID]);
+
+    useEffect(() => {
+        const func = async (oneLeaveType) => {
+            try {
+                const response = await axios.get(`${url}/get-one-leave-type/${oneLeaveType}`);
+                setOneLeaveArray(response.data);
+
+            } catch (error) {
+                console.error("Error: ", error);
+            };
+        }
+
+        if (oneLeaveType) {
+            func(oneLeaveType);
+        }
+
+    }, [oneLeaveType]);
+
+    const applyOtherLeave = async (leaveName) => {
+        try {
+
+            const data = {
+                empID: oneEmployeeID,
+                name: leaveName,
+                description: description,
+                days_needed: workingDays,
+                leaveStartDate: leaveStartDate,
+                leaveEndDate: leaveEndDate,
+                currentYear: currentYear
+            };
+            const response = await axios.post(`${url}/post-other-leave`, data);
+        } catch (error) {
+            console.error("Error: ", error);
+        };
+    };
+
+    useEffect(() => {
+        const func = async (oneEmployeeID) => {
+            try {
+                const response = await axios.get(`${url}/get-other-leaves/${oneEmployeeID}`);
+                console.log("Response: ", response.data);
+                setOtherLeavesReport(response.data);
+            } catch (error) {
+                console.error("Error: ", error);
+            }
+        }
+        func(oneEmployeeID);
+    }, [oneEmployeeID]);
+
+    const column = [
+        {
+            name: 'Name Of Leave',
+            selector: row => row.name
+        },
+        {
+            name: 'Description',
+            selector: row => row.description
+        },
+        {
+            name: 'Days ',
+            selector: row => row.days_needed
+        }, {
+            name: 'Start Date',
+            selector: row => formatDate(row.startDate)
+        },
+        {
+            name: 'End Date ',
+            selector: row => formatDate(row.endDate)
+        },
+        {
+            name: 'Year',
+            selector: row => row.year
+        }
+    ];
 
     return (
         <div>
@@ -448,7 +662,8 @@ function LeavePage() {
             <div style={Container}>
                 <div style={leave}>
                     {employees.map(employee => (
-                        <button key={employee.id} style={CompanyButton} onClick={() => openLeaveModal(employee.id)}>
+                        // <button key={employee.id} style={CompanyButton} onClick={() => openLeaveModal(employee.id)}>
+                        <button key={employee.id} style={CompanyButton} onClick={() => openLeaveAllModal(employee.id)}>
                             {employeeImages[employee.id] ? (
                                 <img
                                     src={employeeImages[employee.id]}
@@ -472,96 +687,175 @@ function LeavePage() {
                             </div>
                         </button>
                     ))}
-                </div>
-                <Modal isOpen={isLeaveModalOpen} onRequestClose={closeLeaveModal} style={modal}>
-                    {oneEmployee.map(employee => (
-                        <>
-                            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                                <h1>{employee.username}</h1>
-                            </div>
-
-                            <div style={{ width: '100%', height: '100%', backgroundColor: 'rgb(206, 206, 236)' }}>
-                                <div style={{ marginLeft: '12px', display: 'flex', gap: '239px', flexDirection: 'inline' }}>
-                                    <p>Date of Employment: {formatDate(employee.date_of_employment)}</p>
-                                    <p>Date of Application: {currentDate} </p>
+                    <Modal isOpen={isLeaveModalOpen} onRequestClose={closeLeaveModal} style={modal}>
+                        {oneEmployee.map(employee => (
+                            <>
+                                <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                                    <h1>{employee.username}</h1>
                                 </div>
-                                <br />
 
-                                <div style={{ width: '100%', height: '40%', backgroundColor: 'white', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', width: '100%' }} >
-                                        <h1>Apply For Leave</h1> <button style={{ color: 'black', width: '20%' }} onClick={() => applyLeave()}>Calculate</button>
+                                <div style={{ width: '100%', height: '100%', backgroundColor: 'rgb(206, 206, 236)' }}>
+                                    <div style={{ marginLeft: '12px', display: 'flex', gap: '239px', flexDirection: 'inline' }}>
+                                        <p>Date of Employment: {formatDate(employee.date_of_employment)}</p>
+                                        <p>Date of Application: {currentDate} </p>
                                     </div>
                                     <br />
+
+                                    <div style={{ width: '100%', height: '40%', backgroundColor: 'white', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', width: '100%' }} >
+                                            <h1>Apply For Leave</h1> <button style={{ color: 'black', width: '20%' }} onClick={() => applyLeave()}>Calculate</button>
+                                        </div>
+                                        <br />
+                                        <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', width: '100%' }}>
+                                            <p> From: </p> <input type='date' name='leave_start_date' id='smallDate' style={{ width: '20%', borderRadius: '20px', display: 'flex', justifyContent: 'center', border: 'none' }} onChange={handleStartDate} />
+                                            <p>To: </p> <input input type='date' name='leave_end_date' id='smallDate' style={{ width: '20%', borderRadius: '20px', display: 'flex', justifyContent: 'center', border: 'none' }} onChange={handleEndDate} />
+                                            <p>Total Days: {workingDays}</p>
+                                        </div>
+                                    </div>
+
+                                    <br />
+
+                                    <div style={{ width: '100%', backgroundColor: 'green', display: 'flex', flexDirection: 'inline' }}>
+
+                                        <div style={{ width: '50%', backgroundColor: 'white' }}>
+
+                                            <div style={{ width: '60%', marginLeft: '12px', backgroundColor: 'white', display: 'flex', }}>
+                                                <p>Leave B/F: {leaveBF} </p>
+                                            </div>
+
+                                            <br />
+
+                                            <div style={{ width: '70%', marginLeft: '12px', backgroundColor: 'white', display: 'flex', }}>
+
+                                                <p>Leave Earned to date : {leaveAvailable} </p>
+
+                                            </div>
+
+                                            <br />
+
+                                            <div style={{ width: '60%', marginLeft: '12px', backgroundColor: 'white', display: 'flex', }}>
+
+                                                <p>Leave Balance before this application: {leaveBeforeThisApplication} - {leaveTakenThisYear} = {Number(leaveBeforeThisApplication) - Number(leaveTakenThisYear)} </p>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div style={{ width: '50%', backgroundColor: 'white' }}>
+
+                                            <div style={{ width: '70%', marginLeft: '12px', backgroundColor: 'white', display: 'flex', }}>
+
+                                                <p>Annual Entitlement: 18 </p>
+
+                                            </div>
+
+                                            <br />
+
+                                            <div style={{ width: '70%', marginLeft: '12px', backgroundColor: 'white', display: 'flex', }}>
+
+                                                <p>Leave Taken This Year: {leaveTakenThisYear} </p>
+
+                                            </div>
+
+                                            <br />
+
+                                            <div style={{ width: '50%', marginLeft: '12px', backgroundColor: 'white', display: 'flex', }}>
+
+                                                <p>Leave balance incl. This application: {(Number(lastDifference) - Number(workingDays))} </p>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </>
+                        ))}
+
+                    </Modal>
+
+                    <Modal isOpen={allLeaves} onRequestClose={closeAllLeaveModal} style={LeaveModal}>
+                        <div style={smaller}>
+                            <button style={buttons} onClick={() => setTab(0)}>Leave Forms</button>
+                            <button style={buttons} onClick={() => setTab(1)}>Report</button>
+                        </div>
+                        <div style={AllLeavesStyle}>
+                            {tab === 0 && <div style={leaves}>
+
+                                <div style={{ width: '100%', marginTop: '15px', marginLeft: '12px', backgroundColor: 'rgb(163, 187, 197)', display: 'flex', gap: '12px', flexDirection: 'inline', flexWrap: 'wrap' }}>
+
+                                    <button onClick={() => openAnnualLeave(IDF)} style={buttonx}>Annual Leave</button>
+                                    {leavesTypes.map(leave => (
+                                        <button style={button} key={leave.id} onClick={() => openOtherLeaveModal(leave.id)} >{leave.name}</button>
+                                    ))}
+                                </div>
+
+                            </div>
+                            }
+
+                            {tab === 1 && <div style={report}>
+                                <div>
+                                    <DataTable
+                                        data={otherLeavesReport}
+                                        columns={column}
+                                        pagination
+                                    ></DataTable>
+                                </div>
+
+                            </div>}
+
+
+                        </div>
+                    </Modal>
+
+                    <Modal isOpen={otherLeaves} onRequestClose={closeOtherLeavesModal} style={modal}>
+                        {oneLeaveArray.map(leave => (
+                            <div>
+                                <div style={{ style: '100%', backgroundColor: 'white', display: 'flex', marginTop: '20px', justifyContent: 'center' }}>
+                                    <h1>{employeeName} Requesting for {leave.name} Leave</h1>
+                                </div>
+
+                                <div style={{ width: '100%', height: '20%', backgroundColor: 'rgb(206, 206, 236)' }}>
+                                    <div style={{ marginLeft: '12px', display: 'flex', marginTop: '12px', gap: '239px', flexDirection: 'inline' }}>
+                                        <p>Date of Employment: Sinz</p>
+                                        <p>Date of Application: {currentDate} </p>
+                                    </div>
+                                </div>
+                                <div style={{ width: '100%', height: '100%', backgroundColor: 'white', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
+
+                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', width: '100%' }} >
+                                        <h1>Apply For Leave</h1> <button style={{ color: 'black', width: '20%' }} onClick={() => applyOtherLeave(leave.name)}>Apply</button>
+                                    </div>
+
+                                    <br />
+
+
                                     <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', width: '100%' }}>
                                         <p> From: </p> <input type='date' name='leave_start_date' id='smallDate' style={{ width: '20%', borderRadius: '20px', display: 'flex', justifyContent: 'center', border: 'none' }} onChange={handleStartDate} />
                                         <p>To: </p> <input input type='date' name='leave_end_date' id='smallDate' style={{ width: '20%', borderRadius: '20px', display: 'flex', justifyContent: 'center', border: 'none' }} onChange={handleEndDate} />
                                         <p>Total Days: {workingDays}</p>
                                     </div>
-                                </div>
 
-                                <br />
+                                    <br />
 
-                                <div style={{ width: '100%', backgroundColor: 'green', display: 'flex', flexDirection: 'inline' }}>
-
-                                    <div style={{ width: '50%', backgroundColor: 'white' }}>
-
-                                        <div style={{ width: '60%', marginLeft: '12px', backgroundColor: 'white', display: 'flex', }}>
-                                            <p>Leave B/F: {leaveBF} </p>
-                                        </div>
-
-                                        <br />
-
-                                        <div style={{ width: '70%', marginLeft: '12px', backgroundColor: 'white', display: 'flex', }}>
-
-                                            <p>Leave Earned to date : {leaveAvailable} </p>
-
-                                        </div>
-                                        <br />
-
-                                        <div style={{ width: '60%', marginLeft: '12px', backgroundColor: 'white', display: 'flex', }}>
-
-                                            <p>Leave Balance before this application: {leaveBeforeThisApplication} </p>
-
-                                        </div>
-
+                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', width: '100%' }} >
+                                        <textarea required name='description' placeholder='Reason / Description' style={textiee} value={description} onChange={(e) => setDescription(e.target.value)}>Reason / Description </textarea>
                                     </div>
 
-                                    <div style={{ width: '50%', backgroundColor: 'white' }}>
-
-                                        <div style={{ width: '70%', marginLeft: '12px', backgroundColor: 'white', display: 'flex', }}>
-
-                                            <p>Annual Entitlement: 18 </p>
-
-                                        </div>
-                                        <br />
-
-                                        <div style={{ width: '70%', marginLeft: '12px', backgroundColor: 'white', display: 'flex', }}>
-
-                                            <p>Leave Taken This Year: {leaveTakenThisYear} </p>
-
-
-                                        </div>
-                                        <br />
-
-                                        <div style={{ width: '50%', marginLeft: '12px', backgroundColor: 'white', display: 'flex', }}>
-
-                                            <p>Leave balance incl. This application: {(Number(leaveBeforeThisApplication) - Number(workingDays))} </p>
-
-                                        </div>
-
-                                    </div>
                                 </div>
-
-
-
                             </div>
-                        </>
-                    ))}
 
-                </Modal>
+
+                        ))}
+
+                    </Modal>
+
+                </div>
             </div>
 
-        </div>
+        </div >
     );
 }
 

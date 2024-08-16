@@ -12,9 +12,9 @@ import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL, getStorage, listAll } from "firebase/storage";
 import DataTable from 'react-data-table-component';
 import Delivery from './deliveryFront';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-pdfMake.vfs = pdfFonts.pdfMake.vfs
+// import pdfMake from 'pdfmake/build/pdfmake';
+// import pdfFonts from 'pdfmake/build/vfs_fonts';
+// pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 function Company() {
 
@@ -198,43 +198,6 @@ function Company() {
         backgroundColor: 'white'
     };
 
-    // const giverFunc = () => {
-
-        const datax = 'dataaaaa'
-
-        const docDefinition = {
-            content: [
-                { text: `This is a header ${datax}`, style: 'header' },
-                'No styling here, this is a standard paragraph',
-                { text: 'Another text', style: 'anotherStyle' },
-                { text: 'Multiple styles applied', style: ['header', 'anotherStyle'] },
-            ],
-
-            styles: {
-                header: {
-                    fontSize: 22,
-                    bold: true,
-                },
-                anotherStyle: {
-                    italics: true,
-                    alignment: 'right',
-                },
-            },
-        };
-
-    //     return docDefinition
-    // };
-
-    const [urlForPdf, setUrlForPdf] = useState(null);
-
-    const createPdf = () => {
-        const pdfGenerator = pdfMake.createPdf(docDefinition);
-        pdfGenerator.getBlob((blob) => {
-            const url = URL.createObjectURL(blob);
-            setUrlForPdf(url)
-        })
-    }
-
 
     const [AddModalOpen, isAddModalOpen] = useState(false);
     const [logo, setLogo] = useState();
@@ -289,7 +252,6 @@ function Company() {
     }, []);
 
     const [infoCompany, setInfoCompany] = useState([]);
-    const [image, setImage] = useState();
 
     const [companyImages, setCompanyImages] = useState({});
 
@@ -601,8 +563,8 @@ function Company() {
         {
             name: 'Delivery Note',
             selector: row => (
-                // <button onClick={() => openDeliveryNote(row.id)}>View</button>
-                <button onClick={createPdf}>View</button>
+                <button onClick={() => openDeliveryNote(row.id)}>View</button>
+                // <button onClick={createPdf}>View</button>
             )
         }
     ];
@@ -627,13 +589,8 @@ function Company() {
             // };
 
             const ren = Delivery(CompanyName, itemName, amount, date);
-
-            setRenner(ren);
-
+            console.log("Renner: ", ren);
             // socket.emit("Go For Delivery", messageDatas);
-
-
-
 
         } catch (error) {
             console.error("Error: ", error);
@@ -813,22 +770,9 @@ function Company() {
 
                     <div>
                         <Modal isOpen={isDeliveryNoteOpen} onRequestClose={closeDeliveryNoteModal} style={modal3}>
-                            {/* {pdf ? (
-                                <iframe src={pdf} width="100%" height="600px" />
-                            ) : (
-                                <p style={{color: 'white'}}>Loading PDF...</p>
-                            )} */}
-
-                            {/* <div  dangerouslySetInnerHTML={{ __html: renner }} /> */}
-
-                            {/* </div>  */}
-
-                            {urlForPdf && (
-                                <div>
-                                    {urlForPdf}
-                                </div>
-                            )}
-
+                            <>
+                                <Delivery />
+                            </>
                         </Modal>
                     </div>
                 </div>
