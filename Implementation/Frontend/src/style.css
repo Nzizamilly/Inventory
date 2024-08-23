@@ -17,7 +17,7 @@
     align-items: center;
     justify-content: center;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(34, 41, 44);
+    background-color: rgb(34, 44, 38);
 }
 
 .account {
@@ -261,9 +261,11 @@ textarea {
     border-radius: 5px;
     border: 1px solid #ccc;
     background-color: black;
-};
+}
 
-.textiee{
+;
+
+.textiee {
     background-color: blue;
 }
 
@@ -943,7 +945,9 @@ li a:hover {
     color: rgb(29, 27, 27);
     font-family: 'Arial', sans-serif;
     background-color: rgb(206, 206, 236);
-};
+}
+
+;
 
 .termsx {
     gap: 15px;
@@ -962,7 +966,9 @@ li a:hover {
     color: rgb(29, 27, 27);
     font-family: 'Arial', sans-serif;
     background-color: rgb(206, 206, 236);
-};
+}
+
+;
 
 .th1 {
     width: 23px;
@@ -1400,4 +1406,94 @@ li a:hover {
 .companyButton {
     height: 28%;
     width: 20%
+}
+
+;
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100vw);
+        /* Start position: outside the viewport */
+    }
+
+    to {
+        transform: translateX(0);
+        /* End position: inside the viewport */
+    }
+}
+
+
+.leaves {
+    width: 90%;
+    height: 50vh;
+    border-radius: 35px;
+
+}
+
+;
+
+.report {
+    width: 90%;
+    height: 50vh;
+    margin-top: 22px;
+    margin-left: 22px;
+    border-radius: 35px;
+    background-color: white;
+    transform: translateX(100vw);
+    /* Initially place the element outside the viewport */
+    animation: slideIn 9s forwards;
+}
+
+.tab-content {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+    width: 100%;
+}
+
+.tab-content.slide-left {
+    transform: translateX(-100%);
+}
+
+.tab-content.slide-right {
+    transform: translateX(0%);
+}
+
+;
+
+
+.take {
+    background-color: blue;
+    width: 100%;
+    position: relative;
+    animation: slideIn 1s ease-out forwards;
+    overflow: hidden;
+    height: 400px;
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.slide-left {
+    animation: slideInLeft 1s ease-out forwards;
+}
+
+.slide-right {
+    animation: slideInRight 1s ease-out forwards;
 }

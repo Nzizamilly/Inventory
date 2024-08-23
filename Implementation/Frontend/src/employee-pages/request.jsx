@@ -345,22 +345,6 @@ function Request() {
     },
   };
 
-  console.log("MessageData FOR DOWN: ", messageDataForDown);
-
-  const No = {
-    width: '10%',
-    height: '10vh',
-    display: 'flex',
-    textAlign: 'center',
-    fontWeight: '100px',
-    alignItems: 'center',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    backgroundColor: 'Black',
-    color: 'rgb(12, 193, 199)',
-    fontFamily: 'Arial, sans-serif',
-  }
-
   return (
     <div>
       <Navbar></Navbar>

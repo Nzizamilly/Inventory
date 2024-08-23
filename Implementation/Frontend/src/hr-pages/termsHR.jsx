@@ -4,25 +4,6 @@ import NavbarMain from './navbarMain';
 
 function TermsHR() {
 
-  let a = 10;
-  let b = 20;
-  let c = a + b;
-  let d = 50;
-
-  const fun = (newD) => {
-    let delta = newD - d;
-    d = newD;
-
-    a += delta / 2;
-    b += delta / 2;
-
-    c = a + b;
-
-  }
-
-  fun(40);
-  console.log(a, b, c, d);
-
   return (
     <div>
       <NavbarMain></NavbarMain>

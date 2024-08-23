@@ -7,6 +7,7 @@ import axios from 'axios';
 import ProfilePicture from '../images/centrika-removebg.png';
 import { ref, getDownloadURL, getStorage, } from "firebase/storage";
 import DataTable from 'react-data-table-component';
+import '../style.css';
 
 
 function LeavePage() {
@@ -67,8 +68,8 @@ function LeavePage() {
 
     const LeaveModal = {
         content: {
-            width: '70%',
-            height: '73%',
+            width: '70%', // Adjust as needed
+            height: '73%', // Adjust as needed
             display: 'flex',
             flexDirection: 'column',
             border: 'none',
@@ -76,12 +77,11 @@ function LeavePage() {
             fontFamily: 'Arial, sans-serif',
             borderRadius: '12px',
             backgroundColor: 'white',
-            marginLeft: '180px',
-            marginTop: '20px'
+            margin: 'auto', // Center the modal within the overlay
         },
         overlay: {
-            backgroundColor: 'rgba(0, 0, 0, 0.0)',
-            // display: 'flex',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)', // Slightly opaque background for the overlay
+            display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
         },
@@ -139,6 +139,8 @@ function LeavePage() {
         width: '99%',
         height: '97%',
         borderRadius: '35px',
+        // position: 'relative',
+        // overflow: 'hidden',
         backgroundColor: 'rgb(163, 187, 197)'
     };
 
@@ -158,7 +160,10 @@ function LeavePage() {
         width: '90%',
         height: '50vh',
         borderRadius: '35px',
-        backgroundColor: 'rgb(163, 187, 197)',
+        // backgroundColor: 'red',
+        position: 'relative',
+        animation: 'slideIn 1s ease-out forwards',
+        overflow: 'hidden',
     };
 
     const report = {
@@ -168,6 +173,9 @@ function LeavePage() {
         marginLeft: '22px',
         borderRadius: '35px',
         backgroundColor: 'white',
+        position: 'relative',
+        animation: 'slideIn 1s ease-out forwards',
+        overflow: 'hidden',
     }
 
     const smaller = {
@@ -457,7 +465,7 @@ function LeavePage() {
 
 
 
-            if (lastDifference >= workingDays ) {
+            if (lastDifference >= workingDays) {
                 // const response = await axios.post(`${url}/take-needed-days`, data);
                 window.alert(`${oneEmployee[0].username} will be on leave of ${workingDays} Days`);
             } else {
@@ -507,7 +515,7 @@ function LeavePage() {
 
         func(oneEmployeeID);
     }, [oneEmployeeID]);
-const [lastDifference, setLastDifference] = useState('')
+    const [lastDifference, setLastDifference] = useState('')
     useEffect(() => {
         const func = (leaveBFI3, leaveAva3ilab) => {
             try {
@@ -653,6 +661,17 @@ const [lastDifference, setLastDifference] = useState('')
         }
     ];
 
+ 
+
+    const take = {
+        backgroundColor: 'blue',
+        width: '100%',
+        position: 'relative',
+        animation: 'slideIn 1s ease-out forwards',
+        overflow: 'hidden',
+        height: '400px',
+    }
+
     return (
         <div>
             <NavbarMain></NavbarMain>
@@ -681,7 +700,7 @@ const [lastDifference, setLastDifference] = useState('')
                                 <p>Name: {employee.username}</p>
                                 <p>Email: {employee.email}</p>
                                 <p>Address: {employee.address}</p>
-                                <p>PhoneNumber: {employee.phoneNumber}</p>
+                                <p>Phone Number: {employee.phoneNumber}</p>
                                 <p>Role: {employee.role_name}</p>
                                 <p>{employee.number}</p>
                             </div>
@@ -782,17 +801,19 @@ const [lastDifference, setLastDifference] = useState('')
                             <button style={buttons} onClick={() => setTab(1)}>Report</button>
                         </div>
                         <div style={AllLeavesStyle}>
+
                             {tab === 0 && <div style={leaves}>
 
-                                <div style={{ width: '100%', marginTop: '15px', marginLeft: '12px', backgroundColor: 'rgb(163, 187, 197)', display: 'flex', gap: '12px', flexDirection: 'inline', flexWrap: 'wrap' }}>
+                                    <div style={{ width: '100%', marginTop: '15px', marginLeft: '12px', backgroundColor: 'rgb(163, 187, 197)', display: 'flex', gap: '12px', flexDirection: 'inline', flexWrap: 'wrap' }}>
 
-                                    <button onClick={() => openAnnualLeave(IDF)} style={buttonx}>Annual Leave</button>
-                                    {leavesTypes.map(leave => (
-                                        <button style={button} key={leave.id} onClick={() => openOtherLeaveModal(leave.id)} >{leave.name}</button>
-                                    ))}
+                                        <button onClick={() => openAnnualLeave(IDF)} style={buttonx}>Annual Leave</button>
+                                        {leavesTypes.map(leave => (
+                                            <button style={button} key={leave.id} onClick={() => openOtherLeaveModal(leave.id)} >{leave.name}</button>
+                                        ))}
+                                    </div>
                                 </div>
 
-                            </div>
+                           
                             }
 
                             {tab === 1 && <div style={report}>
@@ -853,7 +874,7 @@ const [lastDifference, setLastDifference] = useState('')
                     </Modal>
 
                 </div>
-            </div>
+            </div >
 
         </div >
     );

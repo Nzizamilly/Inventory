@@ -42,6 +42,7 @@ import ItemTransactionsAdmin2 from './admin-pages/itemTransaction2';
 import ItemTransactionsAdmins from './admin-pages/itemTransacation';
 import Company from './admin-pages/company';
 import LeavePage from './hr-pages/leave';
+import Onboard from './hr-pages/onboard';
 
 const router = createBrowserRouter([
   {
@@ -199,7 +200,12 @@ const router = createBrowserRouter([
   {
     path: 'leave-page',
     element: <LeavePage />
-  }
+  },
+  {
+    path: 'onboard',
+    element: <Onboard />
+  },
+
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
