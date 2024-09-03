@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import NavbarMain from './navbarMain';
 import Keys from '../keys';
 import Modal from 'react-modal';
+import ClipLoader from "react-spinners/ClipLoader";
 import axios from 'axios';
 import ProfilePicture from '../images/centrika-removebg.png';
 import { ref, getDownloadURL, getStorage, } from "firebase/storage";
@@ -69,7 +70,7 @@ function LeavePage() {
     const LeaveModal = {
         content: {
             width: '70%', // Adjust as needed
-            height: '73%', // Adjust as needed
+            height: '78%', // Adjust as needed
             display: 'flex',
             flexDirection: 'column',
             border: 'none',
@@ -137,8 +138,9 @@ function LeavePage() {
     };
     const AllLeavesStyle = {
         width: '99%',
-        height: '97%',
+        // height: '97%',
         borderRadius: '35px',
+        padding: '17px',
         // position: 'relative',
         // overflow: 'hidden',
         backgroundColor: 'rgb(163, 187, 197)'
@@ -168,8 +170,10 @@ function LeavePage() {
 
     const report = {
         width: '90%',
-        height: '50vh',
-        marginTop: '22px',
+        // height: '50vh',
+        padding: '10px',
+        // marginTop: '22px',
+        overflow: 'auto',
         marginLeft: '22px',
         borderRadius: '35px',
         backgroundColor: 'white',
@@ -202,6 +206,7 @@ function LeavePage() {
     const [leaveTakenThisYear, setLeaveTakenThisYear] = useState('')
     const [leaveBF, setLeaveBF] = useState(0);
     const [tab, setTab] = useState(0);
+    const [loading, setLoading] = useState(true);
     const [IDF, setIDF] = useState('');
     const [currentDate, setCurrentDate] = useState('');
     const [otherLeavesReport, setOtherLeavesReport] = useState([]);
@@ -212,6 +217,9 @@ function LeavePage() {
     const [oneLeaveType, setOneLeaveType] = useState('');
     const [oneLeaveArray, setOneLeaveArray] = useState([]);
     const [description, setDescription] = useState('');
+    const [createModal, setCreateModal] = useState(false);
+    const [createAppliedLeaveModal, setCreateAppliedLeaveModal] = useState(false);
+
 
     const holidays = [
         {
@@ -346,7 +354,9 @@ function LeavePage() {
         func(oneEmployeeID);
     }, [oneEmployeeID]);
 
-
+    const closeCreateModal = () => {
+        setCreateModal(false);
+    };
 
     useEffect(() => {
         const Dday = new Date().getDate()
@@ -424,7 +434,6 @@ function LeavePage() {
                         const imageURL = await getDownloadURL(imageRef);
                         return { [employee.id]: imageURL };
                     } catch (error) {
-                        // console.error(`Error fetching image for employee ${employee.id}: `, error);
                         return { [employee.id]: console.log("No Image") };
                     }
                 });
@@ -453,8 +462,9 @@ function LeavePage() {
     };
 
 
-    const applyLeave = async () => {
+    const applyLeaveI = async () => {
         try {
+
             const applyingYear = leaveEndDate.getFullYear();
 
             const data = {
@@ -463,11 +473,13 @@ function LeavePage() {
                 applyingYear: applyingYear
             };
 
-
-
             if (lastDifference >= workingDays) {
                 // const response = await axios.post(`${url}/take-needed-days`, data);
-                window.alert(`${oneEmployee[0].username} will be on leave of ${workingDays} Days`);
+                setInterval(() => {
+                    closeAppliedLeaveLoader();
+                }, 3700);
+
+                // window.alert(`${oneEmployee[0].username} will be on leave of ${workingDays} Days`);
             } else {
                 window.alert(`${oneEmployee[0].username} hasn't earned ${workingDays} days.`);
             }
@@ -476,6 +488,11 @@ function LeavePage() {
             console.error("Error", error)
         }
     };
+
+    const applyLeave = () => {
+        setCreateAppliedLeaveModal(true);
+        applyLeaveI();
+    }
 
     useEffect(() => {
         if (leaveStartDate && leaveEndDate) {
@@ -517,7 +534,7 @@ function LeavePage() {
     }, [oneEmployeeID]);
     const [lastDifference, setLastDifference] = useState('')
     useEffect(() => {
-        const func = (leaveBFI3, leaveAva3ilab) => {
+        const func = (leaveBFI3, leaveAva3) => {
             try {
                 const sum = (Number(leaveBF) + Number(leaveAvailable));
                 setLeaveBeforeThisApplication(sum);
@@ -556,6 +573,11 @@ function LeavePage() {
     const closeOtherLeavesModal = () => {
         setOtherLeaves(false);
         setDescription("");
+    };
+
+
+    const closeAppliedLeaveLoader = () => {
+        setCreateAppliedLeaveModal(false);
     };
 
     useEffect(() => {
@@ -604,7 +626,7 @@ function LeavePage() {
 
     }, [oneLeaveType]);
 
-    const applyOtherLeave = async (leaveName) => {
+    const applyOtherLeaves = async (leaveName) => {
         try {
 
             const data = {
@@ -622,16 +644,26 @@ function LeavePage() {
         };
     };
 
+    const applyOtherLeave = (leaveName) => {
+        setCreateModal(true);
+        applyOtherLeaves(leaveName);
+    }
+
     useEffect(() => {
         const func = async (oneEmployeeID) => {
             try {
                 const response = await axios.get(`${url}/get-other-leaves/${oneEmployeeID}`);
                 console.log("Response: ", response.data);
                 setOtherLeavesReport(response.data);
+
+                setInterval(() => {
+                    closeCreateModal();
+                }, 3700);
+
             } catch (error) {
                 console.error("Error: ", error);
-            }
-        }
+            };
+        };
         func(oneEmployeeID);
     }, [oneEmployeeID]);
 
@@ -661,7 +693,7 @@ function LeavePage() {
         }
     ];
 
- 
+
 
     const take = {
         backgroundColor: 'blue',
@@ -787,11 +819,20 @@ function LeavePage() {
                                         </div>
                                     </div>
 
-
-
                                 </div>
                             </>
                         ))}
+
+                        <Modal isOpen={createAppliedLeaveModal} onRequestClose={closeAppliedLeaveLoader} className={modal}>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+                                <ClipLoader color={'green'} loading={loading} size={89} />
+                                <div>
+                                    <p>Issuing {workingDays} days of applied leave to {employeeName} </p>
+                                </div>
+                            </div>
+
+                        </Modal>
 
                     </Modal>
 
@@ -804,16 +845,16 @@ function LeavePage() {
 
                             {tab === 0 && <div style={leaves}>
 
-                                    <div style={{ width: '100%', marginTop: '15px', marginLeft: '12px', backgroundColor: 'rgb(163, 187, 197)', display: 'flex', gap: '12px', flexDirection: 'inline', flexWrap: 'wrap' }}>
+                                <div style={{ width: '100%', marginTop: '15px', marginLeft: '12px', backgroundColor: 'rgb(163, 187, 197)', display: 'flex', gap: '12px', flexDirection: 'inline', flexWrap: 'wrap' }}>
 
-                                        <button onClick={() => openAnnualLeave(IDF)} style={buttonx}>Annual Leave</button>
-                                        {leavesTypes.map(leave => (
-                                            <button style={button} key={leave.id} onClick={() => openOtherLeaveModal(leave.id)} >{leave.name}</button>
-                                        ))}
-                                    </div>
+                                    <button onClick={() => openAnnualLeave(IDF)} style={buttonx}>Annual Leave</button>
+                                    {leavesTypes.map(leave => (
+                                        <button style={button} key={leave.id} onClick={() => openOtherLeaveModal(leave.id)} >{leave.name}</button>
+                                    ))}
                                 </div>
+                            </div>
 
-                           
+
                             }
 
                             {tab === 1 && <div style={report}>
@@ -830,6 +871,8 @@ function LeavePage() {
 
                         </div>
                     </Modal>
+
+
 
                     <Modal isOpen={otherLeaves} onRequestClose={closeOtherLeavesModal} style={modal}>
                         {oneLeaveArray.map(leave => (
@@ -867,9 +910,18 @@ function LeavePage() {
 
                                 </div>
                             </div>
-
-
                         ))}
+                        <Modal isOpen={createModal} onRequestClose={closeCreateModal} className={modal}>
+                            {oneLeaveArray.map(leave => (
+
+                                <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+                                    <ClipLoader color={'green'} loading={loading} size={89} />
+                                    <div>
+                                        <p>Issuing {workingDays} days of {leave.name} to {employeeName} </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </Modal>
 
                     </Modal>
 
