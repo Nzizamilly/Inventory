@@ -17,6 +17,7 @@ function Login() {
         display: 'flex',
         alignItems: 'center',
     };
+
     const login = {
         width: '24%',
         height: '46vh',
@@ -102,7 +103,7 @@ function Login() {
                     }
 
                 } else {
-                    alert("Not found")
+                    alert(`Not found, ${values.password}`);
                 }
             })
             .catch(err => console.log(err));

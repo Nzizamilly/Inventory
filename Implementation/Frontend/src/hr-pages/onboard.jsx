@@ -79,7 +79,6 @@ function Onboard() {
     width: '30px',
     height: '30px',
     borderRadius: '14px',
-    marginTop: '2px'
   }
 
   const arrows = {
@@ -280,7 +279,8 @@ function Onboard() {
 
   const Select = {
     width: '65%',
-    height: '28%',
+    height: '12%',
+    marginTop: '12px',
     color: 'black',
     border: 'none',
     backgroundColor: 'black',
@@ -449,12 +449,6 @@ function Onboard() {
     functions();
   }, []);
 
-  const style = {
-    backgroundColor: 'black',
-    width: '1%',
-    height: '1%'
-  };
-
   const [records, setRecords] = useState([]);
 
   const handleFilter = (event) => {
@@ -482,9 +476,6 @@ function Onboard() {
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
-    // position: 'relative',
-    // animation: 'slideIn 1s ease-out forwards',
-    // overflow: 'hidden',
     height: '400px'
   };
 
@@ -510,27 +501,72 @@ function Onboard() {
 
   const [tab, setTab] = useState(1);
   const [animationClass, setAnimationClass] = useState('');
-  const [attendantfirstName, setAttendantFirstName] = useState('');
+  const [attendantFirstName, setAttendantFirstName] = useState('');
   const [attendantSecondName, setAttendantSecondName] = useState('');
   const [attendantThirdName, setAttendantThirdName] = useState('');
-  const [attendantaddress, setAttendantAddress] = useState('');
+  const [attendantAddress, setAttendantAddress] = useState('');
   const [attendantPhoneNumber, setAttendantPhoneNumber] = useState('')
   const [attendantNationality, setAttendantNationality] = useState('')
   const [attendantEmail, setAttendantEmail] = useState('')
   const [attendantBirthDate, setAttendantBirthDate] = useState('')
   const [attendantHeight, setAttendantHeight] = useState('');
+  const [attendantDrivingLicense, setAttendantDrivingLicense] = useState('');
+  const [attendantTaxIdentificationID, setAttendantTaxIdentificationID] = useState('');
+  const [attendantEmploymentStatus, setAttendantEmploymentStatus] = useState('');
   const [attendantPassportNumber, setAttendantPassportNumber] = useState('');
-   
-
-
-
-
-
-
-
-
-
-
+  const [attendantDisability, setAttendantDisability] = useState('');
+  const [attendantMaritalStatus, setAttendantMaritalStatus] = useState('');
+  const [spouseFirstName, setSpouseFirstName] = useState('');
+  const [spouseSecondName, setSpouseSecondName] = useState('');
+  const [spouseThirdName, setSpouseThirdName] = useState('');
+  const [spousePhoneNumber, setSpousePhoneNumber] = useState('');
+  const [spouseDateOfBirth, setSpouseDateOfBirth] = useState('');
+  const [spouseEmail, setSpouseEmail] = useState('');
+  const [spouseOccupation, setSpouseOccupation] = useState('');
+  const [spouseAddress, setSpouseAddress] = useState('');
+  const [spouseNumberOfChildren, setSpouseNumberOfChildren] = useState('');
+  const [fatherFirstName, setFatherFirstName] = useState('');
+  const [fatherSecondName, setFatherSecondName] = useState('');
+  const [fatherThirdName, setFatherThirdName] = useState('')
+  const [fatherPhoneNumber, setFatherPhoneNumber] = useState('')
+  const [fatherDateOfBirth, setFatherDateOfBirth] = useState('')
+  const [motherFirstName, setMotherFirstName] = useState('')
+  const [motherSecondName, setMotherSecondName] = useState('')
+  const [motherThirdName, setMotherThirdName] = useState('')
+  const [motherPhoneNumber, setMotherPhoneNumber] = useState('');
+  const [motherDateOfBirth, setMotherDateOfBirth] = useState('')
+  const [emergencyFirstName, setEmergencyFirstName] = useState('');
+  const [emergencySecondName, setEmergencySecondName] = useState('');
+  const [emergencyThirdName, setEmergencyThirdName] = useState('');
+  const [emergencyPhoneNumber, setEmergencyPhoneNumber] = useState('');
+  const [emergencyEmail, setEmergencyEmail] = useState('');
+  const [academicQualification1, setAcademicQualifications1] = useState('');
+  const [academicQualification2, setAcademicQualifications2] = useState('');
+  const [academicQualification3, setAcademicQualifications3] = useState('');
+  const [academicQualification4, setAcademicQualifications4] = useState('');
+  const [academicQualification5, setAcademicQualifications5] = useState('');
+  const [institution1, setInstitution1] = useState('')
+  const [institution2, setInstitution2] = useState('')
+  const [institution3, setInstitution3] = useState('')
+  const [institution4, setInstitution4] = useState('')
+  const [institution5, setInstitution5] = useState('')
+  const [dateObtained1, setDateObtained1] = useState('');
+  const [dateObtained2, setDateObtained2] = useState('');
+  const [dateObtained3, setDateObtained3] = useState('');
+  const [dateObtained4, setDateObtained4] = useState('');
+  const [dateObtained5, setDateObtained5] = useState('');
+  const [relativeName, setRelativeName] = useState('');
+  const [relativeRelationship, setRelativeRelationship] = useState('');
+  const [relativeDepartment, setRelativeDepartment] = useState('');
+  const [relativeBranch, setRelativeBranch] = useState('');
+  const [relativeLatestOrganization, setRelativeLatestOrganization] = useState('');
+  const [relativeJobTitle, setRelativeJobTitle] = useState('');
+  const [relativeFromDate, setRelativeFromDate] = useState('');
+  const [relativeCompanyName, setRelativeCompanyName] = useState('');
+  const [relativePhoneNumber, setRelativePhoneNumber] = useState('');
+  const [whyarrestdetaineddeportedanyauthorityabroad, setwhyArrestdetaineddeportedanyauthorityabroad] = useState('')
+  const [anyreasonfordischargefrompreviousposition, setAnyreasonfordischargefrompreviousposition] = useState('');
+  const [addressAnyReasonForLeave, setAddressAnyReasonForLeave] = useState('');
 
   const numberOfTabs = 9;
 
@@ -549,6 +585,97 @@ function Onboard() {
     setAnimationClass('');
   };
 
+  const [nextAttendantID, setNextAttendantID] = useState('');
+
+
+  const onboardFunction = async () => {
+
+    const attendant = [
+      attendantFirstName,
+      attendantSecondName,
+      attendantThirdName,
+      attendantNationality,
+      attendantEmail,
+      attendantAddress,
+      attendantPhoneNumber,
+      attendantBirthDate,
+      attendantHeight,
+      attendantPassportNumber,
+      attendantDrivingLicense,
+      attendantTaxIdentificationID,
+      attendantEmploymentStatus,
+      selectedDepartment,
+      selectedRole,
+      attendantDisability,
+      attendantMaritalStatus,
+    ];
+
+    const spouse = [
+      nextAttendantID,
+      spouseFirstName,
+      spouseSecondName,
+      spouseThirdName,
+      spousePhoneNumber,
+      spouseDateOfBirth,
+      spouseEmail,
+      spouseOccupation,
+      spouseAddress,
+      spouseNumberOfChildren
+    ];
+
+    const familyInformation = [
+      nextAttendantID,
+      fatherFirstName,
+      fatherSecondName,
+      fatherThirdName,
+      fatherPhoneNumber,
+      fatherDateOfBirth,
+      motherFirstName,
+      motherSecondName,
+      motherThirdName,
+      motherPhoneNumber,
+      motherDateOfBirth
+    ];
+
+    const emergencyContact = [
+      nextAttendantID,
+      emergencyFirstName,
+      emergencySecondName,
+      emergencyThirdName,
+      emergencyPhoneNumber,
+      emergencyEmail,
+    ];
+
+    const academic = [
+      nextAttendantID,
+      academicQualification1,
+      academicQualification2,
+      academicQualification3,
+      academicQualification4,
+      academicQualification5,
+    ]
+
+    const response = await axios.post(`${url}/send-attendant`, attendant);
+    const responsee = await axios.post(`${url}/send-spouse`, spouse);
+    const responseee = await axios.post(`${url}/send-family-information`, familyInformation);
+    const responseeee = await axios.post(`${url}/send-emergency-contact`, emergencyContact)
+    const responseeeee = await axios.post(`${url}/send-academic`, academic);
+  }
+  useEffect(() => {
+    const func = async () => {
+      try {
+        const response = await axios.get(`${url}/get-next-attendant-id`)
+        console.log("Here: ", response.data.latest_id + 1);
+        const nextAttendantID = response.data.latest_id + 1;
+        setNextAttendantID(nextAttendantID);
+
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    }
+    func();
+  }, [])
+
   return (
     <div>
       <NavbarMain></NavbarMain>
@@ -556,7 +683,7 @@ function Onboard() {
         <div style={kain}>
           <div style={MakeBig}>
             <div style={One}>
-              <h1>List OF Employees</h1>
+              <h1>List Of Employees</h1>
               <button className='addItem-btn1' onClick={() => setAddVisible(true)} ><img src={Add} style={svgStyle} /></button>
               <input type='text' placeholder='Search For An Employee' onChange={handleFilter} />
             </div>
@@ -587,18 +714,18 @@ function Onboard() {
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
                       <input placeholder='First Name' style={text} type='text' onChange={(e) => setAttendantFirstName(e.target.value)} />
-                      <input placeholder='Second Name' style={text} type='text' onChange={(e) => setAttendantSecondName(e.target.value)}/>
-                      <input placeholder='Third Name' style={text} type='text' onChange={(e) => setAttendantThirdName(e.target.value)}/>
+                      <input placeholder='Second Name' style={text} type='text' onChange={(e) => setAttendantSecondName(e.target.value)} />
+                      <input placeholder='Third Name' style={text} type='text' onChange={(e) => setAttendantThirdName(e.target.value)} />
                       <input placeholder='Phone (Drop)' style={text} type='text' onChange={(e) => setAttendantPhoneNumber(e.target.value)} />
-                      <input placeholder='Nationality' style={text} type='text' onChange={(e) => setAttendantNationality(e.target.value)}/>
+                      <input placeholder='Nationality' style={text} type='text' onChange={(e) => setAttendantNationality(e.target.value)} />
                     </div>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
-                      <input placeholder='Email' style={text} type='text' onChange={(e) => setAttendantEmail(e.target.value)}/>
+                      <input placeholder='Email' style={text} type='text' onChange={(e) => setAttendantEmail(e.target.value)} />
                       <input placeholder='Address' style={text} type='text' onChange={(e) => setAttendantAddress(e.target.value)} />
-                      <input placeholder='Birth Date' style={text} type='text' onChange={(e) => setAttendantBirthDate(e.target.value)}/>
-                      <input placeholder='Phone Number' style={text} type='text' onChange={(e) => setAttendantFirstName(e.target.value)}/>
-                      <input placeholder='Height' style={text} type='text' onChange={(e) => setAttendantHeight(e.target.value)}/>
+                      <input placeholder='Birth Date' style={text} type='text' onChange={(e) => setAttendantBirthDate(e.target.value)} />
+                      <input placeholder='Phone Number' style={text} type='text' onChange={(e) => setAttendantFirstName(e.target.value)} />
+                      <input placeholder='Height' style={text} type='text' onChange={(e) => setAttendantHeight(e.target.value)} />
                     </div>
                   </div>
 
@@ -613,16 +740,27 @@ function Onboard() {
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
                       <input placeholder='Passport Number' style={text} type='text' onChange={(e) => setAttendantPassportNumber(e.target.value)} />
-                      <input placeholder='Driving License ID' style={text} type='text' />
-                      <input placeholder='Tax Identification ID' style={text} type='text' />
-                      <input placeholder='Employment Status' style={text} type='text' />
+                      <input placeholder='Driving License ID' style={text} type='text' onChange={(e) => setAttendantDrivingLicense(e.target.value)} />
+                      <input placeholder='Tax Identification ID' style={text} type='text' onChange={(e) => setAttendantTaxIdentificationID(e.target.value)} />
+                      <input placeholder='Employment Status' style={text} type='text' onChange={(e) => setAttendantEmploymentStatus(e.target.value)} />
                     </div>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
-                      <input placeholder='Department' style={text} type='text' />
-                      <input placeholder='Position' style={text} type='text' />
-                      <input placeholder='Disability' style={text} type='text' />
-                      <input placeholder='Marital Status' style={text} type='text' />
+                      <select onChange={handleDepartmentChange} value={selectedDepartment} style={Select}>
+                        <option value='' disabled >Select Department</option>
+                        {department.map(departments => (
+                          <option key={departments.id} value={departments.id} >{departments.department_name}</option>
+                        ))}
+                      </select>
+
+                      <select onChange={handleRoleChange} value={selectedRole} style={Select}>
+                        <option value='' disabled>Select Role</option>
+                        {role.map(roles => (
+                          <option key={roles.id} value={roles.id} style={OptionColor}>{roles.role_name}</option>
+                        ))}
+                      </select>
+                      <input placeholder='Disability' style={text} type='text' onChange={(e) => setAttendantDisability(e.target.value)} />
+                      <input placeholder='Marital Status' style={text} type='text' onChange={(e) => setAttendantMaritalStatus(e.target.value)} />
                     </div>
                   </div>
 
@@ -638,18 +776,18 @@ function Onboard() {
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
-                      <input placeholder='First Name' style={text} type='text' onChange={(e) => setFirstName(e.target.value)} />
-                      <input placeholder='Second Name' style={text} type='text' />
-                      <input placeholder='Third Name' style={text} type='text' />
-                      <input placeholder='Phone Number' style={text} type='text' />
-                      <input placeholder='Date Of Birth' style={text} type='text' />
+                      <input placeholder='First Name' style={text} type='text' onChange={(e) => setSpouseFirstName(e.target.value)} />
+                      <input placeholder='Second Name' style={text} type='text' onChange={(e) => setSpouseSecondName(e.target.value)} />
+                      <input placeholder='Third Name' style={text} type='text' onChange={(e) => setSpouseThirdName(e.target.value)} />
+                      <input placeholder='Phone Number' style={text} type='text' onChange={(e) => setSpousePhoneNumber(e.target.value)} />
+                      <input placeholder='Date Of Birth' style={text} type='text' onChange={(e) => setSpouseDateOfBirth(e.target.value)} />
                     </div>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
-                      <input placeholder='Email' style={text} type='text' />
-                      <input placeholder='Occupation' style={text} type='text' />
-                      <input placeholder='Address' style={text} type='text' />
-                      <input placeholder='Number of Children' style={text} type='text' />
+                      <input placeholder='Email' style={text} type='text' onChange={(e) => setSpouseEmail(e.target.value)} />
+                      <input placeholder='Occupation' style={text} type='text' onChange={(e) => setSpouseOccupation(e.target.value)} />
+                      <input placeholder='Address' style={text} type='text' onChange={(e) => setSpouseAddress(e.target.value)} />
+                      <input placeholder='Number of Children' style={text} type='text' onChange={(e) => setSpouseNumberOfChildren(e.target.value)} />
                     </div>
                   </div>
 
@@ -663,19 +801,19 @@ function Onboard() {
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
-                      <input placeholder='Father First Name' style={text} type='text' onChange={(e) => setFirstName(e.target.value)} />
-                      <input placeholder='Father Second Name' style={text} type='text' />
-                      <input placeholder='Father Third Name' style={text} type='text' />
-                      <input placeholder='Father Phone Number' style={text} type='text' />
-                      <input placeholder='Father Date Of Birth' style={text} type='text' />
+                      <input placeholder='Father First Name' style={text} type='text' onChange={(e) => setFatherFirstName(e.target.value)} />
+                      <input placeholder='Father Second Name' style={text} type='text' onChange={(e) => setFatherSecondName(e.target.value)} />
+                      <input placeholder='Father Third Name' style={text} type='text' onChange={(e) => setFatherThirdName(e.target.value)} />
+                      <input placeholder='Father Phone Number' style={text} type='text' onChange={(e) => setFatherPhoneNumber(e.target.value)} />
+                      <input placeholder='Father Date Of Birth' style={text} type='text' onChange={(e) => setFatherDateOfBirth(e.target.value)} />
                     </div>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
-                      <input placeholder='Mother First Name' style={text} type='text' onChange={(e) => setFirstName(e.target.value)} />
-                      <input placeholder='Mother Second Name' style={text} type='text' />
-                      <input placeholder='Mother Third Name' style={text} type='text' />
-                      <input placeholder='Mother Phone Number' style={text} type='text' />
-                      <input placeholder='Mother Date Of Birth' style={text} type='text' />
+                      <input placeholder='Mother First Name' style={text} type='text' onChange={(e) => setMotherFirstName(e.target.value)} />
+                      <input placeholder='Mother Second Name' style={text} type='text' onChange={(e) => setMotherSecondName(e.target.value)} />
+                      <input placeholder='Mother Third Name' style={text} type='text' onChange={(e) => setMotherThirdName(e.target.value)} />
+                      <input placeholder='Mother Phone Number' style={text} type='text' onChange={(e) => setMotherPhoneNumber(e.target.value)} />
+                      <input placeholder='Mother Date Of Birth' style={text} type='text' onChange={(e) => setMotherDateOfBirth(e.target.value)} />
                     </div>
                   </div>
 
@@ -690,11 +828,11 @@ function Onboard() {
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
-                      <input placeholder='First Name' style={text} type='text' onChange={(e) => setFirstName(e.target.value)} />
-                      <input placeholder='Second Name' style={text} type='text' />
-                      <input placeholder='Third Name' style={text} type='text' />
-                      <input placeholder='Phone Number' style={text} type='text' />
-                      <input placeholder='Email' style={text} type='text' />
+                      <input placeholder='First Name' style={text} type='text' onChange={(e) => setEmergencyFirstName(e.target.value)} />
+                      <input placeholder='Second Name' style={text} type='text' onChange={(e) => setEmergencySecondName(e.target.value)} />
+                      <input placeholder='Third Name' style={text} type='text' onChange={(e) => setEmergencyThirdName(e.target.value)} />
+                      <input placeholder='Phone Number' style={text} type='text' onChange={(e) => setEmergencyPhoneNumber(e.target.value)} />
+                      <input placeholder='Email' style={text} type='text' onChange={(e) => setEmergencyEmail(e.target.value)} />
                     </div>
 
                   </div>
@@ -710,26 +848,26 @@ function Onboard() {
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
-                      <input placeholder='Academic Qualification' style={text} type='text' onChange={(e) => setFirstName(e.target.value)} />
-                      <input placeholder='Academic Qualification' style={text} type='text' />
-                      <input placeholder='Academic Qualification' style={text} type='text' />
-                      <input placeholder='Academic Qualification' style={text} type='text' />
-                      <input placeholder='Academic Qualification' style={text} type='text' />
+                      <input placeholder='Academic Qualification' style={text} type='text' onChange={(e) => setAcademicQualifications1(e.target.value)} />
+                      <input placeholder='Academic Qualification' style={text} type='text' onChange={(e) => setAcademicQualifications2(e.target.value)} />
+                      <input placeholder='Academic Qualification' style={text} type='text' onChange={(e) => setAcademicQualifications3(e.target.value)} />
+                      <input placeholder='Academic Qualification' style={text} type='text' onChange={(e) => setAcademicQualifications4(e.target.value)} />
+                      <input placeholder='Academic Qualification' style={text} type='text' onChange={(e) => setAcademicQualifications5(e.target.value)} />
                     </div>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '55%', gap: '25px' }}>
-                      <input placeholder='Institution' style={text} type='text' onChange={(e) => setFirstName(e.target.value)} />
-                      <input placeholder='Institution' style={text} type='text' />
-                      <input placeholder='Institution' style={text} type='text' />
-                      <input placeholder='Institution' style={text} type='text' />
-                      <input placeholder='Institution' style={text} type='text' />
+                      <input placeholder='Institution' style={text} type='text' onChange={(e) => setInstitution1(e.target.value)} />
+                      <input placeholder='Institution' style={text} type='text' onChange={(e) => setInstitution2(e.target.value)} />
+                      <input placeholder='Institution' style={text} type='text' onChange={(e) => setInstitution3(e.target.value)} />
+                      <input placeholder='Institution' style={text} type='text' onChange={(e) => setInstitution4(e.target.value)} />
+                      <input placeholder='Institution' style={text} type='text' onChange={(e) => setInstitution5(e.target.value)} />
                     </div>
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
-                      <input placeholder='Date Obtained' style={text} type='text' onChange={(e) => setFirstName(e.target.value)} />
-                      <input placeholder='Date Obtained' style={text} type='text' />
-                      <input placeholder='Date Obtained' style={text} type='text' />
-                      <input placeholder='Date Obtained' style={text} type='text' />
-                      <input placeholder='Date Obtained' style={text} type='text' />
+                      <input placeholder='Date Obtained' style={text} type='text' onChange={(e) => setDateObtained1(e.target.value)} />
+                      <input placeholder='Date Obtained' style={text} type='text' onChange={(e) => setDateObtained2(e.target.value)} />
+                      <input placeholder='Date Obtained' style={text} type='text' onChange={(e) => setDateObtained3(e.target.value)} />
+                      <input placeholder='Date Obtained' style={text} type='text' onChange={(e) => setDateObtained4(e.target.value)} />
+                      <input placeholder='Date Obtained' style={text} type='text' onChange={(e) => setDateObtained5(e.target.value)} />
                     </div>
                   </div>
 
@@ -749,18 +887,18 @@ function Onboard() {
                         if Yes, indicate
                       </p>
 
-                      <input placeholder='Name' style={text} type='text' />
-                      <input placeholder='Relationship' style={text} type='text' />
-                      <input placeholder='Department' style={text} type='text' />
-                      <input placeholder='Branch' style={text} type='text' />
+                      <input placeholder='Name' style={text} type='text' onChange={(e) => setRelativeName(e.target.value)} />
+                      <input placeholder='Relationship' style={text} type='text' onChange={(e) => setRelativeRelationship(e.target.value)} />
+                      <input placeholder='Department' style={text} type='text' onChange={(e) => setRelativeDepartment(e.target.value)} />
+                      <input placeholder='Branch' style={text} type='text' onChange={(e) => setRelativeBranch(e.target.value)} />
                     </div>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
-                      <input placeholder='Latest Organization' style={text} type='text' />
-                      <input placeholder='Job Title' style={text} type='text' />
-                      <input placeholder='From Date' style={text} type='text' />
-                      <input placeholder='Company Name' style={text} type='text' />
-                      <input placeholder='Phone Number' style={text} type='text' />
+                      <input placeholder='Latest Organization' style={text} type='text' onChange={(e) => setRelativeLatestOrganization(e.target.value)} />
+                      <input placeholder='Job Title' style={text} type='text' onChange={(e) => setRelativeJobTitle(e.target.value)} />
+                      <input placeholder='From Date' style={text} type='text' onChange={(e) => setRelativeFromDate(e.target.value)} />
+                      <input placeholder='Company Name' style={text} type='text' onChange={(e) => setRelativeCompanyName(e.target.value)} />
+                      <input placeholder='Phone Number' style={text} type='text' onChange={(e) => setRelativePhoneNumber(e.target.value)} />
                     </div>
                   </div>
 
@@ -805,25 +943,27 @@ function Onboard() {
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
-                      <input placeholder='Full Name' style={text} type='text' value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                      <input placeholder='Address' style={text} type='text' value={address} />
-                      <input placeholder='Contact' style={text} type='text' value={phoneNumber} />
+                      <input placeholder='Full Name' style={text} type='text' value={attendantFirstName} />
+                      <input placeholder='Address' style={text} type='text' value={attendantAddress} />
+                      <input placeholder='Contact' style={text} type='text' value={attendantPhoneNumber} />
                       <input placeholder='Place Of Work' style={text} type='text' />
                     </div>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
-                    <label  className='add-btn'><img src={Add} style={svgStyle} /> <p style={{ color: 'white' }}>Add ID Picture</p>
-                    <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName}/>
-                    </label>
-                    <label  className='add-btn'><img src={Add} style={svgStyle} /> <p style={{ color: 'white' }}>Add CV</p>
-                    <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName}/>
-                    </label>
-                    <label  className='add-btn'><img src={Add} style={svgStyle} /> <p style={{ color: 'white' }}>Other Docs</p>
-                    <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName}/>
-                    </label>
-
+                      <label className='add-btn'><img src={Add} style={svgStyle} /> <p style={{ color: 'white' }}>Add ID Picture</p>
+                        <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName} />
+                      </label>
+                      <label className='add-btn'><img src={Add} style={svgStyle} /> <p style={{ color: 'white' }}>Add CV</p>
+                        <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName} />
+                      </label>
+                      <label className='add-btn'><img src={Add} style={svgStyle} /> <p style={{ color: 'white' }}>Other Docs</p>
+                        <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName} />
+                      </label>
                     </div>
 
+                    <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '70%', gap: '25px' }}>
+                      <button style={{ backgroundColor: 'green', width: '40%', height: '15%', color: 'white' }} onClick={() => onboardFunction()}>Onboard</button>
+                    </div>
                   </div>
 
                 </div>

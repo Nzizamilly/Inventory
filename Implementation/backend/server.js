@@ -2877,6 +2877,146 @@ otherleaves.empID = ?
    });
 });
 
+app.post('/send-attendant', (req, res) => {
+ console.log("Got It:", req.body);
+ const [
+  attendantFirstName,
+  attendantSecondName,
+  attendantThirdName,
+  attendantNationality,
+  attendantEmail,
+  attendantAddress,
+  attendantPhoneNumber,
+  attendantBirthDate,
+  attendantHeight,
+  attendantPassportNumber,
+  attendantDrivingLicense,
+  attendantTaxIdentificationID,
+  attendantEmploymentStatus,
+  selectedDepartment,
+  selectedRole,
+  attendantDisability,
+  attendantMaritalStatus,
+ ] = req.body;
+
+ const sql = `INSERT INTO attendant (
+  first_name, second_name, third_name, nationality, email, address, phone_number, birth_date,
+  height, passport_number, driving_license, tax_identificationID, employment_status, departmenID,
+  roleID, disability, marital_status
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+
+db.query(sql, [
+  attendantFirstName,
+  attendantSecondName,
+  attendantThirdName,
+  attendantNationality,
+  attendantEmail,
+  attendantAddress,
+  attendantPhoneNumber,
+  attendantBirthDate,
+  attendantHeight,
+  attendantPassportNumber,
+  attendantDrivingLicense,
+  attendantTaxIdentificationID,
+  attendantEmploymentStatus,
+  selectedDepartment,
+  selectedRole,
+  attendantDisability,
+  attendantMaritalStatus
+], (error, result) => {
+  result ? console.log("Done!") : console.error("Error: ", error);
+ });
+});
+
+app.post('/send-spouse', (req, res) => {
+  const [ 
+    nextAttendantID,
+    spouseFirstName,
+    spouseSecondName,
+    spouseThirdName,
+    spousePhoneNumber,
+    spouseDateOfBirth,
+    spouseEmail,
+    spouseOccupation,
+    spouseAddress,
+    spouseNumberOfChildren] = req.body;
+
+  const sql = `INSERT INTO (attendantID,	first_name,	second_name,	third_name,	phone_number,	date_of_birth,	email,	occupation,	address,	number_of_children	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )`;
+  db.query(sql, [  nextAttendantID,
+    spouseFirstName,
+    spouseSecondName,
+    spouseThirdName,
+    spousePhoneNumber,
+    spouseDateOfBirth,
+    spouseEmail,
+    spouseOccupation,
+    spouseAddress,
+    spouseNumberOfChildren], (error, result) => {
+      result ? console.log("Done") : console.error("Error", error);
+    });
+});
+
+app.post('/send-family-information', ( req, res) => {
+  const [
+    nextAttendantID,
+    fatherFirstName,
+    fatherSecondName,
+    fatherThirdName,
+    fatherPhoneNumber,
+    fatherDateOfBirth,
+    motherFirstName,
+    motherSecondName,
+    motherThirdName,
+    motherPhoneNumber,
+    motherDateOfBirth] = req.body;
+
+    const sql = `INSERT INTO family_info (attendantID,	father_first_name,	father_second_name,	father_third_name,	father_phone_number,	father_DOB,	mother_first_name,	mother_second_name,	mother_third_name,	mother_phone_number,	mother_DOB) VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, ?,?)`;
+    db.query(sql , [  nextAttendantID,
+      fatherFirstName,
+      fatherSecondName,
+      fatherThirdName,
+      fatherPhoneNumber,
+      fatherDateOfBirth,
+      motherFirstName,
+      motherSecondName,
+      motherThirdName,
+      motherPhoneNumber,
+      motherDateOfBirth], (error, result) => {
+      result ? console.log("Done") : console.error("Error: ", error);
+      });
+});
+
+app.post('/send-emergency-contact', (req, res) => {
+  const [
+    nextAttendantID,
+    emergencyFirstName,
+    emergencySecondName,
+    emergencyThirdName,
+    emergencyPhoneNumber,
+    emergencyEmail,
+  ] = req.body;
+
+  db.query(sql, [ nextAttendantID,
+    emergencyFirstName,
+    emergencySecondName,
+    emergencyThirdName,
+    emergencyPhoneNumber,
+    emergencyEmail,], (error, result) => {
+      result ? console.log("Done") : console.error("Error: ", error);
+    });
+});
+
+app.post('/send-academic', (req, res) => {
+  
+})
+
+app.get('/get-next-attendant-id', (req, res) => {
+  const sql =  `SELECT MAX(id) AS latest_id FROM attendant`;
+  db.query(sql, (error, result) =>{ 
+    result ? res.json(result[0]) : console.error("Error: ", error);
+  });
+});
+
 app.listen(port, () => {
   console.log("Connected to backend");
 });
