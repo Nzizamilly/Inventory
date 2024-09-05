@@ -564,7 +564,7 @@ function Onboard() {
   const [relativeFromDate, setRelativeFromDate] = useState('');
   const [relativeCompanyName, setRelativeCompanyName] = useState('');
   const [relativePhoneNumber, setRelativePhoneNumber] = useState('');
-  const [whyarrestdetaineddeportedanyauthorityabroad, setwhyArrestdetaineddeportedanyauthorityabroad] = useState('')
+    const [whyarrestdetaineddeportedanyauthorityabroad, setwhyArrestdetaineddeportedanyauthorityabroad] = useState('')
   const [anyreasonfordischargefrompreviousposition, setAnyreasonfordischargefrompreviousposition] = useState('');
   const [addressAnyReasonForLeave, setAddressAnyReasonForLeave] = useState('');
 
@@ -653,6 +653,36 @@ function Onboard() {
       academicQualification3,
       academicQualification4,
       academicQualification5,
+      institution1,
+      institution2,
+      institution3,
+      institution4,
+      institution5,
+      dateObtained1,
+      dateObtained2,
+      dateObtained3,
+      dateObtained4,
+      dateObtained5
+    ];
+
+    const relative = [
+      nextAttendantID,
+      relativeName,
+      relativeRelationship,
+      relativeDepartment,
+      relativeBranch,
+      relativeLatestOrganization,
+      relativeJobTitle,
+      relativeFromDate,
+      relativeCompanyName,
+      relativePhoneNumber,
+    ];
+
+    const employmentHistory = [
+      nextAttendantID,
+      whyarrestdetaineddeportedanyauthorityabroad,
+      anyreasonfordischargefrompreviousposition,
+      addressAnyReasonForLeave
     ]
 
     const response = await axios.post(`${url}/send-attendant`, attendant);
@@ -660,6 +690,8 @@ function Onboard() {
     const responseee = await axios.post(`${url}/send-family-information`, familyInformation);
     const responseeee = await axios.post(`${url}/send-emergency-contact`, emergencyContact)
     const responseeeee = await axios.post(`${url}/send-academic`, academic);
+    const responseeeeee = await axios.post(`${url}/send-relative`, relative);
+    const responseeeeeee = await axios.post(`${url}/send-employment-history`, employmentHistory);
   }
   useEffect(() => {
     const func = async () => {
@@ -917,17 +949,17 @@ function Onboard() {
                         if Yes State why
                       </p>
 
-                      <textarea placeholder='Reason' style={text} type='text'></textarea>
+                      <textarea placeholder='Reason' style={text} type='text'  onChange={(e) => setwhyArrestdetaineddeportedanyauthorityabroad(e.target.value)}></textarea>
                       <p>Have you ever been discharged or been forced to resign for misconduct or unsatisfactory service from any position?
                         If yes say why
                       </p>
-                      <textarea placeholder='Reason' style={text} type='text' ></textarea>
+                      <textarea placeholder='Reason' style={text} type='text'   onChange={(e) => setAnyreasonfordischargefrompreviousposition(e.target.value)}></textarea>
 
                     </div>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
                       <p>Address Reason For Leaving</p>
-                      <textarea placeholder='Reason' style={text} type='text' ></textarea>
+                      <textarea placeholder='Reason' style={text} type='text'   onChange={(e) => setAddressAnyReasonForLeave(e.target.value)}></textarea>
 
                     </div>
                   </div>

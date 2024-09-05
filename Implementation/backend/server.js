@@ -2872,64 +2872,64 @@ app.get('/get-other-leaves/:id', (req, res) => {
 otherleaves.empID = ? 
    `;
 
-   db.query(sql, [id], (error, result) => {
+  db.query(sql, [id], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
-   });
+  });
 });
 
 app.post('/send-attendant', (req, res) => {
- console.log("Got It:", req.body);
- const [
-  attendantFirstName,
-  attendantSecondName,
-  attendantThirdName,
-  attendantNationality,
-  attendantEmail,
-  attendantAddress,
-  attendantPhoneNumber,
-  attendantBirthDate,
-  attendantHeight,
-  attendantPassportNumber,
-  attendantDrivingLicense,
-  attendantTaxIdentificationID,
-  attendantEmploymentStatus,
-  selectedDepartment,
-  selectedRole,
-  attendantDisability,
-  attendantMaritalStatus,
- ] = req.body;
+  console.log("Got It:", req.body);
+  const [
+    attendantFirstName,
+    attendantSecondName,
+    attendantThirdName,
+    attendantNationality,
+    attendantEmail,
+    attendantAddress,
+    attendantPhoneNumber,
+    attendantBirthDate,
+    attendantHeight,
+    attendantPassportNumber,
+    attendantDrivingLicense,
+    attendantTaxIdentificationID,
+    attendantEmploymentStatus,
+    selectedDepartment,
+    selectedRole,
+    attendantDisability,
+    attendantMaritalStatus,
+  ] = req.body;
 
- const sql = `INSERT INTO attendant (
+  const sql = `INSERT INTO attendant (
   first_name, second_name, third_name, nationality, email, address, phone_number, birth_date,
   height, passport_number, driving_license, tax_identificationID, employment_status, departmenID,
   roleID, disability, marital_status
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-db.query(sql, [
-  attendantFirstName,
-  attendantSecondName,
-  attendantThirdName,
-  attendantNationality,
-  attendantEmail,
-  attendantAddress,
-  attendantPhoneNumber,
-  attendantBirthDate,
-  attendantHeight,
-  attendantPassportNumber,
-  attendantDrivingLicense,
-  attendantTaxIdentificationID,
-  attendantEmploymentStatus,
-  selectedDepartment,
-  selectedRole,
-  attendantDisability,
-  attendantMaritalStatus
-], (error, result) => {
-  result ? console.log("Done!") : console.error("Error: ", error);
- });
+  db.query(sql, [
+    attendantFirstName,
+    attendantSecondName,
+    attendantThirdName,
+    attendantNationality,
+    attendantEmail,
+    attendantAddress,
+    attendantPhoneNumber,
+    attendantBirthDate,
+    attendantHeight,
+    attendantPassportNumber,
+    attendantDrivingLicense,
+    attendantTaxIdentificationID,
+    attendantEmploymentStatus,
+    selectedDepartment,
+    selectedRole,
+    attendantDisability,
+    attendantMaritalStatus
+  ], (error, result) => {
+    result ? console.log("Done!") : console.error("Error In Attendant", error);
+  });
 });
 
 app.post('/send-spouse', (req, res) => {
-  const [ 
+  const [
     nextAttendantID,
     spouseFirstName,
     spouseSecondName,
@@ -2941,8 +2941,9 @@ app.post('/send-spouse', (req, res) => {
     spouseAddress,
     spouseNumberOfChildren] = req.body;
 
-  const sql = `INSERT INTO (attendantID,	first_name,	second_name,	third_name,	phone_number,	date_of_birth,	email,	occupation,	address,	number_of_children	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )`;
-  db.query(sql, [  nextAttendantID,
+  const sql = `INSERT INTO (attendantID,	first_name,	second_name,	third_name,	phone_number,	date_of_birth,	email,	occupation,	address,	number_of_children	)
+   VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )`;
+  db.query(sql, [nextAttendantID,
     spouseFirstName,
     spouseSecondName,
     spouseThirdName,
@@ -2952,11 +2953,11 @@ app.post('/send-spouse', (req, res) => {
     spouseOccupation,
     spouseAddress,
     spouseNumberOfChildren], (error, result) => {
-      result ? console.log("Done") : console.error("Error", error);
+      result ? console.log("Done") : console.error("Error in spo", error);
     });
 });
 
-app.post('/send-family-information', ( req, res) => {
+app.post('/send-family-information', (req, res) => {
   const [
     nextAttendantID,
     fatherFirstName,
@@ -2970,20 +2971,21 @@ app.post('/send-family-information', ( req, res) => {
     motherPhoneNumber,
     motherDateOfBirth] = req.body;
 
-    const sql = `INSERT INTO family_info (attendantID,	father_first_name,	father_second_name,	father_third_name,	father_phone_number,	father_DOB,	mother_first_name,	mother_second_name,	mother_third_name,	mother_phone_number,	mother_DOB) VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, ?,?)`;
-    db.query(sql , [  nextAttendantID,
-      fatherFirstName,
-      fatherSecondName,
-      fatherThirdName,
-      fatherPhoneNumber,
-      fatherDateOfBirth,
-      motherFirstName,
-      motherSecondName,
-      motherThirdName,
-      motherPhoneNumber,
-      motherDateOfBirth], (error, result) => {
+  const sql = `INSERT INTO family_info (attendantID,	father_first_name,	father_second_name,	father_third_name,	father_phone_number,	father_DOB,	mother_first_name,	mother_second_name,	mother_third_name,	mother_phone_number,	mother_DOB) 
+  VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, ?,?)`;
+  db.query(sql, [nextAttendantID,
+    fatherFirstName,
+    fatherSecondName,
+    fatherThirdName,
+    fatherPhoneNumber,
+    fatherDateOfBirth,
+    motherFirstName,
+    motherSecondName,
+    motherThirdName,
+    motherPhoneNumber,
+    motherDateOfBirth], (error, result) => {
       result ? console.log("Done") : console.error("Error: ", error);
-      });
+    });
 });
 
 app.post('/send-emergency-contact', (req, res) => {
@@ -2996,7 +2998,10 @@ app.post('/send-emergency-contact', (req, res) => {
     emergencyEmail,
   ] = req.body;
 
-  db.query(sql, [ nextAttendantID,
+  const sql = `INSERT INTO `
+
+  db.query(sql, [
+    nextAttendantID,
     emergencyFirstName,
     emergencySecondName,
     emergencyThirdName,
@@ -3007,12 +3012,101 @@ app.post('/send-emergency-contact', (req, res) => {
 });
 
 app.post('/send-academic', (req, res) => {
-  
-})
+  const [
+    nextAttendantID,
+    institution1,
+    institution2,
+    institution3,
+    institution4,
+    institution5,
+    dateObtained1,
+    dateObtained2,
+    dateObtained3,
+    dateObtained4,
+    dateObtained5,
+    academicQualification1,
+    academicQualification2,
+    academicQualification3,
+    academicQualification4,
+    academicQualification5,
+  ] = req.body;
+  const sql = `INSERT INTO academicprofessionq(attendantID,	institution1,	institution2,	institution3,	institution4,	institution5,	date_obtained1,	date_obtained2,	date_obtained3,	date_obtained4,	date_obtained5,	academic_qualification1,	academic_qualification2,	academic_qualification3,	academic_qualification4, academic_qualification5	)
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )`;
+
+  db.query(sql, [
+    nextAttendantID,
+    institution1,
+    institution2,
+    institution3,
+    institution4,
+    institution5,
+    dateObtained1,
+    dateObtained2,
+    dateObtained3,
+    dateObtained4,
+    dateObtained5,
+    academicQualification1,
+    academicQualification2,
+    academicQualification3,
+    academicQualification4,
+    academicQualification5,], (error, result) => {
+      result ? console.log("Done") : console.error("Error: ", error);
+    });
+});
+
+app.post('/send-relative', (req, res) => {
+  const [
+    nextAttendantID,
+    relativeName,
+    relativeRelationship,
+    relativeDepartment,
+    relativeBranch,
+    relativeLatestOrganization,
+    relativeJobTitle,
+    relativeFromDate,
+    relativeCompanyName,
+    relativePhoneNumber,
+  ] = req.body;
+
+  const sql = `INSERT INTO relativeattendant(attendantID,	relativeName,	ralativeRelationship,	relativeDepartment,	relativeBranch,	relativeLatestOrganization,	relativeJobTitle,	relativeFromDate,	relaiveCompanyName,	relativePhoneNumber	)
+  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+  db.query(sql, [
+    nextAttendantID,
+    relativeName,
+    relativeRelationship,
+    relativeDepartment,
+    relativeBranch,
+    relativeLatestOrganization,
+    relativeJobTitle,
+    relativeFromDate,
+    relativeCompanyName,
+    relativePhoneNumber,], (error, result) => {
+      result ? console.log("Done") : console.error("Error: ", error);
+    });
+});
+
+app.post('/send-employment-history', (req, res) => {
+  const [
+    nextAttendantID,
+    whyarrestdetaineddeportedanyauthorityabroad,
+    anyreasonfordischargefrompreviousposition,
+    addressAnyReasonForLeave
+  ] = req.body;
+  const sql = `INSERT INTO employmenthistory (attendantID	,whyarrest/detained/deported/anyauthorityabroad	,anyreasonfordischargefrompreviousposition	,addressanyreasonforleaving)
+  VALUES(?, ?, ?, ?)
+  `;
+  db.query(sql, [ nextAttendantID,
+    whyarrestdetaineddeportedanyauthorityabroad,
+    anyreasonfordischargefrompreviousposition,
+    addressAnyReasonForLeave], (error, result) => {
+      result ? console.log("Done") : console.error("Error");
+    });
+});
 
 app.get('/get-next-attendant-id', (req, res) => {
-  const sql =  `SELECT MAX(id) AS latest_id FROM attendant`;
-  db.query(sql, (error, result) =>{ 
+  const sql = `SELECT MAX(id) AS latest_id FROM attendant`;
+  db.query(sql, (error, result) => {
     result ? res.json(result[0]) : console.error("Error: ", error);
   });
 });
