@@ -2878,7 +2878,7 @@ otherleaves.empID = ?
 });
 
 app.post('/send-attendant', (req, res) => {
-  console.log("Got It:", req.body);
+  // console.log("Got It from Params:", req.body);
   const [
     attendantFirstName,
     attendantSecondName,
@@ -2924,11 +2924,12 @@ app.post('/send-attendant', (req, res) => {
     attendantDisability,
     attendantMaritalStatus
   ], (error, result) => {
-    result ? console.log("Done!") : console.error("Error In Attendant", error);
+    result ? console.log("Done!") : console.error("Error In Attendant");
   });
 });
 
 app.post('/send-spouse', (req, res) => {
+
   const [
     nextAttendantID,
     spouseFirstName,
@@ -2939,11 +2940,13 @@ app.post('/send-spouse', (req, res) => {
     spouseEmail,
     spouseOccupation,
     spouseAddress,
-    spouseNumberOfChildren] = req.body;
+    spouseNumberOfChildren
+  ] = req.body;
 
-  const sql = `INSERT INTO (attendantID,	first_name,	second_name,	third_name,	phone_number,	date_of_birth,	email,	occupation,	address,	number_of_children	)
+  const sql = `INSERT INTO spouse(attendantID,	first_name,	second_name,	third_name,	phone_number,	date_of_birth,	email,	occupation,	address,	number_of_children	)
    VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )`;
-  db.query(sql, [nextAttendantID,
+  db.query(sql, [
+    nextAttendantID,
     spouseFirstName,
     spouseSecondName,
     spouseThirdName,
@@ -2952,8 +2955,9 @@ app.post('/send-spouse', (req, res) => {
     spouseEmail,
     spouseOccupation,
     spouseAddress,
-    spouseNumberOfChildren], (error, result) => {
-      result ? console.log("Done") : console.error("Error in spo", error);
+    spouseNumberOfChildren
+  ], (error, result) => {
+      result ? console.log("Done with spouse") : console.error("Error in spouse", error);
     });
 });
 
@@ -2984,7 +2988,7 @@ app.post('/send-family-information', (req, res) => {
     motherThirdName,
     motherPhoneNumber,
     motherDateOfBirth], (error, result) => {
-      result ? console.log("Done") : console.error("Error: ", error);
+      result ? console.log("Done with family") : console.error("Error in family");
     });
 });
 
@@ -2998,7 +3002,9 @@ app.post('/send-emergency-contact', (req, res) => {
     emergencyEmail,
   ] = req.body;
 
-  const sql = `INSERT INTO `
+  const sql = `INSERT INTO emergency_contact (attendantID,	first_name,	second_name,	third_name,	phone_number,	email	) 
+  VALUES (?, ?, ?, ?, ?, ?)
+  `
 
   db.query(sql, [
     nextAttendantID,
@@ -3007,7 +3013,7 @@ app.post('/send-emergency-contact', (req, res) => {
     emergencyThirdName,
     emergencyPhoneNumber,
     emergencyEmail,], (error, result) => {
-      result ? console.log("Done") : console.error("Error: ", error);
+      result ? console.log("Done with emergencyContact") : console.error("Error with emergency ", error);
     });
 });
 
@@ -3030,7 +3036,7 @@ app.post('/send-academic', (req, res) => {
     academicQualification4,
     academicQualification5,
   ] = req.body;
-  const sql = `INSERT INTO academicprofessionq(attendantID,	institution1,	institution2,	institution3,	institution4,	institution5,	date_obtained1,	date_obtained2,	date_obtained3,	date_obtained4,	date_obtained5,	academic_qualification1,	academic_qualification2,	academic_qualification3,	academic_qualification4, academic_qualification5	)
+  const sql = `INSERT INTO academicprofessionq (attendantID,	institution1,	institution2,	institution3,	institution4,	institution5,	date_obtained1,	date_obtained2,	date_obtained3,	date_obtained4,	date_obtained5,	academic_qualification1,	academic_qualification2,	academic_qualification3,	academic_qualification4, academic_qualification5	)
    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )`;
 
   db.query(sql, [
@@ -3050,7 +3056,7 @@ app.post('/send-academic', (req, res) => {
     academicQualification3,
     academicQualification4,
     academicQualification5,], (error, result) => {
-      result ? console.log("Done") : console.error("Error: ", error);
+      result ? console.log("Done academic") : console.error("Error in academic", error);
     });
 });
 
@@ -3068,7 +3074,7 @@ app.post('/send-relative', (req, res) => {
     relativePhoneNumber,
   ] = req.body;
 
-  const sql = `INSERT INTO relativeattendant(attendantID,	relativeName,	ralativeRelationship,	relativeDepartment,	relativeBranch,	relativeLatestOrganization,	relativeJobTitle,	relativeFromDate,	relaiveCompanyName,	relativePhoneNumber	)
+  const sql = `INSERT INTO relativeattenadant(attendantID,	relativeName,	ralativeRelationship,	relativeDepartment,	relativeBranch,	relativeLatestOrganization,	relativeJobTitle,	relativeFromDate,	relativeCompanyName,	relativePhoneNumber	)
   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
   db.query(sql, [
@@ -3082,7 +3088,7 @@ app.post('/send-relative', (req, res) => {
     relativeFromDate,
     relativeCompanyName,
     relativePhoneNumber,], (error, result) => {
-      result ? console.log("Done") : console.error("Error: ", error);
+      result ? console.log("Done with relative") : console.error("Error in relative", error);
     });
 });
 
@@ -3093,21 +3099,21 @@ app.post('/send-employment-history', (req, res) => {
     anyreasonfordischargefrompreviousposition,
     addressAnyReasonForLeave
   ] = req.body;
-  const sql = `INSERT INTO employmenthistory (attendantID	,whyarrest/detained/deported/anyauthorityabroad	,anyreasonfordischargefrompreviousposition	,addressanyreasonforleaving)
+  const sql = `INSERT INTO employmenthistory (attendantID	,why_arrest_detained_deported_anyauthorityabroad	,anyreasonfordischargefrompreviousposition	,addressanyreasonforleaving)
   VALUES(?, ?, ?, ?)
   `;
   db.query(sql, [ nextAttendantID,
     whyarrestdetaineddeportedanyauthorityabroad,
     anyreasonfordischargefrompreviousposition,
     addressAnyReasonForLeave], (error, result) => {
-      result ? console.log("Done") : console.error("Error");
+      result ? console.log("Done with employment") : console.error("Error employment history", error);
     });
 });
 
 app.get('/get-next-attendant-id', (req, res) => {
   const sql = `SELECT MAX(id) AS latest_id FROM attendant`;
   db.query(sql, (error, result) => {
-    result ? res.json(result[0]) : console.error("Error: ", error);
+    result ? res.json(result[0]) : console.error("Error:", error);
   });
 });
 

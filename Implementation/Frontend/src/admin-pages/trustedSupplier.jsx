@@ -234,7 +234,6 @@ function TrustedSuppliers() {
         const IdForQuotation = latestId + 1;
         // console.log("ID FOR PDF: ", IdForQuotation);
         const imageRef = ref(storage, `SuppliersPDF/${imageUpload.name, IdForQuotation}`);
-        const imagePDFURL = ref(storage, 'Centrikalogo/');
         uploadBytes(imageRef, imageUpload).then(() => {
         });
 
@@ -367,21 +366,7 @@ function TrustedSuppliers() {
         };
     }, [dates]);
 
-    const countdownString = `${countDown.months} months and ${countDown.days} days`;
-    const lowOnTheDays = '0 months and 29 days';
-
-    // useEffect(() => {
-
-    //     const warningMessage = () => {
-
-    //         if (countdownString === lowOnTheDays) {
-    //             io.emit("SendWarning",)
-    //         };
-    //     };
-
-    //     warningMessage();
-
-    // }, []);
+    const countdownString = `${countDown.months} months and ${countDown.days} days`
 
   const docs = [
     {
@@ -455,13 +440,7 @@ function TrustedSuppliers() {
                 </Modal>
 
                 <Modal isOpen={isPDFViewOpen} onRequestClose={closePDFViewer} style={modal3}>
-                    {/* <div style={{ width: "100%", height: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        {imageUrl && (
-                            <Worker workerUrl='https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js'>
-                                <Viewer fileUrl={imageUrl}></Viewer>
-                            </Worker>
-                        )}
-                    </div> */}
+                   
                  {imageUrl && <DocViewer documents={docs} pluginRenderers={DocViewerRenderers} />}
                  
                 </Modal>

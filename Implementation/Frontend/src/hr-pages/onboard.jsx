@@ -410,11 +410,6 @@ function Onboard() {
 
   const [createModal, setCreateModal] = useState(false);
 
-  const openCreateModal = () => {
-    setCreateModal(true);
-    handleMake();
-  };
-
   const closeCreateModal = () => {
     setCreateModal(false);
   };
@@ -564,7 +559,7 @@ function Onboard() {
   const [relativeFromDate, setRelativeFromDate] = useState('');
   const [relativeCompanyName, setRelativeCompanyName] = useState('');
   const [relativePhoneNumber, setRelativePhoneNumber] = useState('');
-    const [whyarrestdetaineddeportedanyauthorityabroad, setwhyArrestdetaineddeportedanyauthorityabroad] = useState('')
+  const [whyarrestdetaineddeportedanyauthorityabroad, setwhyArrestdetaineddeportedanyauthorityabroad] = useState('')
   const [anyreasonfordischargefrompreviousposition, setAnyreasonfordischargefrompreviousposition] = useState('');
   const [addressAnyReasonForLeave, setAddressAnyReasonForLeave] = useState('');
 
@@ -586,7 +581,47 @@ function Onboard() {
   };
 
   const [nextAttendantID, setNextAttendantID] = useState('');
+  const [CVUpload, setCVUpload] = useState(null);
+  const [CVFile, setCVFile] = useState('');
+  const [CVUrl, setCVUrl] = useState('');
 
+
+  const [otherFilesUpload, setOtherFilesUpload] = useState(null);
+  const [otherFilesFile, setOtherFilesFile] = useState('');
+  const [otherFilesUrl, setOtherFilesUrl] = useState('');
+
+  const updateFileNameCV = (event) => {
+    const selectedCVFile = event.target.files[0];
+    setCVUpload(selectedCVFile);
+
+    const fileName = selectedCVFile ? selectedCVFile.name : 'No file Chosen';
+    setCVFile(fileName);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCVUrl(reader.result);
+    };
+    if (selectedCVFile) {
+      reader.readAsDataURL(selectedCVFile)
+    }
+  };
+
+  const updateFileNameOtherDocs = (event) => {
+    const selectedOtherDocs = event.target.files[0];
+    setOtherFilesUpload(selectedOtherDocs);
+
+    const fileName = selectedOtherDocs ? selectedOtherDocs.name : 'No file Chosen';
+    setOtherFilesFile(fileName);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setOtherFilesUrl(reader.result);
+    };
+
+    if (selectedOtherDocs) {
+      reader.readAsDataURL(selectedOtherDocs);
+    }
+
+
+  };
 
   const onboardFunction = async () => {
 
@@ -665,6 +700,7 @@ function Onboard() {
       dateObtained5
     ];
 
+
     const relative = [
       nextAttendantID,
       relativeName,
@@ -685,14 +721,56 @@ function Onboard() {
       addressAnyReasonForLeave
     ]
 
-    const response = await axios.post(`${url}/send-attendant`, attendant);
-    const responsee = await axios.post(`${url}/send-spouse`, spouse);
-    const responseee = await axios.post(`${url}/send-family-information`, familyInformation);
-    const responseeee = await axios.post(`${url}/send-emergency-contact`, emergencyContact)
-    const responseeeee = await axios.post(`${url}/send-academic`, academic);
-    const responseeeeee = await axios.post(`${url}/send-relative`, relative);
-    const responseeeeeee = await axios.post(`${url}/send-employment-history`, employmentHistory);
-  }
+
+    const sendAttendant = axios.post(`${url}/send-attendant`, attendant);
+    const sendSpouse = axios.post(`${url}/send-spouse`, spouse);
+    const sendFamilyInfo = axios.post(`${url}/send-family-information`, familyInformation);
+    const sendAcademic = axios.post(`${url}/send-academic`, academic);
+    const sendRelative = axios.post(`${url}/send-relative`, relative);
+    const sendEmploymentHistory = axios.post(`${url}/send-employment-history`, employmentHistory);
+    const sendEmergencyContact = axios.post(`${url}/send-emergency-contact`, emergencyContact);
+
+    Promise.all([sendAttendant, sendSpouse, sendFamilyInfo, sendAcademic, sendRelative, sendEmploymentHistory, sendEmergencyContact])
+      .then(response => {
+        console.log(response);
+      })
+      .catch(err => {
+        console.error("Error: ", err);
+      });
+
+    console.log("PDF CV Got in function:", CVUpload);
+
+
+    if (imageUpload == null) return;
+    const IdForQuotation = nextAttendantID;
+    console.log("Profile Picture Got: ", IdForQuotation);
+    const imageRef = ref(storage, `attendantProfilePicture/${imageUpload.name, IdForQuotation}`);
+    uploadBytes(imageRef, imageUpload).then(() => {  });
+
+    if (CVUpload == null) return;
+    console.log("PDF CV Got", nextAttendantID);
+    const CVRef = ref(storage, `attendantCV/${CVUpload.name, nextAttendantID}`);
+    uploadBytes(CVRef, CVUpload).then(() => { });
+
+    if (otherFilesUpload == null) return;
+    console.log("Other Files Got", otherFilesUpload);
+    const otherFilesRef = ref(storage, `otherDocsAttendant/${otherFilesUpload.name, nextAttendantID}`)
+    uploadBytes(otherFilesRef, otherFilesUpload).then(() => { })
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   useEffect(() => {
     const func = async () => {
       try {
@@ -739,7 +817,7 @@ function Onboard() {
             >
               {tab === 1 &&
                 <div style={holder}>
-                  <div style={{ width: '100%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
                     <h2>Personal Information</h2>
                   </div>
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
@@ -765,7 +843,7 @@ function Onboard() {
               }
               {tab === 2 &&
                 <div style={holder}>
-                  <div style={{ width: '100%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
                     <h2>Personal Information</h2>
                   </div>
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
@@ -802,7 +880,7 @@ function Onboard() {
 
               {tab === 3 &&
                 <div style={holder}>
-                  <div style={{ width: '100%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
                     <h2>Spouse Information</h2>
                   </div>
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
@@ -827,7 +905,7 @@ function Onboard() {
               }
               {tab === 4 &&
                 <div style={holder}>
-                  <div style={{ width: '100%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
                     <h2>Family Information</h2>
                   </div>
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
@@ -874,7 +952,7 @@ function Onboard() {
 
               {tab === 6 &&
                 <div style={holder}>
-                  <div style={{ width: '100%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
                     <h2>Academic And Professional Qualifications</h2>
                   </div>
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
@@ -908,7 +986,7 @@ function Onboard() {
 
               {tab === 7 &&
                 <div style={holder}>
-                  <div style={{ width: '100%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
                     <h2>Employment History</h2>
                   </div>
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
@@ -938,7 +1016,7 @@ function Onboard() {
               }
               {tab === 8 &&
                 <div style={holder}>
-                  <div style={{ width: '100%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
                     <h2>Employment History</h2>
                   </div>
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline', gap: '20px' }}>
@@ -949,17 +1027,17 @@ function Onboard() {
                         if Yes State why
                       </p>
 
-                      <textarea placeholder='Reason' style={text} type='text'  onChange={(e) => setwhyArrestdetaineddeportedanyauthorityabroad(e.target.value)}></textarea>
+                      <textarea placeholder='Reason' style={text} type='text' onChange={(e) => setwhyArrestdetaineddeportedanyauthorityabroad(e.target.value)}></textarea>
                       <p>Have you ever been discharged or been forced to resign for misconduct or unsatisfactory service from any position?
                         If yes say why
                       </p>
-                      <textarea placeholder='Reason' style={text} type='text'   onChange={(e) => setAnyreasonfordischargefrompreviousposition(e.target.value)}></textarea>
+                      <textarea placeholder='Reason' style={text} type='text' onChange={(e) => setAnyreasonfordischargefrompreviousposition(e.target.value)}></textarea>
 
                     </div>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
                       <p>Address Reason For Leaving</p>
-                      <textarea placeholder='Reason' style={text} type='text'   onChange={(e) => setAddressAnyReasonForLeave(e.target.value)}></textarea>
+                      <textarea placeholder='Reason' style={text} type='text' onChange={(e) => setAddressAnyReasonForLeave(e.target.value)}></textarea>
 
                     </div>
                   </div>
@@ -969,7 +1047,7 @@ function Onboard() {
 
               {tab === 9 &&
                 <div style={holder}>
-                  <div style={{ width: '100%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
                     <h2>Final Statement</h2>
                   </div>
                   <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
@@ -985,11 +1063,11 @@ function Onboard() {
                       <label className='add-btn'><img src={Add} style={svgStyle} /> <p style={{ color: 'white' }}>Add ID Picture</p>
                         <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName} />
                       </label>
-                      <label className='add-btn'><img src={Add} style={svgStyle} /> <p style={{ color: 'white' }}>Add CV</p>
-                        <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName} />
+                      <label className='add-btn'><img src={Add} style={svgStyle} /> <p style={{ color: 'white' }}>Add CV 'PDF'</p>
+                        <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileNameCV} />
                       </label>
                       <label className='add-btn'><img src={Add} style={svgStyle} /> <p style={{ color: 'white' }}>Other Docs</p>
-                        <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileName} />
+                        <input style={{ display: 'none' }} id="file" type="file" accept="image/*" onChange={updateFileNameOtherDocs} />
                       </label>
                     </div>
 
