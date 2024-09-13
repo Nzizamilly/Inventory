@@ -9,6 +9,7 @@ const moment = require('moment');
 const nodemailer = require('nodemailer');
 const pdf = require('html-pdf');
 const { EMAIL, PASSWORD } = require('./env.js');
+const util = require('util'); 
 
 const port = process.env.PORT || 5500;
 
@@ -44,6 +45,8 @@ const db = mysql.createPool({
   password: "",
   database: "inventorynew",
 });
+
+const query = util.promisify(db.query).bind(db);
 
 db.getConnection((err, connection) => {
   if (err) {
@@ -1283,6 +1286,7 @@ app.put('/update-serial-status/:IDTaken/:status/:taker', async (req, res) => {
   }
 });
 
+
 app.get('/monthly-report/:StartDate/:EndDate/:id', (req, res) => {
   const start = req.params.StartDate;
   const end = req.params.EndDate;
@@ -1360,7 +1364,7 @@ app.post('/add-role/:deptID', async (req, res) => {
     const gotDepartmentName = req.params.deptID;
     console.log("DeptID", gotDepartmentName);
     const q = "INSERT INTO role(role_name, departmentID, status) VALUES(?, ?, ?)";
-    const values = [req.body.role_name, gotDepartmentName, req.body.status];
+    const values = [req.body.roleName, gotDepartmentName, req.body.status];
     db.query(q, values, (err, data) => {
       if (err) {
         console.error("Error", err);
@@ -2957,8 +2961,8 @@ app.post('/send-spouse', (req, res) => {
     spouseAddress,
     spouseNumberOfChildren
   ], (error, result) => {
-      result ? console.log("Done with spouse") : console.error("Error in spouse", error);
-    });
+    result ? console.log("Done with spouse") : console.error("Error in spouse", error);
+  });
 });
 
 app.post('/send-family-information', (req, res) => {
@@ -2992,7 +2996,7 @@ app.post('/send-family-information', (req, res) => {
     });
 });
 
-app.post('/send-emergency-contact', (req, res) => {
+app.post('/send-emergency-contact/:emergencyContact', (req, res) => {
   const [
     nextAttendantID,
     emergencyFirstName,
@@ -3000,7 +3004,9 @@ app.post('/send-emergency-contact', (req, res) => {
     emergencyThirdName,
     emergencyPhoneNumber,
     emergencyEmail,
-  ] = req.body;
+  ] = req.params.emergencyContact;
+
+  console.log("Received: ", req.body);
 
   const sql = `INSERT INTO emergency_contact (attendantID,	first_name,	second_name,	third_name,	phone_number,	email	) 
   VALUES (?, ?, ?, ?, ?, ?)
@@ -3102,7 +3108,7 @@ app.post('/send-employment-history', (req, res) => {
   const sql = `INSERT INTO employmenthistory (attendantID	,why_arrest_detained_deported_anyauthorityabroad	,anyreasonfordischargefrompreviousposition	,addressanyreasonforleaving)
   VALUES(?, ?, ?, ?)
   `;
-  db.query(sql, [ nextAttendantID,
+  db.query(sql, [nextAttendantID,
     whyarrestdetaineddeportedanyauthorityabroad,
     anyreasonfordischargefrompreviousposition,
     addressAnyReasonForLeave], (error, result) => {
@@ -3115,6 +3121,168 @@ app.get('/get-next-attendant-id', (req, res) => {
   db.query(sql, (error, result) => {
     result ? res.json(result[0]) : console.error("Error:", error);
   });
+});
+
+app.get('/get-attendants', (req, res) => {
+  const sql = `SELECT attendant.*,
+       role.role_name,
+       department.department_name
+FROM attendant
+JOIN role ON attendant.roleID = role.id
+JOIN department ON attendant.departmenID = department.id;
+`;
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error In fetching all attendants");
+  })
+});
+
+app.get('/attendee-once/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = `SELECT 
+    -- Fields from the attendant table
+    a.id,
+    a.first_name,
+    a.second_name,
+    a.third_name,
+    a.nationality,
+    a.email,
+    a.address,
+    a.phone_number,
+    a.birth_date,
+    a.height,
+    a.passport_number,
+    a.driving_license,
+    a.tax_identificationID,
+    a.employment_status,
+    d.department_name,  -- Department name from the department table (via departmentID)
+    r.role_name,        -- Role name from the role table (via roleID)
+    a.disability,
+    a.marital_status,
+
+    -- Fields from the spouse table
+    s.first_name AS spouse_first_name,
+    s.second_name AS spouse_second_name,
+    s.third_name AS spouse_third_name,
+    s.phone_number AS spouse_phone_number,
+    s.date_of_birth AS spouse_dob,
+    s.email AS spouse_email,
+    s.occupation AS spouse_occupation,
+    s.address AS spouse_address,
+    s.number_of_children AS spouse_number_of_children,
+
+    -- Fields from the family_info table
+    f.father_first_name,
+    f.father_second_name,
+    f.father_third_name,
+    f.father_phone_number,
+    f.father_DOB,
+    f.mother_first_name,
+    f.mother_second_name,
+    f.mother_third_name,
+    f.mother_phone_number,
+    f.mother_DOB,
+
+    -- Fields from the emergency_contact table
+    e.first_name AS emergency_contact_first_name,
+    e.second_name AS emergency_contact_second_name,
+    e.third_name AS emergency_contact_third_name,
+    e.phone_number AS emergency_contact_phone_number,
+    e.email AS emergency_contact_email,
+
+    -- Fields from the academicprofessionq table
+    ac.institution1,
+    ac.institution2,
+    ac.institution3,
+    ac.institution4,
+    ac.institution5,
+    ac.date_obtained1,
+    ac.date_obtained2,
+    ac.date_obtained3,
+    ac.date_obtained4,
+    ac.date_obtained5,
+    ac.academic_qualification1,
+    ac.academic_qualification2,
+    ac.academic_qualification3,
+    ac.academic_qualification4,
+    ac.academic_qualification5,
+
+    -- Fields from the relativeattendant table
+    rel.relativeName,	
+    rel.ralativeRelationship,	
+    rel.relativeDepartment,	
+    rel.relativeBranch,	
+    rel.relativeLatestOrganization,	
+    rel.relativeJobTitle,	
+    rel.relativeFromDate,	
+    rel.relativeCompanyName,	
+    rel.relativePhoneNumber,
+
+    -- Fields from the employmenthistory table
+    eh.why_arrest_detained_deported_anyauthorityabroad,
+    eh.anyreasonfordischargefrompreviousposition,	
+    eh.addressanyreasonforleaving
+
+-- Primary table: attendant
+FROM attendant a
+
+-- LEFT JOIN with spouse table using attendantID
+LEFT JOIN spouse s ON a.id = s.attendantID
+
+-- LEFT JOIN with family_info table using attendantID
+LEFT JOIN family_info f ON a.id = f.attendantID
+
+-- LEFT JOIN with emergency_contact table using attendantID
+LEFT JOIN emergency_contact e ON a.id = e.attendantID
+
+-- LEFT JOIN with academicprofessionq table using attendantID
+LEFT JOIN academicprofessionq ac ON a.id = ac.attendantID
+
+-- LEFT JOIN with relativeattendant table using attendantID
+LEFT JOIN relativeattenadant rel ON a.id = rel.attendantID
+
+-- LEFT JOIN with employmenthistory table using attendantID
+LEFT JOIN employmenthistory eh ON a.id = eh.attendantID
+
+-- LEFT JOIN with department table to fetch department_name based on departmentID
+LEFT JOIN department d ON a.departmenID = d.id
+
+-- LEFT JOIN with role table to fetch role_name based on roleID
+LEFT JOIN role r ON a.roleID = r.id
+
+-- Filter to fetch data for a specific attendant (with ID = 2)
+WHERE a.id = ?;
+  `;
+  db.query(sql, [id], (error, result) => {
+    result ? res.json(result) : console.error("Error In fetching one attendant");
+  });
+});
+
+app.delete('/delete-entire-attendant/:currentAttendantID', async (req, res) => {
+  const id = req.params.currentAttendantID;
+
+  try {
+    // Start transaction
+    await query('START TRANSACTION');
+
+    await query('DELETE FROM spouse WHERE attendantID = ?', [id]);
+    await query('DELETE FROM family_info WHERE attendantID = ?', [id]);
+    await query('DELETE FROM emergency_contact WHERE attendantID = ?', [id]);
+    await query('DELETE FROM academicprofessionq WHERE attendantID = ?', [id]);
+    await query('DELETE FROM relativeattenadant WHERE attendantID = ?', [id]);
+    await query('DELETE FROM employmenthistory WHERE attendantID = ?', [id]);
+
+    // Finally, delete from the attendant table
+    await query('DELETE FROM attendant WHERE id = ?', [id]);
+
+    // Commit the transaction
+    await query('COMMIT');
+
+    res.status(200).send({ message: 'Attendant and related data deleted successfully.' });
+  } catch (error) {
+  console.error("Error: ", error);
+    await query('ROLLBACK');
+    res.status(500).send({ error: 'Error deleting attendant data', details: error });
+  }
 });
 
 app.listen(port, () => {

@@ -181,7 +181,7 @@ function NavbarMain() {
             <ul className='ul2Admin'>
                 <li className='liAdmin'><Link to={'/account-hr'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li>
 
-                <li className='liAdmin'><Link to={'/onboard'} > <p>Onboard</p></Link></li>
+                <li className='liAdmin'><Link to={'/onboard'} > <p>Employee Personal File</p></Link></li>
                 <li className='liAdmin'><Link to={'/leave-page'} > <p>Leave</p></Link></li>
                 <Select
                     options={option}

@@ -701,6 +701,13 @@ li a:hover {
     background-color: rgb(206, 206, 236);
 }
 
+.attendant{
+   width: 100%;
+   height: 70%;
+   display: flex;
+   flex-direction: inline;
+}
+
 .request-review {
     gap: 4px;
     padding: 8px;

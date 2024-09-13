@@ -9,7 +9,7 @@ import Keys from '../keys';
 
 function Departments_Roles() {
 
-const url = Keys.REACT_APP_BACKEND;
+    const url = Keys.REACT_APP_BACKEND;
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isDepartmentViewOpen, setIsDepartmentViewOpen] = useState(false);
@@ -18,11 +18,8 @@ const url = Keys.REACT_APP_BACKEND;
     const [isAddRoleModalOpen, setIsAddRoleModalOpen] = useState(false);
     const [isRoleViewModalOpen, setIsRoleViewModalOpen] = useState(false);
     const [viewRole, setViewRole] = useState([]);
-    const [role, setRole] = useState({
-        role: '',
-        status: '',
-        status: takenDeptID
-    });
+    const [roleName, setRoleName] = useState('');
+    const [status, setStatus] = useState('');
 
     const [department, setDepartment] = useState({
         department_name: '',
@@ -92,8 +89,8 @@ const url = Keys.REACT_APP_BACKEND;
     }
 
     const openAddRoleModal = (row) => {
-        handleAddRole(row)
-        setTakenDeptID(row)
+        // handleAddRole(row)
+        setTakenDeptID(row.id);
         setIsAddRoleModalOpen(true)
     }
 
@@ -127,13 +124,9 @@ const url = Keys.REACT_APP_BACKEND;
         setDepartment((prev) => ({ ...prev, [event.target.name]: event.target.value }));
     }
 
-    const handleRoleInput = (event) => {
-        setRole((prev) => ({ ...prev, [event.target.name]: event.target.value }));
-    }
-
     const handleViewRole = async (row) => {
         try {
-            const response = await axios.get(`/get-role/${row.id}`);
+            const response = await axios.get(`${url}/get-role/${row.id}`);
             console.log("Rolees", response);
             const result = await response.data;
             setViewRole(result)
@@ -152,12 +145,16 @@ const url = Keys.REACT_APP_BACKEND;
         }
     }
 
-    const handleAddRole = async (row) => {
+    const handleAddRole = async (takenDeptID) => {
         try {
-            const response = await axios.post(`/add-role/${row.id}`, role);
+            const all = {
+                roleName: roleName,
+                status: status
+            }
+            const response = await axios.post(`${url}/add-role/${takenDeptID}`, all);
             console.log("response", response);
             window.alert("Role Added Well");
-            closeAddRoleModal()
+            closeAddRoleModal();
 
         } catch (error) {
             console.error("Error", error)
@@ -212,7 +209,8 @@ const url = Keys.REACT_APP_BACKEND;
             name: 'Status',
             selector: row => row.status
         }
-    ]
+    ];
+    
     const kain = {
         marginLeft: '20px',
         fontFamily: 'Arial, sans-serif',
@@ -250,9 +248,9 @@ const url = Keys.REACT_APP_BACKEND;
                 </Modal>
                 <Modal isOpen={isAddRoleModalOpen} onRequestClose={closeAddRoleModal} style={modalStyles}>
                     <h1>Add A Role</h1>
-                    <input type='text' name='role_name' placeholder='Role Name' onChange={handleRoleInput} />
+                    <input type='text' name='role_name' placeholder='Role Name' onChange={(e) => setRoleName(e.target.value)} />
                     <br />
-                    <input type='text' name='status' placeholder='Status' onChange={handleRoleInput} />
+                    <input type='text' name='status' placeholder='Status' onChange={(e) => setStatus(e.target.value)} />
                     <br />
                     <button onClick={() => handleAddRole(takenDeptID)}>Submit</button>
                 </Modal>

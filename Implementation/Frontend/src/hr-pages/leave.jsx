@@ -375,7 +375,7 @@ function LeavePage() {
                 if (DOEYear === currentYear) {
                     const lastMonth = currentMonth - Number(1);
                     const diff = ((Number(lastMonth) - Number(DOEMonth)) * Number(1.5));
-                    console.log(`${lastMonth} - ${DOEMonth} * ${1.5} = ${diff}`);
+                    console.log(`Show us some Difference ${lastMonth} ${1.5} = ${diff}`);
                     setLeaveAvailable(diff);
                     const zero = 0;
                     setLeaveBF(zero);
@@ -390,7 +390,6 @@ function LeavePage() {
                     const leaveBF = get - response.data.total_leave_taken_past_years;
                     console.log(`${get} - ${response.data.total_leave_taken_past_years} = ${leaveBF}`)
                     setLeaveBF(leaveBF);
-
                 };
             } catch (error) {
                 console.error("Error :", error);

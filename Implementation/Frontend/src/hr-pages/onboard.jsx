@@ -12,13 +12,16 @@ import ProfilePicture from '../images/profile-picture.svg';
 import '../style.css'
 import Update from '../images/update.svg';
 import { storage } from '../firebase';
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, deleteObject, uploadBytes, getDownloadURL } from "firebase/storage";
+import Logo from '../images/logo.svg';
 import keys from '../keys';
 import Left from '../images/left-arrow.svg';
 import Right from '../images/right-arrow.svg';
+import Delete from '../images/delete.svg';
 
 
 function Onboard() {
+
   const url = keys.REACT_APP_BACKEND;
 
   const modal = {
@@ -42,6 +45,30 @@ function Onboard() {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
+    },
+  }
+
+  const personal = {
+    overlay: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    content: {
+      width: '83%',
+      margin: 'auto',
+      height: '84vh',
+      backgroundColor: 'rgb(206, 206, 236)',
+      border: 'none',
+      borderRadius: '12px',
+      gap: '23px',
+      color: "black",
+      padding: '12px 0px',
+      fontFamily: 'Arial, sans- serif',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      // alignItems: 'center',
     },
   }
 
@@ -87,6 +114,13 @@ function Onboard() {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+  };
+
+  const attendant = {
+    width: '100%',
+    height: '70%',
+    display: 'flex',
+    flexDirection: 'inline',
   }
 
   const [emps, setEmps] = useState([]);
@@ -97,6 +131,7 @@ function Onboard() {
   const [switchStates, setSwitchStates] = useState({});
   const [file, setFile] = useState('');
   const [loading, setLoading] = useState(true);
+  const [records, setRecords] = useState([]);
   const [imageUpload, setImageUpload] = useState(null);
   const [department, setDepartment] = useState([]);
   const [role, setRole] = useState([]);
@@ -121,7 +156,7 @@ function Onboard() {
   useEffect(() => {
     const fetchEmp = async () => {
       try {
-        const res = await axios.get(`${url}/employees`);
+        const res = await axios.get(`${url}/get-attendants`);
         setEmps(res.data);
       } catch (error) {
       }
@@ -195,31 +230,33 @@ function Onboard() {
     setEmployee((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
 
+  const [currentAttendantID, setCurrentAttendantID] = useState('');
 
-  const bringOneEmployee = async (id) => {
+  const bringOneAttendant = async (id) => {
     try {
-      const response = await axios.get(`${url}/employee-once/${id}`);
+      const response = await axios.get(`${url}/attendee-once/${id}`);
+      setCurrentAttendantID(response.data[0].id);
       setSumOne(response.data);
     } catch (error) {
       console.error("Error: ", error);
-    }
-
-  }
+    };
+  };
 
   const openInfoModal = (id) => {
-    bringOneEmployee(id);
-    fetchImageURL(id)
+    bringOneAttendant(id);
+    fetchImageURL(id);
     setOneEmployee(true);
   };
 
   const closeInfoModal = () => {
+    setImageURL('');
     setOneEmployee(false);
   };
 
   const empsColumn = [
     {
       name: 'Name',
-      selector: row => row.username
+      selector: row => row.first_name
     },
 
     {
@@ -418,7 +455,7 @@ function Onboard() {
     try {
       if (ID) {
         console.log("ID PROVIDED: ", ID)
-        const imageRef = ref(storage, `employeesProfilePictures/${ID}`);
+        const imageRef = ref(storage, `attendantProfilePicture/${ID}`);
         const imageURL = await getDownloadURL(imageRef);
         setImageURL(imageURL);
       };
@@ -444,11 +481,10 @@ function Onboard() {
     functions();
   }, []);
 
-  const [records, setRecords] = useState([]);
 
   const handleFilter = (event) => {
     const newData = emps.filter((row) => {
-      return row.username.toLowerCase().includes(event.target.value.toLowerCase());
+      return row.first_name.toLowerCase().includes(event.target.value.toLowerCase());
     });
     setRecords(newData);
   };
@@ -470,6 +506,18 @@ function Onboard() {
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'column',
+    height: '400px'
+  };
+
+  const holderx = {
+    width: '100%',
+    height: '85%',
+    borderRadius: '12px',
+    display: 'flex',
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    // alignItems: 'center',
     flexDirection: 'column',
     height: '400px'
   };
@@ -496,6 +544,7 @@ function Onboard() {
 
   const [tab, setTab] = useState(1);
   const [animationClass, setAnimationClass] = useState('');
+  const [animationClassx, setAnimationClassx] = useState('');
   const [attendantFirstName, setAttendantFirstName] = useState('');
   const [attendantSecondName, setAttendantSecondName] = useState('');
   const [attendantThirdName, setAttendantThirdName] = useState('');
@@ -562,8 +611,11 @@ function Onboard() {
   const [whyarrestdetaineddeportedanyauthorityabroad, setwhyArrestdetaineddeportedanyauthorityabroad] = useState('')
   const [anyreasonfordischargefrompreviousposition, setAnyreasonfordischargefrompreviousposition] = useState('');
   const [addressAnyReasonForLeave, setAddressAnyReasonForLeave] = useState('');
+  const [tabx, setTabx] = useState(1);
+
 
   const numberOfTabs = 9;
+  const numberOfTabsx = 8;
 
   const handlePrev = () => {
     setAnimationClass('slide-left');
@@ -576,8 +628,23 @@ function Onboard() {
   };
 
   // Reset animation class to allow re-triggering
+
   const resetAnimation = () => {
     setAnimationClass('');
+  };
+
+  const resetAnimationx = () => {
+    setAnimationClassx('');
+  };
+
+  const handlePrevx = () => {
+    setAnimationClassx('slide-left');
+    setTabx((prev) => (prev > 1 ? prev - 1 : numberOfTabsx));
+  };
+
+  const handleNextx = () => {
+    setAnimationClassx('slide-right');
+    setTabx((prev) => (prev < numberOfTabsx ? prev + 1 : 1));
   };
 
   const [nextAttendantID, setNextAttendantID] = useState('');
@@ -683,11 +750,6 @@ function Onboard() {
 
     const academic = [
       nextAttendantID,
-      academicQualification1,
-      academicQualification2,
-      academicQualification3,
-      academicQualification4,
-      academicQualification5,
       institution1,
       institution2,
       institution3,
@@ -697,9 +759,13 @@ function Onboard() {
       dateObtained2,
       dateObtained3,
       dateObtained4,
-      dateObtained5
+      dateObtained5,
+      academicQualification1,
+      academicQualification2,
+      academicQualification3,
+      academicQualification4,
+      academicQualification5,
     ];
-
 
     const relative = [
       nextAttendantID,
@@ -727,10 +793,11 @@ function Onboard() {
     const sendFamilyInfo = axios.post(`${url}/send-family-information`, familyInformation);
     const sendAcademic = axios.post(`${url}/send-academic`, academic);
     const sendRelative = axios.post(`${url}/send-relative`, relative);
-    const sendEmploymentHistory = axios.post(`${url}/send-employment-history`, employmentHistory);
     const sendEmergencyContact = axios.post(`${url}/send-emergency-contact`, emergencyContact);
-
+    const sendEmploymentHistory = axios.post(`${url}/send-employment-history`, employmentHistory);
+    // 
     Promise.all([sendAttendant, sendSpouse, sendFamilyInfo, sendAcademic, sendRelative, sendEmploymentHistory, sendEmergencyContact])
+      // Promise.all([sendEmergencyContact])
       .then(response => {
         console.log(response);
       })
@@ -745,7 +812,7 @@ function Onboard() {
     const IdForQuotation = nextAttendantID;
     console.log("Profile Picture Got: ", IdForQuotation);
     const imageRef = ref(storage, `attendantProfilePicture/${imageUpload.name, IdForQuotation}`);
-    uploadBytes(imageRef, imageUpload).then(() => {  });
+    uploadBytes(imageRef, imageUpload).then(() => { });
 
     if (CVUpload == null) return;
     console.log("PDF CV Got", nextAttendantID);
@@ -759,7 +826,25 @@ function Onboard() {
   };
 
 
+  const handleDeleteEntireAttendant = async (currentAttendantID) => {
+    try {
+      console.log("ID Passed:", currentAttendantID);
+      const response = await axios.delete(`${url}/delete-entire-attendant/${currentAttendantID}`);
 
+      const imageRef = ref(storage, `attendantProfilePicture/${currentAttendantID}`);
+      const CVRef = ref(storage, `attendantCV/${currentAttendantID}`);
+      const otherFilesRef = ref(storage, `otherDocsAttendant/${currentAttendantID}`);
+
+      await deleteObject(CVRef);
+      await deleteObject(imageRef);
+      await deleteObject(otherFilesRef);
+
+      console.log("reponse:", response.data);
+
+    } catch (error) {
+      console.error("Error: ", error);
+    };
+  };
 
 
 
@@ -809,6 +894,7 @@ function Onboard() {
         <br />
 
         <div style={some}>
+
           <Modal isOpen={addVisible} onRequestClose={() => setAddVisible(false)} style={modal}>
             <div
               className={animationClass}
@@ -875,7 +961,6 @@ function Onboard() {
                   </div>
 
                 </div>
-
               }
 
               {tab === 3 &&
@@ -1093,30 +1178,241 @@ function Onboard() {
             </div>
           </Modal >
 
-          <Modal isOpen={oneEmployee} onRequestClose={closeInfoModal} style={modal}>
-            {sumOne.map((emp) => (
-              <div key={emp.id} className="employee">
-                <h1>{emp.username}</h1>
+          <Modal isOpen={oneEmployee} onRequestClose={closeInfoModal} style={personal}>
 
+            <div style={attendant}>
+
+              <div style={{ width: '30%', height: '117%', backgroundColor: 'white', display: 'flex', marginLeft: '12px', borderRadius: '22px', alignItems: 'center' }}>
                 {imageURL ? (
-                  <img src={imageURL} style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }} />
+                  <img src={imageURL} style={{ maxWidth: '90%', objectFit: 'cover', maxHeight: '40vh', borderRadius: '20px' }} />
 
-                ) : <img src={ProfilePicture} style={{ maxWidth: '90%', maxHeight: '15vh', borderRadius: '60px' }} />}
+                ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh', backgroundColor: 'white' }} />}
+              </div>
 
-                <p>Username: {emp.username}</p>
-                <p>Password: *******</p>
-                <p>Address: {emp.address}</p>
-                <p>Position: {emp.role_name}</p>
-                <p>Department: {emp.department_name}</p>
-                <p>Email: {emp.email}</p>
-                <p>Date Of Employment: {formatDate(emp.date_of_employment)}</p>
-                <p>Status:  <span style={{ color: emp.status === 'DE-ACTIVATED' ? 'red' : 'green' }}>{emp.status}</span></p>
-                <div style={ThemBs}>
-                  <button className='addItem-btn' onClick={() => setVisible(true)}><img src={Update} style={svgStyle} /></button>
-                  <Switch onChange={(checked) => handleSwitchChange(checked, emp.id)} checked={switchStates[emp.id] || false} />
+              <div className={animationClassx}
+                style={holderx}
+                onAnimationEnd={resetAnimationx}
+              >
+                {tabx === 1 && <div>
+                  {sumOne.map(attendee => (
+                    <div style={holderx}>
+                      <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                        <h2>Personal Information</h2>
+                      </div>
+                      <div style={{ display: 'flex', marginTop: '1px', height: '70%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
+
+                        <div style={{ backgroundColor: 'white', marginTop: '44px', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '100%', gap: '25px' }}>
+                          <p>First Name: {attendee.first_name}</p>
+                          <p>Second Name:  {attendee.second_name}</p>
+                          <p>Third Name: {attendee.third_name}</p>
+                          <p>Phone:  {attendee.phone_number}</p>
+                          <p>Nationality:  {attendee.nationality}</p>
+                        </div>
+
+                        <div style={{ backgroundColor: 'white', marginTop: '44px', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '100%', gap: '25px' }}>
+                          <p>Email: {attendee.email}</p>
+                          <p>Address: {attendee.address}</p>
+                          <p>Birth Date: {attendee.birth_date}</p>
+                          <p>Phone Number: {attendee.phone_number}</p>
+                          <p>Height: {attendee.height}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
+                }
 
-                <Modal isOpen={visible} onRequestClose={() => setVisible(false)} style={modalUpdate}>
+                {tabx === 2 && <div>
+                  {sumOne.map(attendee => (
+                    <div style={holderx}>
+                      <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                        <h2>Personal Information</h2>
+                      </div>
+                      <div style={{ display: 'flex', marginTop: '1px', height: '70%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
+
+                        <div style={{ backgroundColor: 'white', marginTop: '44px', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '100%', gap: '25px' }}>
+                          <p>Passport Number: {attendee.passport_number}</p>
+                          <p>Driving:  {attendee.driving_license}</p>
+                          <p>Tax Identification: {attendee.tax_identificationID}</p>
+                          <p>Pre Employment Status:  {attendee.employment_status}</p>
+                        </div>
+
+                        <div style={{ backgroundColor: 'white', marginTop: '44px', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '100%', gap: '25px' }}>
+                          <p>Department: {attendee.department_name}</p>
+                          <p>Role: {attendee.role_name}</p>
+                          <p>Birth Date: {attendee.birth_date}</p>
+                          <p>Disability: {attendee.disability}</p>
+                          <p>Marital Status: {attendee.marital_status}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                }
+
+                {tabx === 3 && <div>
+                  {sumOne.map(attendee => (
+                    <div style={holderx}>
+                      <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                        <h2>Spouse Information</h2>
+                      </div>
+                      <div style={{ display: 'flex', marginTop: '1px', height: '70%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
+
+                        <div style={{ backgroundColor: 'white', marginTop: '44px', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '100%', gap: '25px' }}>
+                          <p>First Name: {attendee.spouse_first_name}</p>
+                          <p>Second Name:  {attendee.spouse_second_name}</p>
+                          <p>Third Name: {attendee.spouse_third_name}</p>
+                          <p>Phone Number:  {attendee.spouse_phone_number}</p>
+                          <p>Date Of Birth:  {attendee.spouse_dob}</p>
+                        </div>
+
+                        <div style={{ backgroundColor: 'white', marginTop: '44px', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '100%', gap: '25px' }}>
+                          <p>Email: {attendee.spouse_email}</p>
+                          <p>Occupation: {attendee.spouse_occupation}</p>
+                          <p>Address: {attendee.spouse_address}</p>
+                          <p>Number of Childrens: {attendee.spouse_number_of_children}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                }
+
+                {tabx === 4 && <div>
+                  {sumOne.map(attendee => (
+                    <div style={holderx}>
+                      <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                        <h2>Family Information</h2>
+                      </div>
+                      <div style={{ display: 'flex', marginTop: '1px', height: '70%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
+
+                        <div style={{ backgroundColor: 'white', marginTop: '44px', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '100%', gap: '25px' }}>
+                          <p>Father First Name: {attendee.father_first_name}</p>
+                          <p>Father Second Name:  {attendee.father_second_name}</p>
+                          <p>Father Third Name: {attendee.father_third_name}</p>
+                          <p>Father Phone Number:  {attendee.father_phone_number}</p>
+                          <p>Father Date Of Birth:  {attendee.father_DOB}</p>
+                        </div>
+
+                        <div style={{ backgroundColor: 'white', marginTop: '44px', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '100%', gap: '25px' }}>
+                          <p>Mother First Name: {attendee.mother_first_name}</p>
+                          <p>Mother Second Name:  {attendee.mother_second_name}</p>
+                          <p>Mother Third Name: {attendee.mother_third_name}</p>
+                          <p>Mother Phone Number:  {attendee.mother_phone_number}</p>
+                          <p>Mother Date Of Birth:  {attendee.mother_DOB}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                }
+
+                {tabx === 5 && <div>
+                  {sumOne.map(attendee => (
+                    <div style={holderx}>
+                      <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                        <h2>Emergency Contact</h2>
+                      </div>
+                      <div style={{ display: 'flex', marginTop: '1px', height: '70%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
+
+                        <div style={{ backgroundColor: 'white', marginTop: '44px', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '100%', gap: '25px' }}>
+                          <p>Emergency First Name: {attendee.emergency_contact_first_name}</p>
+                          <p>Emergency Second Name:  {attendee.emergency_contact_second_name}</p>
+                          <p>Emergency Third Name: {attendee.emergency_contact_third_name}</p>
+                          <p>Emergency Phone Number:  {attendee.emergency_contact_phone_number}</p>
+                          <p>Emergency Email:  {attendee.emergency_contact_email}</p>
+                        </div>
+
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                }
+
+                {tabx === 6 && <div>
+                  {sumOne.map(attendee => (
+                    <div style={holderx}>
+                      <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                        <h2>Academic And Professional Qualification</h2>
+                      </div>
+                      <div style={{ display: 'flex', marginTop: '1px', height: '90%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
+
+                        <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
+                          <p>Academic Qualification: {attendee.academic_qualification1}</p>
+                          <p>Academic Qualification: {attendee.academic_qualification2}</p>
+                          <p>Academic Qualification: {attendee.academic_qualification3}</p>
+                          <p>Academic Qualification: {attendee.academic_qualification4}</p>
+                          <p>Academic Qualification: {attendee.academic_qualification5}</p>
+                        </div>
+
+                        <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '55%', gap: '25px' }}>
+                          <p>Institution: {attendee.institution1}</p>
+                          <p>Institution: {attendee.institution2}</p>
+                          <p>Institution: {attendee.institution3}</p>
+                          <p>Institution: {attendee.institution4}</p>
+                          <p>Institution: {attendee.institution5}</p>
+                        </div>
+                        <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
+                          <p>Date Obtained: {attendee.date_obtained1}</p>
+                          <p>Date Obtained: {attendee.date_obtained2}</p>
+                          <p>Date Obtained: {attendee.date_obtained3}</p>
+                          <p>Date Obtained: {attendee.date_obtained4}</p>
+                          <p>Date Obtained: {attendee.date_obtained5}</p>
+                        </div>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+                }
+
+                {tabx === 7 && <div>
+                  {sumOne.map(attendee => (
+                    <div style={holderx}>
+                      <div style={{ width: '100%', borderRadius: '12px', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', justifyContent: 'center' }}>
+                        <h2>Employment History</h2>
+                      </div>
+                      <div style={{ display: 'flex', marginTop: '1px', height: '70%', borderRadius: '12px', backgroundColor: 'white', width: '100%', flexDirection: 'inline' }}>
+
+                        <div style={{ backgroundColor: 'white', marginTop: '44px', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
+                          <p>
+                            Are any of your relatives, family friends or close friends
+                            employed by your current employer?
+                            if Yes, indicate: {attendee.relativeName}
+                          </p>
+                          <p>Name:  {attendee.relativeName}</p>
+                          <p>Relationship: {attendee.ralativeRelationship}</p>
+                          <p>Department:  {attendee.relativeDepartment}</p>
+                          <p>Branch:  {attendee.relativeBranch}</p>
+                        </div>
+
+                        <div style={{ backgroundColor: 'white', borderRadius: '12px', marginTop: '44px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
+                          <p>Latest Organization: {attendee.relativeLatestOrganization}</p>
+                          <p>Job Title: {attendee.relativeJobTitle}</p>
+                          <p>From Date: {attendee.relativeFromDate}</p>
+                          <p>Company Name: {attendee.relativeCompanyName}</p>
+                          <p>Phone Number: {attendee.relativePhoneNumber}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                }
+
+
+
+              </div>
+            </div>
+            <br />
+            <div style={{ width: '20%', height: '10%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', gap: '12px', marginLeft: '797px' }}>
+
+              <button style={buttx} onClick={() => { handleDeleteEntireAttendant(currentAttendantID) }}><img src={Delete} style={arrows} /></button>
+              <button style={buttx} onClick={handlePrevx}><img src={Left} style={arrows} /></button>
+              <button style={buttx} onClick={handleNextx}><img src={Right} style={arrows} /></button>
+            </div>
+          </Modal>
+
+          {/* <Modal isOpen={visible} onRequestClose={() => setVisible(false)} style={modalUpdate}>
                   <h1>Update</h1>
                   <input type='text' placeholder='Username' name="username" onChange={handleChange} />
                   <input type='text' placeholder='Password' name="password" onChange={handleChange} />
@@ -1144,10 +1440,9 @@ function Onboard() {
                     </label>
                   </div>
                   <button onClick={() => handleUpdate(emp.id)}>Submit</button>
-                </Modal>
-              </div>
-            ))}
-          </Modal>
+                </Modal> */}
+
+
 
           <Modal isOpen={createModal} onRequestClose={closeCreateModal} className={modal}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
