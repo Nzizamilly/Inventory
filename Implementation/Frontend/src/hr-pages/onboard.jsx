@@ -262,7 +262,7 @@ function Onboard() {
     {
       name: 'Last Name',
       selector: row => row.third_name
-    },{
+    }, {
       name: 'Date Of Employment',
       selector: row => row.date_of_employment
     },
@@ -1252,6 +1252,7 @@ function Onboard() {
                           <p>Driving:  {attendee.driving_license}</p>
                           <p>Tax Identification: {attendee.tax_identificationID}</p>
                           <p>Pre Employment Status:  {attendee.employment_status}</p>
+                          <p>Marital Status: {attendee.marital_status}</p>
                         </div>
 
                         <div style={{ backgroundColor: 'white', marginTop: '44px', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '100%', gap: '25px' }}>
@@ -1259,7 +1260,6 @@ function Onboard() {
                           <p>Role: {attendee.role_name}</p>
                           <p>Birth Date: {attendee.birth_date}</p>
                           <p>Disability: {attendee.disability}</p>
-                          <p>Marital Status: {attendee.marital_status}</p>
                         </div>
                       </div>
                     </div>
@@ -1421,11 +1421,14 @@ function Onboard() {
               </div>
             </div>
             <br />
-            <div style={{ width: '20%', height: '10%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', gap: '12px', marginLeft: '797px' }}>
+            <div style={{ width: '100%', height: '10%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', flexDirection: 'inline', gap: '12px', }}>
 
-              <button style={buttx} onClick={() => { handleDeleteEntireAttendant(currentAttendantID) }}><img src={Delete} style={arrows} /></button>
-              <button style={buttx} onClick={handlePrevx}><img src={Left} style={arrows} /></button>
-              <button style={buttx} onClick={handleNextx}><img src={Right} style={arrows} /></button>
+              <div style={{ width: '100%', height: '10%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', gap: '12px', marginLeft: '797px' }}>
+                <p style={{ width: '50%', marginTop: '20px', height: '10%', backgroundColor: 'rgb(206, 206, 236)', display: 'flex', gap: '12px' }}>  Slide {tabx} of {numberOfTabsx}</p>
+                <button style={buttx} onClick={() => { handleDeleteEntireAttendant(currentAttendantID) }}><img src={Delete} style={arrows} /></button>
+                <button style={buttx} onClick={handlePrevx}><img src={Left} style={arrows} /></button>
+                <button style={buttx} onClick={handleNextx}><img src={Right} style={arrows} /></button>
+              </div>
             </div>
           </Modal>
 
