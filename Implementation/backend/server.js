@@ -9,7 +9,7 @@ const moment = require('moment');
 const nodemailer = require('nodemailer');
 const pdf = require('html-pdf');
 const { EMAIL, PASSWORD } = require('./env.js');
-const util = require('util'); 
+const util = require('util');
 
 const port = process.env.PORT || 5500;
 
@@ -2901,13 +2901,15 @@ app.post('/send-attendant', (req, res) => {
     selectedRole,
     attendantDisability,
     attendantMaritalStatus,
+    attendantPlaceOfWork,
+    attendantDOE
   ] = req.body;
 
   const sql = `INSERT INTO attendant (
   first_name, second_name, third_name, nationality, email, address, phone_number, birth_date,
   height, passport_number, driving_license, tax_identificationID, employment_status, departmenID,
-  roleID, disability, marital_status
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  roleID, disability, marital_status, place_of_work, date_of_employment
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
   db.query(sql, [
     attendantFirstName,
@@ -2926,7 +2928,9 @@ app.post('/send-attendant', (req, res) => {
     selectedDepartment,
     selectedRole,
     attendantDisability,
-    attendantMaritalStatus
+    attendantMaritalStatus,
+    attendantPlaceOfWork,
+    attendantDOE
   ], (error, result) => {
     result ? console.log("Done!") : console.error("Error In Attendant");
   });
@@ -3279,7 +3283,7 @@ app.delete('/delete-entire-attendant/:currentAttendantID', async (req, res) => {
 
     res.status(200).send({ message: 'Attendant and related data deleted successfully.' });
   } catch (error) {
-  console.error("Error: ", error);
+    console.error("Error: ", error);
     await query('ROLLBACK');
     res.status(500).send({ error: 'Error deleting attendant data', details: error });
   }

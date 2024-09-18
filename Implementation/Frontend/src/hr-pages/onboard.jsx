@@ -260,6 +260,18 @@ function Onboard() {
     },
 
     {
+      name: 'Last Name',
+      selector: row => row.third_name
+    },{
+      name: 'Date Of Employment',
+      selector: row => row.date_of_employment
+    },
+    {
+      name: 'Work Place',
+      selector: row => row.place_of_work
+    },
+
+    {
       name: 'Role',
       selector: row => row.role_name
     },
@@ -611,6 +623,8 @@ function Onboard() {
   const [whyarrestdetaineddeportedanyauthorityabroad, setwhyArrestdetaineddeportedanyauthorityabroad] = useState('')
   const [anyreasonfordischargefrompreviousposition, setAnyreasonfordischargefrompreviousposition] = useState('');
   const [addressAnyReasonForLeave, setAddressAnyReasonForLeave] = useState('');
+  const [attendantPlaceOfWork, setAttendantPlaceOfWork] = useState('');
+  const [attendantDOE, setAttendantDOE] = useState('');
   const [tabx, setTabx] = useState(1);
 
 
@@ -710,6 +724,8 @@ function Onboard() {
       selectedRole,
       attendantDisability,
       attendantMaritalStatus,
+      attendantPlaceOfWork,
+      attendantDOE
     ];
 
     const spouse = [
@@ -1141,7 +1157,8 @@ function Onboard() {
                       <input placeholder='Full Name' style={text} type='text' value={attendantFirstName} />
                       <input placeholder='Address' style={text} type='text' value={attendantAddress} />
                       <input placeholder='Contact' style={text} type='text' value={attendantPhoneNumber} />
-                      <input placeholder='Place Of Work' style={text} type='text' />
+                      <input placeholder='Place Of Work' style={text} type='text' value={attendantPlaceOfWork} onChange={(e) => setAttendantPlaceOfWork(e.target.value)} />
+                      <input placeholder='Date Of Employment (Start Of Contract)' style={text} type='date' value={attendantDOE} onChange={(e) => setAttendantDOE(e.target.value)} />
                     </div>
 
                     <div style={{ backgroundColor: 'white', borderRadius: '12px', height: '100%', display: 'flex', flexDirection: 'column', width: '70%', gap: '25px' }}>
