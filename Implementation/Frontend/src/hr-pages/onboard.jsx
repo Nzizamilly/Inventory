@@ -864,14 +864,6 @@ function Onboard() {
 
 
 
-
-
-
-
-
-
-
-
   useEffect(() => {
     const func = async () => {
       try {

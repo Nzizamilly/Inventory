@@ -14,6 +14,8 @@ import HashLoader from "react-spinners/HashLoader";
 import io from 'socket.io-client';
 import RiseLoader from "react-spinners/RiseLoader";
 import Keys from '../keys';
+import Left from '../images/left-arrow.svg';
+import Right from '../images/right-arrow.svg';
 
 function ItemsAdmin() {
 
@@ -60,6 +62,18 @@ function ItemsAdmin() {
     display: 'flex',
     backgroundColor: 'rgb(223, 225, 234)',
     padding: '12px 12px'
+  };
+
+  const holder = {
+    width: '80%',
+    height: '85%',
+    borderRadius: '12px',
+    display: 'flex',
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    height: '400px'
   };
 
   const display = {
@@ -119,6 +133,23 @@ function ItemsAdmin() {
     display: 'flex',
     borderRadius: '850px',
     backgroundRolor: 'rgb(0, 255, 255)',
+  };
+  const buttx = {
+    width: '40%',
+    height: '60px',
+    display: 'flex',
+    borderRadius: '30px',
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  };
+
+  const arrows = {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   };
 
   const kindaStyle = {
@@ -211,6 +242,7 @@ function ItemsAdmin() {
     },
   };
 
+  const [animationClass, setAnimationClass] = useState('');
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isListLoaderOpen, setIsListLoaderOpen] = useState(false);
@@ -255,6 +287,10 @@ function ItemsAdmin() {
   const [takerUserName, setTakerUserName] = useState('');
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [takerModalOpen, isTakerModalOpen] = useState(false);
+  const [serialHolder, setSerialHolder] = useState('');
+  const [tab, setTab] = useState(1);
+  const [serialHolderFrom, setSerialHolderFrom] = useState('')
+  const [serialHolderTo, setSerialHolderTo] = useState('')
   const [serialUpdateData, setSerialUpdateData] = useState({
     serial_number: '',
     state_of_item: '',
@@ -416,6 +452,37 @@ function ItemsAdmin() {
     category: selectedCategory
   }
 
+  const numberOfTabs = 2
+
+  const handlePrev = () => {
+    setAnimationClass('slide-left');
+    setTab((prev) => (prev > 1 ? prev - 1 : numberOfTabs));
+  };
+
+  const handleNext = () => {
+    setAnimationClass('slide-right');
+    setTab((prev) => (prev < numberOfTabs ? prev + 1 : 1));
+  };
+
+  const resetAnimation = () => {
+    setAnimationClass('');
+  };
+
+  const [latestItemID, setLatestItemID] = useState('');
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const response = await axios.get(`${url}/get-latest-itemID`);
+        console.log("Diplay Latest ID: ", response.data.latest_id);
+        setLatestItemID(response.data.latest_id);
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    }
+    fetch();
+  }, [])
+
   const handleAddSimpleItemClick = async () => {
     try {
       console.log(newItem);
@@ -434,6 +501,15 @@ function ItemsAdmin() {
       console.error('Error adding Items: ', error);
     }
   };
+
+  const handleSendMultipleSerials = async () => {
+    try {
+      await axios.post(`${url}/add-serial-holder/${latestItemID}/${serialHolder}/${serialHolderFrom}/${serialHolderTo}`);
+
+    } catch (error) {
+      console.error("Error", error);
+    }
+  }
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -475,8 +551,11 @@ function ItemsAdmin() {
         itemID: takeItemID
       });
       console.log("Check...", serialNumber);
-      const response = await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber);
-      console.log("Response: ", response.data);
+      // const response = await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber);
+      // console.log("Response: ", response.data);
+      const responsee = await axios.post(`${url}/add-serial-holder/${latestItemID}/${serialHolder}`, serialHolder);
+      console.log("Response: ", responsee.data);
+
       setInterval(() => {
         setIsCreatingSerialNumberOpen(false);
       }, 2700);
@@ -871,7 +950,7 @@ function ItemsAdmin() {
               <button className='addItem-btn' onClick={() => openSimpleModal()}><img src={AddItem} style={svgStyle} /></button>
             </div>
 
-              <DataTable
+            <DataTable
               columns={one}
               data={items}
               pagination
@@ -917,18 +996,53 @@ function ItemsAdmin() {
               ))}
             </select>
             <br />
+
             <button onClick={openCreatingItem}>Send</button>
           </Modal>
+
           <Modal isOpen={isSerialModalOpen} onRequestClose={closeSerialModal} style={modalStyles}>
-            <h1>Add Serial Number</h1>
-            <input placeholder='Add Serial Number' name='serial_number' type='text' onChange={handleSerialNumber} />
-            <br />
-            <input placeholder='State Of Item' name='state_of_item' type='text' onChange={handleSerialNumber} />
-            <br />
-            <input placeholder='Depreciation Rate' name='depreciation_rate' type='text' onChange={handleSerialNumber} />
-            <br />
-            <button onClick={() => openCreatingSerialNumber(selectedItemID)}>Add</button>
+            <div
+              className={animationClass}
+              style={holder}
+              onAnimationEnd={resetAnimation} // Reset animation class after animation ends
+            >
+              {tab === 1 && <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+
+                <h1>Add Serial Number For One Item</h1>
+                <input placeholder='Add Serial Number' name='serial_number' type='text' onChange={handleSerialNumber} />
+                <br />
+                <input placeholder='State Of Item' name='state_of_item' type='text' onChange={handleSerialNumber} />
+                <br />
+                <input placeholder='Depreciation Rate' name='depreciation_rate' type='text' onChange={handleSerialNumber} />
+                <br />
+                <button onClick={() => openCreatingSerialNumber(selectedItemID)}>Add</button>
+              </div>
+              }
+
+              {tab === 2 && <div style={{ width: '100%', gap: '15px', height: '40%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                <h1>Add Serial Number For Multiple Items</h1>
+
+
+                <input placeholder='Letters before ID' type='text' value={serialHolder} onChange={(e) => setSerialHolder(e.target.value)} />
+                <input placeholder='From' type='text' value={serialHolderFrom} onChange={(e) => setSerialHolderFrom(e.target.value)} />
+                <input placeholder='To' type='text' value={serialHolderTo} onChange={(e) => setSerialHolderTo(e.target.value)} />
+                <button onClick={() => handleSendMultipleSerials()}>Send</button>
+
+              </div>
+              }
+
+            </div>
+
+            <div style={{ width: '100%', height: '10%', backgroundColor: 'white', display: 'flex', flexDirection: 'inline', gap: '12px' }}>
+
+              <div style={{ width: '20%', height: '10%', backgroundColor: 'white', display: 'flex', gap: '12px', marginLeft: '700px' }}>
+                <button style={buttx} onClick={handlePrev}><img src={Left} style={arrows} /></button>
+                <button style={buttx} onClick={handleNext}><img src={Right} style={arrows} /></button>
+              </div>
+            </div>
+
           </Modal>
+
           <Modal isOpen={isInfoModalOpen} onRequestClose={closeInfoModal} style={modalStyles}>
             <h1>
               {getNom.length > 0 ? <span>{getNom[0].itemName}</span> : "Loading..."}: {totalSerialCount}
@@ -1040,17 +1154,17 @@ function ItemsAdmin() {
             <input type='text' placeholder='Search...' onChange={handleFilterY} />
           </div>
 
-              <div style={{ width: '55%', borderRadius: '12px', height: '34%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
-                {filteredEmployeesBulk.profile_picture ? <img src={ProfilePicture} style={profilePicture} /> : <img src={filteredEmployeesBulk.profile_picture} alt='profile_Picture' style={profilePicture} />}
-                <br />
-                <div style={{ color: 'black', flexDirection: 'column', justifyContent: 'center', display: 'flex', backgroundColor: 'rgb(163, 187, 197)', width: '75%', fontFamily: 'san-serif', marginTop: '3px', paddingLeft: '12px', borderRadius: '12px', height: '97%' }}>
-                  <p>Name: {filteredEmployeesBulk.username}</p>
-                  <p>Position: {filteredEmployeesBulk.role_name}</p>
-                  <p>Department: {filteredEmployeesBulk.department_name}</p>
-                  <p>Address: {filteredEmployeesBulk.address}</p>
-                  <button onClick={() => { openListLoader(filteredEmployeesBulk.username) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
-                </div>
-              </div>
+          <div style={{ width: '55%', borderRadius: '12px', height: '34%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
+            {filteredEmployeesBulk.profile_picture ? <img src={ProfilePicture} style={profilePicture} /> : <img src={filteredEmployeesBulk.profile_picture} alt='profile_Picture' style={profilePicture} />}
+            <br />
+            <div style={{ color: 'black', flexDirection: 'column', justifyContent: 'center', display: 'flex', backgroundColor: 'rgb(163, 187, 197)', width: '75%', fontFamily: 'san-serif', marginTop: '3px', paddingLeft: '12px', borderRadius: '12px', height: '97%' }}>
+              <p>Name: {filteredEmployeesBulk.username}</p>
+              <p>Position: {filteredEmployeesBulk.role_name}</p>
+              <p>Department: {filteredEmployeesBulk.department_name}</p>
+              <p>Address: {filteredEmployeesBulk.address}</p>
+              <button onClick={() => { openListLoader(filteredEmployeesBulk.username) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
+            </div>
+          </div>
 
         </Modal>
       </div>

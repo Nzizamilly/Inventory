@@ -582,6 +582,13 @@ app.post("/employee", (req, res) => {
   });
 });
 
+app.get('/get-latest-itemID', (req, res) => {
+  const sql = `SELECT MAX(id) AS latest_id FROM item`;
+  db.query(sql, (error, result) => {
+    result ? res.json({ latest_id: result[0].latest_id }) : console.error("Error in fetching item latestid");
+  })
+})
+
 app.post('/add-items', (req, res) => {
 
   const categoryId = req.body.category;
@@ -613,6 +620,33 @@ app.post('/add-items', (req, res) => {
   });
 });
 
+app.post('/add-serial-holder/:itemID/:serialHolder/:serialHolderFrom/:serialHolderTo', (req, res) => {
+  const from = req.params.serialHolderFrom;
+  const to = req.params.serialHolderTo;
+  const itemID = Number(req.params.itemID) + 1;
+  const reqs = req.params.serialHolder;
+
+  let numbers = [];
+
+  for (let i = from; i >= to; i--) {
+    numbers.push(i);
+  };
+
+  console.log(`ItemID is ${itemID} numbers are ${numbers}`);
+
+  const sql = `INSERT INTO serial_number_holder_digits (serial_number_holder, itemID, number) VALUES (? , ?, ?)`;
+
+  numbers.forEach((number) => {
+    db.query(sql, [reqs, itemID, number ], (error, result) => {
+      if (error) {
+        console.error("Error in inserting serial holder", error);
+      } else {
+        // console.log(`Number ${number} inserted successfully for ItemID ${itemID}`);
+      }
+    });
+  });
+
+})
 
 app.put("/employee/:id", (req, res) => {
   const empID = req.params.id;
@@ -1057,7 +1091,9 @@ app.get('/serial-number/:itemID', (req, res) => {
 
 app.get('/get-serial-number/:itemID', (req, res) => {
   const itemID = req.params.itemID;
+  // const q = 'SELECT * FROM serial_number WHERE itemID = ?';
   const q = 'SELECT * FROM serial_number WHERE itemID = ?';
+
   const values = [
     itemID
   ];
