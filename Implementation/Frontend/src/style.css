@@ -913,12 +913,12 @@ li a:hover {
 }
 
 .green-btn {
-    color: white;
+    color: green;
     background-color: green;
 }
 
 .red-btn {
-    color: white;
+    color: red;
     background-color: red;
 }
 

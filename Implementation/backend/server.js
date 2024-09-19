@@ -582,6 +582,13 @@ app.post("/employee", (req, res) => {
   });
 });
 
+app.get('/get-latest-itemID', (req, res) => {
+  const sql = `SELECT MAX(id) AS latest_id FROM item`;
+  db.query(sql, (error, result) => {
+    result ? res.json({ latest_id: result[0].latest_id }) : console.error("Error in fetching item latestid");
+  })
+})
+
 app.post('/add-items', (req, res) => {
 
   const categoryId = req.body.category;
@@ -613,6 +620,37 @@ app.post('/add-items', (req, res) => {
   });
 });
 
+app.post('/add-serial-holder/:itemID/:serialHolder/:serialHolderFrom/:serialHolderTo/:depreciation_rate_holder/:state_of_item_holder/:currentDate', (req, res) => {
+  const from = req.params.serialHolderFrom;
+  const to = req.params.serialHolderTo;
+  const itemID = Number(req.params.itemID);
+  const reqs = req.params.serialHolder;
+  const depreciation_rate_holder = req.params.depreciation_rate_holder
+  const state_of_item_holder = req.params.state_of_item_holder
+  const currentDate = req.params.currentDate;
+  const status = 'In';
+
+  let numbers = [];
+
+  for (let i = from; i >= to; i--) {
+    numbers.push(i);
+  };
+
+  console.log(`ItemID is ${itemID}, numbers are ${numbers}, depreciation_rate is ${depreciation_rate_holder}, state of item is ${state_of_item_holder} current date is ${currentDate}`);
+
+  const sql = `INSERT INTO serial_number_holder_digits (serial_number_holder, itemID, number,depreciation_rate_holder, state_of_item_holder, date_holder, status) VALUES (? , ?, ?, ?, ?, ?, ?)`;
+
+  numbers.forEach((number) => {
+    db.query(sql, [reqs, itemID, number,depreciation_rate_holder,  state_of_item_holder, currentDate, status], (error, result) => {
+      if (error) {
+        console.error("Error in inserting serial holder", error);
+      } else {
+        // console.log(`Number ${number} inserted successfully for ItemID ${itemID}`);
+      }
+    });
+  });
+
+})
 
 app.put("/employee/:id", (req, res) => {
   const empID = req.params.id;
@@ -1057,18 +1095,30 @@ app.get('/serial-number/:itemID', (req, res) => {
 
 app.get('/get-serial-number/:itemID', (req, res) => {
   const itemID = req.params.itemID;
-  const q = 'SELECT * FROM serial_number WHERE itemID = ?';
-  const values = [
-    itemID
-  ];
-  db.query(q, [values], (err, result) => {
+  console.log("ID Passed: ", itemID);
+  // const q = 'SELECT * FROM serial_number WHERE itemID = ?';
+  const q = `SELECT * FROM serial_number WHERE itemID = ?  `;
+  const qs = `SELECT * FROM serial_number_holder_digits WHERE itemID = ?  `;
+
+  db.query(q, [itemID], (err, serialNumberResult) => {
     if (err) {
-      console.error('Error fetching item : ', err);
-      res.status(500).json({ error: 'Internal Server Error' });
-      return;
+      console.error('Error in fetching from serial_number:', err);
     }
-    return res.json(result)
-  })
+
+    db.query(qs, [itemID], (err, serialHolderResult) => {
+      if (err) {
+        console.error('Error in fetching from serial_number_holder_digits:', err);
+      }
+
+      const result = {
+        serialNumbers: serialNumberResult,
+        serialHolders: serialHolderResult
+      };
+
+      // console.log("ALL DATA:", result);
+      return res.json(result);
+    });
+  });
 })
 
 app.get('/get-name-serial-number/:itemID', (req, res) => {
