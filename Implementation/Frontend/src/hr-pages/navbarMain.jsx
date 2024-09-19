@@ -7,6 +7,7 @@ import PolicySVG from '../images/policySVG.svg';
 import Modal from 'react-modal';
 import Select from 'react-select';
 import Keys from '../keys';
+import Leave from '../images/leave.svg'
 
 function NavbarMain() {
     const color = {
@@ -182,14 +183,13 @@ function NavbarMain() {
                 <li className='liAdmin'><Link to={'/account-hr'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li>
 
                 <li className='liAdmin'><Link to={'/onboard'} > <p>Employee Personal File</p></Link></li>
-                <li className='liAdmin'><Link to={'/leave-page'} > <p>Leave</p></Link></li>
+                <li className='liAdmin'><Link to={'/leave-page'} ><img src={Leave} style={{ maxWidth: '18%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Leave</p></Link></li>
                 <Select
                     options={option}
                     styles={customStyles}
                     placeholder="Request"
                     onChange={handleRequestChange}
                 />
-                {/* <li className='lisupervisor'><Link to={'/transaction-hr'}>Transactions</Link></li> */}
                 <li className='liAdmin'><Link to={'/terms-hr'}><img src={PolicySVG} style={{ maxWidth: '18%', maxHeight: '50vh' }} /><p style={{ marginTop: '7px' }}>Terms and Conditions</p></Link></li>
             </ul>
             <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={modalStyles}>

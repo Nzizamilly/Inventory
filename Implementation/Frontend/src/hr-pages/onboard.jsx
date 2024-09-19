@@ -262,7 +262,13 @@ function Onboard() {
     {
       name: 'Last Name',
       selector: row => row.third_name
-    }, {
+    },
+    {
+      name: 'Email',
+      selector: row => row.email
+    },
+    
+    {
       name: 'Date Of Employment',
       selector: row => row.date_of_employment
     },
@@ -898,6 +904,7 @@ function Onboard() {
               <button className='addItem-btn1' onClick={() => setAddVisible(true)} ><img src={Add} style={svgStyle} /></button>
               <input type='text' placeholder='Search For An Employee' onChange={handleFilter} />
             </div>
+            <br />
             <DataTable
               columns={empsColumn}
               data={records}

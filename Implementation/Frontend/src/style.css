@@ -1224,15 +1224,38 @@ li a:hover {
 .home-hr-container {
     width: 100%;
     height: 100vh;
+    background-image: url('../src/images/employeesForDisplay.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     display: flex;
-    overflow: auto;
-    color: black;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     font-family: 'Arial', sans-serif;
-    background-color: rgb(130, 142, 161);
-}
-
+    position: relative;
+    z-index: -1; /* Lower z-index than the navbar */
+    /* margin-top: 60px; Adjust margin to compensate for the navbar height */
+  }
+  
+  .home-hr-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* Adjust the opacity overlay */
+    z-index: -1; /* Make sure it stays behind the text */
+  }
+  
+  .home-hr-container h1 {
+    position: relative;
+    color: rgb(223, 217, 217);
+    font-size: 3rem;
+    text-align: center;
+    z-index: 2;
+  }
+  
 .home-hr {
     display: flex;
     text-align: center;
