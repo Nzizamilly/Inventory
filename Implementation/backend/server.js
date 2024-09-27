@@ -620,12 +620,11 @@ app.post('/add-items', (req, res) => {
   });
 });
 
-app.post('/add-serial-holder/:itemID/:serials/:depreciation_rate_holder/:state_of_item_holder/:currentDate', (req, res) => {
+app.post('/add-serial-holder/:itemID/:serials/:depreciation_rate_holder/:state_of_item_holder', (req, res) => {
   const serials = req.params.serials.split(','); // Split serials by commas
   const itemID = Number(req.params.itemID);
   const depreciation_rate_holder = req.params.depreciation_rate_holder;
   const state_of_item_holder = req.params.state_of_item_holder;
-  const currentDate = req.params.currentDate;
   const status = 'In';
 
   const sql = "INSERT INTO serial_number (serial_number, state_of_item, depreciation_rate, itemID, status, taker, quantity ) VALUES (?,?,?,?,?,NULL,1)";
@@ -643,6 +642,16 @@ app.post('/add-serial-holder/:itemID/:serials/:depreciation_rate_holder/:state_o
 
   res.status(200).send("Serial numbers inserted successfully");
 });
+
+app.delete('/delete-serial-item/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = `DELETE FROM serial_number WHERE id = ?`;
+
+  db.query(sql, [id], (error, result) => {
+    result ? res.json(result) : console.error("Error Deleting Serial Number");
+  })
+
+})
 
 app.put("/employee/:id", (req, res) => {
   const empID = req.params.id;

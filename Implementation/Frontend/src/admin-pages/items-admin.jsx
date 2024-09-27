@@ -524,15 +524,14 @@ function ItemsAdmin() {
      })
 
       const currentDatex = new Date();
-       const currentDate = currentDatex.toDateString()
-      await axios.post(`${url}/add-serial-holder/${latestItemID}/${wholeWord}/${depreciation_rate_holder}/${state_of_item_holder}/${currentDate}`);
+      await axios.post(`${url}/add-serial-holder/${latestItemID}/${wholeWord}/${depreciation_rate_holder}/${state_of_item_holder}`);
 
     } catch (error) {
       console.error("Error", error);
     }
   };
 
-  console.log("Whole Word: ", wholeWord);
+  // console.log("Whole Word: ", wholeWord);
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
