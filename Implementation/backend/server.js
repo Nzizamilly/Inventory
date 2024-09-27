@@ -620,37 +620,29 @@ app.post('/add-items', (req, res) => {
   });
 });
 
-app.post('/add-serial-holder/:itemID/:serialHolder/:serialHolderFrom/:serialHolderTo/:depreciation_rate_holder/:state_of_item_holder/:currentDate', (req, res) => {
-  const from = req.params.serialHolderFrom;
-  const to = req.params.serialHolderTo;
+app.post('/add-serial-holder/:itemID/:serials/:depreciation_rate_holder/:state_of_item_holder/:currentDate', (req, res) => {
+  const serials = req.params.serials.split(','); // Split serials by commas
   const itemID = Number(req.params.itemID);
-  const reqs = req.params.serialHolder;
-  const depreciation_rate_holder = req.params.depreciation_rate_holder
-  const state_of_item_holder = req.params.state_of_item_holder
+  const depreciation_rate_holder = req.params.depreciation_rate_holder;
+  const state_of_item_holder = req.params.state_of_item_holder;
   const currentDate = req.params.currentDate;
   const status = 'In';
 
-  let numbers = [];
+  const sql = "INSERT INTO serial_number (serial_number, state_of_item, depreciation_rate, itemID, status, taker, quantity ) VALUES (?,?,?,?,?,NULL,1)";
 
-  for (let i = from; i >= to; i--) {
-    numbers.push(i);
-  };
-
-  console.log(`ItemID is ${itemID}, numbers are ${numbers}, depreciation_rate is ${depreciation_rate_holder}, state of item is ${state_of_item_holder} current date is ${currentDate}`);
-
-  const sql = `INSERT INTO serial_number_holder_digits (serial_number_holder, itemID, number,depreciation_rate_holder, state_of_item_holder, date_holder, status) VALUES (? , ?, ?, ?, ?, ?, ?)`;
-
-  numbers.forEach((number) => {
-    db.query(sql, [reqs, itemID, number,depreciation_rate_holder,  state_of_item_holder, currentDate, status], (error, result) => {
+  serials.forEach((serial) => {
+    db.query(sql, [serial.trim(), state_of_item_holder, depreciation_rate_holder, itemID, status], (error, result) => {
       if (error) {
         console.error("Error in inserting serial holder", error);
+        res.status(500).send("Failed to insert serial number");
       } else {
-        // console.log(`Number ${number} inserted successfully for ItemID ${itemID}`);
+        console.log(`Serial ${serial.trim()} inserted successfully for ItemID ${itemID}`);
       }
     });
   });
 
-})
+  res.status(200).send("Serial numbers inserted successfully");
+});
 
 app.put("/employee/:id", (req, res) => {
   const empID = req.params.id;
@@ -1098,28 +1090,12 @@ app.get('/get-serial-number/:itemID', (req, res) => {
   console.log("ID Passed: ", itemID);
   // const q = 'SELECT * FROM serial_number WHERE itemID = ?';
   const q = `SELECT * FROM serial_number WHERE itemID = ?  `;
-  const qs = `SELECT * FROM serial_number_holder_digits WHERE itemID = ?  `;
 
-  db.query(q, [itemID], (err, serialNumberResult) => {
-    if (err) {
-      console.error('Error in fetching from serial_number:', err);
-    }
-
-    db.query(qs, [itemID], (err, serialHolderResult) => {
-      if (err) {
-        console.error('Error in fetching from serial_number_holder_digits:', err);
-      }
-
-      const result = {
-        serialNumbers: serialNumberResult,
-        serialHolders: serialHolderResult
-      };
-
-      // console.log("ALL DATA:", result);
-      return res.json(result);
-    });
+  db.query(q, [itemID], (error, result) => {
+     result ? res.json(result) : console.error("Error: ", error);
   });
-})
+});
+ 
 
 app.get('/get-name-serial-number/:itemID', (req, res) => {
   const itemID = req.params.itemID;
@@ -3339,6 +3315,9 @@ app.delete('/delete-entire-attendant/:currentAttendantID', async (req, res) => {
   }
 });
 
+
+
+                     
 app.listen(port, () => {
   console.log("Connected to backend");
 });

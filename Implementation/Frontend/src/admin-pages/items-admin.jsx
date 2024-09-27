@@ -411,7 +411,8 @@ function ItemsAdmin() {
   };
 
   const closeInfoModal = () => {
-    setIsInfoModalOpen(false)
+    setIsInfoModalOpen(false);
+    setAllSerials([]);
   };
 
   const closeSerialModal = () => {
@@ -504,16 +505,34 @@ function ItemsAdmin() {
     }
   };
 
+  const [wholeWord, setWholeWord] = useState([])
+
   const handleSendMultipleSerials = async () => {
     try {
+
+      const numbers = [];
+
+     for (let i = serialHolderFrom; i >= serialHolderTo; i--){
+      numbers.push(i);
+     };
+
+     console.log("Numbers: ", numbers);
+
+     numbers.forEach((number) => {
+       const take = (serialHolder +  ' ' + number);
+       setWholeWord((prev) => [...prev, take]);
+     })
+
       const currentDatex = new Date();
        const currentDate = currentDatex.toDateString()
-      await axios.post(`${url}/add-serial-holder/${latestItemID}/${serialHolder}/${serialHolderFrom}/${serialHolderTo}/${depreciation_rate_holder}/${state_of_item_holder}/${currentDate}`);
+      await axios.post(`${url}/add-serial-holder/${latestItemID}/${wholeWord}/${depreciation_rate_holder}/${state_of_item_holder}/${currentDate}`);
 
     } catch (error) {
       console.error("Error", error);
     }
-  }
+  };
+
+  console.log("Whole Word: ", wholeWord);
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -590,19 +609,14 @@ function ItemsAdmin() {
       const response = await axios.get(`${url}/get-serial-number/${itemID}`);
       const result = response.data;
       
-      // Directly use result data instead of waiting for state updates
-      const allSerials = [...result.serialNumbers, ...result.serialHolders];
-  
-      // Set state values
-      setGetEm(result.serialNumbers);
-      setGetEm2(result.serialHolders);
-      setSerialLength(allSerials.length);
-      setAllSerials(allSerials);
+      setAllSerials(result);
       
     } catch (error) {
       console.error('Error fetching data: ', error);
     }
   };
+
+  // console.log("All series: ", allSerials);
 
   const fetchNom = async (itemID) => {
     try {
@@ -747,20 +761,20 @@ function ItemsAdmin() {
   const columns = [
     {
       name: 'Serial Number',
-      selector: row => row.serial_number || `${row.serial_number_holder || ''} ${row.number || ''}`
+      selector: row => row.serial_number 
     },
     {
       name: 'State of Item',
-      selector: row => row.state_of_item ||  `${row.state_of_item_holder}` 
+      selector: row => row.state_of_item 
 
     },
     {
       name: 'Depreciation Rate',
-      selector: row => row.depreciation_rate || `${row.depreciation_rate_holder + '%' }` 
+      selector: row => row.depreciation_rate 
     },
     {
       name: 'Date',
-      selector: row => formatDate(row.date || `${row.date_holder}`)
+      selector: row => formatDate(row.date)
 
     },
     {
@@ -1172,14 +1186,14 @@ function ItemsAdmin() {
           </div>
 
           <div style={{ width: '55%', borderRadius: '12px', height: '34%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
-            {filteredEmployeesBulk.profile_picture ? <img src={ProfilePicture} style={profilePicture} /> : <img src={filteredEmployeesBulk.profile_picture} alt='profile_Picture' style={profilePicture} />}
+            {allEmployees.profile_picture ? <img src={ProfilePicture} style={profilePicture} /> : <img src={allEmployees.profile_picture} alt='profile_Picture' style={profilePicture} />}
             <br />
             <div style={{ color: 'black', flexDirection: 'column', justifyContent: 'center', display: 'flex', backgroundColor: 'rgb(163, 187, 197)', width: '75%', fontFamily: 'san-serif', marginTop: '3px', paddingLeft: '12px', borderRadius: '12px', height: '97%' }}>
-              <p>Name: {filteredEmployeesBulk.username}</p>
-              <p>Position: {filteredEmployeesBulk.role_name}</p>
-              <p>Department: {filteredEmployeesBulk.department_name}</p>
-              <p>Address: {filteredEmployeesBulk.address}</p>
-              <button onClick={() => { openListLoader(filteredEmployeesBulk.username) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
+              <p>Name: {allEmployees.username}</p>
+              <p>Position: {allEmployees.role_name}</p>
+              <p>Department: {allEmployees.department_name}</p>
+              <p>Address: {allEmployees.address}</p>
+              <button onClick={() => { openListLoader(allEmployees.username) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
             </div>
           </div>
 
