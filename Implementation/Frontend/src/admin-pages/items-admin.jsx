@@ -246,6 +246,7 @@ function ItemsAdmin() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isListLoaderOpen, setIsListLoaderOpen] = useState(false);
+  const [isListLoaderOpenx, setIsListLoaderOpenx] = useState(false);
   const [items, setItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSimpleModalOpen, setIsSimpleModalOpen] = useState(false);
@@ -294,6 +295,7 @@ function ItemsAdmin() {
   const [tab, setTab] = useState(1);
   const [serialHolderFrom, setSerialHolderFrom] = useState('')
   const [serialHolderTo, setSerialHolderTo] = useState('')
+  const [numberToGiveOut ,setNumberToGiveOut] = useState('')
   const [serialUpdateData, setSerialUpdateData] = useState({
     serial_number: '',
     state_of_item: '',
@@ -433,6 +435,17 @@ function ItemsAdmin() {
   const closeListLoader = () => {
     setIsListLoaderOpen(false);
   };
+  const openListLoaderx = (username) => {
+    setIsListLoaderOpenx(true);
+    setTakerUserName(username);
+    takeID(username);
+  };
+
+  const closeListLoaderx = () => {
+    setIsListLoaderOpen(false);
+  };
+
+
 
   const closeSimpleModal = () => {
     setIsSimpleModalOpen(false);
@@ -512,20 +525,19 @@ function ItemsAdmin() {
 
       const numbers = [];
 
-     for (let i = serialHolderFrom; i >= serialHolderTo; i--){
-      numbers.push(i);
-     };
+      for (let i = serialHolderFrom; i >= serialHolderTo; i--) {
+        numbers.push(i);
+      };
 
-     console.log("Numbers: ", numbers);
+      console.log("Numbers: ", numbers);
 
-     numbers.forEach((number) => {
-       const take = (serialHolder +  ' ' + number);
-       setWholeWord((prev) => [...prev, take]);
-     })
+      numbers.forEach((number) => {
+        const take = (serialHolder + ' ' + number);
+        setWholeWord((prev) => [...prev, take]);
+      });
 
-      const currentDatex = new Date();
       await axios.post(`${url}/add-serial-holder/${latestItemID}/${wholeWord}/${depreciation_rate_holder}/${state_of_item_holder}`);
-
+      window.alert("Done!!")
     } catch (error) {
       console.error("Error", error);
     }
@@ -607,9 +619,9 @@ function ItemsAdmin() {
     try {
       const response = await axios.get(`${url}/get-serial-number/${itemID}`);
       const result = response.data;
-      
+
       setAllSerials(result);
-      
+
     } catch (error) {
       console.error('Error fetching data: ', error);
     }
@@ -760,16 +772,16 @@ function ItemsAdmin() {
   const columns = [
     {
       name: 'Serial Number',
-      selector: row => row.serial_number 
+      selector: row => row.serial_number
     },
     {
       name: 'State of Item',
-      selector: row => row.state_of_item 
+      selector: row => row.state_of_item
 
     },
     {
       name: 'Depreciation Rate',
-      selector: row => row.depreciation_rate 
+      selector: row => row.depreciation_rate
     },
     {
       name: 'Date',
@@ -1176,25 +1188,29 @@ function ItemsAdmin() {
           </Modal>
         </div>
 
-        <Modal isOpen={isBulkModalOpen} onRequestClose={closeBulkModal} style={bulkModal}>
-          <div>
+        <Modal isOpen={isBulkModalOpen} onRequestClose={closeBulkModal} style={modal5}>
+          <div  style={{  gap: '90px' }}>
             <h1>Give Out Multiple Items</h1>
-            <input type='text' placeholder='Number' />
-            <p>To</p>
-            <input type='text' placeholder='Search...' onChange={handleFilterY} />
+            <input type='text' placeholder='Number' onChange={(e) => setNumberToGiveOut(e.target.value)} />
+            <p style={{ marginLeft: '8px' }}>To</p>
+            <input style={{ width: '85%' }} type='text' placeholder='Search For An Employee To Give This Item...' onChange={handleFilterX} />
           </div>
 
-          <div style={{ width: '55%', borderRadius: '12px', height: '34%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
-            {allEmployees.profile_picture ? <img src={ProfilePicture} style={profilePicture} /> : <img src={allEmployees.profile_picture} alt='profile_Picture' style={profilePicture} />}
-            <br />
-            <div style={{ color: 'black', flexDirection: 'column', justifyContent: 'center', display: 'flex', backgroundColor: 'rgb(163, 187, 197)', width: '75%', fontFamily: 'san-serif', marginTop: '3px', paddingLeft: '12px', borderRadius: '12px', height: '97%' }}>
-              <p>Name: {allEmployees.username}</p>
-              <p>Position: {allEmployees.role_name}</p>
-              <p>Department: {allEmployees.department_name}</p>
-              <p>Address: {allEmployees.address}</p>
-              <button onClick={() => { openListLoader(allEmployees.username) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
+
+         
+          {filteredEmployees.map((employee) => (
+            <div style={{ width: '55%', borderRadius: '12px', height: '24%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
+              <img src={ProfilePicture} style={profilePicture} /> 
+              <br />
+              <div style={{ color: 'black', flexDirection: 'column', justifyContent: 'center', display: 'flex', backgroundColor: 'rgb(163, 187, 197)', width: '75%', fontFamily: 'san-serif', marginTop: '3px', paddingLeft: '12px', borderRadius: '12px', height: '97%' }}>
+                <p>Name: {employee.username}</p>
+                <p>Position: {employee.role_name}</p>
+                <p>Department: {employee.department_name}</p>
+                <p>Address: {employee.address}</p>
+                <button onClick={() => { openListLoader(employee.username, employee.id) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
+              </div>
             </div>
-          </div>
+          ))}
 
         </Modal>
       </div>

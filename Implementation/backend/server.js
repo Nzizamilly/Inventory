@@ -308,7 +308,7 @@ ORDER BY
         console.error("Error sending file:", err);
         res.status(500).send("Error sending file");
       } else {
-        console.log("File sent successfully");
+        // console/.log("File s/ent successfully");
       }
     });
   });
@@ -626,6 +626,12 @@ app.post('/add-serial-holder/:itemID/:serials/:depreciation_rate_holder/:state_o
   const depreciation_rate_holder = req.params.depreciation_rate_holder;
   const state_of_item_holder = req.params.state_of_item_holder;
   const status = 'In';
+
+  console.log("Passed : ", serials,
+    itemID,
+    depreciation_rate_holder,
+    state_of_item_holder,
+    status)
 
   const sql = "INSERT INTO serial_number (serial_number, state_of_item, depreciation_rate, itemID, status, taker, quantity ) VALUES (?,?,?,?,?,NULL,1)";
 
@@ -1101,10 +1107,10 @@ app.get('/get-serial-number/:itemID', (req, res) => {
   const q = `SELECT * FROM serial_number WHERE itemID = ?  `;
 
   db.query(q, [itemID], (error, result) => {
-     result ? res.json(result) : console.error("Error: ", error);
+    result ? res.json(result) : console.error("Error: ", error);
   });
 });
- 
+
 
 app.get('/get-name-serial-number/:itemID', (req, res) => {
   const itemID = req.params.itemID;
@@ -3326,7 +3332,7 @@ app.delete('/delete-entire-attendant/:currentAttendantID', async (req, res) => {
 
 
 
-                     
+
 app.listen(port, () => {
   console.log("Connected to backend");
 });
