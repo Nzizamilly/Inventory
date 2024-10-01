@@ -278,6 +278,7 @@ function ItemsAdmin() {
   const [username, setUsername] = useState('');
   const [someCategoryName, setSomeCategoryName] = useState('')
   const [supplier, setSupplier] = useState([]);
+  const [selectedItemIDForMultipleCreation, setSelectedItemIDForMultipleCreation] = useState(null);
   const [selectedSupplier, setSelectedSupplier] = useState('');
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
   const [handleConfirmID, setHandleConfirmID] = useState(null);
@@ -295,7 +296,7 @@ function ItemsAdmin() {
   const [tab, setTab] = useState(1);
   const [serialHolderFrom, setSerialHolderFrom] = useState('')
   const [serialHolderTo, setSerialHolderTo] = useState('')
-  const [numberToGiveOut ,setNumberToGiveOut] = useState('')
+  const [numberToGiveOut, setNumberToGiveOut] = useState('')
   const [serialUpdateData, setSerialUpdateData] = useState({
     serial_number: '',
     state_of_item: '',
@@ -361,7 +362,7 @@ function ItemsAdmin() {
   };
 
   const openSerialModal = (itemId) => {
-    setSelectedItemID(itemId);
+    setSelectedItemIDForMultipleCreation(itemId);
     setIsSerialModalOpen(true);
   };
 
@@ -485,20 +486,6 @@ function ItemsAdmin() {
     setAnimationClass('');
   };
 
-  const [latestItemID, setLatestItemID] = useState('');
-
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const response = await axios.get(`${url}/get-latest-itemID`);
-        setLatestItemID(response.data.latest_id);
-      } catch (error) {
-        console.error("Error: ", error);
-      }
-    }
-    fetch();
-  }, [])
-
   const handleAddSimpleItemClick = async () => {
     try {
       console.log(newItem);
@@ -529,14 +516,12 @@ function ItemsAdmin() {
         numbers.push(i);
       };
 
-      console.log("Numbers: ", numbers);
-
       numbers.forEach((number) => {
         const take = (serialHolder + ' ' + number);
         setWholeWord((prev) => [...prev, take]);
       });
 
-      await axios.post(`${url}/add-serial-holder/${latestItemID}/${wholeWord}/${depreciation_rate_holder}/${state_of_item_holder}`);
+      await axios.post(`${url}/add-serial-holder/${selectedItemIDForMultipleCreation}/${wholeWord}/${depreciation_rate_holder}/${state_of_item_holder}`);
       window.alert("Done!!")
     } catch (error) {
       console.error("Error", error);
@@ -666,16 +651,14 @@ function ItemsAdmin() {
     const employeeID = localStorage.getItem('userID');
 
     const responsee = await axios.post(`${url}/insert-deletion-doer/${itemID}/${employeeID}`);
-    console.log(responsee.data);
     const response = await axios.delete(`${url}/delete-item/${itemID}`);
-    console.log(response.data);
-    console.log("Item was deleted Successfully...");
     setIsDeletingOpen(true);
+    setIsConfirmModalOpen(false);
+
 
     setInterval(() => {
       setIsDeletingOpen(false);
     }, 2700);
-    console.log("ITEMID :", itemID);
 
   };
 
@@ -1189,7 +1172,7 @@ function ItemsAdmin() {
         </div>
 
         <Modal isOpen={isBulkModalOpen} onRequestClose={closeBulkModal} style={modal5}>
-          <div  style={{  gap: '90px' }}>
+          <div style={{ gap: '90px' }}>
             <h1>Give Out Multiple Items</h1>
             <input type='text' placeholder='Number' onChange={(e) => setNumberToGiveOut(e.target.value)} />
             <p style={{ marginLeft: '8px' }}>To</p>
@@ -1197,10 +1180,10 @@ function ItemsAdmin() {
           </div>
 
 
-         
+
           {filteredEmployees.map((employee) => (
             <div style={{ width: '55%', borderRadius: '12px', height: '24%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
-              <img src={ProfilePicture} style={profilePicture} /> 
+              <img src={ProfilePicture} style={profilePicture} />
               <br />
               <div style={{ color: 'black', flexDirection: 'column', justifyContent: 'center', display: 'flex', backgroundColor: 'rgb(163, 187, 197)', width: '75%', fontFamily: 'san-serif', marginTop: '3px', paddingLeft: '12px', borderRadius: '12px', height: '97%' }}>
                 <p>Name: {employee.username}</p>

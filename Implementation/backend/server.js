@@ -14,6 +14,7 @@ const util = require('util');
 const port = process.env.PORT || 5500;
 
 const pdfTemplate = require('./');
+const { resolve } = require("path");
 
 const app = express();
 const server = http.createServer(app);
@@ -620,7 +621,9 @@ app.post('/add-items', (req, res) => {
   });
 });
 
-app.post('/add-serial-holder/:itemID/:serials/:depreciation_rate_holder/:state_of_item_holder', (req, res) => {
+app.post('/add-serial-holder/:itemID/:serials/:depreciation_rate_holder/:state_of_item_holder', async (req, res) => {
+
+
   const serials = req.params.serials.split(','); // Split serials by commas
   const itemID = Number(req.params.itemID);
   const depreciation_rate_holder = req.params.depreciation_rate_holder;
@@ -641,7 +644,8 @@ app.post('/add-serial-holder/:itemID/:serials/:depreciation_rate_holder/:state_o
         console.error("Error in inserting serial holder", error);
         res.status(500).send("Failed to insert serial number");
       } else {
-        console.log(`Serial ${serial.trim()} inserted successfully for ItemID ${itemID}`);
+        console.log("Result: ", result);
+        console.log(`Serial ${serial.trim()} ID ItemID ${itemID}`);
       }
     });
   });
