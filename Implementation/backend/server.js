@@ -1106,7 +1106,7 @@ app.get('/serial-number/:itemID', (req, res) => {
 
 app.get('/get-serial-number/:itemID', (req, res) => {
   const itemID = req.params.itemID;
-  console.log("ID Passed: ", itemID);
+  // console.log("ID Passed: ", itemID);
   // const q = 'SELECT * FROM serial_number WHERE itemID = ?';
   const q = `SELECT * FROM serial_number WHERE itemID = ?  `;
 

@@ -226,9 +226,10 @@ function ItemsAdmin() {
     },
     content: {
       width: '50%', // Adjust the width percentage
-      marginLeft: '395px', // Remove or adjust marginLeft
+      marginLeft: '295px', // Remove or adjust marginLeft
       height: 'auto',
       border: 'none',
+      fontFamily: "'Arial', sans-serif",
       borderRadius: '12px',
       gap: '2%', // Remove or adjust gap
       color: 'black',
@@ -277,6 +278,7 @@ function ItemsAdmin() {
   const [filteredCategories, setFilteredCategories] = useState(categories);
   const [username, setUsername] = useState('');
   const [someCategoryName, setSomeCategoryName] = useState('')
+  const [wholeWord, setWholeWord] = useState([])
   const [supplier, setSupplier] = useState([]);
   const [selectedItemIDForMultipleCreation, setSelectedItemIDForMultipleCreation] = useState(null);
   const [selectedSupplier, setSelectedSupplier] = useState('');
@@ -433,6 +435,12 @@ function ItemsAdmin() {
     takeID(username);
   };
 
+  const openListLoaderForMany = (employee) => {
+    setIsListLoaderOpen(true);
+    setTakerUserName(username);
+    takeIDs(employee.id);
+  };
+
   const closeListLoader = () => {
     setIsListLoaderOpen(false);
   };
@@ -505,7 +513,37 @@ function ItemsAdmin() {
     }
   };
 
-  const [wholeWord, setWholeWord] = useState([])
+  const takeIDs = async(employee) => {
+    const requestor = employee.employee_username;
+    const item = employee.name;
+    const amount = numberToGiveOut;
+    const employeeID = employee.id;
+
+    try {
+
+      const response = await axios.put(`${url}/change-status-from-notifications/${requestor}/${item}/${amount}/${employeeID}`);
+      const result = response.data;
+
+      if (result === "Given Out") {
+
+        socket.emit("Send Approved Email", employee);
+
+        const responsee = await axios.put(`${url}/change-request-stockStatus/${employeeID}`);
+        console.log("Responsee: ", responsee.data);
+
+      } else {
+        window.alert("Insuffiencient Amount To Give Out");
+      }
+
+      setInterval(() => {
+        setIsListLoaderOpen(false);
+      }, 2700);
+
+    } catch (error) {
+      console.error("Error: ", error);
+    };
+  }
+
 
   const handleSendMultipleSerials = async () => {
     try {
@@ -598,7 +636,6 @@ function ItemsAdmin() {
     };
   };
 
-  const [serialLength, setSerialLength] = useState('');
 
   const fetchNumberOfItemss = async (itemID) => {
     try {
@@ -1070,7 +1107,7 @@ function ItemsAdmin() {
           <Modal isOpen={isInfoModalOpen} onRequestClose={closeInfoModal} style={modalStyles}>
             <h1>
               {/* {getNom.length > 0 ? <span>{getNom[0].itemName}</span> : "Loading..."}: {totalSerialCount} */}
-              {getNom.length > 0 ? <span>{getNom[0].itemName}</span> : "Loading..."}: {serialLength}
+              {getNom.length > 0 ? <span>{getNom[0].itemName} : {totalSerialCount} </span> : "Loading..."}
             </h1>
             <div style={{ width: '70%', display: 'flex', justifyContent: 'center', gap: '12px', flexDirection: 'inline' }}>
               <input type='text' placeholder='Search By Serial Number' onChange={handleFilter} />
@@ -1190,7 +1227,7 @@ function ItemsAdmin() {
                 <p>Position: {employee.role_name}</p>
                 <p>Department: {employee.department_name}</p>
                 <p>Address: {employee.address}</p>
-                <button onClick={() => { openListLoader(employee.username, employee.id) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
+                <button onClick={() => { openListLoaderForMany(employee) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
               </div>
             </div>
           ))}
