@@ -951,6 +951,20 @@ function ItemsAdmin() {
     setFilteredCategories(categories);
   }, [categories]);
 
+
+  const [filteredSerialNumbers, setFilteredSerialNumbers] = useState([]);
+
+  const handleFilterSerial = (event) => {
+    const newData = allSerials.filter((row) => {
+      return row.serial_number.toLowerCase().includes(event.target.value.toLowerCase());
+    });
+    setFilteredSerialNumbers(newData);
+  };
+
+  useEffect(() => {
+    setFilteredSerialNumbers(allSerials);
+  }, [allSerials]);
+
   useEffect(() => {
     setRecords(getEm);
   }, [getEm]);
@@ -1110,13 +1124,13 @@ function ItemsAdmin() {
               {getNom.length > 0 ? <span>{getNom[0].itemName} : {totalSerialCount} </span> : "Loading..."}
             </h1>
             <div style={{ width: '70%', display: 'flex', justifyContent: 'center', gap: '12px', flexDirection: 'inline' }}>
-              <input type='text' placeholder='Search By Serial Number' onChange={handleFilter} />
+              <input type='text' placeholder='Search By Serial Number' onChange={handleFilterSerial} />
               <button onClick={() => openBulkModal()}>Bulk</button>
             </div>
             <br />
             <DataTable
               columns={columns}
-              data={allSerials}
+              data={filteredSerialNumbers}
               pagination
             ></DataTable>
           </Modal>
