@@ -444,7 +444,7 @@ ORDER BY
   })
 
   socket.on("Send Approved Email", (messageData) => {
-    console.log("Object to be sent", messageData);
+    // console.log("Object to be sent", messageData);
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -1108,7 +1108,7 @@ app.get('/get-serial-number/:itemID', (req, res) => {
   const itemID = req.params.itemID;
   // console.log("ID Passed: ", itemID);
   // const q = 'SELECT * FROM serial_number WHERE itemID = ?';
-  const q = `SELECT * FROM serial_number WHERE itemID = ?  `;
+  const q = `SELECT * FROM serial_number WHERE itemID = ? ORDER BY serial_number ASC;   `;
 
   db.query(q, [itemID], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
@@ -1266,8 +1266,8 @@ app.get('/get-total-number/:id', (req, res) => {
 app.put('/update-serial-status/:id/:status', (req, res) => {
   const id = req.params.id
   const status = req.params.status
-  console.log("Status: ", status);
-  console.log("ID: ", id);
+  // console.log("Status: ", status);
+  // console.log("ID: ", id);
   const q = `UPDATE serial_number set status = ?, taker = '' WHERE id = ?`;
   const values = [status, id]
   db.query(q, values, (error, result) => {
@@ -1283,9 +1283,9 @@ app.put('/update-serial-status/:IDTaken/:status/:taker', async (req, res) => {
   const id = req.params.IDTaken
   const status = req.params.status
   const taker = req.params.taker
-  console.log("Status: ", status);
-  console.log("ID: ", id);
-  console.log("Taker Name: ", taker);
+  // console.log("Status: ", status);
+  // console.log("ID: ", id);
+  // console.log("Taker Name: ", taker);
 
   const getEmployeeID = (id) => {
     return new Promise((resolve, reject) => {
@@ -2504,6 +2504,56 @@ app.put('/change-status-from-notifications/:requestor/:item/:amount/:rowID', asy
   }
 });
 
+app.put('/change-status-from-notifications-for-bulk/:employeeID/:item/:amount/:rowID', async (req, res) => {
+
+  const requestor = req.params.employeeID;
+  const item = req.params.item;
+  const requiredAmount = parseInt(req.params.amount);
+
+
+  const getExactAmount = (item) => {
+    return new Promise((resolve, reject) => {
+      const q = `SELECT COUNT(*) AS count FROM serial_number WHERE status = 'In' AND itemID = ?;`;
+      const value = [item];
+
+      db.query(q, value, (error, result) => {
+        if (error) {
+          console.error("Error:", error);
+          reject(error);
+        } else {
+          // console.log("Result:", result);
+          // Ensure that result is an array and has at least one element
+          if (Array.isArray(result) && result.length > 0) {
+            // Resolve with the count value
+            resolve(result[0].count);
+          } else {
+            reject(new Error("No result found"));
+          }
+        }
+      });
+    });
+  };
+
+  const exactAmount = await getExactAmount(item);
+
+  if (exactAmount >= requiredAmount) {
+
+    const updateQuery = `UPDATE serial_number 
+        SET status = 'Out', taker = ?  
+        WHERE itemID = ? 
+        AND status = 'In' 
+        ORDER BY serial_number ASC
+        LIMIT ?;`;
+    const updateValues = [requestor, item, requiredAmount];
+
+    db.query(updateQuery, updateValues, (error, result) => {
+      result ? res.json("Given Out") : console.error("Error: ", error);
+    });
+  } else {
+    res.json("Not enough items to give out.");
+  }
+});
+
 app.put('/change-status-from-notifications-for-company/:requestor/:item/:amount/:company', async (req, res) => {
 
   const requestor = req.params.requestor;
@@ -2536,11 +2586,15 @@ app.put('/change-status-from-notifications-for-company/:requestor/:item/:amount/
 
   const exactAmount = await getExactAmount(item);
 
+  console.log("Got exact amount: ", exactAmount)
+
   if (exactAmount >= requiredAmount) {
+
+    console.log("Entered Giving Out Process!!!")
 
     const updateQuery = `UPDATE serial_number SET status = 'Out',  taker = ?, companyID = ?  WHERE itemID = ? AND status = 'In' LIMIT ?;`;
     const updateValues = [requestor, company, item, requiredAmount];
-
+     console.log("Given Out!!");
     db.query(updateQuery, updateValues, (error, result) => {
       result ? res.json("Given Out") : console.error("Error: ", error);
     });

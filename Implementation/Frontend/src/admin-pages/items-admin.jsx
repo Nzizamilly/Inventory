@@ -196,27 +196,21 @@ function ItemsAdmin() {
     },
   };
 
-  const bulkModal = {
-    overlay: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    content: {
-      width: '43%',
-      marginLeft: '385px',
-      height: '72vh',
-      border: 'none',
-      borderRadius: '12px',
-      gap: '23px',
-      color: "black",
-      padding: '12px 0px',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-  };
+
+  const bulker = {
+    color: 'black',
+    flexDirection: 'column',
+    fontFamily: "'Arial', sans-serif",
+    justifyContent: 'center',
+    display: 'flex',
+    backgroundColor: 'rgb(163, 187, 197)',
+    width: '75%',
+    marginTop: '3px',
+    paddingLeft: '12px',
+    borderRadius: '12px',
+    height: '97%'
+  }
+
 
   const modal5 = {
     overlay: {
@@ -264,7 +258,6 @@ function ItemsAdmin() {
   const [totalSerialCount, setTotalSerialCount] = useState(0);
   const [serialNumberForDown, setSerialNumberForDown] = useState('');
   const [getEm, setGetEm] = useState([]);
-  const [getEm2, setGetEm2] = useState([]);
   const [allSerials, setAllSerials] = useState([])
   const [IDTaken, setIDTaken] = useState();
   const [loading, setLoading] = useState(true);
@@ -296,6 +289,8 @@ function ItemsAdmin() {
   const [serialHolder, setSerialHolder] = useState('');
   const [depreciation_rate_holder, setDepreciation_rate_holder] = useState('')
   const [tab, setTab] = useState(1);
+  const [requiredAmountBulk, setRequiredAmountBulk] = useState('');
+  const [requestorBulk, setRequestorBulk] = useState('')
   const [serialHolderFrom, setSerialHolderFrom] = useState('')
   const [serialHolderTo, setSerialHolderTo] = useState('')
   const [numberToGiveOut, setNumberToGiveOut] = useState('')
@@ -311,6 +306,9 @@ function ItemsAdmin() {
 
   const closeBulkModal = () => {
     setIsBulkModalOpen(false);
+    setInterval(() => {
+      setIsListLoaderOpen(false);
+    }, 2700);
   };
 
   const openDeletingItem = (itemID) => {
@@ -393,6 +391,7 @@ function ItemsAdmin() {
 
   const openInfoModal = async (itemId) => {
     try {
+
       setSelectedItemID(itemId);
       setLoadingInfo(true);
       fetchNumberOfItems(itemId);
@@ -438,7 +437,7 @@ function ItemsAdmin() {
   const openListLoaderForMany = (employee) => {
     setIsListLoaderOpen(true);
     setTakerUserName(username);
-    takeIDs(employee.id);
+    takeIDs(employee);
   };
 
   const closeListLoader = () => {
@@ -513,15 +512,18 @@ function ItemsAdmin() {
     }
   };
 
-  const takeIDs = async(employee) => {
-    const requestor = employee.employee_username;
-    const item = employee.name;
+
+  const takeIDs = async (employee) => {
+    const requestor = employee.username;
+    setRequestorBulk(requestor);
+    const item = selectedItemID;
     const amount = numberToGiveOut;
+    setRequiredAmountBulk(amount)
     const employeeID = employee.id;
 
     try {
 
-      const response = await axios.put(`${url}/change-status-from-notifications/${requestor}/${item}/${amount}/${employeeID}`);
+      const response = await axios.put(`${url}/change-status-from-notifications-for-bulk/${employeeID}/${item}/${amount}/${employeeID}`);
       const result = response.data;
 
       if (result === "Given Out") {
@@ -535,9 +537,11 @@ function ItemsAdmin() {
         window.alert("Insuffiencient Amount To Give Out");
       }
 
-      setInterval(() => {
-        setIsListLoaderOpen(false);
-      }, 2700);
+      closeBulkModal();
+
+      // setInterval(() => {
+      //   setIsListLoaderOpen(false);
+      // }, 2700);
 
     } catch (error) {
       console.error("Error: ", error);
@@ -1198,7 +1202,7 @@ function ItemsAdmin() {
 
             {filteredEmployees.map((employee) => (
               <div style={{ width: '55%', borderRadius: '12px', height: '24%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
-                {employee.profile_picture ? <img src={ProfilePicture} style={profilePicture} /> : <img src={employee.profile_picture} alt='profile_Picture' style={profilePicture} />}
+                <img src={ProfilePicture} style={profilePicture} />
                 <br />
                 <div style={{ color: 'black', flexDirection: 'column', justifyContent: 'center', display: 'flex', backgroundColor: 'rgb(163, 187, 197)', width: '75%', fontFamily: 'san-serif', marginTop: '3px', paddingLeft: '12px', borderRadius: '12px', height: '97%' }}>
                   <p>Name: {employee.username}</p>
@@ -1216,7 +1220,7 @@ function ItemsAdmin() {
               <RiseLoader color={'#3444e5'} loading={loading} size={11} />
               <div style={{ fontFamily: 'sans-serif' }}>
                 <br />
-                <p>Giving {serialNumberForDown} to {username}...</p>
+                <p>Giving {serialNumberForDown || requiredAmountBulk} to {username || requestorBulk}...</p>
               </div>
             </div>
           </Modal>
@@ -1236,12 +1240,12 @@ function ItemsAdmin() {
             <div style={{ width: '55%', borderRadius: '12px', height: '24%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
               <img src={ProfilePicture} style={profilePicture} />
               <br />
-              <div style={{ color: 'black', flexDirection: 'column', justifyContent: 'center', display: 'flex', backgroundColor: 'rgb(163, 187, 197)', width: '75%', fontFamily: 'san-serif', marginTop: '3px', paddingLeft: '12px', borderRadius: '12px', height: '97%' }}>
+              <div style={bulker}>
                 <p>Name: {employee.username}</p>
                 <p>Position: {employee.role_name}</p>
                 <p>Department: {employee.department_name}</p>
                 <p>Address: {employee.address}</p>
-                <button onClick={() => { openListLoaderForMany(employee) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
+                <button onClick={() => { openListLoaderForMany(employee) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'white', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
               </div>
             </div>
           ))}
