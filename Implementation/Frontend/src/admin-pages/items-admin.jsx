@@ -13,6 +13,7 @@ import DataTable from 'react-data-table-component';
 import HashLoader from "react-spinners/HashLoader";
 import io from 'socket.io-client';
 import RiseLoader from "react-spinners/RiseLoader";
+import FadeLoader from "react-spinners/FadeLoader";
 import Keys from '../keys';
 import Left from '../images/left-arrow.svg';
 import Right from '../images/right-arrow.svg';
@@ -190,6 +191,7 @@ function ItemsAdmin() {
       color: "black",
       padding: '12px 0px',
       display: 'flex',
+      backgroundColor: 'none',
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
@@ -293,13 +295,23 @@ function ItemsAdmin() {
   const [requiredAmountBulk, setRequiredAmountBulk] = useState('');
   const [requestorBulk, setRequestorBulk] = useState('')
   const [serialHolderFrom, setSerialHolderFrom] = useState('')
-  const [serialHolderTo, setSerialHolderTo] = useState('')
+  const [serialHolderTo, setSerialHolderTo] = useState('');
+  const [isSomeLoaderOpen, setIsSomeLoaderOpen] = useState(false);
   const [numberToGiveOut, setNumberToGiveOut] = useState('')
   const [serialUpdateData, setSerialUpdateData] = useState({
     serial_number: '',
     state_of_item: '',
     depreciation_rate: '',
   });
+
+  const openSomeLoader = () => {
+    setIsSomeLoaderOpen(true);
+  }
+
+  const closeSomeLoader = () => {
+    setIsSomeLoaderOpen(false);
+
+  }
 
   const openBulkModal = () => {
     setIsBulkModalOpen(true);
@@ -552,24 +564,29 @@ function ItemsAdmin() {
 
   const handleSendMultipleSerials = async () => {
     try {
-
       const numbers = [];
+      const wholeWordArray = [];
 
+      // Generate numbers from serialHolderFrom to serialHolderTo
       for (let i = serialHolderFrom; i >= serialHolderTo; i--) {
         numbers.push(i);
-      };
+      }
 
+      // Combine serialHolder with each number to create the serials
       numbers.forEach((number) => {
-        const take = (serialHolder + ' ' + number);
-        setWholeWord((prev) => [...prev, take]);
+        const take = serialHolder + ' ' + number;
+        wholeWordArray.push(take);
       });
 
-      await axios.post(`${url}/add-serial-holder/${selectedItemIDForMultipleCreation}/${wholeWord}/${depreciation_rate_holder}/${state_of_item_holder}`);
-      window.alert("Done!!")
+      // Send the serials data in a single Axios request
+      await axios.post(`${url}/add-serial-holder/${selectedItemIDForMultipleCreation}/${wholeWordArray}/${depreciation_rate_holder}/${state_of_item_holder}`);
+
+      window.alert("Done!!");
     } catch (error) {
       console.error("Error", error);
     }
   };
+
 
   // console.log("Whole Word: ", wholeWord);
 
@@ -752,10 +769,9 @@ function ItemsAdmin() {
   const takeID = async (username) => {
     const status = 'Out';
     const taker = username;
-    
+
     setUsername(taker);
 
-    setIsInfoModalOpen(false);
 
     const response = await axios.put(`${url}/update-serial-status/${IDTaken}/${status}/${username}`);
     const result = response.data;
@@ -770,19 +786,24 @@ function ItemsAdmin() {
     }, 2700);
   };
 
+
   const handleSerialStatus = async (row, status, rowss) => {
 
     if (status === 'Out') {
       const status = 'In';
       try {
 
-        setIsInfoModalOpen(false);
+        openSomeLoader();
+
         const response = await axios.put(`${url}/update-serial-status/${row}/${status}`);
         const result = response.data;
         const message = 'Successfully Updated!!!'
         if (result === message) {
           openInfoModal(selectedItemID);
         }
+
+        closeSomeLoader();
+
 
       } catch (error) {
         console.error("Error", error);
@@ -1234,6 +1255,18 @@ function ItemsAdmin() {
               </div>
             </div>
           </Modal>
+
+          <Modal isOpen={isSomeLoaderOpen} onRequestClose={closeSomeLoader} style={modal} >
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
+              <FadeLoader color={'#1adf4f'} loading={loading} size={11} />
+              <div style={{ fontFamily: 'sans-serif' }}>
+                <br />
+                <p>Please Wait...</p>
+              </div>
+            </div>
+          </Modal>
+
+
         </div>
 
         <Modal isOpen={isBulkModalOpen} onRequestClose={closeBulkModal} style={modal5}>
@@ -1243,7 +1276,6 @@ function ItemsAdmin() {
             <p style={{ marginLeft: '8px' }}>To</p>
             <input style={{ width: '85%' }} type='text' placeholder='Search For An Employee To Give This Item...' onChange={handleFilterX} />
           </div>
-
 
 
           {filteredEmployees.map((employee) => (
