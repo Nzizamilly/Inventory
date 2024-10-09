@@ -271,6 +271,7 @@ function ItemsAdmin() {
   const [filteredCategories, setFilteredCategories] = useState(categories);
   const [username, setUsername] = useState('');
   const [someCategoryName, setSomeCategoryName] = useState('')
+  const [state_of_item_holder, setState_of_item_holder] = useState('')
   const [wholeWord, setWholeWord] = useState([])
   const [supplier, setSupplier] = useState([]);
   const [selectedItemIDForMultipleCreation, setSelectedItemIDForMultipleCreation] = useState(null);
@@ -751,11 +752,18 @@ function ItemsAdmin() {
   const takeID = async (username) => {
     const status = 'Out';
     const taker = username;
+    
     setUsername(taker);
-    console.log("Status: ", status);
-    console.log("Taker: ", taker);
+
+    setIsInfoModalOpen(false);
+
     const response = await axios.put(`${url}/update-serial-status/${IDTaken}/${status}/${username}`);
-    console.log("Response: ", response.data);
+    const result = response.data;
+    const message = 'Successfully Updated!!!'
+
+    if (result === message) {
+      openInfoModal(selectedItemID);
+    };
 
     setInterval(() => {
       closeListLoader();
@@ -767,10 +775,15 @@ function ItemsAdmin() {
     if (status === 'Out') {
       const status = 'In';
       try {
-        console.log("Status: ", status);
-        console.log("ID: ", row);
+
+        setIsInfoModalOpen(false);
         const response = await axios.put(`${url}/update-serial-status/${row}/${status}`);
-        console.log(response);
+        const result = response.data;
+        const message = 'Successfully Updated!!!'
+        if (result === message) {
+          openInfoModal(selectedItemID);
+        }
+
       } catch (error) {
         console.error("Error", error);
       };
@@ -781,7 +794,6 @@ function ItemsAdmin() {
         setIDTaken(row);
         openTakerModal();
         setSerialNumberForDown(rowss.serial_number);
-        const status = 'Out';
         console.log("Username Going: ", username);
       } catch (error) {
         console.error("Error", error);
@@ -791,7 +803,6 @@ function ItemsAdmin() {
     };
   };
 
-  const [state_of_item_holder, setState_of_item_holder] = useState('')
 
   const columns = [
     {
@@ -1124,7 +1135,6 @@ function ItemsAdmin() {
 
           <Modal isOpen={isInfoModalOpen} onRequestClose={closeInfoModal} style={modalStyles}>
             <h1>
-              {/* {getNom.length > 0 ? <span>{getNom[0].itemName}</span> : "Loading..."}: {totalSerialCount} */}
               {getNom.length > 0 ? <span>{getNom[0].itemName} : {totalSerialCount} </span> : "Loading..."}
             </h1>
             <div style={{ width: '70%', display: 'flex', justifyContent: 'center', gap: '12px', flexDirection: 'inline' }}>

@@ -1266,15 +1266,14 @@ app.get('/get-total-number/:id', (req, res) => {
 app.put('/update-serial-status/:id/:status', (req, res) => {
   const id = req.params.id
   const status = req.params.status
-  // console.log("Status: ", status);
   // console.log("ID: ", id);
   const q = `UPDATE serial_number set status = ?, taker = '' WHERE id = ?`;
   const values = [status, id]
   db.query(q, values, (error, result) => {
-    if (error) {
+    if (error) {  
       console.error("Error", error);
-    } else {
-      return result;
+    } else {          
+      res.json("Successfully Updated!!!");
     };
   });
 });
@@ -1307,7 +1306,6 @@ app.put('/update-serial-status/:IDTaken/:status/:taker', async (req, res) => {
   try {
     const result = await getEmployeeID(taker);
     const takerID = result[0].id;
-    console.log("Taker ID: ", takerID);
 
     if (takerID !== null) {
       const updateQuery = `UPDATE serial_number SET status = ?, taker = ?, quantity = GREATEST(quantity - 1, 0) WHERE id = ?`;
@@ -1318,8 +1316,7 @@ app.put('/update-serial-status/:IDTaken/:status/:taker', async (req, res) => {
           console.error("Error", error);
           res.status(500).json({ error: "Internal Server Error" });
         } else {
-          console.log("Serial Number Changed for taker and status...... ");
-          res.status(200).json({ message: "Update successful" });
+          res.json("Successfully Updated!!!")
         };
       });
     } else {
