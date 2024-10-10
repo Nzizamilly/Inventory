@@ -256,7 +256,7 @@ ORDER BY
     console.log("Things: ", messageData, status);
 
     const companyID = messageData.company;
-    const itemID = messageData.itemID;
+    const itemID = parseInt(messageData.itemID);
     const amount = messageData.amount;
     const requestor = messageData.requestor;
     const date = new Date();
