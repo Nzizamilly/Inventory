@@ -6,6 +6,7 @@ import AddItem from '../images/addItem.svg'
 import Modal from 'react-modal';
 import Logo from '../images/logo.svg';
 import { io } from 'socket.io-client';
+import SyncLoader from "react-spinners/SyncLoader";
 import axios from 'axios';
 import Keys from '../keys';
 import { storage } from '../firebase';
@@ -183,6 +184,53 @@ function Company() {
         },
     };
 
+    const modal = {
+        overlay: {
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        content: {
+          width: '25%',
+          marginLeft: '495px',
+          height: '76vh',
+          backgroundColor: 'rgb(94, 120, 138)',
+          border: 'none',
+          borderRadius: '12px',
+          gap: '23px',
+          color: "black",
+          padding: '12px 0px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+      };
+
+    const info = {
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgb(163, 187, 197)',
+        display: 'flex',
+        flexDirection: 'inline'
+    };
+
+    const issue = {
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgb(163, 187, 197)',
+        display: 'flex',
+        flexDirection: 'inline'
+    };
+
+    const report = {
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgb(163, 187, 197)',
+        display: 'flex',
+        flexDirection: 'inline'
+    }
+
     const logoButton = {
         width: '25%',
         gap: '9px',
@@ -199,6 +247,98 @@ function Company() {
     const [AddModalOpen, isAddModalOpen] = useState(false);
     const [logo, setLogo] = useState();
     const [latestId, setLatestID] = useState('');
+    const [infoCompany, setInfoCompany] = useState([]);
+    const [companyImages, setCompanyImages] = useState({});
+    const [bringAll, setBringAll] = useState([]);
+    const [companyModalOpen, isCompanyModalOpen] = useState(false);
+    const [oneCompanyID, setOneCompanyID] = useState('');
+    const [isDeliveryNoteOpen, setIsDeliveryNoteOpen] = useState(false);
+    const [oneCompany, setOneCompany] = useState([]);
+    const [imageForOneCompany, setImageForOneCompany] = useState('');
+    const [category, setCategory] = useState([]);
+    const [selectedItem, setSelectedItem] = useState('');
+    const [tab, setTab] = useState(0);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [item, setItem] = useState([]);
+    const [supervisor, setSupervisor] = useState([]);
+    const [selectedSupervisor, setSelectedSupervisor] = useState('');
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [itemName, setItemName] = useState('');
+    const [CompanyName, setCompanyName] = useState('');
+    const [date, setDate] = useState('');
+    const [amount, setAmount] = useState('')
+    const [pdf, setPDF] = useState('');
+    const [IDForDeliveryUseEffect, setIDForDeliveryUseEffect] = useState('')
+    const [quantity, setQuantity] = useState();
+    const [totalIn, setTotalIn] = useState([]);
+    const [isIssueLoaderOpen, setIssueLoaderOpen] = useState(false)
+
+
+    const openIssueLoader = (ID) => {
+        setIssueLoaderOpen(true);
+        handleIssue(ID);
+    }
+
+    const closeIssueLoader = () => {
+        setIssueLoaderOpen(false);
+    }
+
+
+    const openDeliveryNote = (ID) => {
+        setIsDeliveryNoteOpen(true);
+        handleDeliveryNoteForOneCompany(ID);
+        setIDForDeliveryUseEffect(ID);
+    };
+
+    const closeDeliveryNoteModal = () => {
+        setIsDeliveryNoteOpen(false);
+    };
+
+    const openCompanyModal = (ID) => {
+        isCompanyModalOpen(true);
+        setOneCompanyID(ID);
+        fetchOneCompany(ID);
+
+    };
+
+    const closeCompanyModal = () => {
+        setImageForOneCompany('')
+        setData('');
+        setOneCompanyID('');
+        setItemName('');
+        setDate('');
+        setAmount('');
+        setPDF('');
+        isCompanyModalOpen(false);
+    };
+
+
+
+
+
+    const fetchOneCompany = async (ID) => {
+
+        const imageRef = ref(storage, `companyLogos/${ID}`);
+        const imageURL = await getDownloadURL(imageRef);
+        setImageForOneCompany(imageURL);
+
+        try {
+            const responsee = await axios.get(`${url}/gets-one/${ID}`);
+            setData(responsee.data);
+            console.log("Hittttttttttt");
+        } catch (error) {
+            // console.error("Error", error);
+        };
+
+        try {
+            const response = await axios.get(`${url}/get-one-company/${ID}`);
+
+            setOneCompany(response.data);
+        } catch (error) {
+            console.error("Error: ", error)
+        };
+    };
 
     const updateFileName = (event) => {
         const selectedLogo = event.target.files[0];
@@ -248,10 +388,24 @@ function Company() {
         fetchIDs();
     }, []);
 
-    const [infoCompany, setInfoCompany] = useState([]);
 
-    const [companyImages, setCompanyImages] = useState({});
+    useEffect(() => {
+        const fetch = async () => {
+            try {
+                const storage = getStorage();
+                const listRef = ref(storage, 'companyLogos/');
+                const res = await listAll(listRef);
+                // console.log("Files fetched: ", res.items);
+                const names = res.items.map((itemRef) => itemRef.name);
+                // console.log("File names: ", names);
 
+                setBringAll(names);
+            } catch (error) {
+                console.error("Error: ", error);
+            };
+        }
+        fetch();
+    }, []);
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
@@ -281,121 +435,6 @@ function Company() {
         fetchCompanies();
     }, [url]);
 
-    const [bringAll, setBringAll] = useState([]);
-
-    useEffect(() => {
-        const fetch = async () => {
-            try {
-                const storage = getStorage();
-                const listRef = ref(storage, 'companyLogos/');
-                const res = await listAll(listRef);
-                // console.log("Files fetched: ", res.items);
-                const names = res.items.map((itemRef) => itemRef.name);
-                // console.log("File names: ", names);
-
-                setBringAll(names);
-            } catch (error) {
-                console.error("Error: ", error);
-            };
-        }
-        fetch();
-    }, []);
-
-    // console.log("All Images from Firebase", bringAll);
-
-    const [companyModalOpen, isCompanyModalOpen] = useState(false);
-    const [oneCompanyID, setOneCompanyID] = useState('');
-    const [isDeliveryNoteOpen, setIsDeliveryNoteOpen] = useState(false);
-    const [renner, setRenner] = useState();
-
-    const [IDForDeliveryUseEffect, setIDForDeliveryUseEffect] = useState('')
-
-    const openDeliveryNote = (ID) => {
-        setIsDeliveryNoteOpen(true);
-        handleDeliveryNoteForOneCompany(ID);
-        setIDForDeliveryUseEffect(ID);
-    };
-
-    const closeDeliveryNoteModal = () => {
-        setIsDeliveryNoteOpen(false);
-    };
-
-    const openCompanyModal = (ID) => {
-        isCompanyModalOpen(true);
-        setOneCompanyID(ID);
-        fetchOneCompany(ID);
-
-    };
-
-    const closeCompanyModal = () => {
-        setImageForOneCompany('')
-        setData('');
-        setOneCompany('');
-        setOneCompanyID('');
-        setItemName('');
-        setDate('');
-        setAmount('');
-        setPDF('');
-        isCompanyModalOpen(false);
-    };
-
-    const [tab, setTab] = useState(0);
-
-    const info = {
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgb(163, 187, 197)',
-        display: 'flex',
-        flexDirection: 'inline'
-    };
-
-    const issue = {
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgb(163, 187, 197)',
-        display: 'flex',
-        flexDirection: 'inline'
-    };
-
-    const report = {
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgb(163, 187, 197)',
-        display: 'flex',
-        flexDirection: 'inline'
-    }
-
-    const [oneCompany, setOneCompany] = useState([]);
-    const [imageForOneCompany, setImageForOneCompany] = useState('');
-
-    const fetchOneCompany = async (ID) => {
-
-        const imageRef = ref(storage, `companyLogos/${ID}`);
-        const imageURL = await getDownloadURL(imageRef);
-        setImageForOneCompany(imageURL);
-
-        try {
-            const responsee = await axios.get(`${url}/gets-one/${ID}`);
-            setData(responsee.data);
-            console.log("Hittttttttttt");
-        } catch (error) {
-            // console.error("Error", error);
-        };
-
-        try {
-            const response = await axios.get(`${url}/get-one-company/${ID}`);
-
-            setOneCompany(response.data);
-        } catch (error) {
-            console.error("Error: ", error)
-        };
-
-
-
-    };
-
-    const [category, setCategory] = useState([]);
-
     useEffect(() => {
         const fetchCategory = async () => {
             try {
@@ -408,7 +447,6 @@ function Company() {
         fetchCategory();
     }, []);
 
-    const [selectedCategory, setSelectedCategory] = useState('');
 
     const handleCategoryChange = (event) => {
         const selectedValue = event.target.value;
@@ -417,7 +455,6 @@ function Company() {
 
 
 
-    const [item, setItem] = useState([]);
 
     useEffect(() => {
         const fetchItem = async (selectedCategory) => {
@@ -433,14 +470,12 @@ function Company() {
         };
     }, [selectedCategory]);
 
-    const [selectedItem, setSelectedItem] = useState('');
 
     const handleItemChange = (event) => {
         const selectedValue = event.target.value;
         setSelectedItem(selectedValue);
     };
 
-    const [supervisor, setSupervisor] = useState([]);
 
     useEffect(() => {
         const fetchSuper = async () => {
@@ -454,20 +489,17 @@ function Company() {
         fetchSuper();
     }, []);
 
-    const [selectedSupervisor, setSelectedSupervisor] = useState('');
 
     const handleSupervisorChange = (event) => {
         const selectedValue = event.target.value;
         setSelectedSupervisor(selectedValue);
     };
 
-    const [quantity, setQuantity] = useState();
 
     const handleQuantity = (event) => {
         setQuantity(event.target.value)
     };
 
-    const [totalIn, setTotalIn] = useState([]);
 
     useEffect(() => {
         const bring = async () => {
@@ -481,20 +513,10 @@ function Company() {
         bring();
     }, [selectedItem]);
 
-    const [itemName, setItemName] = useState('');
-    const [CompanyName, setCompanyName] = useState('');
-    const [date, setDate] = useState('');
-    const [companyID, setComapnyID] = useState('');
-    const [amount, setAmount] = useState('')
-    const [pdf, setPDF] = useState('');
 
     const handleIssue = async (ID) => {
 
         try {
-            // const requestor = selectedSupervisor;
-            // const item = selectedItem;
-            // const amount = quantity;
-            // const company = ID;
 
             console.log("Numbers: ", totalIn.totalIn, quantity)
 
@@ -504,12 +526,7 @@ function Company() {
 
                 const data = (response.data);
                 console.log("Data: ", data)
-                // setItemName(data[0].name);
-                // setCompanyName(data[0].CompanyName);
-                // setComapnyID(data[0].id);
-                // const date = formatDate(data[0].date);
-                // setDate(date);
-                // setAmount(data[0].amount);
+
 
                 const date = new Date();
                 const messageDatas = {
@@ -526,10 +543,14 @@ function Company() {
 
                 // const post = await axios.post(`${url}/post-some`, messageDatas);
 
-                socket.emit("Company Insert", (messageDatas));
+                // socket.emit("Company Insert", (messageDatas));
 
-                const responsee = await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas);
-                console.log("Response: ", responsee.data);
+                // const responsee = await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas);
+                // console.log("Response: ", responsee.data);
+
+                setInterval(() => {
+                    setIssueLoaderOpen(false);
+                  }, 2700);
 
             } else {
                 window.alert("Insufficient Amount...");
@@ -540,20 +561,6 @@ function Company() {
     };
 
 
-    const [data, setData] = useState([]);
-
-    // useEffect(() => {
-
-    //     const bring = async () => {
-    //         try {
-    //             const response = await axios.get(`${url}/get-one/${oneCompanyID}`);
-    //             setData(response.data);
-    //         } catch (error) {
-    //             console.error("Error: ", error);
-    //         }
-    //     }
-    //     bring();
-    // }, [oneCompanyID, data]);
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -725,6 +732,7 @@ function Company() {
                                         </div>
                                     </div>
                                 ))}
+
                             </div>
                         </div>
                     </div>
@@ -763,7 +771,7 @@ function Company() {
                                 ))}
                             </select>
 
-                            <button style={{ backgroundColor: 'white', width: '20%' }} onClick={() => handleIssue(oneCompanyID)}>Issue Out</button>
+                            <button style={{ backgroundColor: 'white', width: '20%' }} onClick={() => openIssueLoader(oneCompanyID)}>Issue Out</button>
                             {/* <button style={{ backgroundColor: 'white', width: '20%' }} onClick={() => openDeliveryNote()}>Issue Out</button> */}
 
                         </div>
@@ -801,6 +809,16 @@ function Company() {
                     </div>
                 </div>
             </Modal>
+
+            <Modal isOpen={isIssueLoaderOpen} onRequestClose={closeIssueLoader} className={modal} >
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+              <SyncLoader color={'green'} loading={loading} size={19} />
+              <div style={{ fontFamily: 'sans-serif' }}>
+                <br />
+                <p>Please Wait...</p>
+              </div>
+            </div>
+          </Modal>
 
         </div>
     );
