@@ -802,7 +802,7 @@ function ItemsAdmin() {
           openInfoModal(selectedItemID);
         }
 
-        closeSomeLoader();
+        setIsSomeLoaderOpen(false);
 
 
       } catch (error) {
