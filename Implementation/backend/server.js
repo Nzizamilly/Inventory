@@ -1258,13 +1258,13 @@ app.get('/get-total-number/:id', (req, res) => {
 app.put('/update-serial-status/:id/:status', (req, res) => {
   const id = req.params.id
   const status = req.params.status
-  // console.log("ID: ", id);
-  const q = `UPDATE serial_number set status = ?, taker = '' WHERE id = ?`;
+  console.log("Passed: ", id, status);
+  const q = `UPDATE serial_number set status = ?, taker = '0' WHERE id = ?`;
   const values = [status, id]
   db.query(q, values, (error, result) => {
-    if (error) {  
+    if (error) {
       console.error("Error", error);
-    } else {          
+    } else {
       res.json("Successfully Updated!!!");
     };
   });
@@ -2583,7 +2583,7 @@ app.put('/change-status-from-notifications-for-company/:requestor/:item/:amount/
 
     const updateQuery = `UPDATE serial_number SET status = 'Out',  taker = ?, companyID = ?  WHERE itemID = ? AND status = 'In' LIMIT ?;`;
     const updateValues = [requestor, company, item, requiredAmount];
-     console.log("Given Out!!");
+    console.log("Given Out!!");
     db.query(updateQuery, updateValues, (error, result) => {
       result ? res.json("Given Out") : console.error("Error: ", error);
     });
