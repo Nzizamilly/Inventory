@@ -261,6 +261,8 @@ ORDER BY
     const requestor = messageData.requestor;
     const date = new Date();
 
+    console.log(`item ID is ${itemID}`)
+
     const sql = `INSERT INTO company_records (companyID,	itemID,	amount, employeeID,	status) VALUES (?, ?, ?, ?, ?)`;
     db.query(sql, [companyID, itemID, amount, requestor, status], (error, result) => {
       result ? console.log("Good: ", result) : console.error("Error: ", error);
