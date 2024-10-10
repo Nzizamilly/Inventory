@@ -203,6 +203,10 @@ function ItemTransactionsAdmin2() {
                 <p onMouseOver={() => openModal(row.taker)}>{row.username}</p>
             ),
         },
+        {
+            name: 'Company Holding',
+            selector: row => row.CompanyName
+        }
     ];
 
     const [isModalOpen, setIsModalOpen] = useState(false);

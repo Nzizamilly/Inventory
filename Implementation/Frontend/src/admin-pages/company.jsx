@@ -329,6 +329,13 @@ function Company() {
 
     const closeCompanyModal = () => {
         setImageForOneCompany('')
+        setData('');
+        setOneCompany('');
+        setOneCompanyID('');
+        setItemName('');
+        setDate('');
+        setAmount('');
+        setPDF('');
         isCompanyModalOpen(false);
     };
 
@@ -368,11 +375,23 @@ function Company() {
         setImageForOneCompany(imageURL);
 
         try {
+            const responsee = await axios.get(`${url}/gets-one/${ID}`);
+            setData(responsee.data);
+            console.log("Hittttttttttt");
+        } catch (error) {
+            // console.error("Error", error);
+        };
+
+        try {
             const response = await axios.get(`${url}/get-one-company/${ID}`);
+
             setOneCompany(response.data);
         } catch (error) {
             console.error("Error: ", error)
         };
+
+
+
     };
 
     const [category, setCategory] = useState([]);
@@ -442,10 +461,10 @@ function Company() {
         setSelectedSupervisor(selectedValue);
     };
 
-    const [quantity, setQuantity] = useState('');
+    const [quantity, setQuantity] = useState();
 
     const handleQuantity = (event) => {
-        setQuantity((prev) => ({ ...prev, [event.target.name]: event.target.value }));
+        setQuantity(event.target.value)
     };
 
     const [totalIn, setTotalIn] = useState([]);
@@ -456,7 +475,7 @@ function Company() {
                 const response = await axios.get(`${url}/get-total-in/${selectedItem}`);
                 setTotalIn(response.data);
             } catch (error) {
-                console.error("Error: ", error);
+                // console.error("Error: ", error);
             }
         };
         bring();
@@ -465,6 +484,7 @@ function Company() {
     const [itemName, setItemName] = useState('');
     const [CompanyName, setCompanyName] = useState('');
     const [date, setDate] = useState('');
+    const [companyID, setComapnyID] = useState('');
     const [amount, setAmount] = useState('')
     const [pdf, setPDF] = useState('');
 
@@ -473,40 +493,44 @@ function Company() {
         try {
             // const requestor = selectedSupervisor;
             // const item = selectedItem;
-            const amount = quantity.quantity;
+            // const amount = quantity;
             // const company = ID;
 
-            console.log("Numbers: ", totalIn.totalIn, amount)
+            console.log("Numbers: ", totalIn.totalIn, quantity)
 
-            if (totalIn.totalIn >= amount) {
+            if (totalIn.totalIn >= quantity) {
 
                 const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${ID}`);
 
                 const data = (response.data);
                 console.log("Data: ", data)
-                setItemName(data[0].name);
-                setCompanyName(data[0].CompanyName);
-                const date = formatDate(data[0].date);
-                setDate(date);
-                setAmount(data[0].amount);
+                // setItemName(data[0].name);
+                // setCompanyName(data[0].CompanyName);
+                // setComapnyID(data[0].id);
+                // const date = formatDate(data[0].date);
+                // setDate(date);
+                // setAmount(data[0].amount);
 
+                const date = new Date();
                 const messageDatas = {
-                    itemName: itemName,
-                    CompanyName: CompanyName,
+                    itemID: selectedItem,
+                    company: oneCompanyID,
+                    requestor: selectedSupervisor,
                     date: date,
-                    amount: amount,
+                    amount: quantity,
                 };
 
                 console.log("Passed: ", messageDatas);
 
-                // socket.emit("Go For Delivery", messageData);
+                // socket.emit("Go For Delivery", messageDatas);
 
-                const post = await axios.post(`${url}/post-some`, messageDatas);
+                // const post = await axios.post(`${url}/post-some`, messageDatas);
 
-                // socket.emit("Company Insert", (messageData));
+                socket.emit("Company Insert", (messageDatas));
 
-                // const response = await axios.put(`${url}/change-status-from-notifications-for-company/${requestor}/${item}/${amount}/${company}`);
-                // console.log("Response: ", response.data);
+                const responsee = await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas);
+                console.log("Response: ", responsee.data);
+
             } else {
                 window.alert("Insufficient Amount...");
             }
@@ -518,18 +542,18 @@ function Company() {
 
     const [data, setData] = useState([]);
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        const bring = async () => {
-            try {
-                const response = await axios.get(`${url}/get-one/${oneCompanyID}`);
-                setData(response.data);
-            } catch (error) {
-                console.error("Error: ", error);
-            }
-        }
-        bring();
-    }, [oneCompanyID, data]);
+    //     const bring = async () => {
+    //         try {
+    //             const response = await axios.get(`${url}/get-one/${oneCompanyID}`);
+    //             setData(response.data);
+    //         } catch (error) {
+    //             console.error("Error: ", error);
+    //         }
+    //     }
+    //     bring();
+    // }, [oneCompanyID, data]);
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -688,17 +712,20 @@ function Company() {
                         </div>
 
                         <div style={{ width: '40%', height: '70%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            {oneCompany.map(one => (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    <p>Name:{one.CompanyName}</p>
-                                    <p>Email:{one.email}</p>
-                                    <p>Number:{one.number}</p>
-                                    <div style={{ width: '100%', height: '20%', display: 'flex', flexDirection: 'inline', gap: '12px' }}>
-                                        <button style={{ borderRadius: '12px', width: '76%', backgroundColor: 'white' }}>Update</button>
-                                        <button style={{ borderRadius: '12px', width: '75%', backgroundColor: 'red' }}>Delete</button>
+                            <div>
+
+                                {oneCompany.map(one => (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                        <p>Name:{one.CompanyName}</p>
+                                        <p>Email:{one.email}</p>
+                                        <p>Number:{one.number}</p>
+                                        <div style={{ width: '100%', height: '20%', display: 'flex', flexDirection: 'inline', gap: '12px' }}>
+                                            <button style={{ borderRadius: '12px', width: '76%', backgroundColor: 'white' }}>Update</button>
+                                            <button style={{ borderRadius: '12px', width: '75%', backgroundColor: 'red' }}>Delete</button>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     </div>
                     }

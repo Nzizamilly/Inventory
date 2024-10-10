@@ -402,11 +402,14 @@ function ItemsAdmin() {
     setIsUpdateSerial(false);
   }
 
-  const openInfoModal = async (itemId) => {
+  const [selectedItemName, setSeletecteItemName] = useState('')
+
+  const openInfoModal = async (itemId, name) => {
     try {
 
       setSelectedItemID(itemId);
       setLoadingInfo(true);
+      setSeletecteItemName(name)
       fetchNumberOfItems(itemId);
       fetchNumberOfItemss(itemId);
       fetchNom(itemId);
@@ -441,10 +444,10 @@ function ItemsAdmin() {
     setIsSimpleModalOpen(true);
   };
 
-  const openListLoader = (username) => {
+  const openListLoader = (employee) => {
     setIsListLoaderOpen(true);
-    setTakerUserName(username);
-    takeID(username);
+    setTakerUserName(employee.username);
+    takeID(employee);
   };
 
   const openListLoaderForMany = (employee) => {
@@ -766,19 +769,25 @@ function ItemsAdmin() {
     };
   };
 
-  const takeID = async (username) => {
+  const takeID = async (employee) => {
     const status = 'Out';
-    const taker = username;
+    const taker = employee.id;
 
     setUsername(taker);
 
+    const messageData = {
+      name: selectedItemName,
+      email: employee.email,
+    };
+
+    socket.emit("Send Approved Email", messageData);
 
     const response = await axios.put(`${url}/update-serial-status/${IDTaken}/${status}/${username}`);
     const result = response.data;
     const message = 'Successfully Updated!!!'
 
     if (result === message) {
-      openInfoModal(selectedItemID);
+      openInfoModal(selectedItemID, selectedItemName);
     };
 
     setInterval(() => {
@@ -799,7 +808,7 @@ function ItemsAdmin() {
         const result = response.data;
         const message = 'Successfully Updated!!!'
         if (result === message) {
-          openInfoModal(selectedItemID);
+          openInfoModal(selectedItemID, selectedItemName);
         }
 
         setIsSomeLoaderOpen(false);
@@ -911,7 +920,7 @@ function ItemsAdmin() {
     {
       name: 'Serial Numbers',
       selector: row => (
-        <button className='addItem-btn' onClick={() => openInfoModal(row.id)}><img src={Info} style={svgStyle} /></button>
+        <button className='addItem-btn' onClick={() => openInfoModal(row.id, row.name)}><img src={Info} style={svgStyle} /></button>
       ),
     },
   ];
@@ -1235,12 +1244,13 @@ function ItemsAdmin() {
               <div style={{ width: '55%', borderRadius: '12px', height: '24%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
                 <img src={ProfilePicture} style={profilePicture} />
                 <br />
-                <div style={{ color: 'black', flexDirection: 'column', justifyContent: 'center', display: 'flex', backgroundColor: 'rgb(163, 187, 197)', width: '75%', fontFamily: 'san-serif', marginTop: '3px', paddingLeft: '12px', borderRadius: '12px', height: '97%' }}>
+                <div style={bulker}>
                   <p>Name: {employee.username}</p>
                   <p>Position: {employee.role_name}</p>
                   <p>Department: {employee.department_name}</p>
                   <p>Address: {employee.address}</p>
-                  <button onClick={() => { openListLoader(employee.username) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
+                  <p>Email: {employee.email}</p>
+                  <button onClick={() => { openListLoader(employee) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'whire', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
                 </div>
               </div>
             ))}
@@ -1287,6 +1297,7 @@ function ItemsAdmin() {
                 <p>Position: {employee.role_name}</p>
                 <p>Department: {employee.department_name}</p>
                 <p>Address: {employee.address}</p>
+                <p>Email: {employee.email}</p>
                 <button onClick={() => { openListLoaderForMany(employee) }} style={{ backgroundColor: 'rgb(106, 112, 220)', color: 'white', display: 'flex', width: '25%', justifyContent: 'center' }}>Give Out</button>
               </div>
             </div>

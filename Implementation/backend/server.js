@@ -256,7 +256,7 @@ ORDER BY
     console.log("Things: ", messageData, status);
 
     const companyID = messageData.company;
-    const itemID = messageData.item;
+    const itemID = messageData.itemID;
     const amount = messageData.amount;
     const requestor = messageData.requestor;
     const date = new Date();
@@ -301,7 +301,7 @@ ORDER BY
 
 
   app.get('/get-pdf', (req, res) => {
-    console.log("HIT!!!!!");
+    // console.log("HIT!!!!!");
     const filePath = `${__dirname}/result.pdf`;
     res.setHeader('Content-Type', 'application/pdf');
     res.sendFile(filePath, (err) => {
@@ -1222,11 +1222,9 @@ app.delete('/delete-employee/:id', (req, res) => {
 
 app.get('/items/:categoryID', (req, res) => {
   const categoryID = req.params.categoryID;
-  console.log("CategoryID: ", categoryID);
   const q = 'SELECT * FROM item WHERE categoryID = ?';
   db.query(q, categoryID, (error, result) => {
     error ? console.error("Error: ", error) : res.json(result);
-    console.log("This passed successfully");
   })
 });
 
@@ -1259,7 +1257,7 @@ app.put('/update-serial-status/:id/:status', (req, res) => {
   const id = req.params.id
   const status = req.params.status
   console.log("Passed: ", id, status);
-  const q = `UPDATE serial_number set status = ?, taker = '0' WHERE id = ?`;
+  const q = `UPDATE serial_number set status = ?, taker = '0', companyID = '0'  WHERE id = ?`;
   const values = [status, id]
   db.query(q, values, (error, result) => {
     if (error) {
@@ -1278,22 +1276,22 @@ app.put('/update-serial-status/:IDTaken/:status/:taker', async (req, res) => {
   // console.log("ID: ", id);
   // console.log("Taker Name: ", taker);
 
-  const getEmployeeID = (id) => {
-    return new Promise((resolve, reject) => {
-      const q = `SELECT id FROM employees WHERE username = ?`;
-      const value = [id];
+  // const getEmployeeID = (id) => {
+  //   return new Promise((resolve, reject) => {
+  //     const q = `SELECT id FROM employees WHERE username = ?`;
+  //     const value = [id];
 
-      db.query(q, value, (error, result) => {
-        if (error) {
-          console.error("error", error);
-          reject(error);
-        } else {
-          console.log("Result", result);
-          resolve(result);
-        }
-      });
-    });
-  };
+  //     db.query(q, value, (error, result) => {
+  //       if (error) {
+  //         console.error("error", error);
+  //         reject(error);
+  //       } else {
+  //         console.log("Result", result);
+  //         resolve(result);
+  //       }
+  //     });
+  //   });
+  // };
 
   try {
     const result = await getEmployeeID(taker);
@@ -2495,8 +2493,11 @@ app.put('/change-status-from-notifications/:requestor/:item/:amount/:rowID', asy
 
 app.put('/change-status-from-notifications-for-bulk/:employeeID/:item/:amount/:rowID', async (req, res) => {
 
+  console.log("Called");
+
   const requestor = req.params.employeeID;
   const item = req.params.item;
+  const companyID = req.params.rowID
   const requiredAmount = parseInt(req.params.amount);
 
 
@@ -2528,12 +2529,65 @@ app.put('/change-status-from-notifications-for-bulk/:employeeID/:item/:amount/:r
   if (exactAmount >= requiredAmount) {
 
     const updateQuery = `UPDATE serial_number 
-        SET status = 'Out', taker = ?  
+        SET status = 'Out', taker = ?, companyID = ? 
         WHERE itemID = ? 
         AND status = 'In' 
         ORDER BY serial_number ASC
         LIMIT ?;`;
-    const updateValues = [requestor, item, requiredAmount];
+    const updateValues = [requestor, companyID, item, requiredAmount];
+
+    db.query(updateQuery, updateValues, (error, result) => {
+      result ? res.json("Given Out") : console.error("Error: ", error);
+    });
+  } else {
+    res.json("Not enough items to give out.");
+  }
+});
+
+app.put('/change-status-from-notifications-for-bulkx', async (req, res) => {
+
+  console.log("Called");
+
+  const requestor = parseInt(req.body.requestor);
+  const item = req.body.itemID;
+  const companyID = parseInt(req.body.company);
+  const requiredAmount = parseInt(req.body.amount);
+
+
+  const getExactAmount = (item) => {
+    return new Promise((resolve, reject) => {
+      const q = `SELECT COUNT(*) AS count FROM serial_number WHERE status = 'In' AND itemID = ?;`;
+      const value = [item];
+
+      db.query(q, value, (error, result) => {
+        if (error) {
+          console.error("Error:", error);
+          reject(error);
+        } else {
+          // console.log("Result:", result);
+          // Ensure that result is an array and has at least one element
+          if (Array.isArray(result) && result.length > 0) {
+            // Resolve with the count value
+            resolve(result[0].count);
+          } else {
+            reject(new Error("No result found"));
+          }
+        }
+      });
+    });
+  };
+
+  const exactAmount = await getExactAmount(item);
+
+  if (exactAmount >= requiredAmount) {
+
+    const updateQuery = `UPDATE serial_number 
+        SET status = 'Out', taker = ?, companyID = ? 
+        WHERE itemID = ? 
+        AND status = 'In' 
+        ORDER BY serial_number ASC
+        LIMIT ?;`;
+    const updateValues = [requestor, companyID, item, requiredAmount];
 
     db.query(updateQuery, updateValues, (error, result) => {
       result ? res.json("Given Out") : console.error("Error: ", error);
@@ -2579,11 +2633,11 @@ app.put('/change-status-from-notifications-for-company/:requestor/:item/:amount/
 
   if (exactAmount >= requiredAmount) {
 
-    console.log("Entered Giving Out Process!!!")
+    // console.log("Entered Giving Out Process!!!")
 
     const updateQuery = `UPDATE serial_number SET status = 'Out',  taker = ?, companyID = ?  WHERE itemID = ? AND status = 'In' LIMIT ?;`;
     const updateValues = [requestor, company, item, requiredAmount];
-    console.log("Given Out!!");
+    // console.log("Given Out!!");
     db.query(updateQuery, updateValues, (error, result) => {
       result ? res.json("Given Out") : console.error("Error: ", error);
     });
@@ -2714,9 +2768,11 @@ app.get('/get-count-for-all-serial-numbers', (req, res) => {
 
 app.get('/get-serial-numbers-for-item/:ID', (req, res) => {
   const id = req.params.ID;
-  const sql = `SELECT serial_number.*, employees.username
+  const sql = `SELECT serial_number.*, employees.username, company.CompanyName
    FROM 
-  serial_number LEFT JOIN employees ON serial_number.taker = employees.id 
+  serial_number
+   LEFT JOIN employees ON serial_number.taker = employees.id 
+   LEFT JOIN company ON serial_number.companyID = company.id 
   WHERE itemID = ?;`;
   db.query(sql, [id], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
@@ -2827,7 +2883,7 @@ app.get('/get-total-in/:itemID', (req, res) => {
   });
 });
 
-app.get('/get-one/:oneCompanyID', (req, res) => {
+app.get('/gets-one/:oneCompanyID', (req, res) => {
   const companyID = req.params.oneCompanyID;
   const sql = `
    SELECT company_records.*, company.CompanyName, item.name, employees.username
