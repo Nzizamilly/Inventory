@@ -433,7 +433,7 @@ function Company() {
         };
     }, [selectedCategory]);
 
-    const [selectedItem, setSelectedItem] = useState([]);
+    const [selectedItem, setSelectedItem] = useState('');
 
     const handleItemChange = (event) => {
         const selectedValue = event.target.value;
