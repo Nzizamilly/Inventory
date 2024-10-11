@@ -539,14 +539,14 @@ function Company() {
 
                 console.log("Passed: ", messageDatas);
 
-                // socket.emit("Go For Delivery", messageDatas);
+                socket.emit("Go For Delivery", messageDatas);
 
-                // const post = await axios.post(`${url}/post-some`, messageDatas);
+                const post = await axios.post(`${url}/post-some`, messageDatas);
 
-                // socket.emit("Company Insert", (messageDatas));
+                socket.emit("Company Insert", (messageDatas));
 
-                // const responsee = await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas);
-                // console.log("Response: ", responsee.data);
+                const responsee = await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas);
+                console.log("Response: ", responsee.data);
 
                 setInterval(() => {
                     setIssueLoaderOpen(false);
