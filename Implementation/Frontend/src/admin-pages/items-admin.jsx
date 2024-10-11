@@ -254,9 +254,7 @@ function ItemsAdmin() {
   const [loadingInfo, setLoadingInfo] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [takeUpdateId, setTakeUpdateID] = useState(null);
-  const [itemName, setItemName] = useState('');
-  const [serialNumbers, setSerialNumbers] = useState([]);
-  const [totalSerialCount, setTotalSerialCount] = useState(0);
+
   const [serialNumberForDown, setSerialNumberForDown] = useState('');
   const [getEm, setGetEm] = useState([]);
   const [allSerials, setAllSerials] = useState([])
@@ -409,7 +407,6 @@ function ItemsAdmin() {
       setSelectedItemID(itemId);
       setLoadingInfo(true);
       setSeletecteItemName(name)
-      fetchNumberOfItems(itemId);
       fetchNumberOfItemss(itemId);
       fetchNom(itemId);
     } catch (error) {
@@ -634,21 +631,7 @@ function ItemsAdmin() {
     };
   };
 
-  const fetchNumberOfItems = async (itemID) => {
-    try {
-      setLoadingInfo(true);
-      const response = await axios.get(`${url}/serial-number/${itemID}`);
-      const result = await response.data;
-      // console.log('Fetched data:', result);
-      setItemName(result.itemName);
-      setSerialNumbers(result.serialNumbers);
-      setTotalSerialCount(result.totalSerialCount);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoadingInfo(false);
-    };
-  };
+
 
 
   const fetchNumberOfItemss = async (itemID) => {
@@ -1155,7 +1138,7 @@ function ItemsAdmin() {
 
           <Modal isOpen={isInfoModalOpen} onRequestClose={closeInfoModal} style={modalStyles}>
             <h1>
-              {getNom.length > 0 ? <span>{getNom[0].itemName} : {totalSerialCount} </span> : "Loading..."}
+              {getNom.length > 0 ? <span>{getNom[0].itemName} : {allSerials.length} </span> : "Loading..."}
             </h1>
             <div style={{ width: '70%', display: 'flex', justifyContent: 'center', gap: '12px', flexDirection: 'inline' }}>
               <input type='text' placeholder='Search By Serial Number' onChange={handleFilterSerial} />
