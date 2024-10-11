@@ -1038,69 +1038,13 @@ app.post('/add-serial-number/:takeItemID', (req, res) => {
     console.log("Serial number added well", data)
     return res.json(data)
   });
-
 });
 
-app.get('/serial-number/:itemID', (req, res) => {
-  const itemID = req.params.itemID;
 
-  const q1 = `
-    SELECT
-      item.name AS itemName
-    FROM
-      serial_number
-    JOIN
-      item ON serial_number.itemId = item.id
-    WHERE
-      serial_number.itemId = ?;
-  `;
-
-  const q2 = `
-    SELECT
-      serial_number,
-      state_of_item,
-      date
-    FROM
-      serial_number
-    WHERE
-      itemId = ?;
-  `;
-
-  db.query(q1, [itemID], (err, result1) => {
-    if (err) {
-      console.error('Error fetching item name:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
-      return;
-    }
-
-    // Check if result1 has rows before accessing them
-    if (result1 && result1.length > 0) {
-      const itemName = result1[0].itemName;
-
-      db.query(q2, [itemID], (err, result2) => {
-        if (err) {
-          console.error('Error fetching serial numbers:', err);
-          res.status(500).json({ error: 'Internal Server Error' });
-          return;
-        }
-
-        const serialNumbers = result2;
-
-        res.json({
-          itemName: { itemName },
-          serialNumbers: { serialNumbers },
-          totalSerialCount: serialNumbers.length,
-        });
-      });
-    } else {
-      // Handle the case where result1 is empty
-      res.status(404).json({ error: 'Item not found' });
-    }
-  });
-});
 
 app.get('/get-serial-number/:itemID', (req, res) => {
   const itemID = req.params.itemID;
+  console.log("ItemID: ", itemID);
   const q = `SELECT * FROM serial_number WHERE itemID = ? ORDER BY serial_number ASC;   `;
 
   db.query(q, [itemID], (error, result) => {

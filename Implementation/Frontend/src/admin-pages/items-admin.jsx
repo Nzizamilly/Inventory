@@ -641,12 +641,15 @@ function ItemsAdmin() {
 
       setAllSerials(result);
 
+      console.log("Results: ", result);
+    
+
     } catch (error) {
       console.error('Error fetching data: ', error);
     }
   };
 
-  // console.log("All series: ", allSerials);
+  console.log("All series: ", allSerials);
 
   const fetchNom = async (itemID) => {
     try {
