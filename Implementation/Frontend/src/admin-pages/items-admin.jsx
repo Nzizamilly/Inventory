@@ -636,6 +636,8 @@ function ItemsAdmin() {
 
   const fetchNumberOfItemss = async (itemID) => {
     try {
+      console.log("Hitt::::::: ");
+
       const response = await axios.get(`${url}/get-serial-number/${itemID}`);
       const result = response.data;
 
