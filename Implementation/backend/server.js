@@ -1048,7 +1048,12 @@ app.get('/get-serial-number/:itemID', (req, res) => {
   const q = `SELECT * FROM serial_number WHERE itemID = ? ORDER BY serial_number ASC;   `;
 
   db.query(q, [itemID], (error, result) => {
-    result ? res.json(result) : console.error("Error: ", error);
+    if (result) {
+      console.log("Result: ", result);
+      res.json(result);
+    } else {
+      console.error("Error: ", error);
+    }
   });
 });
 
@@ -1220,9 +1225,9 @@ app.put('/update-serial-status/:IDTaken/:status/:taker', async (req, res) => {
   const taker = req.params.taker
 
   try {
-  
+
     if (taker !== null) {
-      
+
       const updateQuery = `UPDATE serial_number SET status = ?, taker = ?, quantity = GREATEST(quantity - 1, 0) WHERE id = ?`;
       const updateValues = [status, taker, id];
 
