@@ -539,9 +539,9 @@ function Company() {
 
                 console.log("Passed: ", messageDatas);
 
-                socket.emit("Go For Delivery", messageDatas);
+                // socket.emit("Go For Delivery", messageDatas);
 
-                const post = await axios.post(`${url}/post-some`, messageDatas);
+                // const post = await axios.post(`${url}/post-some`, messageDatas);
 
                 socket.emit("Company Insert", (messageDatas));
 
