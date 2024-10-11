@@ -1048,7 +1048,7 @@ app.get('/get-serial-number/:itemID', (req, res) => {
   const q = `SELECT * FROM serial_number WHERE itemID = ? ORDER BY serial_number ASC;   `;
 
   db.query(q, [itemID], (error, result) => {
-    result ? console.log(result) : console.error("Error: ", error);
+    result ? res.json(result) : console.error("Error: ", error);
   });
 });
 
