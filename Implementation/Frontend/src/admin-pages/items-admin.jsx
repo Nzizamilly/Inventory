@@ -273,7 +273,7 @@ function ItemsAdmin() {
   const [state_of_item_holder, setState_of_item_holder] = useState('')
   const [wholeWord, setWholeWord] = useState([])
   const [supplier, setSupplier] = useState([]);
-  const [selectedItemIDForMultipleCreation, setSelectedItemIDForMultipleCreation] = useState(null);
+  const [selectedItemIDForMultipleCreation, setSelectedItemIDForMultipleCreation] = useState(Number);
   const [selectedSupplier, setSelectedSupplier] = useState('');
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
   const [handleConfirmID, setHandleConfirmID] = useState(null);
@@ -556,18 +556,15 @@ function ItemsAdmin() {
       const numbers = [];
       const wholeWordArray = [];
 
-      // Generate numbers from serialHolderFrom to serialHolderTo
       for (let i = serialHolderFrom; i >= serialHolderTo; i--) {
         numbers.push(i);
       }
 
-      // Combine serialHolder with each number to create the serials
       numbers.forEach((number) => {
         const take = serialHolder + ' ' + number;
         wholeWordArray.push(take);
       });
 
-      // Send the serials data in a single Axios request
       await axios.post(`${url}/add-serial-holder/${selectedItemIDForMultipleCreation}/${wholeWordArray}/${depreciation_rate_holder}/${state_of_item_holder}`);
 
       window.alert("Done!!");
