@@ -1271,37 +1271,17 @@ app.put('/update-serial-status/:id/:status', (req, res) => {
 });
 
 app.put('/update-serial-status/:IDTaken/:status/:taker', async (req, res) => {
+
   const id = req.params.IDTaken
   const status = req.params.status
   const taker = req.params.taker
-  // console.log("Status: ", status);
-  // console.log("ID: ", id);
-  // console.log("Taker Name: ", taker);
-
-  // const getEmployeeID = (id) => {
-  //   return new Promise((resolve, reject) => {
-  //     const q = `SELECT id FROM employees WHERE username = ?`;
-  //     const value = [id];
-
-  //     db.query(q, value, (error, result) => {
-  //       if (error) {
-  //         console.error("error", error);
-  //         reject(error);
-  //       } else {
-  //         console.log("Result", result);
-  //         resolve(result);
-  //       }
-  //     });
-  //   });
-  // };
 
   try {
-    const result = await getEmployeeID(taker);
-    const takerID = result[0].id;
-
-    if (takerID !== null) {
+  
+    if (taker !== null) {
+      
       const updateQuery = `UPDATE serial_number SET status = ?, taker = ?, quantity = GREATEST(quantity - 1, 0) WHERE id = ?`;
-      const updateValues = [status, takerID, id];
+      const updateValues = [status, taker, id];
 
       db.query(updateQuery, updateValues, (error, updateResult) => {
         if (error) {

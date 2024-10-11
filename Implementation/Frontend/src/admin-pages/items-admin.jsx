@@ -182,16 +182,16 @@ function ItemsAdmin() {
       alignItems: 'center',
     },
     content: {
-      width: '23%',
+      width: '25%',
       marginLeft: '495px',
-      height: '72vh',
+      height: '76vh',
+      backgroundColor: 'rgb(94, 120, 138)',
       border: 'none',
       borderRadius: '12px',
       gap: '23px',
       color: "black",
       padding: '12px 0px',
       display: 'flex',
-      backgroundColor: 'none',
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
@@ -459,16 +459,6 @@ function ItemsAdmin() {
   const closeListLoader = () => {
     setIsListLoaderOpen(false);
   };
-  const openListLoaderx = (username) => {
-    setIsListLoaderOpenx(true);
-    setTakerUserName(username);
-    takeID(username);
-  };
-
-  const closeListLoaderx = () => {
-    setIsListLoaderOpen(false);
-  };
-
 
 
   const closeSimpleModal = () => {
@@ -531,7 +521,7 @@ function ItemsAdmin() {
 
   const takeIDs = async (employee) => {
     const requestor = employee.username;
-    setRequestorBulk(requestor);
+    setRequestorBulk(employee.username);
     const item = selectedItemID;
     const amount = numberToGiveOut;
     setRequiredAmountBulk(amount)
@@ -771,7 +761,8 @@ function ItemsAdmin() {
 
   const takeID = async (employee) => {
     const status = 'Out';
-    const taker = employee.id;
+    const taker = employee.username;
+    const id = employee.id
 
     setUsername(taker);
 
@@ -782,7 +773,7 @@ function ItemsAdmin() {
 
     socket.emit("Send Approved Email", messageData);
 
-    const response = await axios.put(`${url}/update-serial-status/${IDTaken}/${status}/${username}`);
+    const response = await axios.put(`${url}/update-serial-status/${IDTaken}/${status}/${id}`);
     const result = response.data;
     const message = 'Successfully Updated!!!'
 
@@ -1196,7 +1187,7 @@ function ItemsAdmin() {
             <br />
             <button onClick={() => HandleConfirm(handleConfirmID)}>Yes</button>
           </Modal>
-          <Modal isOpen={isCreatingNewItemOpen} onRequestClose={closeCreatingNewItem} style={modal}>
+          <Modal isOpen={isCreatingNewItemOpen} onRequestClose={closeCreatingNewItem} className={modal}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
               <HashLoader color={'green'} loading={loading} size={59} />
               <div>
@@ -1205,7 +1196,7 @@ function ItemsAdmin() {
               </div>
             </div>
           </Modal>
-          <Modal isOpen={isCreatingSerialNumberOpen} onRequestClose={closeCreatingSerialNumber} style={modal}>
+          <Modal isOpen={isCreatingSerialNumberOpen} onRequestClose={closeCreatingSerialNumber} className={modal}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
               <HashLoader color={'blue'} loading={loading} size={59} />
               <div>
@@ -1215,7 +1206,7 @@ function ItemsAdmin() {
             </div>
           </Modal>
 
-          <Modal isOpen={isDeletingOpen} onRequestClose={closeDeletingItem} style={modal}>
+          <Modal isOpen={isDeletingOpen} onRequestClose={closeDeletingItem} className={modal}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
               <HashLoader color={'red'} loading={loading} size={59} />
               <div>
@@ -1225,7 +1216,7 @@ function ItemsAdmin() {
             </div>
           </Modal>
 
-          <Modal isOpen={isUpdatedOpen} onRequestClose={closeUpdateItem} style={modal}>
+          <Modal isOpen={isUpdatedOpen} onRequestClose={closeUpdateItem} className={modal}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
               <HashLoader color={'cyan'} loading={loading} size={59} />
               <div>
@@ -1256,9 +1247,9 @@ function ItemsAdmin() {
             ))}
           </Modal>
 
-          <Modal isOpen={isListLoaderOpen} onRequestClose={closeListLoader} style={modal} >
-            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
-              <RiseLoader color={'#3444e5'} loading={loading} size={11} />
+          <Modal isOpen={isListLoaderOpen} onRequestClose={closeListLoader} className={modal} >
+            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+              <RiseLoader color={'#3444e5'} loading={loading} size={19} />
               <div style={{ fontFamily: 'sans-serif' }}>
                 <br />
                 <p>Giving {serialNumberForDown || requiredAmountBulk} to {username || requestorBulk}...</p>
@@ -1266,7 +1257,7 @@ function ItemsAdmin() {
             </div>
           </Modal>
 
-          <Modal isOpen={isSomeLoaderOpen} onRequestClose={closeSomeLoader} style={modal} >
+          <Modal isOpen={isSomeLoaderOpen} onRequestClose={closeSomeLoader} className={modal} >
             <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
               <FadeLoader color={'#1adf4f'} loading={loading} size={11} />
               <div style={{ fontFamily: 'sans-serif' }}>
