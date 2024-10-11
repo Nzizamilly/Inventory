@@ -1019,7 +1019,6 @@ app.put('/supplier/:id', (req, res) => {
 })
 
 app.post('/add-serial-number/:takeItemID', (req, res) => {
-  34
   const itemID = req.params.takeItemID;
   const status = 'In';
   console.log("Status is: ", status);

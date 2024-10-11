@@ -243,13 +243,12 @@ function ItemsAdmin() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isListLoaderOpen, setIsListLoaderOpen] = useState(false);
-  const [isListLoaderOpenx, setIsListLoaderOpenx] = useState(false);
   const [items, setItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSimpleModalOpen, setIsSimpleModalOpen] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [isSerialModalOpen, setIsSerialModalOpen] = useState(false);
-  const [selectedItemID, setSelectedItemID] = useState(null);
+  const [selectedItemID, setSelectedItemID] = useState(Number);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [takenItemId, setTakenItemId] = useState('');
   const [loadingInfo, setLoadingInfo] = useState(false);
