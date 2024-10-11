@@ -631,7 +631,7 @@ app.post('/add-serial-holder/:itemID/:serials/:depreciation_rate_holder/:state_o
   const state_of_item_holder = req.params.state_of_item_holder;
   const status = 'In';
 
-  console.log("All ",itemID, depreciation_rate_holder, state_of_item_holder, status );
+  console.log("All ", itemID, depreciation_rate_holder, state_of_item_holder, status);
 
 
   const sql = "INSERT INTO serial_number (serial_number, state_of_item, depreciation_rate, itemID, status, taker, quantity ) VALUES (?,?,?,?,?,NULL,1)";
@@ -3365,7 +3365,24 @@ app.delete('/delete-entire-attendant/:currentAttendantID', async (req, res) => {
   }
 });
 
+app.get('/get-unlocated', (req, res) => {
+  const sql = `SELECT serial_number.* FROM serial_number LEFT JOIN item ON serial_number.itemID = item.id WHERE item.id IS NULL;`;
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
 
+app.delete('/delete-unlocated-serials', (req, res) => {
+  const sql = `DELETE serial_number.*
+    FROM serial_number
+    LEFT JOIN item ON serial_number.itemID = item.id
+    WHERE item.id IS NULL;`;
+
+  db.query(sql, (error, result) => {
+    result ? console.log("DELETE WELL!!") : console.error("Error: ", error);
+  })
+
+})
 
 
 app.listen(port, () => {

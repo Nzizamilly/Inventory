@@ -269,9 +269,9 @@ function ItemsAdmin() {
   const [getUpdateSerialID, setGetUpdateSerialID] = useState('');
   const [filteredCategories, setFilteredCategories] = useState(categories);
   const [username, setUsername] = useState('');
-  const [someCategoryName, setSomeCategoryName] = useState('')
-  const [state_of_item_holder, setState_of_item_holder] = useState('')
-  const [wholeWord, setWholeWord] = useState([])
+  const [someCategoryName, setSomeCategoryName] = useState('');
+  const [state_of_item_holder, setState_of_item_holder] = useState('');
+  const [wholeWord, setWholeWord] = useState([]);
   const [supplier, setSupplier] = useState([]);
   const [selectedItemIDForMultipleCreation, setSelectedItemIDForMultipleCreation] = useState(Number);
   const [selectedSupplier, setSelectedSupplier] = useState('');
@@ -434,6 +434,11 @@ function ItemsAdmin() {
   const closeSerialModal = () => {
     setIsSerialModalOpen(false);
     setSerialNumber('');
+    setSelectedItemIDForMultipleCreation('');
+    setDepreciation_rate_holder('');
+    setState_of_item_holder('');
+    setSerialHolderFrom('');
+    setSerialHolderTo('');
   };
 
   const openSimpleModal = () => {

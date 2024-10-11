@@ -29,10 +29,11 @@ function ItemTransactionsAdmin2() {
     };
 
     const itemstyle = {
-        width: '70%',
+        width: '83%',
         left: '50%',
         gap: '18px',
         marginBottom: '990px',
+        marginLeft: '200px',
         borderRadius: '12px',
         flexWrap: 'wrap',
         display: 'flex',
@@ -307,6 +308,27 @@ function ItemTransactionsAdmin2() {
         setRecords(serialNumbersForSingleItems);
     }, [serialNumbersForSingleItems]);
 
+    const [unlocated, setUnlocated] = useState([]);
+
+    useEffect(() => {
+        const find = async () => {
+            try {
+                const response = await axios.get(`${url}/get-unlocated`)
+                setUnlocated(response.data);
+            } catch (error) {
+                console.error("Error: ", error);
+            }
+        }
+        find();
+    }, [unlocated]);
+
+    const handleClear = async () => {
+        try {
+            const response = await axios.delete(`${url}/delete-unlocated-serials`);
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+    }
 
     return (
         <div>
@@ -320,6 +342,8 @@ function ItemTransactionsAdmin2() {
                     <div style={{ width: '95%', height: '25%', gap: '12px', display: 'flex', justifyContent: 'center', float: 'right' }}>
                         <input type='text' placeholder='Search For A Specific Item....' onChange={handleFilter} />
                         <p style={{ marginTop: '12px' }}>Total Items: {count}</p>
+                        <p style={{ marginTop: '12px' }}>Unlocated Serial Numbers: {unlocated.length}</p>
+                        <button style={{ backgroundColor: 'rgb(199, 49, 12)', color: 'white' }} onClick={() => handleClear()}>Clear</button>
                     </div>
                     <br />
                     <br />
