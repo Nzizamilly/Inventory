@@ -109,13 +109,16 @@ function ItemTransactionsAdmin2() {
     const [serialNumbersForSingleItems, setSerialNumbersForSingleItem] = useState([]);
     const [totalNumberForSingleItem, setTotalNumberForSingleItem] = useState([]);
     const [isSingleItemModalOpen, setIsSingleItemModalOpen] = useState(false);
-    const [isAllDataOpen, setIsAllOpen] = useState(false);
     const [IDForSerialCount, setIDForSerialCount] = useState()
     const [itemName, setItemName] = useState();
     const [IDForDates, setIDForDates] = useState('');
     const [imageURL, setImageURL] = useState('');
     const [count, setCount] = useState();
     const [endSingleItem, setEndSingleItem] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [taker, setTaker] = useState([]);
+    const [records, setRecords] = useState([]);
+    const [unlocated, setUnlocated] = useState([]);
     const [startSingleItem, setStartSingleItem] = useState('');
 
     const url = Keys.REACT_APP_BACKEND;
@@ -210,7 +213,6 @@ function ItemTransactionsAdmin2() {
         }
     ];
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const openModal = (ID) => {
         setIsModalOpen(true);
@@ -221,7 +223,6 @@ function ItemTransactionsAdmin2() {
         setIsModalOpen(false);
     };
 
-    const [taker, setTaker] = useState([]);
 
     const fetchTakerInfo = async (ID) => {
         try {
@@ -295,7 +296,6 @@ function ItemTransactionsAdmin2() {
 
     const fileName = `Report of ${itemName}`;
 
-    const [records, setRecords] = useState([]);
 
     const handleFilterx = (event) => {
         const newData = serialNumbersForSingleItems.filter((row) => {
@@ -308,7 +308,6 @@ function ItemTransactionsAdmin2() {
         setRecords(serialNumbersForSingleItems);
     }, [serialNumbersForSingleItems]);
 
-    const [unlocated, setUnlocated] = useState([]);
 
     useEffect(() => {
         const find = async () => {

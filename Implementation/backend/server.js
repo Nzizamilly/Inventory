@@ -3380,6 +3380,26 @@ app.delete('/delete-unlocated-serials', (req, res) => {
 
   db.query(sql, (error, result) => {
     result ? console.log("DELETE WELL!!") : console.error("Error: ", error);
+  });
+});
+
+app.post('/out-history/:selectedItemID/:status/:id', (req, res) => {
+  const itemID = req.params.selectedItemID
+  const status = 'Taken';
+  const id = req.params.id;
+  const amount = 1;
+
+
+  const Dday = new Date().getDate()
+  const Mmonth = new Date().getMonth() + 1;
+  const Yyear = new Date().getFullYear();
+
+  const today = `${Dday}/${Mmonth}/${Yyear}`;
+
+
+  const sql = `INSERT INTO daily_item_transaction (itemID,	employeeID,	date,	status,	amount) VALUES (?, ?, ?, ? ,?)`;
+  db.query(sql, [itemID, id, today, status, amount], (error, result) => {
+    result ? res.status(200) : console.error("Error", error);
   })
 
 })

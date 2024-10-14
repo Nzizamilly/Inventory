@@ -646,7 +646,7 @@ function ItemsAdmin() {
       setAllSerials(result);
 
       console.log("Results: ", result);
-    
+
 
     } catch (error) {
       console.error('Error fetching data: ', error);
@@ -749,6 +749,7 @@ function ItemsAdmin() {
   };
 
   const takeID = async (employee) => {
+
     const status = 'Out';
     const taker = employee.username;
     const id = employee.id
@@ -762,8 +763,11 @@ function ItemsAdmin() {
 
     socket.emit("Send Approved Email", messageData);
 
+    const responsee = await axios.post(`${url}/out-history/${selectedItemID}/${status}/${id}`)
+
     const response = await axios.put(`${url}/update-serial-status/${IDTaken}/${status}/${id}`);
     const result = response.data;
+    
     const message = 'Successfully Updated!!!'
 
     if (result === message) {
