@@ -5,7 +5,7 @@ import AddItem from '../images/addItem.svg'
 // import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import Modal from 'react-modal';
 import Logo from '../images/logo.svg';
-import FadeLoader from "react-spinners/FadeLoader";
+import PuffLoader from "react-spinners/PuffLoader";
 import { io } from 'socket.io-client';
 import SyncLoader from "react-spinners/SyncLoader";
 import axios from 'axios';
@@ -674,7 +674,7 @@ function Company() {
                                     style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }}
                                 />
                             ) : (
-                                <FadeLoader color={'blue'} loading={loading} size={11} />
+                                <PuffLoader color={'white'} loading={loading} size={81} />
                             )}
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
