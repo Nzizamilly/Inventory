@@ -84,18 +84,6 @@ function NavbarAdmin() {
     changeTransaction(transactionType);
   }, [transactionType]);
 
-  const select = {
-    display: 'block',
-    padding: '12px 12px',
-    borderRadius: '12px',
-    textDecoration: 'none',
-    color: 'rgb(5, 5, 5)',
-    width: '198px',
-    backgroundColor: 'black',
-    color: 'white'
-
-  }
-
   useEffect(() => {
     const fetchData = async () => {
       const EmpID = localStorage.getItem("userID");
@@ -176,7 +164,7 @@ function NavbarAdmin() {
       setCount(response.data);
     }
     bringPendingNumbers();
-  }, []);
+  }, [setCount]);
 
   return (
     <div >

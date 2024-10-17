@@ -103,7 +103,7 @@ function Login() {
                     }
 
                 } else {
-                    alert(`Not found, ${values.password}`);
+                    alert(`Not found`);
                 }
             })
             .catch(err => console.log(err));
@@ -119,12 +119,15 @@ function Login() {
     }
     return (
         <div style={loginContainer}>
-            <div style={login}>
-                <h1>Login</h1>
-                <input placeholder='Username' type='text' className='inputTest' name='username' onChange={handleInput} ref={username} />
-                <input placeholder='Password' type='password' name='password' onChange={handleInput} ref={password} />
-                <button style={button} onClick={handleSubmit}>Enter</button>
-            </div>
+            <form style={{ width: '100%', display: 'flex', justifyContent: 'center'}}>
+                <div style={login}>
+
+                    <h1>Login</h1>
+                    <input placeholder='Username' type='text' className='inputTest' name='username' onChange={handleInput} ref={username} />
+                    <input placeholder='Password' type='password' name='password' onChange={handleInput} ref={password} />
+                    <button style={button} onClick={handleSubmit}>Enter</button>
+                </div>
+            </form>
         </div>
     );
 }

@@ -5,6 +5,7 @@ import AddItem from '../images/addItem.svg'
 // import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import Modal from 'react-modal';
 import Logo from '../images/logo.svg';
+import FadeLoader from "react-spinners/FadeLoader";
 import { io } from 'socket.io-client';
 import SyncLoader from "react-spinners/SyncLoader";
 import axios from 'axios';
@@ -666,11 +667,16 @@ function Company() {
                 <div className="terms-admin">
                     {infoCompany.map(company => (
                         <button key={company.id} style={CompanyButton} onClick={() => openCompanyModal(company.id, company.CompanyName)}>
-                            <img
-                                src={companyImages[company.id]}
-                                alt={`${company.CompanyName} logo`}
-                                style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }}
-                            />
+                            {companyImages && companyImages[company.id] ? (
+                                <img
+                                    src={companyImages[company.id]}
+                                    alt={`${company.CompanyName} logo`}
+                                    style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }}
+                                />
+                            ) : (
+                                <FadeLoader color={'blue'} loading={loading} size={11} />
+                            )}
+
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                 <p>{company.CompanyName}</p>
                                 <p>{company.email}</p>

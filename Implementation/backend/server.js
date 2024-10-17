@@ -67,9 +67,11 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
+
   socket.on("Employee_Message_Supervisor(1)", async (messageData) => {
 
     console.log("From employee: to supervisor", messageData);
+    
     const getEmployeeID = (employeeName) => {
       return new Promise((resolve, reject) => {
         const sql = `SELECT id FROM employees WHERE username = ?`;
@@ -2425,7 +2427,7 @@ app.put('/change-status-from-notifications/:requestor/:item/:amount/:rowID', asy
 
 app.put('/change-status-from-notifications-for-bulk/:employeeID/:item/:amount/:rowID', async (req, res) => {
 
-  console.log("Called");
+  console.log("HITTTT")
 
   const requestor = req.params.employeeID;
   const item = req.params.item;
@@ -2443,7 +2445,7 @@ app.put('/change-status-from-notifications-for-bulk/:employeeID/:item/:amount/:r
           console.error("Error:", error);
           reject(error);
         } else {
-          // console.log("Result:", result);
+          console.log("Result", result);
           // Ensure that result is an array and has at least one element
           if (Array.isArray(result) && result.length > 0) {
             // Resolve with the count value
@@ -2598,10 +2600,13 @@ app.get('/get-hr-admin-pending-requests', (req, res) => {
 
   const sql = `SELECT
   employees.username AS employee_username, 
+ 
   supervisor.username AS supervisor_username,
   hr_admin_request.amount, 
   hr_admin_request.description, 
   hr_admin_request.id, 
+  hr_admin_request.itemID, 
+  hr_admin_request.employeeID, 
   hr_admin_request.supervisorID,
   hr_admin_request.email,
   category.category_name,

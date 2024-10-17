@@ -192,6 +192,7 @@ function Request() {
     }, 2000);
 
     socket.emit("Employee_Message_Supervisor(1)", messageData);
+    
     try {
       const response = await axios.post(`${url}/add-request-employee-supervisor`, messageData);
       messageData.id = id;
@@ -337,7 +338,6 @@ function Request() {
       borderRadius: '12px',
       gap: '23px',
       color: "black",
-      padding: '12px 0px',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
