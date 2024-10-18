@@ -2847,7 +2847,12 @@ app.get('/get-one-company-for-delivery/:oneCompanyID/:ID', (req, res) => {
    WHERE companyID = ? AND company_records.id = ?
      `;
   db.query(sql, [companyID, ID], (error, result) => {
-    result ? res.json(result) : console.error("Error: ", error);
+   if(result){
+    console.log("Result: ", result); 
+    res.json(result);
+   }else{
+    console.error("Error: ", error);
+   }
   });
 });
 
