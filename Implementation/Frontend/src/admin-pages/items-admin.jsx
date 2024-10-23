@@ -91,9 +91,6 @@ function ItemsAdmin() {
     height: '30px',
     borderRadius: '14px',
   }
-  const inano = {
-    color: 'black'
-  };
 
   const Select = {
     width: '65%',

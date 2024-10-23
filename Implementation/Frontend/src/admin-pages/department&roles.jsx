@@ -116,6 +116,7 @@ function Departments_Roles() {
         justifyContent: 'center',
         alignItems: 'center',
         width: '17%',
+        color: 'white',
         backgroundColor: 'rgb(67, 67, 179)'
 
     }

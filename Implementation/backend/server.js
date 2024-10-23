@@ -774,7 +774,7 @@ app.get('/get-DOE/:ID', (req, res) => {
 });
 
 
-app.post('/login', (req, res) => {
+app.post ('/login', (req, res) => {
   const sql = "SELECT * FROM employees WHERE username = ? and password = ? ";
   db.query(sql, [req.body.username, req.body.password], (err, result) => {
     if (err) {
@@ -1253,10 +1253,46 @@ app.put('/update-serial-status/:IDTaken/:status/:taker', async (req, res) => {
 });
 
 
-app.get('/monthly-report/:StartDate/:EndDate/:id', (req, res) => {
+// app.get('/monthly-report/:StartDate/:EndDate/:id', (req, res) => {
+//   const start = req.params.StartDate;
+//   const end = req.params.EndDate;
+//   const idi = req.params.id;
+
+//   console.log("Start from front: ", start);
+//   console.log("end from front: ", end);
+//   const query = `
+//   SELECT 
+//   DATE_FORMAT(serial_number.date, '%Y-%m-%d') AS transaction_date,
+//   item.name AS item_name,
+//   COALESCE(SUM(CASE WHEN serial_number.status = 'In' THEN 1 ELSE 0 END), 0) AS amount_entered,
+//   COALESCE(SUM(CASE WHEN serial_number.status = 'Out' THEN 1 ELSE 0 END), 0) AS amount_went_out,
+//   employees.username AS taker_name,
+//   COALESCE((SELECT COUNT(*) FROM serial_number s WHERE s.status = 'In' AND s.itemID = item.id), 0) AS total_items_in
+// FROM serial_number
+// JOIN item ON serial_number.itemID = item.id
+// LEFT JOIN employees ON serial_number.taker = employees.id
+// WHERE serial_number.date >= ? AND serial_number.date <= ? AND id = ? -- Specify your date range here
+// GROUP BY transaction_date, item.name, employees.username, item.id
+// ORDER BY serial_number.date DESC; -- Order by date in descending order
+
+//   `;
+//   const startDate = moment(req.query.start, 'DD-MM-YYYY').format('YYYY-MM-DD');
+//   const endDate = moment(req.query.end, 'DD-MM-YYYY').format('YYYY-MM-DD');
+//   const values = [start, end, idi];
+//   db.query(query, values, (error, result) => {
+//     if (error) {
+//       console.error("Error", error);
+//       res.status(500).json({ error: "Internal Server Error" });
+//     } else {
+//       console.log("Result: ", result);
+//       res.json(result);
+//     }
+//   });
+// });
+
+app.get('/monthly-report/:StartDate/:EndDate', (req, res) => {
   const start = req.params.StartDate;
   const end = req.params.EndDate;
-  const idi = req.params.id;
 
   console.log("Start from front: ", start);
   console.log("end from front: ", end);
@@ -1271,14 +1307,12 @@ app.get('/monthly-report/:StartDate/:EndDate/:id', (req, res) => {
 FROM serial_number
 JOIN item ON serial_number.itemID = item.id
 LEFT JOIN employees ON serial_number.taker = employees.id
-WHERE serial_number.date >= ? AND serial_number.date <= ? AND id = ? -- Specify your date range here
+WHERE serial_number.date >= ? AND serial_number.date <= ?  -- Specify your date range here
 GROUP BY transaction_date, item.name, employees.username, item.id
 ORDER BY serial_number.date DESC; -- Order by date in descending order
 
   `;
-  const startDate = moment(req.query.start, 'DD-MM-YYYY').format('YYYY-MM-DD');
-  const endDate = moment(req.query.end, 'DD-MM-YYYY').format('YYYY-MM-DD');
-  const values = [start, end, idi];
+  const values = [start, end];
   db.query(query, values, (error, result) => {
     if (error) {
       console.error("Error", error);

@@ -32,6 +32,7 @@ function ItemTransactionsAdmins() {
   useEffect(() => {
     const fetchMonthlyReport = async () => {
       try {
+        console.log('Dates: ', startDate, endDate)
         const response = await axios.get(`${url}/monthly-report/${startDate}/${endDate}`);
         setReport(response.data);
         setRecords(response.data);
@@ -82,7 +83,137 @@ function ItemTransactionsAdmins() {
   };
 
   const handlePrint = () => {
-    window.print();
+    let printContent = `<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0 auto;
+            max-width: 800px;
+            padding: 20px;
+            /* display: flex;
+            flex-direction: inline; */
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        .letterhead {
+            /* margin-bottom: 20px; */
+            /* padding-bottom: 10px; */
+            display: flex;
+            width: 100%;
+            height: 23%;
+            gap: 303px;
+            /* justify-content: flex-end; */
+            /* padding: 20px; */
+        }
+
+        .report {
+            margin-top: 32px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        .contact-info {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .delivery-note {
+            text-decoration: underline;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 4px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="all">
+        <div class="letterhead">
+            <div style="width: 40%; height: 40%; ">
+                <img src="https://firebasestorage.googleapis.com/v0/b/inventoryquotation.appspot.com/o/Centrikalogo%2Fcentrika-removebg.png?alt=media&token=cfce643f-ba97-4fc8-8a05-8571d0a9ce79"
+                    alt="centrika-removebg" style="width: 200px; height: 130px;" />
+            </div>
+
+
+            <div style="margin-right: 30px; display: flex; ">
+                <div class="address">
+                    <p>P.O. Box: 4097 Kigali-Rwanda</p>
+                    <p>KN 2, Nyarugenge Kigali-Rwanda</p>
+                    <p>Tel: +250 731 000 100</p>
+                    <p>Email: info@centrika.rw</p>
+                    <p>Website: <a href="http://www.centrika.rw">www.centrika.rw</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="report">
+            <h1>Inventory Report</h1>
+            <table border="1" cellspacing="0" cellpadding="5">
+                <thead>
+                    <tr>
+                    <th>Date</th>
+                        <th>Item</th>
+                        <th>Number In Stock</th>
+                        <th>Number Out</th>
+                        <th>Requestor</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                 ${records.map(record => `
+                 <tr>
+                 <td>${record.transaction_date}</td>
+                 <td>${record.item_name}</td>
+                 <td>${record.amount_entered}</td>
+                 <td>${record.amount_went_out}</td>
+                 <td>${record.taker_name}</td>
+                 <td>${record.total_items_in}</td>
+                 </tr>
+                 `).join('')}
+                </tbody>
+            </table>
+        </div>
+</body>
+</html>`;
+
+    const printWindow = window.open('', '', 'width=900,height=650')
+    printWindow.document.write(printContent);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
   };
 
   const kain = {
@@ -109,9 +240,9 @@ function ItemTransactionsAdmins() {
         <div style={kindaStyle}>
           <input type="text" placeholder="Search By Item Name" onChange={handleFilter} />
           <br />
-          <div>
-            From: <input type="date" onChange={(e) => setStartDate(e.target.value)} className='' />
-            To: <input type="date" onChange={(e) => setEndDate(e.target.value)} className='' />
+          <div style={{ width: '100%', display: 'flex', gap: '12px', justifyContent: 'center', flexDirection: 'inline'}}>
+           <p style={{marginTop: '5px'}}>From:</p> <input type="date" onChange={(e) => setStartDate(e.target.value)} style={{ width: '20%', borderRadius: '20px',  display: 'flex', justifyContent: 'center', border: 'none' }} />
+            <p style={{marginTop: '5px'}}>To:</p> <input type="date" onChange={(e) => setEndDate(e.target.value)} style={{ width: '20%', borderRadius: '20px',  display: 'flex', justifyContent: 'center', border: 'none' }} />
           </div>
           <br />
           <div style={{ display: 'flex', gap: '9px', flexDirection: 'inline' }}>

@@ -101,7 +101,6 @@ function NavbarMain() {
             ...provided,
             backgroundColor: 'black',
             display: 'flex',
-            justifyContent: 'center',
             '&:hover': {
                 backgroundColor: 'lightgrey',
                 color: 'black'
@@ -109,11 +108,12 @@ function NavbarMain() {
         }),
         singleValue: (provided) => ({
             ...provided,
-            width: '54px',
+            width: '100%',
             height: '24px',
             display: 'flex',
+            marginLeft: '10px',
             alignItems: 'center',
-            backgroundColor: 'blue',
+            backgroundColor: 'black',
             color: 'white',
         })
     };
@@ -183,8 +183,8 @@ function NavbarMain() {
             <ul className='ul2Admin'>
                 <li className='liAdmin'><Link to={'/account-hr'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li>
 
-                <li className='liAdmin'><Link to={'/onboard'} > <img src={PersonalInfo} style={{ maxWidth: '18%', maxHeight: '50vh' }} /> <p>Employee Personal File</p></Link></li>
                 <li className='liAdmin'><Link to={'/leave-page'} ><img src={Leave} style={{ maxWidth: '18%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Leave</p></Link></li>
+                <li className='liAdmin'><Link to={'/onboard'} > <img src={PersonalInfo} style={{ maxWidth: '18%', maxHeight: '50vh' }} /> <p>Employee Personal File</p></Link></li>
                 <Select
                     options={option}
                     styles={customStyles}

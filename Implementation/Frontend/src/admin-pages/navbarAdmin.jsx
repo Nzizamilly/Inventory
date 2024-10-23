@@ -77,8 +77,10 @@ function NavbarAdmin() {
     const changeTransaction = (transactionType) => {
       if (transactionType === 'item') {
         navigate('/item-transaction')
-      } else if (transactionType) {
+      } else if (transactionType === 'action') {
         navigate('/action-transaction')
+      } else if (transactionType === 'report') {
+        navigate('/item-transactions')
       };
     }
     changeTransaction(transactionType);
@@ -109,6 +111,7 @@ function NavbarAdmin() {
   const option = [
     { value: 'item', label: "Item Transaction" },
     { value: 'action', label: "Action Transaction" },
+    { value: 'report', label: "Item Transaction Report" },
   ]
 
   const customStyles = {
