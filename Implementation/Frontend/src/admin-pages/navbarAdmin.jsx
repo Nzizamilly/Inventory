@@ -35,6 +35,7 @@ function NavbarAdmin() {
       height: '25%',
       marginRight: '-20%',
       transform: 'translate(-50%, -50%)',
+      zIndex: '20',
       opacity: 0.9,
       fontFamily: 'Your Custom Font, sans-serif',
       fontSize: '16px',
@@ -49,6 +50,7 @@ function NavbarAdmin() {
     },
     overlay: {
       backgroundColor: 'rgba(0, 0, 0, 0.0)',
+      zIndex: '20',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -159,7 +161,7 @@ function NavbarAdmin() {
     changeSupplier(selectedSupplier);
   }, [selectedSupplier]);
 
-  const [count, setCount] =useState([]);
+  const [count, setCount] = useState([]);
 
   useEffect(() => {
     const bringPendingNumbers = async () => {
@@ -175,7 +177,8 @@ function NavbarAdmin() {
       <ul className='ul1Admin'>
         <li className='li1Admin' onClick={handleLogout}><Link to={'/'}>Log Out</Link></li>
         <li className='li1Admin'><Link to={'/home-admin'}>Home</Link></li>
-        <li style={{ float: 'left', marginLeft: '193px' }} className='li1Admin'><img style={{ maxWidth: '100%', marginTop: '1px', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+        <li style={{ float: 'left', marginLeft: '3px', marginTop: '-5px' }} className='li1Admin'><img style={{ maxWidth: '100%', marginTop: '1px', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+
         {/* <li style={{ float: 'left', marginLeft: '193px' }} ><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li> */}
       </ul>
 

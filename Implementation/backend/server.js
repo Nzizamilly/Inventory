@@ -1207,12 +1207,13 @@ app.get('/get-total-number/:id', (req, res) => {
   });
 });
 
-app.put('/update-serial-status/:id/:status', (req, res) => {
-  const id = req.params.id
-  const status = req.params.status
+app.put('/update-serial-status-return/:id/:status/:taker', (req, res) => {
+  const id = req.params.id;
+  const status = req.params.status;
+  const taker = req.params.taker;
   console.log("Passed: ", id, status);
-  const q = `UPDATE serial_number set status = ?, taker = '0', companyID = '0'  WHERE id = ?`;
-  const values = [status, id]
+  const q = `UPDATE serial_number set status = ?, taker = '0', companyID = '0', returner = ?  WHERE id = ?`;
+  const values = [status, taker, id]
   db.query(q, values, (error, result) => {
     if (error) {
       console.error("Error", error);
@@ -1303,6 +1304,7 @@ app.get('/monthly-report/:StartDate/:EndDate', (req, res) => {
   COALESCE(SUM(CASE WHEN serial_number.status = 'In' THEN 1 ELSE 0 END), 0) AS amount_entered,
   COALESCE(SUM(CASE WHEN serial_number.status = 'Out' THEN 1 ELSE 0 END), 0) AS amount_went_out,
   employees.username AS taker_name,
+  serial_number.returner,
   COALESCE((SELECT COUNT(*) FROM serial_number s WHERE s.status = 'In' AND s.itemID = item.id), 0) AS total_items_in
 FROM serial_number
 JOIN item ON serial_number.itemID = item.id
@@ -1318,7 +1320,6 @@ ORDER BY serial_number.date DESC; -- Order by date in descending order
       console.error("Error", error);
       res.status(500).json({ error: "Internal Server Error" });
     } else {
-      console.log("Result: ", result);
       res.json(result);
     }
   });

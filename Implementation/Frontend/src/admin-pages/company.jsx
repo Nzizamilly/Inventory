@@ -25,9 +25,9 @@ function Company() {
 
     const Container = {
         width: '100%',
-        height: '100vh',
+        // height: '100vh',
         display: 'flex',
-        overflow: 'auto',
+        // overflow: 'auto',
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'center',
@@ -60,8 +60,8 @@ function Company() {
     };
 
     const CompanyButton = {
-        height: '48%',
-        width: '28%',
+        height: '148px',
+        width: '32%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'
@@ -121,6 +121,7 @@ function Company() {
 
     const closeAddModal = () => {
         isAddModalOpen(false);
+        window.location.reload();
     };
 
     const modal3 = {
@@ -243,7 +244,7 @@ function Company() {
 
 
     const [AddModalOpen, isAddModalOpen] = useState(false);
-    const [logo, setLogo] = useState();
+    const [logo, setLogo] = useState('');
     const [latestId, setLatestID] = useState('');
     const [infoCompany, setInfoCompany] = useState([]);
     const [companyImages, setCompanyImages] = useState({});
@@ -354,6 +355,11 @@ function Company() {
         setCompany((prev) => ({ ...prev, [event.target.name]: event.target.value }));
     };
 
+    const handleMakeModal = () => {
+        handleMake();
+        closeAddModal();
+    }
+
     const handleMake = async () => {
 
         if (logo == null) return;
@@ -405,6 +411,7 @@ function Company() {
         }
         fetch();
     }, []);
+
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
@@ -432,7 +439,7 @@ function Company() {
             }
         };
         fetchCompanies();
-    }, [url]);
+    }, [url, infoCompany]);
 
     useEffect(() => {
         const fetchCategory = async () => {
@@ -737,7 +744,7 @@ function Company() {
                     <input type='text' placeholder='Company Email' style={{ width: '100%' }} name='email' onChange={handleChange} />
                 </div>
 
-                <button style={{ backgroundColor: 'green', height: '20%', width: '15%', marginTop: '11%', color: 'white' }} onClick={() => handleMake()} >Add</button>
+                <button style={{ backgroundColor: 'green', height: '20%', width: '15%', marginTop: '11%', color: 'white' }} onClick={() => handleMakeModal()} >Add</button>
 
             </Modal>
 

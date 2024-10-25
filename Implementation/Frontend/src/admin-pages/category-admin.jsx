@@ -39,6 +39,7 @@ const url = Keys.REACT_APP_BACKEND;
     },
     overlay: {
       backgroundColor: 'rgba(0, 0, 0, 0.0)',
+      zIndex: '20',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -47,6 +48,7 @@ const url = Keys.REACT_APP_BACKEND;
 
   const modal = {
     overlay: {
+      zIndex: '20',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',

@@ -31,10 +31,18 @@ function ItemsAdmin() {
   });
 
   const modalStyles = {
+    overlay: {
+      zIndex: '20',
+    },
     content: {
       top: '50%',
       width: '90%',
+      height: '90%',
       left: '50%',
+      overflow: 'auto',
+      maxHeight: '100%',
+      scrollbarWidth: 'none',
+      msOverflowStyle: 'none',
       right: 'auto',
       bottom: 'auto',
       borderRadius: '12px',
@@ -168,6 +176,7 @@ function ItemsAdmin() {
       backgroundColor: 'rgba(0, 0, 0, 0.0)',
       display: 'flex',
       alignItems: 'center',
+      zIndex: '20',
       justifyContent: 'center',
     },
   };
@@ -176,6 +185,7 @@ function ItemsAdmin() {
     overlay: {
       display: 'flex',
       justifyContent: 'center',
+      zIndex: '20',
       alignItems: 'center',
     },
     content: {
@@ -214,6 +224,7 @@ function ItemsAdmin() {
   const modal5 = {
     overlay: {
       display: 'flex',
+      zIndex: '20',
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -228,6 +239,8 @@ function ItemsAdmin() {
       color: 'black',
       // padding: '12px 0px', // Remove or adjust padding
       overflow: 'auto',
+      scrollbarWidth: 'none',
+      msOverflowStyle: 'none',
       flexDirection: 'column',
       display: 'flex', // Remove if not needed
       // flexDirection: 'column', // Remove if not needed
@@ -518,7 +531,6 @@ function ItemsAdmin() {
 
 
   const takeIDs = async (employee) => {
-    const requestor = employee.username;
     setRequestorBulk(employee.username);
     const item = selectedItemID;
     const amount = numberToGiveOut;
@@ -535,7 +547,6 @@ function ItemsAdmin() {
         socket.emit("Send Approved Email", employee);
 
         const responsee = await axios.put(`${url}/change-request-stockStatus/${employeeID}`);
-        console.log("Responsee: ", responsee.data);
 
       } else {
         window.alert("Insuffiencient Amount To Give Out");
@@ -643,14 +654,12 @@ function ItemsAdmin() {
       setAllSerials(result);
 
       console.log("Results: ", result);
-    
+
 
     } catch (error) {
       console.error('Error fetching data: ', error);
     }
   };
-
-  console.log("All series: ", allSerials);
 
   const fetchNom = async (itemID) => {
     try {
@@ -779,9 +788,12 @@ function ItemsAdmin() {
       const status = 'In';
       try {
 
+        const taker  = rowss.taker
+        console.log("Taker ID: ", taker);
+
         openSomeLoader();
 
-        const response = await axios.put(`${url}/update-serial-status/${row}/${status}`);
+        const response = await axios.put(`${url}/update-serial-status-return/${row}/${status}/${taker}`);
         const result = response.data;
         const message = 'Successfully Updated!!!'
         if (result === message) {
@@ -1144,17 +1156,22 @@ function ItemsAdmin() {
             <h1>
               {getNom.length > 0 ? <span>{getNom[0].itemName} : {allSerials.length} </span> : "Loading..."}
             </h1>
-            <div style={{ width: '70%', display: 'flex', justifyContent: 'center', gap: '12px', flexDirection: 'inline' }}>
-              <input type='text' placeholder='Search By Serial Number' onChange={handleFilterSerial} />
+            <div style={{ width: '70%', height: '20%', display: 'flex', justifyContent: 'center', gap: '12px', flexDirection: 'inline' }}>
+              <input style={{ height: '100% ' }} type='text' placeholder='Search By Serial Number' onChange={handleFilterSerial} />
               <button onClick={() => openBulkModal()}>Bulk</button>
             </div>
             <br />
-            <DataTable
-              columns={columns}
-              data={filteredSerialNumbers}
-              pagination
-            ></DataTable>
+
+            <div style={{ width: '100%', height: '80%' }}>
+              <DataTable
+                columns={columns}
+                data={filteredSerialNumbers}
+                pagination
+              ></DataTable>
+            </div>
+
           </Modal>
+
           <Modal isOpen={isUpdateSerial} onRequestClose={closeUpdateSerialModal} style={modalStyles}>{handleSerialUpdateInput}
             <h1>Update</h1>
             <input type='text' placeholder='Serial Number' name='serial_number' onChange={handleSerialUpdateInput} />
@@ -1218,7 +1235,7 @@ function ItemsAdmin() {
             </div>
 
             {filteredEmployees.map((employee) => (
-              <div style={{ width: '55%', borderRadius: '12px', height: '24%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
+              <div style={{ width: '55%', borderRadius: '12px', height: '30%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
                 <img src={ProfilePicture} style={profilePicture} />
                 <br />
                 <div style={bulker}>
@@ -1244,7 +1261,7 @@ function ItemsAdmin() {
           </Modal>
 
           <Modal isOpen={isSomeLoaderOpen} onRequestClose={closeSomeLoader} className={modal} >
-            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
+            <div style={{ display: 'flex', zIndex: '20', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
               <FadeLoader color={'#1adf4f'} loading={loading} size={11} />
               <div style={{ fontFamily: 'sans-serif' }}>
                 <br />
@@ -1257,16 +1274,16 @@ function ItemsAdmin() {
         </div>
 
         <Modal isOpen={isBulkModalOpen} onRequestClose={closeBulkModal} style={modal5}>
-          <div style={{ gap: '90px' }}>
+          <div style={{ gap: '99px' }}>
             <h1>Give Out Multiple Items</h1>
             <input type='text' placeholder='Number' onChange={(e) => setNumberToGiveOut(e.target.value)} />
-            <p style={{ marginLeft: '8px' }}>To</p>
+            <p style={{ marginLeft: '8px' }}>To:</p>
             <input style={{ width: '85%' }} type='text' placeholder='Search For An Employee To Give This Item...' onChange={handleFilterX} />
           </div>
 
 
           {filteredEmployees.map((employee) => (
-            <div style={{ width: '55%', borderRadius: '12px', height: '24%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
+            <div style={{ width: '55%', borderRadius: '12px', height: '35%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
               <img src={ProfilePicture} style={profilePicture} />
               <br />
               <div style={bulker}>

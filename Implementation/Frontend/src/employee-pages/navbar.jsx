@@ -150,7 +150,7 @@ function Navbar() {
       <ul className='ul1'>
         <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
         <li className='li1'><Link to={'/home-employee'}>Home</Link></li>
-        <li style={{ float: 'left', marginLeft: '193px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+        <li style={{ float: 'left', marginLeft: '193px',  marginTop: '-5px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
       </ul>
       <ul className='ul2Admin'>
         {/* <li style={{display: 'flex', flexDirection: 'inline', gap: '12px', backgroundColor: 'blue'}}><Link to={'/account-employee'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li> */}

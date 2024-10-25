@@ -170,7 +170,7 @@ function NavbarMain() {
         <div className="navbar">
 
             <ul className='ul1' style={color}>
-                <li style={{ float: 'left', marginLeft: '193px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+                <li style={{ float: 'left', marginLeft: '193px', marginTop: '-5px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
                 <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
                 <select onChange={handleTransactionChange} value={transactionType} style={select}>
                     <option value="" disabled >Notifications</option>

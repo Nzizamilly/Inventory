@@ -193,7 +193,7 @@ function NavbarHome() {
     return (
         <div className="navbar">
             <ul className='ul1' style={color}>
-                <li style={{ float: 'left', marginTop: '-1px', marginLeft: '174px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+                <li style={{ float: 'left', marginTop: '-5px' , marginLeft: '174px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
                 <li style = {li1} onClick={handleLogout}><Link>Log Out</Link></li>
                 <select onChange={handleTransactionChange} value={transactionType} style={select}>
                     <option value="" disabled >Requests</option>
