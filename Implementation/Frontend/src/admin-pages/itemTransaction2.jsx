@@ -72,6 +72,7 @@ function ItemTransactionsAdmin2() {
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.0)',
             display: 'flex',
+            zIndex: '20',
             alignItems: 'center',
             justifyContent: 'center',
         },
@@ -81,6 +82,7 @@ function ItemTransactionsAdmin2() {
         overlay: {
             // width: '100%',
             display: 'flex',
+            zIndex: '20',
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -109,7 +111,6 @@ function ItemTransactionsAdmin2() {
     const [serialNumbersForSingleItems, setSerialNumbersForSingleItem] = useState([]);
     const [totalNumberForSingleItem, setTotalNumberForSingleItem] = useState([]);
     const [isSingleItemModalOpen, setIsSingleItemModalOpen] = useState(false);
-    const [isAllDataOpen, setIsAllOpen] = useState(false);
     const [IDForSerialCount, setIDForSerialCount] = useState()
     const [itemName, setItemName] = useState();
     const [IDForDates, setIDForDates] = useState('');
@@ -336,11 +337,11 @@ function ItemTransactionsAdmin2() {
             <div style={kain}>
                 <h1> Item Report Tab</h1>
             </div>
-            <div className="transaction-container-admin">
+            <div className="transaction-container-admin-item">
 
                 <div style={itemstyle}>
                     <div style={{ width: '95%', height: '25%', gap: '12px', display: 'flex', justifyContent: 'center', float: 'right' }}>
-                        <input type='text' placeholder='Search For A Specific Item....' onChange={handleFilter} />
+                        <input type='text' placeholder='Search For A Specific Item....' onChange={handleFilter}  />
                         <p style={{ marginTop: '12px' }}>Total Items: {count}</p>
                         <p style={{ marginTop: '12px' }}>Unlocated Serial Numbers: {unlocated.length}</p>
                         <button style={{ backgroundColor: 'rgb(199, 49, 12)', color: 'white' }} onClick={() => handleClear()}>Clear</button>

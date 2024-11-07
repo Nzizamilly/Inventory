@@ -33,18 +33,21 @@ function Login() {
         overlay: {
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center',
+            zIndex: '20',
+            // alignItems: 'center',
             // opacity: 0, // Ensures overlay is present but transparent
             background: 'transparent',
         },
         content: {
+            zIndex: '20',
             width: '25%',
             marginLeft: '495px',
-            backgroundColor: 'rgb(94, 120, 138)',
             border: 'none',
+            height: '100%',
             borderRadius: '12px',
+            background: 'transparent',
             gap: '23px',
-            color: "black",
+            marginTop: '-19px',
             padding: '12px 0px',
             display: 'flex',
             flexDirection: 'column',
@@ -152,6 +155,10 @@ function Login() {
                 } else {
                     setLoading(false);
                     setUserNotFoundModal(true);
+
+                    setInterval(() => {
+                        closeUserNotFoundModal();
+                    }, 2700)
                 }
             })
             .catch(err => console.log(err));
@@ -170,7 +177,6 @@ function Login() {
         <div style={loginContainer}>
             <form style={{ width: '100%', display: 'flex', justifyContent: 'center' }} method="POST">
                 <div style={login}>
-
                     <h1>Login</h1>
                     <input placeholder='Username' type='text' className='inputTest' name='username' onChange={handleInput} ref={username} />
                     <input placeholder='Password' autocomplete="off" type='password' name='password' onChange={handleInput} ref={password} />
@@ -181,9 +187,9 @@ function Login() {
                 </div>
             </form>
 
-            <Modal isOpen={userNotFoundModal} onRequestClose={closeUserNotFoundModal} className={modal} >
-                <div style={{ display: 'flex', border:'none' , flexDirection: 'inline', marginTop: '10px', height: '6vh', justifyContent: 'center', alignItems: 'center' }}>
-                    <div style={{ display: 'flex',border:'none',  gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '100%', width: '20%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
+            <Modal isOpen={userNotFoundModal} onRequestClose={closeUserNotFoundModal} style={modal} >
+                <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '70%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
                         <img src={Cross} style={svgStyle} />
                         <p style={{ color: 'white' }}>User Not Found.</p>
                     </div>

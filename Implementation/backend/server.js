@@ -71,7 +71,7 @@ io.on("connection", (socket) => {
   socket.on("Employee_Message_Supervisor(1)", async (messageData) => {
 
     console.log("From employee: to supervisor", messageData);
-    
+
     const getEmployeeID = (employeeName) => {
       return new Promise((resolve, reject) => {
         const sql = `SELECT id FROM employees WHERE username = ?`;
@@ -542,6 +542,25 @@ ORDER BY
 
   socket.on("disconnect", () => {
   });
+
+  socket.on("Employee_Leave_Message_Supervisor(1)", (messageData) => {
+
+    const empID = parseInt(messageData.empID);
+    const email = messageData.email;
+    const date_of_request = messageData.datee;
+    const leave = messageData.leave;
+    const roleID = parseInt(messageData.roleID);
+    const endDate = messageData.endDate;
+    const startDate = messageData.startDate;
+    const daysRequired = messageData.daysRequired;
+    const selectedSupervisor = messageData.selectedSupervisor;
+    const description = "None";
+
+    const q = "INSERT INTO employee_leave_request (empID,	roleID,	`leave`, description,	date_of_request,	email,	supervisor_concerned,	startDate,	endDate,	daysRequired) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    db.query(q, [empID, roleID, leave, description, date_of_request, email, selectedSupervisor, startDate, endDate, daysRequired], (error, result) => {
+      result ? console.log("Done Well") : console.error("Error", error);
+    });
+  })
 });
 
 server.listen(5001, () => {
@@ -774,7 +793,7 @@ app.get('/get-DOE/:ID', (req, res) => {
 });
 
 
-app.post ('/login', (req, res) => {
+app.post('/login', (req, res) => {
   const sql = "SELECT * FROM employees WHERE username = ? and password = ? ";
   db.query(sql, [req.body.username, req.body.password], (err, result) => {
     if (err) {
@@ -1039,10 +1058,20 @@ app.post('/add-serial-number/:takeItemID', (req, res) => {
       console.error("Error inserting", err);
       return res.status(500).json({ error: "Internal Server Error" })
     }
-    console.log("Serial number added well", data)
+    console.log("New Serial Inserted!");
     return res.json(data)
   });
 });
+
+app.put('/update-total-number-of-serial/:itemID', (req, res) => {
+
+  const itemID = req.params.itemID;
+
+  const sql = `UPDATE serial_number SET daily_total = daily_total + 1 WHERE id = ?`
+  db.query(sql, itemID, (error, result) => {
+    result ? res.json("Daily Total Updated!!") : console.error("Error: ", error);
+  })
+})
 
 
 
@@ -1053,7 +1082,6 @@ app.get('/get-serial-number/:itemID', (req, res) => {
 
   db.query(q, [itemID], (error, result) => {
     if (result) {
-      console.log("Result: ", result);
       res.json(result);
     } else {
       console.error("Error: ", error);
@@ -1211,9 +1239,10 @@ app.put('/update-serial-status-return/:id/:status/:taker', (req, res) => {
   const id = req.params.id;
   const status = req.params.status;
   const taker = req.params.taker;
+  const amount_returned = 1;
   console.log("Passed: ", id, status);
-  const q = `UPDATE serial_number set status = ?, taker = '0', companyID = '0', returner = ?  WHERE id = ?`;
-  const values = [status, taker, id]
+  const q = `UPDATE serial_number set status = ?, taker = ?, companyID = '0', returner = ?  WHERE id = ?`;
+  const values = [status, taker, amount_returned, id]
   db.query(q, values, (error, result) => {
     if (error) {
       console.error("Error", error);
@@ -1268,7 +1297,7 @@ app.put('/update-serial-status/:IDTaken/:status/:taker', async (req, res) => {
 //   COALESCE(SUM(CASE WHEN serial_number.status = 'In' THEN 1 ELSE 0 END), 0) AS amount_entered,
 //   COALESCE(SUM(CASE WHEN serial_number.status = 'Out' THEN 1 ELSE 0 END), 0) AS amount_went_out,
 //   employees.username AS taker_name,
-//   COALESCE((SELECT COUNT(*) FROM serial_number s WHERE s.status = 'In' AND s.itemID = item.id), 0) AS total_items_in
+//   COALESCE((SELECT COUNT(*) FROM serial_number s WHERE s.status = 'In'  AND s.itemID = item.id), 0) AS total_items_in
 // FROM serial_number
 // JOIN item ON serial_number.itemID = item.id
 // LEFT JOIN employees ON serial_number.taker = employees.id
@@ -1292,26 +1321,35 @@ app.put('/update-serial-status/:IDTaken/:status/:taker', async (req, res) => {
 // });
 
 app.get('/monthly-report/:StartDate/:EndDate', (req, res) => {
+
   const start = req.params.StartDate;
   const end = req.params.EndDate;
 
   console.log("Start from front: ", start);
   console.log("end from front: ", end);
+
   const query = `
-  SELECT 
-  DATE_FORMAT(serial_number.date, '%Y-%m-%d') AS transaction_date,
-  item.name AS item_name,
-  COALESCE(SUM(CASE WHEN serial_number.status = 'In' THEN 1 ELSE 0 END), 0) AS amount_entered,
-  COALESCE(SUM(CASE WHEN serial_number.status = 'Out' THEN 1 ELSE 0 END), 0) AS amount_went_out,
-  employees.username AS taker_name,
-  serial_number.returner,
-  COALESCE((SELECT COUNT(*) FROM serial_number s WHERE s.status = 'In' AND s.itemID = item.id), 0) AS total_items_in
-FROM serial_number
-JOIN item ON serial_number.itemID = item.id
-LEFT JOIN employees ON serial_number.taker = employees.id
-WHERE serial_number.date >= ? AND serial_number.date <= ?  -- Specify your date range here
-GROUP BY transaction_date, item.name, employees.username, item.id
-ORDER BY serial_number.date DESC; -- Order by date in descending order
+
+ SELECT 
+    item_transaction.id, 
+    item_transaction.date, 
+    item_transaction.action, 
+    item_transaction.amount, 
+    item_transaction.retour, 
+    item.name, 
+    employees.username, 
+    item_transaction.remaining 
+FROM 
+    item_transaction
+JOIN 
+    item ON item_transaction.itemID = item.id
+LEFT JOIN 
+    employees ON item_transaction.requestor = employees.id
+WHERE 
+    item_transaction.date BETWEEN ? AND ?
+ORDER BY 
+    item_transaction.date DESC;
+
 
   `;
   const values = [start, end];
@@ -1321,6 +1359,19 @@ ORDER BY serial_number.date DESC; -- Order by date in descending order
       res.status(500).json({ error: "Internal Server Error" });
     } else {
       res.json(result);
+    }
+  });
+});
+
+app.post('/take-one-daily-transaction/:itemID/:amount/:requestor/:status/:retour/:remaining', (req, res) => {
+  const date = new Date();
+  const sql = `INSERT INTO item_transaction ( itemID, amount, requestor, date, retour, action, remaining ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) `;
+  db.query(sql, [req.params.itemID, req.params.amount, req.params.requestor, date, req.params.retour, req.params.status, req.params.remaining], (error, result) => {
+    if (result) {
+      // console.log("Request Recorded!!!");
+      res.json('recorded');
+    } else {
+      console.error("Error: ", error);
     }
   });
 });
@@ -2026,9 +2077,9 @@ app.get('/show-supervisor', (req, res) => {
   const q = `
   SELECT username, id
   FROM employees
-  WHERE roleID = 5;
-  ;`
-    ;
+  WHERE roleID = 5
+  `;
+
   db.query(q, (error, data) => {
     if (error) {
       console.error("Error: ", error);
@@ -2763,6 +2814,18 @@ app.get('/get-Total-Number-Of-Serials-For-single/:ID', (req, res) => {
   });
 });
 
+app.get('/get-Total-Number-Of-Serials-For-single-in/:ID', (req, res) => {
+  const ID = parseInt(req.params.ID);
+  const sql = `SELECT COUNT(*) AS total_serial_count FROM serial_number WHERE status = 'In' AND itemID = ? `;
+  db.query(sql, ID, (error, result) => {
+    if (error) {
+      console.error("Error: ", error);
+    } else {
+      res.json([total_serial_count = result[0].total_serial_count]);
+    };
+  });
+});
+
 app.get('/get-serial-In/:ID', (req, res) => {
   const ID = req.params.ID;
   const sql = `SELECT COUNT(*) AS total_serial_in FROM serial_number WHERE status = 'In' AND itemID = ?`;
@@ -2882,12 +2945,12 @@ app.get('/get-one-company-for-delivery/:oneCompanyID/:ID', (req, res) => {
    WHERE companyID = ? AND company_records.id = ?
      `;
   db.query(sql, [companyID, ID], (error, result) => {
-   if(result){
-    console.log("Result: ", result); 
-    res.json(result);
-   }else{
-    console.error("Error: ", error);
-   }
+    if (result) {
+      console.log("Result: ", result);
+      res.json(result);
+    } else {
+      console.error("Error: ", error);
+    }
   });
 });
 

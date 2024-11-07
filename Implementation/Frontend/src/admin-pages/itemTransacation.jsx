@@ -62,35 +62,31 @@ function ItemTransactionsAdmins() {
   const columns = [
     {
       name: 'Date',
-      selector: (row) => row.transaction_date,
+      selector: (row) => row.date,
     },
     {
       name: 'Item',
-      selector: (row) => row.item_name,
+      selector: (row) => row.name,
     },
     {
-      name: 'Item in-Stock',
-      selector: (row) => {
-        return row.returned !== null ? row.amount_entered : '0';
-      },
+      name: 'In-Stock',
+      selector: (row) => row.amount
     },
     {
-      name: 'Went Out',
+      name: 'Out-Stock',
       selector: (row) => row.amount_went_out,
     },
     {
       name: 'Requestor',
-      selector: (row) => row.taker_name,
+      selector: (row) => row.username,
     },
     {
       name: 'Return',
-      selector: (row) => {
-        return row.returner === '' ? '' : 'Returned';
-        }
+      selector: (row) => row.retour,
     },
     {
       name: 'Current Balance',
-      selector: (row) => row.total_items_in,
+      selector: (row) => row.remaining,
     },
   ];
 
@@ -231,7 +227,7 @@ function ItemTransactionsAdmins() {
 
   const handlePrint = () => {
 
-    const printWindow = window.open('', '', 'width=900,height=650')
+    const printWindow = window.open('', '', 'width=900,height=650, display=flex, justifyContent=center')
     printWindow.document.write(printContent);
     printWindow.document.write('</body></html>');
     printWindow.document.close();
@@ -264,14 +260,15 @@ function ItemTransactionsAdmins() {
       <div style={kain}>
         <h1 style={{ marginLeft: '75px' }}> Item Report Tab</h1>
       </div>
+
       <div className="transaction-container-admin">
         <div style={kindaStyle}>
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '9%' }}>
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '9px', alignItems: 'center', height: '9%' }}>
             <input style={{ height: '100%' }} type="text" placeholder="Search By Item Name" onChange={handleFilter} />
           </div>
           <br />
           <div style={{ width: '100%', display: 'flex', gap: '12px', justifyContent: 'center', flexDirection: 'inline' }}>
-            <p style={{ marginTop: '5px' }}>From:</p> <input type="date" onChange={(e) => setStartDate(e.target.value)} style={{ width: '20%', borderRadius: '20px', display: 'flex', justifyContent: 'center', border: 'none' }} />
+            <p style={{ marginTop: '5px' }}>From:</p> <input type="date" onChange={(e) => setStartDate(e.target.value)} style={{ width: '20%', borderRadius: '20px',  display: 'flex', justifyContent: 'center', border: 'none' }} />
             <p style={{ marginTop: '5px' }}>To:</p> <input type="date" onChange={(e) => setEndDate(e.target.value)} style={{ width: '20%', borderRadius: '20px', display: 'flex', justifyContent: 'center', border: 'none' }} />
           </div>
           <br />

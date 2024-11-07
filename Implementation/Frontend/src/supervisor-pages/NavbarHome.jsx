@@ -117,6 +117,7 @@ function NavbarHome() {
     const options = [
         { value: 'item', label: "Item Notification" },
         { value: 'purchase', label: "Purchase Notification" },
+        { value: 'leave', label: "Leave Notification" },
     ];
 
     const customStyles = {
@@ -140,7 +141,7 @@ function NavbarHome() {
         }),
         singleValue: (provided) => ({
             ...provided,
-            width: '54px',
+            width: '100%',
             height: '24px',
             display: 'flex',
             alignItems: 'center',
@@ -163,6 +164,8 @@ function NavbarHome() {
                 navigate('/purchase-review-supervisor');
             } else if (selectedNotification === 'purchase') {
                 navigate('/purchase-notifications-supervisor');
+            } else if (selectedNotification === 'leave') {
+                navigate('/leave-notifications-supervisor');
             };
         };
         changeNotifications(selectedNotification);
@@ -183,7 +186,7 @@ function NavbarHome() {
     const li1 = {
         width: '99px',
         color: 'white',
-        height: '82px' ,
+        height: '82px',
         float: 'right',
         justifyContent: 'center',
         backgroundColor: 'rgb(8, 81, 26)',
@@ -193,14 +196,14 @@ function NavbarHome() {
     return (
         <div className="navbar">
             <ul className='ul1' style={color}>
-                <li style={{ float: 'left', marginTop: '-5px' , marginLeft: '174px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
-                <li style = {li1} onClick={handleLogout}><Link>Log Out</Link></li>
+                <li style={{ float: 'left', marginTop: '-5px', marginLeft: '174px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+                <li style={li1} onClick={handleLogout}><Link>Log Out</Link></li>
                 <select onChange={handleTransactionChange} value={transactionType} style={select}>
                     <option value="" disabled >Requests</option>
                     <option value="item" >Item</option>
                     <option value="purchase" >Purchase</option>
                 </select>
-                <li style = {li1}><Link to={'/home-supervisor'}>Home</Link></li>
+                <li style={li1}><Link to={'/home-supervisor'}>Home</Link></li>
             </ul>
             <ul className='ul2supervisor'>
                 <li className='liAdmin'><Link to={'/account-admin'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li>

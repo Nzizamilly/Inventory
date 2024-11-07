@@ -110,6 +110,49 @@
     background-color: rgb(163, 187, 197);
 }
 
+.leave-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    overflow: auto;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(163, 187, 197);
+}
+
+;
+
+.leave-div {
+    gap: 15px;
+    width: 83%;
+    height: 49%;
+    border: none;
+    display: flex;
+    color: white;
+    text-align: left;
+    padding: 12px 0px;
+    margin-top: -178px;
+    margin-left: 620px;
+    padding-left: 12px;
+    border-radius: 12px;
+    flex-direction: column;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(190, 226, 243);
+}
+
+.buttonP {
+    width: 24%;
+    display: flex;
+    height: 148px;
+    align-items: center;
+    justify-content: center;
+    background-color: 'rgb(190, 226, 243)';
+}
+
+.buttonP:hover {
+    opacity: 0.5
+}
+
 .terms {
     gap: 15px;
     width: 83%;
@@ -429,7 +472,7 @@ li a:hover {
     margin: 0;
     height: 7%;
     width: 87%;
-    z-index: 1; 
+    z-index: 1;
     overflow: hidden;
     margin-left: 190px;
     list-style-type: none;
@@ -760,7 +803,7 @@ li a:hover {
     /* overflow: auto; */
     /* margin-bottom: 32%; */
     flex-wrap: wrap;
-    align-items: center;
+    /* align-items: center; */
     justify-content: center;
     font-family: 'Arial', sans-serif;
     background-color: rgb(163, 187, 197);
@@ -774,7 +817,20 @@ li a:hover {
     flex-wrap: wrap;
     /* align-items: center; */
     justify-content: center;
-   /* overflow-y: hidden; */
+    /* overflow-y: hidden; */
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(163, 187, 197);
+}
+
+.transaction-container-admin-item {
+    width: 100%;
+    height: 127vh;
+    display: flex;
+    overflow: auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    overflow-y: hidden;
     font-family: 'Arial', sans-serif;
     background-color: rgb(163, 187, 197);
 }
@@ -797,12 +853,12 @@ li a:hover {
     width: 290px;
     height: 98px;
     padding: 8px;
-    display: inline-block;
     color: black;
     flex-shrink: 0;
     margin-left: 15px;
     border-radius: 15px;
     align-items: center;
+    display: inline-block;
     /* flex-direction: column; */
     background-color: rgb(206, 206, 236);
 }
@@ -954,7 +1010,9 @@ li a:hover {
     color: rgb(29, 27, 27);
     font-family: 'Arial', sans-serif;
     background-color: rgb(206, 206, 236);
-};
+}
+
+;
 
 .termsx {
     gap: 15px;

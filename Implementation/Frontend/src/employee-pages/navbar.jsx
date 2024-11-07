@@ -7,6 +7,9 @@ import Centrika from '../images/centrika-removebg.png';
 import Select from 'react-select';
 import PolicySVG from '../images/policySVG.svg';
 import Keys from '../keys';
+import ItemSVG from '../images/item_SVG.svg';
+import Coins from '../images/coins.svg';
+import PalmTree from '../images/palm_tree.svg';
 
 function Navbar() {
 
@@ -77,8 +80,9 @@ function Navbar() {
 
 
   const option = [
-    { value: 'item', label: "Item Request" },
-    { value: 'purchase', label: "Purchase Request" },
+    { value: 'item', label: <><img src={ItemSVG} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Item Request </>},
+    { value: 'purchase', label:  <><img src={Coins} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Purchase Request </> },
+    { value: 'leave', label:  <><img src={PalmTree} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Leave Request </> },
   ];
 
   const options = [
@@ -140,6 +144,8 @@ function Navbar() {
         navigate('/request-employee');
       } else if (selectedRequest === 'purchase') {
         navigate('/purchase-request');
+      } else if (selectedRequest === 'leave') {
+        navigate('/employee-leave-request');
       };
     }
     changeNotification(selectedRequest);
