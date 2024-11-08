@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import NavbarMain from './navbarMain';
+
 import axios from "axios";
 import DataTable from 'react-data-table-component';
 import Add from '../images/add.svg'
 import Modal from 'react-modal';
-import ImgAdd from '../images/add-photo.svg';
-import Switch from 'react-switch'
+
 import ClipLoader from "react-spinners/ClipLoader";
 import Info from '../images/info.svg'
 import ProfilePicture from '../images/profile-picture.svg';
 import '../style.css'
-import Update from '../images/update.svg';
+
 import { storage } from '../firebase';
 import { ref, deleteObject, uploadBytes, getDownloadURL } from "firebase/storage";
 import Logo from '../images/logo.svg';

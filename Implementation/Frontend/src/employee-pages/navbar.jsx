@@ -7,6 +7,9 @@ import Centrika from '../images/centrika-removebg.png';
 import Select from 'react-select';
 import PolicySVG from '../images/policySVG.svg';
 import Keys from '../keys';
+import ItemSVG from '../images/item_SVG.svg';
+import Coins from '../images/coins.svg';
+import PalmTree from '../images/palm_tree.svg';
 
 function Navbar() {
 
@@ -77,13 +80,15 @@ function Navbar() {
 
 
   const option = [
-    { value: 'item', label: "Item Request" },
-    { value: 'purchase', label: "Purchase Request" },
+    { value: 'item', label: <><img src={ItemSVG} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Item Request </>},
+    { value: 'purchase', label:  <><img src={Coins} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Purchase Request </> },
+    { value: 'leave', label:  <><img src={PalmTree} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Leave Request </> },
   ];
 
   const options = [
     { value: 'item', label: "Item Notifications" },
     { value: 'purchase', label: "Purchase Notifications" },
+    { value: 'leave', label: "Leave Notifications" },
   ];
 
   const customStyles = {
@@ -129,6 +134,8 @@ function Navbar() {
         navigate('/notification-employee');
       } else if (selectedNotification === 'purchase') {
         navigate('/purchase-notification-employee');
+      }else if (selectedNotification === 'leave') {
+        navigate('/leave-notification-employee');
       };
     }
     changeRequest(selectedNotification);
@@ -140,6 +147,8 @@ function Navbar() {
         navigate('/request-employee');
       } else if (selectedRequest === 'purchase') {
         navigate('/purchase-request');
+      } else if (selectedRequest === 'leave') {
+        navigate('/employee-leave-request');
       };
     }
     changeNotification(selectedRequest);
@@ -150,7 +159,7 @@ function Navbar() {
       <ul className='ul1'>
         <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
         <li className='li1'><Link to={'/home-employee'}>Home</Link></li>
-        <li style={{ float: 'left', marginLeft: '193px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+        <li style={{ float: 'left', marginLeft: '193px',  marginTop: '-5px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
       </ul>
       <ul className='ul2Admin'>
         {/* <li style={{display: 'flex', flexDirection: 'inline', gap: '12px', backgroundColor: 'blue'}}><Link to={'/account-employee'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li> */}

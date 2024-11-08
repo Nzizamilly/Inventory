@@ -35,6 +35,7 @@ function NavbarAdmin() {
       height: '25%',
       marginRight: '-20%',
       transform: 'translate(-50%, -50%)',
+      zIndex: '20',
       opacity: 0.9,
       fontFamily: 'Your Custom Font, sans-serif',
       fontSize: '16px',
@@ -49,6 +50,7 @@ function NavbarAdmin() {
     },
     overlay: {
       backgroundColor: 'rgba(0, 0, 0, 0.0)',
+      zIndex: '20',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -77,24 +79,14 @@ function NavbarAdmin() {
     const changeTransaction = (transactionType) => {
       if (transactionType === 'item') {
         navigate('/item-transaction')
-      } else if (transactionType) {
+      } else if (transactionType === 'action') {
         navigate('/action-transaction')
+      } else if (transactionType === 'report') {
+        navigate('/item-transactions')
       };
     }
     changeTransaction(transactionType);
   }, [transactionType]);
-
-  const select = {
-    display: 'block',
-    padding: '12px 12px',
-    borderRadius: '12px',
-    textDecoration: 'none',
-    color: 'rgb(5, 5, 5)',
-    width: '198px',
-    backgroundColor: 'black',
-    color: 'white'
-
-  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,6 +113,7 @@ function NavbarAdmin() {
   const option = [
     { value: 'item', label: "Item Transaction" },
     { value: 'action', label: "Action Transaction" },
+    { value: 'report', label: "Item Transaction Report" },
   ]
 
   const customStyles = {
@@ -168,7 +161,7 @@ function NavbarAdmin() {
     changeSupplier(selectedSupplier);
   }, [selectedSupplier]);
 
-  const [count, setCount] =useState([]);
+  const [count, setCount] = useState([]);
 
   useEffect(() => {
     const bringPendingNumbers = async () => {
@@ -176,7 +169,7 @@ function NavbarAdmin() {
       setCount(response.data);
     }
     bringPendingNumbers();
-  }, []);
+  }, [setCount]);
 
   return (
     <div >
@@ -184,7 +177,8 @@ function NavbarAdmin() {
       <ul className='ul1Admin'>
         <li className='li1Admin' onClick={handleLogout}><Link to={'/'}>Log Out</Link></li>
         <li className='li1Admin'><Link to={'/home-admin'}>Home</Link></li>
-        <li style={{ float: 'left', marginLeft: '193px' }} className='li1Admin'><img style={{ maxWidth: '100%', marginTop: '1px', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+        <li style={{ float: 'left', marginLeft: '3px', marginTop: '-5px' }} className='li1Admin'><img style={{ maxWidth: '100%', marginTop: '1px', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+
         {/* <li style={{ float: 'left', marginLeft: '193px' }} ><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li> */}
       </ul>
 

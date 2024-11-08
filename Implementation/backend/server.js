@@ -67,9 +67,11 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
+
   socket.on("Employee_Message_Supervisor(1)", async (messageData) => {
 
     console.log("From employee: to supervisor", messageData);
+
     const getEmployeeID = (employeeName) => {
       return new Promise((resolve, reject) => {
         const sql = `SELECT id FROM employees WHERE username = ?`;
@@ -540,6 +542,26 @@ ORDER BY
 
   socket.on("disconnect", () => {
   });
+
+  socket.on("Employee_Leave_Message_Supervisor(1)", (messageData) => {
+
+    const empID = parseInt(messageData.empID);
+    const email = messageData.email;
+    const date_of_request = messageData.datee;
+    const leave = messageData.leave;
+    const roleID = parseInt(messageData.roleID);
+    const endDate = messageData.endDate;
+    const startDate = messageData.startDate;
+    const daysRequired = messageData.daysRequired;
+    const selectedSupervisor = messageData.selectedSupervisor;
+    const description = "None";
+    const status = 'Pending'
+
+    const q = "INSERT INTO employee_leave_request (empID,	roleID,	`leave`, description,	date_of_request,	email,	supervisor_concerned,	startDate,	endDate,	daysRequired, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    db.query(q, [empID, roleID, leave, description, date_of_request, email, selectedSupervisor, startDate, endDate, daysRequired, status], (error, result) => {
+      result ? console.log("Done Well") : console.error("Error", error);
+    });
+  })
 });
 
 server.listen(5001, () => {
@@ -1037,10 +1059,20 @@ app.post('/add-serial-number/:takeItemID', (req, res) => {
       console.error("Error inserting", err);
       return res.status(500).json({ error: "Internal Server Error" })
     }
-    console.log("Serial number added well", data)
+    console.log("New Serial Inserted!");
     return res.json(data)
   });
 });
+
+app.put('/update-total-number-of-serial/:itemID', (req, res) => {
+
+  const itemID = req.params.itemID;
+
+  const sql = `UPDATE serial_number SET daily_total = daily_total + 1 WHERE id = ?`
+  db.query(sql, itemID, (error, result) => {
+    result ? res.json("Daily Total Updated!!") : console.error("Error: ", error);
+  })
+})
 
 
 
@@ -1051,7 +1083,6 @@ app.get('/get-serial-number/:itemID', (req, res) => {
 
   db.query(q, [itemID], (error, result) => {
     if (result) {
-      console.log("Result: ", result);
       res.json(result);
     } else {
       console.error("Error: ", error);
@@ -1205,12 +1236,14 @@ app.get('/get-total-number/:id', (req, res) => {
   });
 });
 
-app.put('/update-serial-status/:id/:status', (req, res) => {
-  const id = req.params.id
-  const status = req.params.status
+app.put('/update-serial-status-return/:id/:status/:taker', (req, res) => {
+  const id = req.params.id;
+  const status = req.params.status;
+  const taker = req.params.taker;
+  const amount_returned = 1;
   console.log("Passed: ", id, status);
-  const q = `UPDATE serial_number set status = ?, taker = '0', companyID = '0'  WHERE id = ?`;
-  const values = [status, id]
+  const q = `UPDATE serial_number set status = ?, taker = ?, companyID = '0', returner = ?  WHERE id = ?`;
+  const values = [status, taker, amount_returned, id]
   db.query(q, values, (error, result) => {
     if (error) {
       console.error("Error", error);
@@ -1251,39 +1284,95 @@ app.put('/update-serial-status/:IDTaken/:status/:taker', async (req, res) => {
 });
 
 
-app.get('/monthly-report/:StartDate/:EndDate/:id', (req, res) => {
+// app.get('/monthly-report/:StartDate/:EndDate/:id', (req, res) => {
+//   const start = req.params.StartDate;
+//   const end = req.params.EndDate;
+//   const idi = req.params.id;
+
+//   console.log("Start from front: ", start);
+//   console.log("end from front: ", end);
+//   const query = `
+//   SELECT 
+//   DATE_FORMAT(serial_number.date, '%Y-%m-%d') AS transaction_date,
+//   item.name AS item_name,
+//   COALESCE(SUM(CASE WHEN serial_number.status = 'In' THEN 1 ELSE 0 END), 0) AS amount_entered,
+//   COALESCE(SUM(CASE WHEN serial_number.status = 'Out' THEN 1 ELSE 0 END), 0) AS amount_went_out,
+//   employees.username AS taker_name,
+//   COALESCE((SELECT COUNT(*) FROM serial_number s WHERE s.status = 'In'  AND s.itemID = item.id), 0) AS total_items_in
+// FROM serial_number
+// JOIN item ON serial_number.itemID = item.id
+// LEFT JOIN employees ON serial_number.taker = employees.id
+// WHERE serial_number.date >= ? AND serial_number.date <= ? AND id = ? -- Specify your date range here
+// GROUP BY transaction_date, item.name, employees.username, item.id
+// ORDER BY serial_number.date DESC; -- Order by date in descending order
+
+//   `;
+//   const startDate = moment(req.query.start, 'DD-MM-YYYY').format('YYYY-MM-DD');
+//   const endDate = moment(req.query.end, 'DD-MM-YYYY').format('YYYY-MM-DD');
+//   const values = [start, end, idi];
+//   db.query(query, values, (error, result) => {
+//     if (error) {
+//       console.error("Error", error);
+//       res.status(500).json({ error: "Internal Server Error" });
+//     } else {
+//       console.log("Result: ", result);
+//       res.json(result);
+//     }
+//   });
+// });
+
+app.get('/monthly-report/:StartDate/:EndDate', (req, res) => {
+
   const start = req.params.StartDate;
   const end = req.params.EndDate;
-  const idi = req.params.id;
 
   console.log("Start from front: ", start);
   console.log("end from front: ", end);
+
   const query = `
-  SELECT 
-  DATE_FORMAT(serial_number.date, '%Y-%m-%d') AS transaction_date,
-  item.name AS item_name,
-  COALESCE(SUM(CASE WHEN serial_number.status = 'In' THEN 1 ELSE 0 END), 0) AS amount_entered,
-  COALESCE(SUM(CASE WHEN serial_number.status = 'Out' THEN 1 ELSE 0 END), 0) AS amount_went_out,
-  employees.username AS taker_name,
-  COALESCE((SELECT COUNT(*) FROM serial_number s WHERE s.status = 'In' AND s.itemID = item.id), 0) AS total_items_in
-FROM serial_number
-JOIN item ON serial_number.itemID = item.id
-LEFT JOIN employees ON serial_number.taker = employees.id
-WHERE serial_number.date >= ? AND serial_number.date <= ? AND id = ? -- Specify your date range here
-GROUP BY transaction_date, item.name, employees.username, item.id
-ORDER BY serial_number.date DESC; -- Order by date in descending order
+
+ SELECT 
+    item_transaction.id, 
+    item_transaction.date, 
+    item_transaction.action, 
+    item_transaction.amount, 
+    item_transaction.retour, 
+    item.name, 
+    employees.username, 
+    item_transaction.remaining 
+FROM 
+    item_transaction
+JOIN 
+    item ON item_transaction.itemID = item.id
+LEFT JOIN 
+    employees ON item_transaction.requestor = employees.id
+WHERE 
+    item_transaction.date BETWEEN ? AND ?
+ORDER BY 
+    item_transaction.date DESC;
+
 
   `;
-  const startDate = moment(req.query.start, 'DD-MM-YYYY').format('YYYY-MM-DD');
-  const endDate = moment(req.query.end, 'DD-MM-YYYY').format('YYYY-MM-DD');
-  const values = [start, end, idi];
+  const values = [start, end];
   db.query(query, values, (error, result) => {
     if (error) {
       console.error("Error", error);
       res.status(500).json({ error: "Internal Server Error" });
     } else {
-      console.log("Result: ", result);
       res.json(result);
+    }
+  });
+});
+
+app.post('/take-one-daily-transaction/:itemID/:amount/:requestor/:status/:retour/:remaining', (req, res) => {
+  const date = new Date();
+  const sql = `INSERT INTO item_transaction ( itemID, amount, requestor, date, retour, action, remaining ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) `;
+  db.query(sql, [req.params.itemID, req.params.amount, req.params.requestor, date, req.params.retour, req.params.status, req.params.remaining], (error, result) => {
+    if (result) {
+      // console.log("Request Recorded!!!");
+      res.json('recorded');
+    } else {
+      console.error("Error: ", error);
     }
   });
 });
@@ -1306,6 +1395,76 @@ app.get('/getor/:supervisorID', (req, res) => {
   })
 })
 
+app.get('/getor-leave-supervisor/:supervisorID', (req, res) => {
+  const supervisorID = req.params.supervisorID
+
+  const sql = `
+  SELECT
+   employee_leave_request.id,
+   employee_leave_request.leave,
+   employee_leave_request.description,
+   employee_leave_request.date_of_request,
+   employee_leave_request.email,
+   employee_leave_request.startDate,
+   employee_leave_request.endDate,
+   employee_leave_request.daysRequired,
+   employee_leave_request.status,
+   employee_leave_request.empID,
+   employee_leave_request.status,
+   employee_leave_request.roleID,
+   employee_leave_request.supervisor_concerned AS supervisor_concerned_id,
+   role.role_name,
+   employees.username AS employeeName,
+   supervisorConcerned.username AS supervisorConcerned
+
+FROM employee_leave_request 
+
+JOIN role ON employee_leave_request.roleID = role.id
+JOIN employees ON employee_leave_request.empID = employees.id
+JOIN employees AS supervisorConcerned ON employee_leave_request.supervisor_concerned = supervisorConcerned.id
+
+WHERE supervisor_concerned = ? AND employee_leave_request.status = 'Pending'  ;
+  `;
+
+  db.query(sql, [supervisorID], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+})
+
+app.get('/getor-leave-hr', (req, res) => {
+
+  const sql = `
+  SELECT
+   supervisor_hr_leave_request.id,
+   supervisor_hr_leave_request.leave,
+   supervisor_hr_leave_request.description,
+   supervisor_hr_leave_request.date_of_request,
+   supervisor_hr_leave_request.email,
+   supervisor_hr_leave_request.startDate,
+   supervisor_hr_leave_request.endDate,
+   supervisor_hr_leave_request.days_required,
+   supervisor_hr_leave_request.status,
+   supervisor_hr_leave_request.empID,
+   supervisor_hr_leave_request.status,
+   supervisor_hr_leave_request.roleID,
+   supervisor_hr_leave_request.supervisorID AS supervisor_concerned_id,
+   role.role_name,
+   employees.username AS employeeName,
+   supervisorConcerned.username AS supervisorConcerned
+
+FROM supervisor_hr_leave_request 
+
+JOIN role ON supervisor_hr_leave_request.roleID = role.id
+JOIN employees ON supervisor_hr_leave_request.empID = employees.id
+JOIN employees AS supervisorConcerned ON supervisor_hr_leave_request.supervisorID = supervisorConcerned.id
+
+WHERE supervisor_hr_leave_request.status = 'Pending';
+  `;
+
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+})
 
 app.post('/add-department', (req, res) => {
   const q = 'INSERT INTO department(department_name, status) VALUES (?,?)';
@@ -1825,7 +1984,105 @@ app.get('/get-approved-notification', (req, res) => {
   })
 });
 
+app.get('/get-approved-notification-leave-supervisor/:supervisorID', (req, res) => {
+  const q = ` SELECT
+   employee_leave_request.id,
+   employee_leave_request.leave,
+   employee_leave_request.description,
+   employee_leave_request.date_of_request,
+   employee_leave_request.email,
+   employee_leave_request.startDate,
+   employee_leave_request.endDate,
+   employee_leave_request.daysRequired,
+   employee_leave_request.empID,
+   employee_leave_request.status,
+   employee_leave_request.roleID,
+   employee_leave_request.supervisor_concerned AS supervisor_concerned_id,
+   role.role_name,
+   employees.username AS employeeName,
+   supervisorConcerned.username AS supervisorConcerned
 
+FROM employee_leave_request 
+
+JOIN role ON employee_leave_request.roleID = role.id
+JOIN employees ON employee_leave_request.empID = employees.id
+JOIN employees AS supervisorConcerned ON employee_leave_request.supervisor_concerned = supervisorConcerned.id
+
+   
+WHERE (employee_leave_request.status = 'Approved By Supervisor' OR employee_leave_request.status = 'Approved By HR') AND employee_leave_request.supervisor_concerned = ?;
+  
+`;
+  db.query(q, [req.params.supervisorID], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+
+app.get('/get-approved-notification-leave-hr', (req, res) => {
+
+  const q = `SELECT
+   supervisor_hr_leave_request.id,
+   supervisor_hr_leave_request.leave,
+   supervisor_hr_leave_request.description,
+   supervisor_hr_leave_request.date_of_request,
+   supervisor_hr_leave_request.email,
+   supervisor_hr_leave_request.startDate,
+   supervisor_hr_leave_request.endDate,
+   supervisor_hr_leave_request.days_required,
+   supervisor_hr_leave_request.status,
+   supervisor_hr_leave_request.empID,
+   supervisor_hr_leave_request.status,
+   supervisor_hr_leave_request.roleID,
+   supervisor_hr_leave_request.supervisorID AS supervisor_concerned_id,
+   role.role_name,
+   employees.username AS employeeName,
+   supervisorConcerned.username AS supervisorConcerned
+
+FROM supervisor_hr_leave_request 
+
+JOIN role ON supervisor_hr_leave_request.roleID = role.id
+JOIN employees ON supervisor_hr_leave_request.empID = employees.id
+JOIN employees AS supervisorConcerned ON supervisor_hr_leave_request.supervisorID = supervisorConcerned.id
+
+WHERE supervisor_hr_leave_request.status = 'Approved';
+`;
+  db.query(q, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+app.get('/get-denied-notification-leave-hr', (req, res) => {
+  
+  const q = `SELECT
+   supervisor_hr_leave_request.id,
+   supervisor_hr_leave_request.leave,
+   supervisor_hr_leave_request.description,
+   supervisor_hr_leave_request.date_of_request,
+   supervisor_hr_leave_request.email,
+   supervisor_hr_leave_request.startDate,
+   supervisor_hr_leave_request.endDate,
+   supervisor_hr_leave_request.days_required,
+   supervisor_hr_leave_request.status,
+   supervisor_hr_leave_request.empID,
+   supervisor_hr_leave_request.status,
+   supervisor_hr_leave_request.roleID,
+   supervisor_hr_leave_request.supervisorID AS supervisor_concerned_id,
+   role.role_name,
+   employees.username AS employeeName,
+   supervisorConcerned.username AS supervisorConcerned
+
+FROM supervisor_hr_leave_request 
+
+JOIN role ON supervisor_hr_leave_request.roleID = role.id
+JOIN employees ON supervisor_hr_leave_request.empID = employees.id
+JOIN employees AS supervisorConcerned ON supervisor_hr_leave_request.supervisorID = supervisorConcerned.id
+
+WHERE supervisor_hr_leave_request.status = 'Denied';
+`;
+  db.query(q, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
 
 app.get('/get-approved-notification-employee/:employeeID', (req, res) => {
   const employeeID = req.params.employeeID;
@@ -1852,6 +2109,38 @@ app.get('/get-denied-notification', (req, res) => {
   ORDER BY employee_supervisor_request.id DESC;
 `;
   db.query(q, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+});
+
+app.get('/get-denied-notification-leave-supervisor/:supervisorID', (req, res) => {
+  const q = ` SELECT
+   employee_leave_request.id,
+   employee_leave_request.leave,
+   employee_leave_request.description,
+   employee_leave_request.date_of_request,
+   employee_leave_request.email,
+   employee_leave_request.startDate,
+   employee_leave_request.endDate,
+   employee_leave_request.daysRequired,
+   employee_leave_request.empID,
+   employee_leave_request.status,
+   employee_leave_request.roleID,
+   employee_leave_request.supervisor_concerned AS supervisor_concerned_id,
+   role.role_name,
+   employees.username AS employeeName,
+   supervisorConcerned.username AS supervisorConcerned
+
+FROM employee_leave_request 
+
+JOIN role ON employee_leave_request.roleID = role.id
+JOIN employees ON employee_leave_request.empID = employees.id
+JOIN employees AS supervisorConcerned ON employee_leave_request.supervisor_concerned = supervisorConcerned.id
+
+   
+WHERE (employee_leave_request.status = 'Denied By Supervisor' OR employee_leave_request.status = 'Denied By HR') AND employee_leave_request.supervisor_concerned = ?;
+`;
+  db.query(q, [req.params.supervisorID], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
   })
 });
@@ -1989,9 +2278,9 @@ app.get('/show-supervisor', (req, res) => {
   const q = `
   SELECT username, id
   FROM employees
-  WHERE roleID = 5;
-  ;`
-    ;
+  WHERE roleID = 5
+  `;
+
   db.query(q, (error, data) => {
     if (error) {
       console.error("Error: ", error);
@@ -2084,7 +2373,7 @@ app.get('/get-approved-purchase-notification/:supervisorID', (req, res) => {
 
 app.get('/get-approved-purchase-notification-employee/:employeeID', (req, res) => {
   const id = req.params.employeeID;
-  const sql = ` SELECT employees.username,employee_supervisor_purchase.amount,employee_supervisor_purchase.cost_method,employee_supervisor_purchase.expenditure_line,employee_supervisor_purchase.email,employee_supervisor_purchase.status, employee_supervisor_purchase.end_goal,employee_supervisor_purchase.quotation, employee_supervisor_purchase.quotation, employee_supervisor_purchase.priority,employee_supervisor_purchase.date ,employee_supervisor_purchase.date , employee_supervisor_purchase.id
+  const sql = ` SELECT employees.username,employee_supervisor_purchase.amount,employee_supervisor_purchase.cost_method, employee_supervisor_purchase.expenditure_line,employee_supervisor_purchase.email,employee_supervisor_purchase.status, employee_supervisor_purchase.end_goal,employee_supervisor_purchase.quotation, employee_supervisor_purchase.quotation, employee_supervisor_purchase.priority,employee_supervisor_purchase.date ,employee_supervisor_purchase.date , employee_supervisor_purchase.id
  FROM employee_supervisor_purchase
  JOIN employees ON employee_supervisor_purchase.employeeID = employees.id
 WHERE (employee_supervisor_purchase.status = 'Approved By Supervisor' OR employee_supervisor_purchase.status = 'Approved') AND employee_supervisor_purchase.employeeID = ?
@@ -2425,7 +2714,7 @@ app.put('/change-status-from-notifications/:requestor/:item/:amount/:rowID', asy
 
 app.put('/change-status-from-notifications-for-bulk/:employeeID/:item/:amount/:rowID', async (req, res) => {
 
-  console.log("Called");
+  console.log("HITTTT")
 
   const requestor = req.params.employeeID;
   const item = req.params.item;
@@ -2443,7 +2732,7 @@ app.put('/change-status-from-notifications-for-bulk/:employeeID/:item/:amount/:r
           console.error("Error:", error);
           reject(error);
         } else {
-          // console.log("Result:", result);
+          console.log("Result", result);
           // Ensure that result is an array and has at least one element
           if (Array.isArray(result) && result.length > 0) {
             // Resolve with the count value
@@ -2598,10 +2887,13 @@ app.get('/get-hr-admin-pending-requests', (req, res) => {
 
   const sql = `SELECT
   employees.username AS employee_username, 
+ 
   supervisor.username AS supervisor_username,
   hr_admin_request.amount, 
   hr_admin_request.description, 
   hr_admin_request.id, 
+  hr_admin_request.itemID, 
+  hr_admin_request.employeeID, 
   hr_admin_request.supervisorID,
   hr_admin_request.email,
   category.category_name,
@@ -2714,6 +3006,18 @@ app.get('/get-serial-numbers-for-item/:ID', (req, res) => {
 app.get('/get-Total-Number-Of-Serials-For-single/:ID', (req, res) => {
   const ID = req.params.ID;
   const sql = `SELECT COUNT(*) AS total_serial_count FROM serial_number WHERE itemID = ?`;
+  db.query(sql, ID, (error, result) => {
+    if (error) {
+      console.error("Error: ", error);
+    } else {
+      res.json([total_serial_count = result[0].total_serial_count]);
+    };
+  });
+});
+
+app.get('/get-Total-Number-Of-Serials-For-single-in/:ID', (req, res) => {
+  const ID = parseInt(req.params.ID);
+  const sql = `SELECT COUNT(*) AS total_serial_count FROM serial_number WHERE status = 'In' AND itemID = ? `;
   db.query(sql, ID, (error, result) => {
     if (error) {
       console.error("Error: ", error);
@@ -2842,7 +3146,12 @@ app.get('/get-one-company-for-delivery/:oneCompanyID/:ID', (req, res) => {
    WHERE companyID = ? AND company_records.id = ?
      `;
   db.query(sql, [companyID, ID], (error, result) => {
-    result ? res.json(result) : console.error("Error: ", error);
+    if (result) {
+      console.log("Result: ", result);
+      res.json(result);
+    } else {
+      console.error("Error: ", error);
+    }
   });
 });
 
@@ -3400,10 +3709,125 @@ app.post('/out-history/:selectedItemID/:status/:id', (req, res) => {
   const sql = `INSERT INTO daily_item_transaction (itemID,	employeeID,	date,	status,	amount) VALUES (?, ?, ?, ? ,?)`;
   db.query(sql, [itemID, id, today, status, amount], (error, result) => {
     result ? res.status(200) : console.error("Error", error);
-  })
+  });
+});
 
+
+app.get('/get-all-leave-request/:id', (req, res) => {
+
+  const id = req.params.id
+
+  const sql = `
+  SELECT
+   employee_leave_request.id,
+   employee_leave_request.leave,
+   employee_leave_request.description,
+   employee_leave_request.date_of_request,
+   employee_leave_request.email,
+   employee_leave_request.startDate,
+   employee_leave_request.endDate,
+   employee_leave_request.daysRequired,
+   employee_leave_request.empID,
+   employee_leave_request.status,
+   employee_leave_request.roleID,
+   employee_leave_request.supervisor_concerned AS supervisor_concerned_id,
+   role.role_name,
+   employees.username AS employeeName,
+   supervisorConcerned.username AS supervisorConcerned
+
+FROM employee_leave_request 
+
+JOIN role ON employee_leave_request.roleID = role.id
+JOIN employees ON employee_leave_request.empID = employees.id
+JOIN employees AS supervisorConcerned ON employee_leave_request.supervisor_concerned = supervisorConcerned.id
+
+   
+WHERE supervisor_concerned = ? AND employee_leave_request.status = 'Pending';
+
+  `;
+
+  db.query(sql, [id], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.put('/change-employee-leave-status/:id', (req, res) => {
+
+  const status = 'Approved By Supervisor';
+
+  const sql = `UPDATE employee_leave_request SET status = ? WHERE id = ?  `;
+
+  db.query(sql, [status, req.params.id], (error, result) => {
+    // result ? console.log("Employee Notified") : console.error("Error: ", error);
+  });
+});
+
+app.put('/change-employee-leave-status-hr/:id', (req, res) => {
+
+  const status = 'Approved By HR';
+
+  const sql = `UPDATE employee_leave_request SET status = ? WHERE id = ?  `;
+
+  db.query(sql, [status, req.params.id], (error, result) => {
+    // result ? console.log("Employee Notified") : console.error("Error: ", error);
+  });
+});
+
+app.put('/deny-employee-leave-supervisor/:rowID', (req, res) => {
+
+  const status = 'Denied By Supervisor';
+
+  const sql = `UPDATE employee_leave_request SET status = ? WHERE id = ?`;
+  db.query(sql, [status, req.params.rowID], (error, result) => {
+    // result ? console.log("Done!") : console.error("Error: ", error);
+  });
+});
+
+app.put('/deny-employee-leave-hr/:rowID', (req, res) => {
+
+  const status = 'Denied By Hr';
+
+  const sql = `UPDATE employee_leave_request SET status = ? WHERE id = ?`;
+  db.query(sql, [status, req.params.rowID], (error, result) => {
+    // result ? console.log("Done!") : console.error("Error: ", error);
+  });
+});
+
+
+app.post('/insert-employee-leave-into-hr', (req, res) => {
+
+  const status = 'Pending';
+
+  const sql = 'INSERT INTO supervisor_hr_leave_request (empID,	supervisorID,	date_of_request,	email,	startDate,	endDate,	days_required,	roleID, description, `leave`, status ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  db.query(sql, [req.body.empID, req.body.supervisor_concerned_id, req.body.date_of_request, req.body.email, req.body.startDate, req.body.endDate, req.body.daysRequired, req.body.roleID, req.body.description, req.body.leave, status],
+    (error, result) => {
+      result ? res.json("Done!!") : console.error("Error: ", error);
+    });
+});
+
+app.get('/get-leave-notifications-employee/:id', (req, res) => {
+
+  const sql = `SELECT * FROM employee_leave_request WHERE empID = ?`;
+  db.query(sql, [req.params.id], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.put('/approve-employee-leave-hr-table/:id', (req, res) => {
+
+  const sql = `UPDATE supervisor_hr_leave_request SET status = 'Approved' WHERE id = ? `;
+  db.query(sql, [req.params.id], (error, result) => {
+    result ? console.log("Done") : console.error("Error: ", error);
+  })
 })
 
+app.put('/deny-employee-leave-hr-table/:id', (req, res) => {
+
+  const sql = `UPDATE supervisor_hr_leave_request SET status = 'Denied' WHERE id = ? `;
+  db.query(sql, [req.params.id], (error, result) => {
+    result ? console.log("Done") : console.error("Error: ", error);
+  })
+})
 
 app.listen(port, () => {
   console.log("Connected to backend");

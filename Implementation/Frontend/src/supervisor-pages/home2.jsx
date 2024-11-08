@@ -20,6 +20,8 @@ function Home2() {
 
         if (selectedTransactionType === "item") {
             navigate('/notification-supervisor')
+        } else if (selectedTransactionType === "leave") {
+            navigate('/supervisor-leave-notifications')
         } else {
             navigate('/purchase-supervisor')
         }
@@ -48,6 +50,7 @@ function Home2() {
                     <option value="" disabled >Requests</option>
                     <option value="item" >Item</option>
                     <option value="purchase" >Purchase</option>
+                    <option value="leave">Leave</option>
                 </select>
                 <li className='li1'><Link to={'/home-supervisor'}>Home</Link></li>
             </ul>

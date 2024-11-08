@@ -39,6 +39,7 @@ const url = Keys.REACT_APP_BACKEND;
     },
     overlay: {
       backgroundColor: 'rgba(0, 0, 0, 0.0)',
+      zIndex: '20',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -47,6 +48,7 @@ const url = Keys.REACT_APP_BACKEND;
 
   const modal = {
     overlay: {
+      zIndex: '20',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
@@ -114,6 +116,7 @@ const url = Keys.REACT_APP_BACKEND;
       await axios.post(`${url}/category`, category);
       console.log("Category added successfully")
       setAddVisible(false);
+      window.location.reload();
     } catch {
       console.log('Error')
     };
@@ -143,8 +146,9 @@ const url = Keys.REACT_APP_BACKEND;
   const HandleConfirm = async (id) => {
     try {
       const response = await axios.delete(`${url}/delete-category/${id}`);
+      closeConfirmModal();
       setInterval(() => {
-        setIsDeletingOpen(false);
+        closeDeletingItem(false);
       }, 2700);
 
     } catch (error) {

@@ -201,7 +201,7 @@ function PurchaseSupervisor() {
     ]
 
     const handleApprove = async (notifications) => {
-        console.log("Notification: ", notifications.quotation);
+        
         const id = notifications.id
 
         const response = await axios.put(`${url}/change-status/${id}`);
@@ -301,7 +301,7 @@ function PurchaseSupervisor() {
             <NavbarHome></NavbarHome>
             <div className="notification-supervisor">
                 <div style={div}>
-                    <h1 style={{ color: 'white' }}>Purchase Notifications</h1>
+                    <h1 style={{ color: 'black' }}>Purchase Notifications</h1>
                     <div style={smaller}>
                         <button style={buttons} onClick={handlePending}>Pending</button>
                         <button style={buttons} onClick={handleApprovedRequest}>Approved</button>

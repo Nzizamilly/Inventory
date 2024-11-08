@@ -60,11 +60,13 @@ function NotificationSupervisor() {
   };
 
   const handleApprove = async (notifications, index) => {
+
     setInterval(() => {
       setIsSendModalOpen(false);
     }, 2600);
+
     try {
-      console.log("Notifications id :", index);
+     
       const supervisorID = localStorage.getItem("userID");
 
       const supervisorName = localStorage.getItem("username");
@@ -171,6 +173,7 @@ function NotificationSupervisor() {
     width: '90%',
     marginLeft: '13%'
   };
+
   const buttons = {
     width: '65px',
     color: 'black',
@@ -179,6 +182,7 @@ function NotificationSupervisor() {
     borderRadius: '1px',
     backgroundColor: 'white'
   };
+  
   const smaller = {
     display: 'flex',
     flexDirection: 'inline',

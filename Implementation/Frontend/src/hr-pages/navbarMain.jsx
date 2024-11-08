@@ -101,7 +101,6 @@ function NavbarMain() {
             ...provided,
             backgroundColor: 'black',
             display: 'flex',
-            justifyContent: 'center',
             '&:hover': {
                 backgroundColor: 'lightgrey',
                 color: 'black'
@@ -109,11 +108,12 @@ function NavbarMain() {
         }),
         singleValue: (provided) => ({
             ...provided,
-            width: '54px',
+            width: '100%',
             height: '24px',
             display: 'flex',
+            marginLeft: '10px',
             alignItems: 'center',
-            backgroundColor: 'blue',
+            backgroundColor: 'black',
             color: 'white',
         })
     };
@@ -146,9 +146,12 @@ function NavbarMain() {
 
         if (selectedTransactionType === "item") {
             navigate('/notification-hr')
-        } else {
+        } else if (selectedTransactionType === "leave"){
+            navigate('/leave-notification-hr')
+        }else {
             navigate('/purchase-notification-hr')
         }
+
     };
 
     const select = {
@@ -170,21 +173,21 @@ function NavbarMain() {
         <div className="navbar">
 
             <ul className='ul1' style={color}>
-                <li style={{ float: 'left', marginLeft: '193px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
+                <li style={{ float: 'left', marginLeft: '193px', marginTop: '-5px' }} className='li1'><img style={{ maxWidth: '100%', maxHeight: '80vh' }} src={Centrika} alt='Centrika' /></li>
                 <li className='li1' onClick={handleLogout}><Link>Log Out</Link></li>
                 <select onChange={handleTransactionChange} value={transactionType} style={select}>
                     <option value="" disabled >Notifications</option>
                     <option value="item" >Item</option>
                     <option value="purchase" >Purchase</option>
+                    <option value="leave" >Leave</option>
                 </select>
                 <li className='li1'><Link to={'/home-hr'}>Home</Link></li>
             </ul>
 
             <ul className='ul2Admin'>
                 <li className='liAdmin'><Link to={'/account-hr'} onMouseOver={openModal}><img src={AccountIcon} style={{ maxWidth: '14%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Account</p></Link></li>
-
-                <li className='liAdmin'><Link to={'/onboard'} > <img src={PersonalInfo} style={{ maxWidth: '18%', maxHeight: '50vh' }} /> <p>Employee Personal File</p></Link></li>
                 <li className='liAdmin'><Link to={'/leave-page'} ><img src={Leave} style={{ maxWidth: '18%', maxHeight: '50vh' }} /> <p style={{ marginTop: '7px' }}>Leave</p></Link></li>
+                <li className='liAdmin'><Link to={'/onboard'} > <img src={PersonalInfo} style={{ maxWidth: '18%', maxHeight: '50vh' }} /> <p>Employee Personal File</p></Link></li>
                 <Select
                     options={option}
                     styles={customStyles}

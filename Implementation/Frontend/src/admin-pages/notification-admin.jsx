@@ -79,17 +79,17 @@ function NotificationAdmin() {
   ];
 
   const handleSerialStatus = async (row) => {
-    const requestor = row.employee_username;
-    const item = row.name;
+    const requestor = row.employeeID;
     const amount = row.amount;
+    const item = row.itemID;
     const rowID = row.id;
     setName(requestor);
-    setItem(item);
     setAmount(amount);
+    setItem(item);
 
     try {
 
-      const response = await axios.put(`${url}/change-status-from-notifications/${requestor}/${item}/${amount}/${rowID}`);
+      const response = await axios.put(`${url}/change-status-from-notifications-for-bulk/${requestor}/${item}/${amount}/${rowID}`);
       const result = response.data;
 
       if (result === "Given Out") {

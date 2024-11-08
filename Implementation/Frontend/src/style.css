@@ -110,6 +110,74 @@
     background-color: rgb(163, 187, 197);
 }
 
+.leave-notification-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    overflow: auto;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(163, 187, 197);
+}
+
+.leave-supervisor {
+    width: 80%;
+    height: auto;
+    margin-left: 110px;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(163, 187, 197);
+}
+
+.leave-hr {
+    width: 85%;
+    height: auto;
+    margin-left: 200px;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(163, 187, 197);
+
+}
+
+.leave-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    overflow: auto;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(163, 187, 197);
+};
+
+.leave-div {
+    gap: 15px;
+    width: 83%;
+    height: 49%;
+    border: none;
+    display: flex;
+    color: white;
+    text-align: left;
+    padding: 12px 0px;
+    margin-top: -178px;
+    margin-left: 620px;
+    padding-left: 12px;
+    border-radius: 12px;
+    flex-direction: column;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(190, 226, 243);
+}
+
+.buttonP {
+    width: 24%;
+    display: flex;
+    height: 148px;
+    align-items: center;
+    justify-content: center;
+    background-color: 'rgb(190, 226, 243)';
+}
+
+.buttonP:hover {
+    opacity: 0.5
+}
+
 .terms {
     gap: 15px;
     width: 83%;
@@ -428,8 +496,10 @@ li a:hover {
 .ul1Admin {
     margin: 0;
     height: 7%;
-    width: 100%;
+    width: 87%;
+    z-index: 1;
     overflow: hidden;
+    margin-left: 190px;
     list-style-type: none;
     background-color: rgb(8, 81, 26);
 }
@@ -701,11 +771,11 @@ li a:hover {
     background-color: rgb(206, 206, 236);
 }
 
-.attendant{
-   width: 100%;
-   height: 70%;
-   display: flex;
-   flex-direction: inline;
+.attendant {
+    width: 100%;
+    height: 70%;
+    display: flex;
+    flex-direction: inline;
 }
 
 .request-review {
@@ -758,7 +828,7 @@ li a:hover {
     /* overflow: auto; */
     /* margin-bottom: 32%; */
     flex-wrap: wrap;
-    align-items: center;
+    /* align-items: center; */
     justify-content: center;
     font-family: 'Arial', sans-serif;
     background-color: rgb(163, 187, 197);
@@ -766,12 +836,26 @@ li a:hover {
 
 .transaction-container-admin {
     width: 100%;
-    height: 100vh;
+    height: 127vh;
+    display: flex;
+    /* overflow: auto; */
+    flex-wrap: wrap;
+    /* align-items: center; */
+    justify-content: center;
+    /* overflow-y: hidden; */
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(163, 187, 197);
+}
+
+.transaction-container-admin-item {
+    width: 100%;
+    height: 127vh;
     display: flex;
     overflow: auto;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
+    overflow-y: hidden;
     font-family: 'Arial', sans-serif;
     background-color: rgb(163, 187, 197);
 }
@@ -794,12 +878,12 @@ li a:hover {
     width: 290px;
     height: 98px;
     padding: 8px;
-    display: inline-block;
     color: black;
     flex-shrink: 0;
     margin-left: 15px;
     border-radius: 15px;
     align-items: center;
+    display: inline-block;
     /* flex-direction: column; */
     background-color: rgb(206, 206, 236);
 }
@@ -937,15 +1021,14 @@ li a:hover {
 
 .terms-admin {
     gap: 15px;
-    width: 75%;
-    height: 49%;
+    width: 65%;
     border: none;
     display: flex;
     flex-wrap: wrap;
     text-align: left;
     padding: 12px 0px;
-    margin-left: 200px;
-    margin-top: -278px;
+    margin-left: 90px;
+    /* margin-top: -24px; */
     padding-left: 12px;
     border-radius: 12px;
     flex-direction: inline;
@@ -1233,29 +1316,32 @@ li a:hover {
     align-items: center;
     font-family: 'Arial', sans-serif;
     position: relative;
-    z-index: -1; /* Lower z-index than the navbar */
+    z-index: -1;
+    /* Lower z-index than the navbar */
     /* margin-top: 60px; Adjust margin to compensate for the navbar height */
-  }
-  
-  .home-hr-container::before {
+}
+
+.home-hr-container::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.4); /* Adjust the opacity overlay */
-    z-index: -1; /* Make sure it stays behind the text */
-  }
-  
-  .home-hr-container h1 {
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Adjust the opacity overlay */
+    z-index: -1;
+    /* Make sure it stays behind the text */
+}
+
+.home-hr-container h1 {
     position: relative;
     color: rgb(223, 217, 217);
     font-size: 3rem;
     text-align: center;
     z-index: 2;
-  }
-  
+}
+
 .home-hr {
     display: flex;
     text-align: center;

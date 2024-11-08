@@ -5,6 +5,7 @@ import AddItem from '../images/addItem.svg'
 // import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import Modal from 'react-modal';
 import Logo from '../images/logo.svg';
+import PuffLoader from "react-spinners/PuffLoader";
 import { io } from 'socket.io-client';
 import SyncLoader from "react-spinners/SyncLoader";
 import axios from 'axios';
@@ -13,6 +14,7 @@ import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL, getStorage, listAll } from "firebase/storage";
 import DataTable from 'react-data-table-component';
 import Delivery from './deliveryFront';
+import RotateLoader from 'react-spinners/RotateLoader';
 
 function Company() {
 
@@ -23,9 +25,9 @@ function Company() {
 
     const Container = {
         width: '100%',
-        height: '100vh',
+        // height: '100vh',
         display: 'flex',
-        overflow: 'auto',
+        // overflow: 'auto',
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'center',
@@ -58,8 +60,8 @@ function Company() {
     };
 
     const CompanyButton = {
-        height: '48%',
-        width: '28%',
+        height: '148px',
+        width: '32%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'
@@ -78,6 +80,7 @@ function Company() {
 
     const allDiv = {
         width: '90%',
+        borderRadius: '12px',
         height: '97%',
         backgroundColor: 'rgb(163, 187, 197)'
     }
@@ -118,6 +121,7 @@ function Company() {
 
     const closeAddModal = () => {
         isAddModalOpen(false);
+        window.location.reload();
     };
 
     const modal3 = {
@@ -127,18 +131,13 @@ function Company() {
             alignItems: 'center',
         },
         content: {
-            width: '80%',
-            maxWidth: '800px',
-            height: 'auto',
-            border: 'none',
-            marginLeft: '295px',
-            overflow: 'auto',
-            borderRadius: '12px',
+            width: '60%',
+            height: '90%',
+            margin: 'auto',
+            padding: '20px',
+            borderRadius: '8px',
             backgroundColor: 'black',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
+            // overflow: 'auto',
         },
     };
 
@@ -245,11 +244,10 @@ function Company() {
 
 
     const [AddModalOpen, isAddModalOpen] = useState(false);
-    const [logo, setLogo] = useState();
+    const [logo, setLogo] = useState('');
     const [latestId, setLatestID] = useState('');
     const [infoCompany, setInfoCompany] = useState([]);
     const [companyImages, setCompanyImages] = useState({});
-    const [bringAll, setBringAll] = useState([]);
     const [companyModalOpen, isCompanyModalOpen] = useState(false);
     const [oneCompanyID, setOneCompanyID] = useState('');
     const [isDeliveryNoteOpen, setIsDeliveryNoteOpen] = useState(false);
@@ -267,9 +265,8 @@ function Company() {
     const [itemName, setItemName] = useState('');
     const [CompanyName, setCompanyName] = useState('');
     const [date, setDate] = useState('');
-    const [amount, setAmount] = useState('')
+    const [amount, setAmount] = useState(Number)
     const [pdf, setPDF] = useState('');
-    const [IDForDeliveryUseEffect, setIDForDeliveryUseEffect] = useState('')
     const [quantity, setQuantity] = useState();
     const [totalIn, setTotalIn] = useState([]);
     const [isIssueLoaderOpen, setIssueLoaderOpen] = useState(false)
@@ -286,13 +283,17 @@ function Company() {
 
 
     const openDeliveryNote = (ID) => {
-        setIsDeliveryNoteOpen(true);
         handleDeliveryNoteForOneCompany(ID);
-        setIDForDeliveryUseEffect(ID);
     };
 
     const closeDeliveryNoteModal = () => {
+        // setItemName('');
+        // setCompanyName('');
+        // setDate('');
+        // setAmount('');
+
         setIsDeliveryNoteOpen(false);
+        resetDeliveryNoteState();
     };
 
     const openCompanyModal = (ID) => {
@@ -326,7 +327,6 @@ function Company() {
         try {
             const responsee = await axios.get(`${url}/gets-one/${ID}`);
             setData(responsee.data);
-            console.log("Hittttttttttt");
         } catch (error) {
             // console.error("Error", error);
         };
@@ -354,6 +354,11 @@ function Company() {
     const handleChange = (event) => {
         setCompany((prev) => ({ ...prev, [event.target.name]: event.target.value }));
     };
+
+    const handleMakeModal = () => {
+        handleMake();
+        closeAddModal();
+    }
 
     const handleMake = async () => {
 
@@ -399,13 +404,14 @@ function Company() {
                 const names = res.items.map((itemRef) => itemRef.name);
                 // console.log("File names: ", names);
 
-                setBringAll(names);
+
             } catch (error) {
                 console.error("Error: ", error);
             };
         }
         fetch();
     }, []);
+
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
@@ -433,7 +439,7 @@ function Company() {
             }
         };
         fetchCompanies();
-    }, [url]);
+    }, [url, infoCompany]);
 
     useEffect(() => {
         const fetchCategory = async () => {
@@ -592,32 +598,47 @@ function Company() {
             name: 'Delivery Note',
             selector: row => (
                 <button onClick={() => openDeliveryNote(row.id)}>View</button>
-                // <button onClick={createPdf}>View</button>
             )
         }
     ];
 
+    const [renHtml, setRenHtml] = useState('');
+
+
+    // useEffect(() => {
+    //     const func = async () => {
+
+    //         func();
+    //     }, [itemName, CompanyName, date, amount,])
+
+    const [load, setLoad] = useState(false);
+
     const handleDeliveryNoteForOneCompany = async (IDForDeliveryUseEffect) => {
+
         try {
-            const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${IDForDeliveryUseEffect}`);
+            resetDeliveryNoteState();
+            setLoad(true);
+            try {
 
-            const data = (response.data);
+                const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${IDForDeliveryUseEffect}`);
 
-            console.log("Data: ", data)
-            setItemName(data[0].name);
-            setCompanyName(data[0].CompanyName);
-            const date = formatDate(data[0].date);
-            setDate(date);
-            setAmount(data[0].amount);
+                const data = (response.data);
 
-            // const messageDatas = {
-            const itemName = itemName;
-            const CompanyName = CompanyName;
-            const amount = amount;
-            // };
+                console.log("Data: ", data)
+                setItemName(data[0].name);
+                setCompanyName(data[0].CompanyName);
+                const date = formatDate(data[0].date);
+                setDate(date);
+                setAmount(parseInt(data[0].amount));
+            } catch (error) {
+                console.error("Error", error);
+            }
 
-            const ren = Delivery(CompanyName, itemName, amount, date);
-            console.log("Renner: ", ren);
+
+            const ren = Delivery(data[0].CompanyName, data[0].name, data[0].amount, formatDate(data[0].date));
+            setRenHtml(ren);
+            setLoad(false);
+            setIsDeliveryNoteOpen(true);
             // socket.emit("Go For Delivery", messageDatas);
 
         } catch (error) {
@@ -625,17 +646,38 @@ function Company() {
         };
     };
 
-    useEffect(() => {
-        if (itemName && CompanyName && date && amount) {
-            const messageData = {
-                itemName: itemName,
-                CompanyName: CompanyName,
-                date: date,
-                amount: amount,
-            };
-
+    const handleThis = (ID) => {
+        try {
+            setTab(2);
+            fetchOneCompany(ID);
+        } catch (error) {
+            console.error("Error: ", error);
         }
-    }, [itemName, CompanyName, date, amount, pdf]);
+    }
+
+    const resetDeliveryNoteState = () => {
+        setItemName('');
+        setCompanyName('');
+        setDate('');
+        setAmount(0);
+        setRenHtml(null);
+        setIsDeliveryNoteOpen(false);
+        setLoad(false);
+        console.log("RESET HIT: ", itemName, CompanyName, date, amount);
+    };
+
+    // useEffect(() => {
+    //     if (itemName && CompanyName && date && amount) {
+
+    //         const messageData = {
+    //             itemName: itemName,
+    //             CompanyName: CompanyName,
+    //             date: date,
+    //             amount: amount,
+    //         };
+
+    //     }
+    // }, [itemName, CompanyName, date, amount, pdf]);
 
     useEffect(() => {
         const fetchPDF = async () => {
@@ -646,7 +688,6 @@ function Company() {
                 const pdfBlob = response.data;
                 const pdfUrl = URL.createObjectURL(pdfBlob);
                 setPDF(pdfUrl);
-                console.log("Response: ", pdfUrl);
             } catch (error) {
                 console.error("Error: ", error);
             }
@@ -666,11 +707,16 @@ function Company() {
                 <div className="terms-admin">
                     {infoCompany.map(company => (
                         <button key={company.id} style={CompanyButton} onClick={() => openCompanyModal(company.id, company.CompanyName)}>
-                            <img
-                                src={companyImages[company.id]}
-                                alt={`${company.CompanyName} logo`}
-                                style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }}
-                            />
+                            {companyImages && companyImages[company.id] ? (
+                                <img
+                                    src={companyImages[company.id]}
+                                    alt={`${company.CompanyName} logo`}
+                                    style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }}
+                                />
+                            ) : (
+                                <PuffLoader color={'white'} loading={loading} size={81} />
+                            )}
+
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                 <p>{company.CompanyName}</p>
                                 <p>{company.email}</p>
@@ -698,7 +744,7 @@ function Company() {
                     <input type='text' placeholder='Company Email' style={{ width: '100%' }} name='email' onChange={handleChange} />
                 </div>
 
-                <button style={{ backgroundColor: 'green', height: '20%', width: '15%', marginTop: '11%', color: 'white' }} onClick={() => handleMake()} >Add</button>
+                <button style={{ backgroundColor: 'green', height: '20%', width: '15%', marginTop: '11%', color: 'white' }} onClick={() => handleMakeModal()} >Add</button>
 
             </Modal>
 
@@ -706,8 +752,9 @@ function Company() {
                 <div style={smaller}>
                     <button style={buttons} onClick={() => setTab(0)}>Info</button>
                     <button style={buttons} onClick={() => setTab(1)}>Issue</button>
-                    <button style={buttons} onClick={() => setTab(2)}>Report</button>
+                    <button style={buttons} onClick={() => handleThis(oneCompanyID)}>Report</button>
                 </div>
+
                 <div style={allDiv}>
                     {tab === 0 && <div style={info}>
                         <div style={{ width: '20%', height: '100%', display: 'flex', marginLeft: '12px', alignItems: 'center' }}>
@@ -802,9 +849,32 @@ function Company() {
 
                     <div>
                         <Modal isOpen={isDeliveryNoteOpen} onRequestClose={closeDeliveryNoteModal} style={modal3}>
-                            <>
-                                <Delivery />
-                            </>
+                            {load ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+                                    <RotateLoader color={'green'} loading={loading} size={19} />
+                                    <div style={{ fontFamily: 'sans-serif' }}>
+                                        <br />
+                                        <p>Please Wait...</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div
+                                    dangerouslySetInnerHTML={{ __html: renHtml }}
+                                    style={{
+                                        border: '1px solid #ddd',
+                                        backgroundColor: '#f9f9f9',
+                                        padding: '20px',
+                                        borderRadius: '12px',
+                                        overflow: 'auto',
+                                        maxHeight: '100%',
+                                        scrollbarWidth: 'none',
+                                        msOverflowStyle: 'none'
+                                    }}
+                                >
+                                </div>
+
+                            )}
+
                         </Modal>
                     </div>
                 </div>

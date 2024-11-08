@@ -76,6 +76,28 @@ function Request() {
     borderRadius: '14px'
   };
 
+  const modal = {
+    overlay: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    content: {
+      width: '25%',
+      marginLeft: '495px',
+      height: '76vh',
+      backgroundColor: 'rgb(94, 120, 138)',
+      border: 'none',
+      borderRadius: '12px',
+      gap: '23px',
+      color: "black",
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  };
+
   const ioPort = Keys.REACT_APP_SOCKET_PORT;
   const url = Keys.REACT_APP_BACKEND;
 
@@ -192,6 +214,7 @@ function Request() {
     }, 2000);
 
     socket.emit("Employee_Message_Supervisor(1)", messageData);
+    
     try {
       const response = await axios.post(`${url}/add-request-employee-supervisor`, messageData);
       messageData.id = id;
@@ -322,28 +345,7 @@ function Request() {
     showSupervisor();
   }, []);
 
-  const modal = {
-    overlay: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    content: {
-      width: '25%',
-      marginLeft: '495px',
-      height: '76vh',
-      backgroundColor: 'rgb(94, 120, 138)',
-      border: 'none',
-      borderRadius: '12px',
-      gap: '23px',
-      color: "black",
-      padding: '12px 0px',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-  };
+ 
 
   return (
     <div>
@@ -402,6 +404,7 @@ function Request() {
               </div>
             </div>
           </Modal>
+
           <Modal isOpen={isSendModalOpen} onRequestClose={closeRequestModal} className={modal}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
               <PulseLoader color={'green'} loading={loading} size={19} />

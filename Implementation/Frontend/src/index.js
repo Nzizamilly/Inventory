@@ -43,6 +43,10 @@ import ItemTransactionsAdmins from './admin-pages/itemTransacation';
 import Company from './admin-pages/company';
 import LeavePage from './hr-pages/leave';
 import Onboard from './hr-pages/onboard';
+import LeaveRequest from './employee-pages/leaveRequest';
+import LeaveNotificationsSupervisor from './supervisor-pages/leaveNotification';
+import LeaveNotificationsHR from './hr-pages/leaveNotificationHR';
+import LeaveNotificationEmployee from './employee-pages/leaveNotification';
 
 const router = createBrowserRouter([
   {
@@ -204,6 +208,22 @@ const router = createBrowserRouter([
   {
     path: 'onboard',
     element: <Onboard />
+  },
+  {
+    path: 'employee-leave-request',
+    element: <LeaveRequest />
+  },
+  {
+    path: 'supervisor-leave-notifications',
+    element: <LeaveNotificationsSupervisor />
+  },
+  {
+    path: 'leave-notification-hr',
+    element: <LeaveNotificationsHR />
+  },
+  {
+    path: 'leave-notification-employee',
+    element: <LeaveNotificationEmployee />
   },
 
 ]);

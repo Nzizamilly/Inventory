@@ -94,7 +94,7 @@ function Delivery( CompanyName, itemName, amount, date ) {
         <p class="delivery-note">Delivery Note</p>
     </div>
 <div style="margin-top: 70px;">
-    <p>The following ${amount}: ${itemName} have been delivered in good conditions with full configuration of <strong>Electronic
+    <p>The following ${itemName}: ${amount} have been delivered in good conditions with full configuration of <strong>Electronic
             Fare Collection System of "${CompanyName}"</strong></p>
 </div>
     <div style="width: 60%; margin-top: 70px;">

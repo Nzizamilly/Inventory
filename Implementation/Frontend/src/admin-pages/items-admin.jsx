@@ -31,10 +31,49 @@ function ItemsAdmin() {
   });
 
   const modalStyles = {
+    overlay: {
+      zIndex: '20',
+    },
     content: {
       top: '50%',
       width: '90%',
+      // height: '90%',
       left: '50%',
+      overflow: 'auto',
+      maxHeight: '100%',
+      scrollbarWidth: 'none',
+      msOverflowStyle: 'none',
+      right: 'auto',
+      bottom: 'auto',
+      borderRadius: '12px',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      opacity: 0.9,
+      fontFamily: 'Your Custom Font, sans-serif',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      border: 'none',
+      lineHeight: '1.5',
+      display: 'flex',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      alignItems: 'center'
+    },
+  }
+
+  const modalStylesCreate = {
+    overlay: {
+      zIndex: '20',
+    },
+    content: {
+      top: '50%',
+      width: '70%',
+      height: '40%',
+      left: '50%',
+      overflow: 'auto',
+      maxHeight: '100%',
+      scrollbarWidth: 'none',
+      msOverflowStyle: 'none',
       right: 'auto',
       bottom: 'auto',
       borderRadius: '12px',
@@ -91,9 +130,6 @@ function ItemsAdmin() {
     height: '30px',
     borderRadius: '14px',
   }
-  const inano = {
-    color: 'black'
-  };
 
   const Select = {
     width: '65%',
@@ -171,6 +207,7 @@ function ItemsAdmin() {
       backgroundColor: 'rgba(0, 0, 0, 0.0)',
       display: 'flex',
       alignItems: 'center',
+      zIndex: '20',
       justifyContent: 'center',
     },
   };
@@ -179,13 +216,14 @@ function ItemsAdmin() {
     overlay: {
       display: 'flex',
       justifyContent: 'center',
+      zIndex: '60',
       alignItems: 'center',
     },
     content: {
       width: '25%',
       marginLeft: '495px',
       height: '76vh',
-      backgroundColor: 'rgb(94, 120, 138)',
+      backgroundColor: 'white',
       border: 'none',
       borderRadius: '12px',
       gap: '23px',
@@ -217,6 +255,7 @@ function ItemsAdmin() {
   const modal5 = {
     overlay: {
       display: 'flex',
+      zIndex: '20',
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -231,6 +270,8 @@ function ItemsAdmin() {
       color: 'black',
       // padding: '12px 0px', // Remove or adjust padding
       overflow: 'auto',
+      scrollbarWidth: 'none',
+      msOverflowStyle: 'none',
       flexDirection: 'column',
       display: 'flex', // Remove if not needed
       // flexDirection: 'column', // Remove if not needed
@@ -271,7 +312,7 @@ function ItemsAdmin() {
   const [username, setUsername] = useState('');
   const [someCategoryName, setSomeCategoryName] = useState('');
   const [state_of_item_holder, setState_of_item_holder] = useState('');
-  const [wholeWord, setWholeWord] = useState([]);
+  const [filteredSerialNumbers, setFilteredSerialNumbers] = useState([]);
   const [supplier, setSupplier] = useState([]);
   const [selectedItemIDForMultipleCreation, setSelectedItemIDForMultipleCreation] = useState(Number);
   const [selectedSupplier, setSelectedSupplier] = useState('');
@@ -403,7 +444,6 @@ function ItemsAdmin() {
 
   const openInfoModal = async (itemId, name) => {
     try {
-
       setSelectedItemID(itemId);
       setLoadingInfo(true);
       setSeletecteItemName(name)
@@ -521,7 +561,6 @@ function ItemsAdmin() {
 
 
   const takeIDs = async (employee) => {
-    const requestor = employee.username;
     setRequestorBulk(employee.username);
     const item = selectedItemID;
     const amount = numberToGiveOut;
@@ -530,19 +569,31 @@ function ItemsAdmin() {
 
     try {
 
-      const response = await axios.put(`${url}/change-status-from-notifications-for-bulk/${employeeID}/${item}/${amount}/${employeeID}`);
-      const result = response.data;
+      const status = 'Out';
+      const retour = 'none'
+      const remaining = Number(Number(takeInTotalIns) - Number(amount));
+      const responsee = await axios.post(`${url}/take-one-daily-transaction/${item}/${amount}/${employeeID}/${status}/${retour}/${remaining}`);
+      const responseeMessage = responsee.data;
+      const message = 'recorded';
 
-      if (result === "Given Out") {
+      if (responseeMessage === message) {
+        const response = await axios.put(`${url}/change-status-from-notifications-for-bulk/${employeeID}/${item}/${amount}/${employeeID}`);
+        const result = response.data;
 
-        socket.emit("Send Approved Email", employee);
+        if (result === "Given Out") {
 
-        const responsee = await axios.put(`${url}/change-request-stockStatus/${employeeID}`);
-        console.log("Responsee: ", responsee.data);
+          socket.emit("Send Approved Email", employee);
 
+          const responsee = await axios.put(`${url}/change-request-stockStatus/${employeeID}`);
+
+        } else {
+          window.alert("Insuffiencient Amount To Give Out");
+        };
       } else {
-        window.alert("Insuffiencient Amount To Give Out");
+        window.alert("Error in Recording Action");
       }
+
+
 
       closeBulkModal();
 
@@ -615,30 +666,40 @@ function ItemsAdmin() {
     setTakenItemId(takeItemID);
     setSerialNumber(takeItemID);
     setIsSerialModalOpen(true);
+
     try {
       setSerialNumber({
         ...serialNumber,
         itemID: takeItemID
       });
-      console.log("Check...", serialNumber);
+
+
       const response = await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber);
       console.log("Response: ", response.data);
+
+      const updateByAdding = await axios.put(`${url}/update-total-number-of-serial/${takeItemID}`);
+      console.log("Response: ", updateByAdding.data);
 
       setInterval(() => {
         setIsCreatingSerialNumberOpen(false);
       }, 2700);
       closeSerialModal();
+
     } catch (error) {
       console.error('Error adding serial number', error);
     };
   };
 
 
-
+  const [takeInTotalIns, setTakeInTotalIns] = useState(Number);
 
   const fetchNumberOfItemss = async (itemID) => {
     try {
       console.log("Hitt::::::: ");
+
+      const responsee = await axios.get(`${url}/get-Total-Number-Of-Serials-For-single-in/${itemID}`);
+      setTakeInTotalIns(responsee.data)
+      // console.log("Response about remaining: ", responsee.data);
 
       const response = await axios.get(`${url}/get-serial-number/${itemID}`);
       const result = response.data;
@@ -652,8 +713,6 @@ function ItemsAdmin() {
       console.error('Error fetching data: ', error);
     }
   };
-
-  console.log("All series: ", allSerials);
 
   const fetchNom = async (itemID) => {
     try {
@@ -763,39 +822,94 @@ function ItemsAdmin() {
 
     socket.emit("Send Approved Email", messageData);
 
-    const responsee = await axios.post(`${url}/out-history/${selectedItemID}/${status}/${id}`)
+    const amount = 1;
 
-    const response = await axios.put(`${url}/update-serial-status/${IDTaken}/${status}/${id}`);
-    const result = response.data;
-    
-    const message = 'Successfully Updated!!!'
+    const retour = 'none'
 
-    if (result === message) {
-      openInfoModal(selectedItemID, selectedItemName);
-    };
+    const remaining = Number(Number(totalSerialsInByOneItem) - Number(amount));
+
+    console.log("Remaining: ", remaining);
+
+    const responsee = await axios.post(`${url}/take-one-daily-transaction/${selectedItemID}/${amount}/${id}/${status}/${retour}/${remaining}`);
+    const responseeMessage = responsee.data;
+    const recorded = 'recorded';
+
+    if (responseeMessage === recorded) {
+
+      const response = await axios.put(`${url}/update-serial-status/${IDTaken}/${status}/${id}`);
+      const result = response.data;
+      const message = 'Successfully Updated!!!'
+
+      if (result === message) {
+        openInfoModal(selectedItemID, selectedItemName);
+      };
+    } else {
+      window.alert("Error in Recording Action");
+    }
 
     setInterval(() => {
       closeListLoader();
     }, 2700);
+
   };
 
+  const [totalSerialsInByOneItem, setTotalSerialsInByOneItem] = useState([]);
+
+  // useEffect(() => {
+  //   const func = async () => {
+  //     try {
+  //       const response = await axios.get(`${url}/get-Total-Number-Of-Serials-For-single/${selectedItemID}`);
+  //       console.log("Response about remaining: ", response.data);
+  //       setTotalSerialsInByOneItem(response.data)
+  //     } catch (error) {
+  //     };
+  //   }
+  //   func();
+  // }, []);
 
   const handleSerialStatus = async (row, status, rowss) => {
 
+    const response = await axios.get(`${url}/get-Total-Number-Of-Serials-For-single-in/${selectedItemID}`);
+    console.log("Response about remaining: ", response.data);
+    setTotalSerialsInByOneItem(response.data)
+
     if (status === 'Out') {
+
       const status = 'In';
+
       try {
+
+        const taker = rowss.taker
 
         openSomeLoader();
 
-        const response = await axios.put(`${url}/update-serial-status/${row}/${status}`);
-        const result = response.data;
-        const message = 'Successfully Updated!!!'
-        if (result === message) {
-          openInfoModal(selectedItemID, selectedItemName);
+        const amount = 1;
+        const employeeID = 'Unknown';
+        const retour = "return";
+
+        const remaining = Number(Number(takeInTotalIns) + Number(amount));
+
+        console.log("amount, totalSerialsIn, remaining:", amount, takeInTotalIns, remaining);
+
+        const responsee = await axios.post(`${url}/take-one-daily-transaction/${selectedItemID}/${amount}/${employeeID}/${status}/${retour}/${remaining}`);
+        const responseeMessage = responsee.data;
+        const messagee = 'recorded';
+
+        if (responseeMessage === messagee) {
+
+          const response = await axios.put(`${url}/update-serial-status-return/${row}/${status}/${taker}`);
+          const result = response.data;
+          const message = 'Successfully Updated!!!'
+          if (result === message) {
+            openInfoModal(selectedItemID, selectedItemName);
+            setIsSomeLoaderOpen(false);
+          }
+
+        } else {
+          window.alert("Error in Recording Action");
         }
 
-        setIsSomeLoaderOpen(false);
+
 
 
       } catch (error) {
@@ -981,7 +1095,6 @@ function ItemsAdmin() {
   }, [categories]);
 
 
-  const [filteredSerialNumbers, setFilteredSerialNumbers] = useState([]);
 
   const handleFilterSerial = (event) => {
     const newData = allSerials.filter((row) => {
@@ -1087,7 +1200,7 @@ function ItemsAdmin() {
               <button onClick={() => openUpdateItem(takeUpdateId)}>Add </button>
             </div>
           </Modal>
-          <Modal isOpen={isSimpleModalOpen} onRequestClose={closeSimpleModal} style={modalStyles}>
+          <Modal isOpen={isSimpleModalOpen} onRequestClose={closeSimpleModal} style={modalStylesCreate}>
             <h1>Create A New Item</h1>
             <input placeholder='Name' name='name' type='text' value={newItem.name} onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} />
             <br />
@@ -1151,17 +1264,22 @@ function ItemsAdmin() {
             <h1>
               {getNom.length > 0 ? <span>{getNom[0].itemName} : {allSerials.length} </span> : "Loading..."}
             </h1>
-            <div style={{ width: '70%', display: 'flex', justifyContent: 'center', gap: '12px', flexDirection: 'inline' }}>
-              <input type='text' placeholder='Search By Serial Number' onChange={handleFilterSerial} />
+            <div style={{ width: '70%', height: '20%', display: 'flex', justifyContent: 'center', gap: '12px', flexDirection: 'inline' }}>
+              <input style={{ height: '100% ' }} type='text' placeholder='Search By Serial Number' onChange={handleFilterSerial} />
               <button onClick={() => openBulkModal()}>Bulk</button>
             </div>
             <br />
-            <DataTable
-              columns={columns}
-              data={filteredSerialNumbers}
-              pagination
-            ></DataTable>
+
+            <div style={{ width: '100%', height: '80%' }}>
+              <DataTable
+                columns={columns}
+                data={filteredSerialNumbers}
+                pagination
+              ></DataTable>
+            </div>
+
           </Modal>
+
           <Modal isOpen={isUpdateSerial} onRequestClose={closeUpdateSerialModal} style={modalStyles}>{handleSerialUpdateInput}
             <h1>Update</h1>
             <input type='text' placeholder='Serial Number' name='serial_number' onChange={handleSerialUpdateInput} />
@@ -1189,8 +1307,8 @@ function ItemsAdmin() {
               </div>
             </div>
           </Modal>
-          <Modal isOpen={isCreatingSerialNumberOpen} onRequestClose={closeCreatingSerialNumber} className={modal}>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
+          <Modal isOpen={isCreatingSerialNumberOpen} onRequestClose={closeCreatingSerialNumber} style={modal}>
+            <div style={{ display: 'flex', flexDirection: 'column', zIndex: '20', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'tranparent' }}>
               <HashLoader color={'blue'} loading={loading} size={59} />
               <div>
                 <br />
@@ -1225,7 +1343,7 @@ function ItemsAdmin() {
             </div>
 
             {filteredEmployees.map((employee) => (
-              <div style={{ width: '55%', borderRadius: '12px', height: '24%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
+              <div style={{ width: '55%', borderRadius: '12px', height: '30%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
                 <img src={ProfilePicture} style={profilePicture} />
                 <br />
                 <div style={bulker}>
@@ -1264,16 +1382,16 @@ function ItemsAdmin() {
         </div>
 
         <Modal isOpen={isBulkModalOpen} onRequestClose={closeBulkModal} style={modal5}>
-          <div style={{ gap: '90px' }}>
+          <div style={{ gap: '99px' }}>
             <h1>Give Out Multiple Items</h1>
             <input type='text' placeholder='Number' onChange={(e) => setNumberToGiveOut(e.target.value)} />
-            <p style={{ marginLeft: '8px' }}>To</p>
+            <p style={{ marginLeft: '8px' }}>To:</p>
             <input style={{ width: '85%' }} type='text' placeholder='Search For An Employee To Give This Item...' onChange={handleFilterX} />
           </div>
 
 
           {filteredEmployees.map((employee) => (
-            <div style={{ width: '55%', borderRadius: '12px', height: '24%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
+            <div style={{ width: '55%', borderRadius: '12px', height: '35%', backgroundColor: 'rgb(220, 239, 248)', gap: '5px', display: 'flex', flexDirection: 'inline' }}>
               <img src={ProfilePicture} style={profilePicture} />
               <br />
               <div style={bulker}>

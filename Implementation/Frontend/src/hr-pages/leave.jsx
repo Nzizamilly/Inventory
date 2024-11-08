@@ -20,6 +20,10 @@ function LeavePage() {
         height: '100vh',
         display: 'flex',
         overflow: 'auto',
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+
+
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'center',
@@ -111,6 +115,7 @@ function LeavePage() {
             // alignItems: 'center',
         },
     };
+    
     const buttons = {
         borderRadius: '62px',
         width: '76%',
@@ -531,7 +536,9 @@ function LeavePage() {
 
         func(oneEmployeeID);
     }, [oneEmployeeID]);
+
     const [lastDifference, setLastDifference] = useState('')
+    
     useEffect(() => {
         const func = (leaveBFI3, leaveAva3) => {
             try {
@@ -637,6 +644,7 @@ function LeavePage() {
                 leaveEndDate: leaveEndDate,
                 currentYear: currentYear
             };
+
             const response = await axios.post(`${url}/post-other-leave`, data);
         } catch (error) {
             console.error("Error: ", error);
@@ -693,16 +701,6 @@ function LeavePage() {
     ];
 
 
-
-    const take = {
-        backgroundColor: 'blue',
-        width: '100%',
-        position: 'relative',
-        animation: 'slideIn 1s ease-out forwards',
-        overflow: 'hidden',
-        height: '400px',
-    }
-
     return (
         <div>
             <NavbarMain></NavbarMain>
@@ -737,6 +735,7 @@ function LeavePage() {
                             </div>
                         </button>
                     ))}
+
                     <Modal isOpen={isLeaveModalOpen} onRequestClose={closeLeaveModal} style={modal}>
                         {oneEmployee.map(employee => (
                             <>

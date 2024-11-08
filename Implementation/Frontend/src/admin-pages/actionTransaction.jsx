@@ -9,7 +9,7 @@ import keys from '../keys';
 
 function ActionTransactionsAdmin() {
 
-const url = keys.REACT_APP_BACKEND;
+  const url = keys.REACT_APP_BACKEND;
 
   const [report, setReport] = useState([]);
   const [records, setRecords] = useState(report);
@@ -43,6 +43,9 @@ const url = keys.REACT_APP_BACKEND;
   };
 
   const modalStyles = {
+    overlay: {
+      zIndex: '20',
+    },
     content: {
       top: '50%',
       width: '90%',
@@ -175,22 +178,22 @@ const url = keys.REACT_APP_BACKEND;
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column'
-    
+
   }
 
   return (
     <div>
       <NavbarAdmin></NavbarAdmin>
       <div style={kain}>
-      <h1>Action Transaction Tab</h1>
+        <h1>Action Transaction Tab</h1>
       </div>
       <div className="transaction-container-admin">
         <div style={kindaStyle}>
-            <DataTable
-              columns={colum}
-              data={action}
-              pagination
-            ></DataTable>
+          <DataTable
+            columns={colum}
+            data={action}
+            pagination
+          ></DataTable>
         </div>
       </div>
     </div>

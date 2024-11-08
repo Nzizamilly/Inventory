@@ -26,6 +26,7 @@ function EmployeesAdmin() {
   const modal = {
     overlay: {
       display: 'flex',
+      zIndex: '20',
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -50,6 +51,7 @@ function EmployeesAdmin() {
   const modalUpdate = {
     overlay: {
       display: 'flex',
+      zIndex: '20',
       justifyContent: 'center',
       alignItems: 'center',
     },
