@@ -378,6 +378,8 @@ function ItemsAdmin() {
     setIsDeletingOpen(false);
   };
 
+
+
   const openCreatingSerialNumber = (takenItemId) => {
     setIsCreatingSerialNumberOpen(true);
     handleAddSerialNumberClick(takenItemId)
@@ -412,7 +414,10 @@ function ItemsAdmin() {
     setIsWarningModalOpen(false)
   };
 
+  const [addSelectedID, setAddSelectedID] = useState(Number);
+
   const openSerialModal = (itemId) => {
+    setAddSelectedID(itemId)
     setSelectedItemIDForMultipleCreation(itemId);
     setIsSerialModalOpen(true);
   };
@@ -440,13 +445,13 @@ function ItemsAdmin() {
     setIsUpdateSerial(false);
   }
 
-  const [selectedItemName, setSeletecteItemName] = useState('')
+  const [selectedItemName, setSeletectedItemName] = useState('')
 
   const openInfoModal = async (itemId, name) => {
     try {
       setSelectedItemID(itemId);
       setLoadingInfo(true);
-      setSeletecteItemName(name)
+      setSeletectedItemName(name)
       fetchNumberOfItemss(itemId);
       fetchNom(itemId);
     } catch (error) {
@@ -561,6 +566,7 @@ function ItemsAdmin() {
 
 
   const takeIDs = async (employee) => {
+
     setRequestorBulk(employee.username);
     const item = selectedItemID;
     const amount = numberToGiveOut;
@@ -577,6 +583,7 @@ function ItemsAdmin() {
       const message = 'recorded';
 
       if (responseeMessage === message) {
+
         const response = await axios.put(`${url}/change-status-from-notifications-for-bulk/${employeeID}/${item}/${amount}/${employeeID}`);
         const result = response.data;
 
@@ -616,9 +623,23 @@ function ItemsAdmin() {
         numbers.push(i);
       }
 
+      const response = await axios.get(`${url}/check-serial-number-names/${addSelectedID}`);
+      const serialArray = response.data.map(item => item.serial_number);
+
+      console.log("Selected ItemID: ", addSelectedID);
+      console.log("SerialArray: ", serialArray);
+
       numbers.forEach((number) => {
         const take = serialHolder + ' ' + number;
-        wholeWordArray.push(take);
+        const takeWithNoSpace = serialHolder + number;
+        const duplicateExists = serialArray.includes(take) || serialArray.includes(takeWithNoSpace);
+
+        if (duplicateExists) {
+          window.alert("Duplicate serial number detected!");
+          return;
+        } else {
+          wholeWordArray.push(take);
+        }
       });
 
       await axios.post(`${url}/add-serial-holder/${selectedItemIDForMultipleCreation}/${wholeWordArray}/${depreciation_rate_holder}/${state_of_item_holder}`);
@@ -660,19 +681,31 @@ function ItemsAdmin() {
   };
 
   const handleAddSerialNumberClick = async (selectedItemID) => {
-    console.log("ItemID", selectedItemID);
+
+    const response = await axios.get(`${url}/check-serial-number-names/${addSelectedID}`);
+    const serialArray = response.data.map(item => item.serial_number);
+
+
     const takeItemID = selectedItemID;
-    console.log("takeItemID", takeItemID)
     setTakenItemId(takeItemID);
     setSerialNumber(takeItemID);
     setIsSerialModalOpen(true);
 
     try {
-      setSerialNumber({
-        ...serialNumber,
-        itemID: takeItemID
-      });
 
+      setSerialNumber((prev) => ({
+        ...prev,
+        itemID: selectedItemID,
+      }));
+
+      const duplicateExists = serialArray.includes(serialNumber.serial_number);
+
+      console.log('Duplicates:', duplicateExists);
+
+      if (duplicateExists) {
+        window.alert("Duplicate serial number detected!");
+        return;
+      }
 
       const response = await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber);
       console.log("Response: ", response.data);
@@ -705,9 +738,6 @@ function ItemsAdmin() {
       const result = response.data;
 
       setAllSerials(result);
-
-      console.log("Results: ", result);
-
 
     } catch (error) {
       console.error('Error fetching data: ', error);

@@ -583,11 +583,12 @@ app.post("/employee", (req, res) => {
   console.log("role ID", role);
   const status = 'ACTIVE';
 
-  const query = "INSERT INTO employees (username, password, address, roleID, departmentID, status, email, date_of_employment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+  const query = "INSERT INTO employees (username, password, phoneNumber, address, roleID, departmentID, status, email, date_of_employment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   const values = [
     req.body.username,
     req.body.password,
+    req.body.phoneNumber,
     req.body.address,
     roleID,
     departmentID,
@@ -3165,7 +3166,7 @@ app.post('/take-needed-days', (req, res) => {
   const sql = `INSERT INTO leave_tracker (empID, days_needed, dateStamp, leave_taken) VALUES (?, ?, ?,?)`;
 
   db.query(sql, [empID, workingDays, applyingYear, workingDays], (error, result) => {
-    result ? console.log("Success: ", result) : console.error("Error: ", error);
+    // result ? console.log("Success: ", result) : console.error("Error: ", error);
   })
 });
 
@@ -3826,6 +3827,15 @@ app.put('/deny-employee-leave-hr-table/:id', (req, res) => {
   const sql = `UPDATE supervisor_hr_leave_request SET status = 'Denied' WHERE id = ? `;
   db.query(sql, [req.params.id], (error, result) => {
     result ? console.log("Done") : console.error("Error: ", error);
+  })
+})
+
+app.get('/check-serial-number-names/:itemID', (req, res) => {
+
+  const sql = `SELECT serial_number FROM serial_number WHERE itemID = ?`;
+  
+  db.query(sql, [req.params.itemID], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
   })
 })
 

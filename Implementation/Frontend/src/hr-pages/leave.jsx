@@ -351,6 +351,7 @@ function LeavePage() {
                     month: new Date(response.data.date_of_employment).getMonth() + Number(1),
                     year: new Date(response.data.date_of_employment).getFullYear(),
                 }
+                console.log("Data about employee: ", get);
                 setDOE(get);
             } catch (error) {
                 console.error("Error: ", error);
@@ -379,8 +380,9 @@ function LeavePage() {
 
                 if (DOEYear === currentYear) {
                     const lastMonth = currentMonth - Number(1);
+                    // const diff = ((Number(lastMonth) - Number(DOEMonth)) * Number(1.5));
                     const diff = ((Number(lastMonth) - Number(DOEMonth)) * Number(1.5));
-                    console.log(`Show us some Difference ${lastMonth} ${1.5} = ${diff}`);
+                    console.log(`Show us some Difference ${lastMonth} - ${DOEMonth} * ${1.5} = ${diff}`);
                     setLeaveAvailable(diff);
                     const zero = 0;
                     setLeaveBF(zero);
@@ -478,12 +480,12 @@ function LeavePage() {
             };
 
             if (lastDifference >= workingDays) {
-                // const response = await axios.post(`${url}/take-needed-days`, data);
+                const response = await axios.post(`${url}/take-needed-days`, data);
                 setInterval(() => {
                     closeAppliedLeaveLoader();
                 }, 3700);
 
-                // window.alert(`${oneEmployee[0].username} will be on leave of ${workingDays} Days`);
+                window.alert(`${oneEmployee[0].username} will be on leave of ${workingDays} Days`);
             } else {
                 window.alert(`${oneEmployee[0].username} hasn't earned ${workingDays} days.`);
             }

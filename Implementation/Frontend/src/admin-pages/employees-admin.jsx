@@ -31,13 +31,15 @@ function EmployeesAdmin() {
       alignItems: 'center',
     },
     content: {
+      // margin: '0px',
       width: '33%',
       marginLeft: '495px',
-      height: '84vh',
+      marginTop: '-30px',
+      height: '98vh',
       backgroundColor: 'rgb(206, 206, 236)',
       border: 'none',
       borderRadius: '12px',
-      gap: '23px',
+      gap: '20px',
       color: "black",
       padding: '12px 0px',
       fontFamily: 'Arial, sans- serif',
@@ -276,7 +278,7 @@ function EmployeesAdmin() {
 
   const Select = {
     width: '65%',
-    height: '28%',
+    height: '48%',
     color: 'black',
     border: 'none',
     backgroundColor: 'black',
@@ -332,6 +334,7 @@ function EmployeesAdmin() {
   const [employee, setEmployee] = useState({
     username: '',
     password: '',
+    phoneNumber: '',
     address: '',
     departmentName: '',
     roleName: '',
@@ -496,6 +499,7 @@ function EmployeesAdmin() {
             <input type='text' placeholder='Username' name='username' onChange={handleChange2} />
             <input type='text' placeholder='Password' name='password' onChange={handleChange2} />
             <input type='text' placeholder='Address eg: Kigali - Kicukiro' name='address' onChange={handleChange2} />
+            <input type='text' placeholder='Phone Number' name='phone_number' onChange={handleChange2} />
 
             <select onChange={handleDepartmentChange} value={selectedDepartment} style={Select}>
               <option value='' disabled>Select Department</option>
