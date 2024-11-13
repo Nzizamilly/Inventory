@@ -188,6 +188,7 @@ function Company() {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            zIndex: '20'
         },
         content: {
             width: '25%',
@@ -519,6 +520,8 @@ function Company() {
         bring();
     }, [selectedItem]);
 
+    const [takeInTotalIns, setTakeInTotalIns] = useState(Number);
+
 
     const handleIssue = async (ID) => {
 
@@ -535,6 +538,7 @@ function Company() {
 
 
                 const date = new Date();
+
                 const messageDatas = {
                     itemID: selectedItem,
                     company: oneCompanyID,
@@ -545,14 +549,20 @@ function Company() {
 
                 console.log("Passed: ", messageDatas);
 
-                // socket.emit("Go For Delivery", messageDatas);
-
-                // const post = await axios.post(`${url}/post-some`, messageDatas);
-
                 socket.emit("Company Insert", (messageDatas));
+                console.log("Selected ItemID", selectedItem);
+            
+                const remaining = Number(Number(totalIn.totalIn) - Number(quantity));
 
-                const responsee = await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas);
-                console.log("Response: ", responsee.data);
+                console.log("Remaining To be inserted", totalIn.totalIn, quantity, remaining);
+
+
+                const status = 'Out';
+                const retour = 'none'
+
+                const responsee = await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas).then(
+                await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${quantity}/${selectedSupervisor}/${status}/${retour}/${remaining}/${oneCompanyID}`)
+                )
 
                 setInterval(() => {
                     setIssueLoaderOpen(false);
@@ -603,47 +613,10 @@ function Company() {
     ];
 
     const [renHtml, setRenHtml] = useState('');
-
-
-    // useEffect(() => {
-    //     const func = async () => {
-
-    //         func();
-    //     }, [itemName, CompanyName, date, amount,])
-
     const [load, setLoad] = useState(false);
 
     const handleDeliveryNoteForOneCompany = async (IDForDeliveryUseEffect) => {
 
-        try {
-            resetDeliveryNoteState();
-            setLoad(true);
-            try {
-
-                const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${IDForDeliveryUseEffect}`);
-
-                const data = (response.data);
-
-                console.log("Data: ", data)
-                setItemName(data[0].name);
-                setCompanyName(data[0].CompanyName);
-                const date = formatDate(data[0].date);
-                setDate(date);
-                setAmount(parseInt(data[0].amount));
-            } catch (error) {
-                console.error("Error", error);
-            }
-
-
-            const ren = Delivery(data[0].CompanyName, data[0].name, data[0].amount, formatDate(data[0].date));
-            setRenHtml(ren);
-            setLoad(false);
-            setIsDeliveryNoteOpen(true);
-            // socket.emit("Go For Delivery", messageDatas);
-
-        } catch (error) {
-            console.error("Error: ", error);
-        };
     };
 
     const handleThis = (ID) => {
@@ -665,35 +638,6 @@ function Company() {
         setLoad(false);
         console.log("RESET HIT: ", itemName, CompanyName, date, amount);
     };
-
-    // useEffect(() => {
-    //     if (itemName && CompanyName && date && amount) {
-
-    //         const messageData = {
-    //             itemName: itemName,
-    //             CompanyName: CompanyName,
-    //             date: date,
-    //             amount: amount,
-    //         };
-
-    //     }
-    // }, [itemName, CompanyName, date, amount, pdf]);
-
-    useEffect(() => {
-        const fetchPDF = async () => {
-            try {
-                const response = await axios.get(`${url}/get-pdf`, {
-                    responseType: 'blob'
-                });
-                const pdfBlob = response.data;
-                const pdfUrl = URL.createObjectURL(pdfBlob);
-                setPDF(pdfUrl);
-            } catch (error) {
-                console.error("Error: ", error);
-            }
-        }
-        fetchPDF();
-    }, [url]);
 
     return (
         <div>
@@ -835,7 +779,7 @@ function Company() {
                         </div>
 
                         <div style={{ width: '80%', backgroundColor: 'rgb(163, 187, 197)', height: '80%', display: 'flex', borderRadius: '26px', justifyContent: 'center', alignItems: 'center', marginTop: '42px', marginLeft: '109px', flexDirection: 'column' }}>
-                            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', }}>
+                            <div style={{ width: '100%', height: '100%', display: 'flex', overflow: 'scroll', scrollbarWidth: 'none', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgb(163, 187, 197)' }}>
                                 <DataTable
                                     columns={column}
                                     data={data}
@@ -846,37 +790,6 @@ function Company() {
 
                     </div>
                     }
-
-                    <div>
-                        <Modal isOpen={isDeliveryNoteOpen} onRequestClose={closeDeliveryNoteModal} style={modal3}>
-                            {load ? (
-                                <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
-                                    <RotateLoader color={'green'} loading={loading} size={19} />
-                                    <div style={{ fontFamily: 'sans-serif' }}>
-                                        <br />
-                                        <p>Please Wait...</p>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div
-                                    dangerouslySetInnerHTML={{ __html: renHtml }}
-                                    style={{
-                                        border: '1px solid #ddd',
-                                        backgroundColor: '#f9f9f9',
-                                        padding: '20px',
-                                        borderRadius: '12px',
-                                        overflow: 'auto',
-                                        maxHeight: '100%',
-                                        scrollbarWidth: 'none',
-                                        msOverflowStyle: 'none'
-                                    }}
-                                >
-                                </div>
-
-                            )}
-
-                        </Modal>
-                    </div>
                 </div>
             </Modal>
 

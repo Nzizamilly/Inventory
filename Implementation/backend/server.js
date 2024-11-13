@@ -5,16 +5,11 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
 const http = require("http");
-const moment = require('moment');
 const nodemailer = require('nodemailer');
-const pdf = require('html-pdf');
 const { EMAIL, PASSWORD } = require('./env.js');
 const util = require('util');
 
 const port = process.env.PORT || 5500;
-
-const pdfTemplate = require('./');
-const { resolve } = require("path");
 
 const app = express();
 const server = http.createServer(app);
@@ -270,54 +265,6 @@ ORDER BY
       result ? console.log("Good: ", result) : console.error("Error: ", error);
     });
   });
-
-  socket.on("Go For Delivery", (messageData) => {
-
-    pdf.create(pdfTemplate(messageData), {}).toFile('result.pdf', (err) => {
-      if (err) {
-        console.error("Error PDF: ", err);
-        return Promise.reject();
-      }
-      return Promise.resolve();
-    });
-
-  });
-
-  app.post('/post-some', (req, res) => {
-    const data = {
-      CompanyName: req.body.CompanyName,
-      date: req.body.date,
-      itemName: req.body.itemName,
-      amount: req.body.amount,
-    }
-
-    console.log("DATAS: ", data);
-
-    pdf.create(pdfTemplate(data), {}).toFile('result.pdf', (err) => {
-      if (err) {
-        console.error("Error PDF: ", err);
-        return Promise.reject();
-      }
-      return Promise.resolve();
-    });
-
-  })
-
-
-  app.get('/get-pdf', (req, res) => {
-    // console.log("HIT!!!!!");
-    const filePath = `${__dirname}/result.pdf`;
-    res.setHeader('Content-Type', 'application/pdf');
-    res.sendFile(filePath, (err) => {
-      if (err) {
-        console.error("Error sending file:", err);
-        res.status(500).send("Error sending file");
-      } else {
-        // console/.log("File s/ent successfully");
-      }
-    });
-  });
-
 
   socket.on("Stock_Message_Employee(1)", (messageData) => {
     console.log("From HR: to stockManager", messageData);
@@ -1079,7 +1026,7 @@ app.put('/update-total-number-of-serial/:itemID', (req, res) => {
 
 app.get('/get-serial-number/:itemID', (req, res) => {
   const itemID = req.params.itemID;
-  console.log("ItemID: ", itemID);
+  // console.log("ItemID: ", itemID);
   const q = `SELECT * FROM serial_number WHERE itemID = ? ORDER BY serial_number ASC;   `;
 
   db.query(q, [itemID], (error, result) => {
@@ -1338,15 +1285,18 @@ app.get('/monthly-report/:StartDate/:EndDate', (req, res) => {
     item_transaction.action, 
     item_transaction.amount, 
     item_transaction.retour, 
+    item_transaction.remaining ,
+    company.CompanyName,
     item.name, 
-    employees.username, 
-    item_transaction.remaining 
+    employees.username 
 FROM 
     item_transaction
 JOIN 
     item ON item_transaction.itemID = item.id
 LEFT JOIN 
     employees ON item_transaction.requestor = employees.id
+LEFT JOIN 
+    company ON item_transaction.company = company.id
 WHERE 
     item_transaction.date BETWEEN ? AND ?
 ORDER BY 
@@ -1365,17 +1315,33 @@ ORDER BY
   });
 });
 
-app.post('/take-one-daily-transaction/:itemID/:amount/:requestor/:status/:retour/:remaining', (req, res) => {
+app.post('/take-one-daily-transaction/:itemID/:amount/:requestor/:status/:retour/:remaining/:companyID', (req, res) => {
   const date = new Date();
-  const sql = `INSERT INTO item_transaction ( itemID, amount, requestor, date, retour, action, remaining ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) `;
-  db.query(sql, [req.params.itemID, req.params.amount, req.params.requestor, date, req.params.retour, req.params.status, req.params.remaining], (error, result) => {
+  const action = ''
+  // console.log("Remaining: ", req.params.remaining);
+
+  
+  const formatDate = (dateString) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${year}_${month}_${day}`;
+};
+
+
+  const sql = `INSERT INTO item_transaction ( itemID, amount, requestor, date, retour, action, remaining, company ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? ) `;
+  db.query(sql, [req.params.itemID, req.params.amount, req.params.requestor, date, req.params.retour, req.params.status, req.params.remaining, req.params.companyID], (error, result) => {
     if (result) {
       // console.log("Request Recorded!!!");
       res.json('recorded');
     } else {
       console.error("Error: ", error);
     }
-  });
+  }); 
 });
 
 app.get('/getor/:supervisorID', (req, res) => {

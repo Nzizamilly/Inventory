@@ -59,10 +59,15 @@ function ItemTransactionsAdmins() {
     setRecords(report);
   }, [report]);
 
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   const columns = [
     {
       name: 'Date',
-      selector: (row) => row.date,
+      selector: (row) => formatDate(row.date),
     },
     {
       name: 'Item',
@@ -74,11 +79,15 @@ function ItemTransactionsAdmins() {
     },
     {
       name: 'Out-Stock',
-      selector: (row) => row.amount_went_out,
+      selector: (row) => row.action === 'Out' ? row.amount : 0
     },
     {
       name: 'Requestor',
       selector: (row) => row.username,
+    },
+    {
+      name: 'Company',
+      selector: (row) => row.CompanyName,
     },
     {
       name: 'Return',

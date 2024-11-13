@@ -216,7 +216,7 @@ function ItemsAdmin() {
     overlay: {
       display: 'flex',
       justifyContent: 'center',
-      zIndex: '60',
+      zIndex: '20',
       alignItems: 'center',
     },
     content: {
@@ -576,9 +576,11 @@ function ItemsAdmin() {
     try {
 
       const status = 'Out';
-      const retour = 'none'
+      const retour = 'none';
+      const companyID = 0;
+
       const remaining = Number(Number(takeInTotalIns) - Number(amount));
-      const responsee = await axios.post(`${url}/take-one-daily-transaction/${item}/${amount}/${employeeID}/${status}/${retour}/${remaining}`);
+      const responsee = await axios.post(`${url}/take-one-daily-transaction/${item}/${amount}/${employeeID}/${status}/${retour}/${remaining}/${companyID}`);
       const responseeMessage = responsee.data;
       const message = 'recorded';
 
@@ -642,7 +644,22 @@ function ItemsAdmin() {
         }
       });
 
-      await axios.post(`${url}/add-serial-holder/${selectedItemIDForMultipleCreation}/${wholeWordArray}/${depreciation_rate_holder}/${state_of_item_holder}`);
+      const requestorNull = 'none';
+      const statusForMore = 'In';
+      const retour = 'none';
+      const companyID = 0;
+
+      const responseE = await axios.get(`${url}/get-Total-Number-Of-Serials-For-single/${selectedItemID}`);
+      console.log("Response about remaining: ", responseE.data);
+      setTotalSerialsInByOneItem(response.data)
+
+      const amountReal = Number(serialHolderFrom) - Number(serialHolderTo);
+
+      const remaining = Number(Number(takeInTotalIns) + Number(amountReal) + Number(1));
+
+      await axios.post(`${url}/add-serial-holder/${selectedItemIDForMultipleCreation}/${wholeWordArray}/${depreciation_rate_holder}/${state_of_item_holder}`).then(
+        await axios.post(`${url}/take-one-daily-transaction/${selectedItemIDForMultipleCreation}/${amountReal}/${requestorNull}/${statusForMore}/${retour}/${remaining}/${companyID}`)
+      )
 
       window.alert("Done!!");
     } catch (error) {
@@ -682,9 +699,11 @@ function ItemsAdmin() {
 
   const handleAddSerialNumberClick = async (selectedItemID) => {
 
+    const responsee = await axios.get(`${url}/get-Total-Number-Of-Serials-For-single-in/${selectedItemID}`);
+    const left = responsee.data;
+
     const response = await axios.get(`${url}/check-serial-number-names/${addSelectedID}`);
     const serialArray = response.data.map(item => item.serial_number);
-
 
     const takeItemID = selectedItemID;
     setTakenItemId(takeItemID);
@@ -700,18 +719,28 @@ function ItemsAdmin() {
 
       const duplicateExists = serialArray.includes(serialNumber.serial_number);
 
-      console.log('Duplicates:', duplicateExists);
+      // console.log('Duplicates:', duplicateExists);
 
       if (duplicateExists) {
         window.alert("Duplicate serial number detected!");
         return;
       }
 
-      const response = await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber);
-      console.log("Response: ", response.data);
+      const requestorNull = 'none';
+      const statusForMore = 'In';
+      const retour = 'none';
+      const companyID = 0;
+
+      const amountReal = Number(1);
+      const remaining = Number(Number(left) + Number(1));
+
+      const response = await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber).then(
+        await axios.post(`${url}/take-one-daily-transaction/${selectedItemIDForMultipleCreation}/${amountReal}/${requestorNull}/${statusForMore}/${retour}/${remaining}/${companyID}`)
+      )
+      // console.log("Response: ", response.data);
 
       const updateByAdding = await axios.put(`${url}/update-total-number-of-serial/${takeItemID}`);
-      console.log("Response: ", updateByAdding.data);
+      // console.log("Response: ", updateByAdding.data);
 
       setInterval(() => {
         setIsCreatingSerialNumberOpen(false);
@@ -728,7 +757,7 @@ function ItemsAdmin() {
 
   const fetchNumberOfItemss = async (itemID) => {
     try {
-      console.log("Hitt::::::: ");
+      // console.log("Hitt::::::: ");
 
       const responsee = await axios.get(`${url}/get-Total-Number-Of-Serials-For-single-in/${itemID}`);
       setTakeInTotalIns(responsee.data)
@@ -850,17 +879,23 @@ function ItemsAdmin() {
       email: employee.email,
     };
 
+    const response = await axios.get(`${url}/get-Total-Number-Of-Serials-For-single-in/${selectedItemID}`);
+    const left = response.data;
+
     socket.emit("Send Approved Email", messageData);
 
     const amount = 1;
 
     const retour = 'none'
 
-    const remaining = Number(Number(totalSerialsInByOneItem) - Number(amount));
+    const remaining = parseInt(Number(Number(left) - Number(amount)));
 
+    console.log("Left: ", left);
     console.log("Remaining: ", remaining);
 
-    const responsee = await axios.post(`${url}/take-one-daily-transaction/${selectedItemID}/${amount}/${id}/${status}/${retour}/${remaining}`);
+    const companyID = 0;
+
+    const responsee = await axios.post(`${url}/take-one-daily-transaction/${selectedItemID}/${amount}/${id}/${status}/${retour}/${remaining}/${companyID}`);
     const responseeMessage = responsee.data;
     const recorded = 'recorded';
 
@@ -921,7 +956,9 @@ function ItemsAdmin() {
 
         console.log("amount, totalSerialsIn, remaining:", amount, takeInTotalIns, remaining);
 
-        const responsee = await axios.post(`${url}/take-one-daily-transaction/${selectedItemID}/${amount}/${employeeID}/${status}/${retour}/${remaining}`);
+        const companyID = 0
+
+        const responsee = await axios.post(`${url}/take-one-daily-transaction/${selectedItemID}/${amount}/${employeeID}/${status}/${retour}/${remaining}/${companyID}`);
         const responseeMessage = responsee.data;
         const messagee = 'recorded';
 
@@ -1076,7 +1113,7 @@ function ItemsAdmin() {
         openWarningModal();
       } else {
         const response = await axios.delete(`${url}/delete-serial-item/${row.id}`);
-        console.log("Response from deletion ", response.data);
+        // console.log("Response from deletion ", response.data);
       }
 
     } catch (error) {
