@@ -237,7 +237,9 @@ ORDER BY
     const values = [follow, id];
 
     db.query(sql, values, (error, result) => {
-      result ? console.log("Done Well: ", result) : console.error("Error: ", error);
+      if (!result) {
+        console.error("Error", error);
+      }
     });
 
     io.emit("Supervisor_Message_HR(2)", messageData, supervisorName)
@@ -345,7 +347,9 @@ ORDER BY
 
     const sql = `UPDATE supervisor_hr_purchase SET status = 'Approved' WHERE id = ?`;
     db.query(sql, [id], (error, result) => {
-      result ? console.log("Done") : console.error("Error: ", error);
+      if (!result) {
+        console.error("Error", error);
+      }
     });
   })
 
@@ -506,7 +510,9 @@ ORDER BY
 
     const q = "INSERT INTO employee_leave_request (empID,	roleID,	`leave`, description,	date_of_request,	email,	supervisor_concerned,	startDate,	endDate,	daysRequired, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     db.query(q, [empID, roleID, leave, description, date_of_request, email, selectedSupervisor, startDate, endDate, daysRequired, status], (error, result) => {
-      result ? console.log("Done Well") : console.error("Error", error);
+      if (!result) {
+        console.error("Error", error);
+      }
     });
   })
 });
@@ -544,7 +550,7 @@ app.post("/employee", (req, res) => {
     req.body.date_of_employment
   ];
 
-  console.log("DATAS: ", values);
+  // console.log("DATAS: ", values);
 
   db.query(query, values, (error, result) => {
     if (error) {
@@ -657,7 +663,7 @@ app.put("/employee/:id", (req, res) => {
       if (error) {
         console.error("Error: ", error);
       } else {
-        console.log("Done", result);
+        // console.log("Done", result);
         return result;
       }
     })
@@ -1116,7 +1122,7 @@ app.put('/update-serial-item/:id', (req, res) => {
     if (error) {
       console.error("Error :", error);
     } else {
-      console.log("Done right")
+      // console.log("Done right")
       return result
     }
   });
@@ -1273,8 +1279,8 @@ app.get('/monthly-report/:StartDate/:EndDate', (req, res) => {
   const start = req.params.StartDate;
   const end = req.params.EndDate;
 
-  console.log("Start from front: ", start);
-  console.log("end from front: ", end);
+  // console.log("Start from front: ", start);
+  // console.log("end from front: ", end);
 
   const query = `
 
@@ -1442,7 +1448,7 @@ app.post('/add-department', (req, res) => {
     if (error) {
       console.error("Error", error);
     } else {
-      console.log("Done Well");
+      // console.log("Done Well");
       return result;
     };
   });
@@ -1750,7 +1756,7 @@ app.get('/get-all-requests/:id', (req, res) => {
 app.delete('/delete', (req, res) => {
   const sql = "DELETE * FROM employee_supervisor_request WHERE employeeID = 6";
   db.query(sql, (error, result) => {
-    if (result) console.log("Done", result)
+    // if (result) console.log("Done", result)
   })
 })
 
@@ -3283,7 +3289,9 @@ app.post('/send-attendant', (req, res) => {
     attendantPlaceOfWork,
     attendantDOE
   ], (error, result) => {
-    result ? console.log("Done!") : console.error("Error In Attendant");
+    if (!result) {
+      console.error("Error", error);
+    }
   });
 });
 
@@ -3316,7 +3324,9 @@ app.post('/send-spouse', (req, res) => {
     spouseAddress,
     spouseNumberOfChildren
   ], (error, result) => {
-    result ? console.log("Done with spouse") : console.error("Error in spouse", error);
+    if (!result) {
+      console.error("Error", error);
+    }
   });
 });
 
@@ -3347,7 +3357,9 @@ app.post('/send-family-information', (req, res) => {
     motherThirdName,
     motherPhoneNumber,
     motherDateOfBirth], (error, result) => {
-      result ? console.log("Done with family") : console.error("Error in family");
+      if (!result) {
+        console.error("Error", error);
+      }
     });
 });
 
@@ -3374,7 +3386,9 @@ app.post('/send-emergency-contact/:emergencyContact', (req, res) => {
     emergencyThirdName,
     emergencyPhoneNumber,
     emergencyEmail,], (error, result) => {
-      result ? console.log("Done with emergencyContact") : console.error("Error with emergency ", error);
+      if (!result) {
+        console.error("Error", error);
+      }
     });
 });
 
@@ -3417,7 +3431,9 @@ app.post('/send-academic', (req, res) => {
     academicQualification3,
     academicQualification4,
     academicQualification5,], (error, result) => {
-      result ? console.log("Done academic") : console.error("Error in academic", error);
+      if (!result) {
+        console.error("Error", error);
+      }
     });
 });
 
@@ -3449,7 +3465,9 @@ app.post('/send-relative', (req, res) => {
     relativeFromDate,
     relativeCompanyName,
     relativePhoneNumber,], (error, result) => {
-      result ? console.log("Done with relative") : console.error("Error in relative", error);
+      if (!result) {
+        console.error("Error", error);
+      }
     });
 });
 
@@ -3467,7 +3485,9 @@ app.post('/send-employment-history', (req, res) => {
     whyarrestdetaineddeportedanyauthorityabroad,
     anyreasonfordischargefrompreviousposition,
     addressAnyReasonForLeave], (error, result) => {
-      result ? console.log("Done with employment") : console.error("Error employment history", error);
+      if (!result) {
+        console.error("Error", error);
+      }
     });
 });
 
@@ -3654,7 +3674,7 @@ app.delete('/delete-unlocated-serials', (req, res) => {
     WHERE item.id IS NULL;`;
 
   db.query(sql, (error, result) => {
-    result ? console.log("DELETE WELL!!") : console.error("Error: ", error);
+    // result ? console.log("DELETE WELL!!") : console.error("Error: ", error);
   });
 });
 
@@ -3767,7 +3787,9 @@ app.post('/insert-employee-leave-into-hr', (req, res) => {
   const sql = 'INSERT INTO supervisor_hr_leave_request (empID,	supervisorID,	date_of_request,	email,	startDate,	endDate,	days_required,	roleID, description, `leave`, status ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
   db.query(sql, [req.body.empID, req.body.supervisor_concerned_id, req.body.date_of_request, req.body.email, req.body.startDate, req.body.endDate, req.body.daysRequired, req.body.roleID, req.body.description, req.body.leave, status],
     (error, result) => {
-      result ? res.json("Done!!") : console.error("Error: ", error);
+      if (!result) {
+        console.error('Error: ', error);
+      }
     });
 });
 
@@ -3783,7 +3805,7 @@ app.put('/approve-employee-leave-hr-table/:id', (req, res) => {
 
   const sql = `UPDATE supervisor_hr_leave_request SET status = 'Approved' WHERE id = ? `;
   db.query(sql, [req.params.id], (error, result) => {
-    result ? console.log("Done") : console.error("Error: ", error);
+    // result ? console.log("Done") : console.error("Error: ", error);
   })
 })
 
@@ -3791,7 +3813,7 @@ app.put('/deny-employee-leave-hr-table/:id', (req, res) => {
 
   const sql = `UPDATE supervisor_hr_leave_request SET status = 'Denied' WHERE id = ? `;
   db.query(sql, [req.params.id], (error, result) => {
-    result ? console.log("Done") : console.error("Error: ", error);
+    // result ? console.log("Done") : console.error("Error: ", error);
   })
 })
 
@@ -3881,7 +3903,9 @@ app.put('/give-out-one-serial-by-choice/:serialID/:oneCompanyID/:selectedSupervi
 
   const sql = `UPDATE serial_number SET companyID = ?, status = 'Out', taker = ? WHERE id = ? `;
   db.query(sql, [req.params.oneCompanyID, req.params.selectedSupervisor, parseInt(req.params.serialID)], (error, result) => {
-    result ? console.log("Done") : console.error("Error: ", error);
+    if (!result) {
+      console.error("Error", error);
+    }
   });
 })
 
