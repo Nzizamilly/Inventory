@@ -262,7 +262,7 @@ ORDER BY
 
     const sql = `INSERT INTO company_records (companyID,	itemID,	amount, employeeID,	status) VALUES (?, ?, ?, ?, ?)`;
     db.query(sql, [companyID, itemID, amount, requestor, status], (error, result) => {
-      result ? console.log("Good: ", result) : console.error("Error: ", error);
+      // result ? console.log("Good: ", result) : console.error("Error: ", error);
     });
   });
 
@@ -733,7 +733,6 @@ app.get('/get-DOE/:ID', (req, res) => {
 
   db.query(sql, id, (error, result) => {
     if (result) {
-      // console.log("RESULT: ", result);
       res.json(result[0]);
     } else {
       console.error("Error: ", error);
@@ -1189,7 +1188,7 @@ app.put('/update-serial-status-return/:id/:status/:taker', (req, res) => {
   const status = req.params.status;
   const taker = req.params.taker;
   const amount_returned = 1;
-  console.log("Passed: ", id, status);
+  // console.log("Passed: ", id, status);
   const q = `UPDATE serial_number set status = ?, taker = ?, companyID = '0', returner = ?  WHERE id = ?`;
   const values = [status, taker, amount_returned, id]
   db.query(q, values, (error, result) => {
@@ -1320,7 +1319,7 @@ app.post('/take-one-daily-transaction/:itemID/:amount/:requestor/:status/:retour
   const action = ''
   // console.log("Remaining: ", req.params.remaining);
 
-  
+
   const formatDate = (dateString) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1330,7 +1329,7 @@ app.post('/take-one-daily-transaction/:itemID/:amount/:requestor/:status/:retour
     const seconds = String(date.getSeconds()).padStart(2, '0');
 
     return `${year}_${month}_${day}`;
-};
+  };
 
 
   const sql = `INSERT INTO item_transaction ( itemID, amount, requestor, date, retour, action, remaining, company ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? ) `;
@@ -1341,7 +1340,7 @@ app.post('/take-one-daily-transaction/:itemID/:amount/:requestor/:status/:retour
     } else {
       console.error("Error: ", error);
     }
-  }); 
+  });
 });
 
 app.get('/getor/:supervisorID', (req, res) => {
@@ -2019,7 +2018,7 @@ WHERE supervisor_hr_leave_request.status = 'Approved';
 });
 
 app.get('/get-denied-notification-leave-hr', (req, res) => {
-  
+
   const q = `SELECT
    supervisor_hr_leave_request.id,
    supervisor_hr_leave_request.leave,
@@ -3799,10 +3798,91 @@ app.put('/deny-employee-leave-hr-table/:id', (req, res) => {
 app.get('/check-serial-number-names/:itemID', (req, res) => {
 
   const sql = `SELECT serial_number FROM serial_number WHERE itemID = ?`;
-  
+
   db.query(sql, [req.params.itemID], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.get('/get-all-first-parts/:itemID', (req, res) => {
+  const itemID = req.params.itemID;
+
+
+  const sql = `SELECT 
+    SUBSTRING_INDEX(serial_number, ' ', 1) AS first_part
+FROM 
+    serial_number WHERE itemID = ?`;
+
+  db.query(sql, [itemID], (error, result) => {
+    if (error) {
+      console.error("Error fetching data:", error);
+      res.status(500).json({ error: "Database query error" });
+    } else {
+      // Map over result to create an array of first_part values
+      const firstParts = result.map(row => row.first_part);
+      // console.log("First Parts:", firstParts);
+      res.json(firstParts); // Send the array of first parts only
+    }
+  });
+})
+
+app.put('/take-give-out-bulk/:itemID/:wholeWordArray/:companyID', (req, res) => {
+
+  // console.log("Hittttttttttttt");
+
+  const serials = req.params.wholeWordArray.split(',');
+  // console.log("Serials: ", serials);
+  const itemID = req.params.itemID;
+  const companyID = req.params.companyID
+
+  const sql = `UPDATE serial_number SET status = 'Out', companyID = ? WHERE itemID = ? AND serial_number = ?`;
+
+  serials.forEach((serial) => {
+    db.query(sql, [companyID, itemID, serial.trim()], (error, result) => {
+      // result ? console.log('Result: ', result) : console.error("Error: ", error);
+    });
+  });
+});
+
+app.post('/post-company-records/:selectedItem/:oneCompanyID/:selectedSupervisor/:realQuantity', (req, res) => {
+
+  const status = "Issued";
+
+  const companyID = req.params.oneCompanyID;
+  const itemID = parseInt(req.params.selectedItem);
+  const amount = req.params.realQuantity;
+  const requestor = req.params.selectedSupervisor;
+  const date = new Date();
+
+  // console.log("item ID is: ", itemID)
+
+  const sql = `INSERT INTO company_records (companyID,	itemID,	amount, employeeID,	status) VALUES (?, ?, ?, ?, ?)`;
+  db.query(sql, [companyID, itemID, amount, requestor, status], (error, result) => {
+    // result ? console.log("Good: ", result) : console.error("Error: ", error);
+  });
+});
+
+app.get('/get-serial-match/:serialMatch', (req, res) => {
+  const serialMatch = `%${req.params.serialMatch}%`;
+
+  const sql = `
+  SELECT id, serial_number 
+
+  FROM serial_number 
+  
+  WHERE serial_number LIKE ? AND status = 'In'`;
+
+  db.query(sql, [serialMatch], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
   })
+})
+
+app.put('/give-out-one-serial-by-choice/:serialID/:oneCompanyID/:selectedSupervisor', (req, res) => {
+
+  const sql = `UPDATE serial_number SET companyID = ?, status = 'Out', taker = ? WHERE id = ? `;
+  db.query(sql, [req.params.oneCompanyID, req.params.selectedSupervisor, parseInt(req.params.serialID)], (error, result) => {
+    result ? console.log("Done") : console.error("Error: ", error);
+  });
 })
 
 app.listen(port, () => {

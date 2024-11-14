@@ -86,7 +86,15 @@ function Company() {
     }
 
     const Selects = {
-        width: '43%',
+        width: '100%',
+        height: '222px',
+        color: 'black',
+        border: 'none',
+        borderRadius: '21px'
+    };
+
+    const Selectx = {
+        width: '100%',
         height: '18%',
         color: 'black',
         border: 'none',
@@ -218,6 +226,7 @@ function Company() {
     const issue = {
         width: '100%',
         height: '100%',
+        gap: '12px',
         backgroundColor: 'rgb(163, 187, 197)',
         display: 'flex',
         flexDirection: 'inline'
@@ -395,23 +404,23 @@ function Company() {
     }, []);
 
 
-    useEffect(() => {
-        const fetch = async () => {
-            try {
-                const storage = getStorage();
-                const listRef = ref(storage, 'companyLogos/');
-                const res = await listAll(listRef);
-                // console.log("Files fetched: ", res.items);
-                const names = res.items.map((itemRef) => itemRef.name);
-                // console.log("File names: ", names);
+    // useEffect(() => {
+    //     const fetch = async () => {
+    //         try {
+    //             const storage = getStorage();
+    //             const listRef = ref(storage, 'companyLogos/');
+    //             const res = await listAll(listRef);
+    //             // console.log("Files fetched: ", res.items);
+    //             const names = res.items.map((itemRef) => itemRef.name);
+    //             // console.log("File names: ", names);
 
 
-            } catch (error) {
-                console.error("Error: ", error);
-            };
-        }
-        fetch();
-    }, []);
+    //         } catch (error) {
+    //             console.error("Error: ", error);
+    //         };
+    //     }
+    //     fetch();
+    // }, []);
 
     useEffect(() => {
         const fetchCompanies = async () => {
@@ -436,10 +445,14 @@ function Company() {
                 const imagesMap = Object.assign({}, ...images);
                 setCompanyImages(imagesMap);
             } catch (error) {
-                console.error("Error: ", error);
+                // console.error("Error: ", error);
             }
         };
-        fetchCompanies();
+
+        if (url && infoCompany) {
+            fetchCompanies();
+        };
+
     }, [url, infoCompany]);
 
     useEffect(() => {
@@ -448,7 +461,7 @@ function Company() {
                 const response = await axios.get(`${url}/category`);
                 setCategory(response.data);
             } catch (error) {
-                console.error("Error: ", error);
+                // console.error("Error: ", error);
             };
         };
         fetchCategory();
@@ -469,7 +482,7 @@ function Company() {
                 const response = await axios.get(`${url}/items/${selectedCategory}`);
                 setItem(response.data);
             } catch (error) {
-                console.error("Error: ", error);
+                // console.error("Error: ", error);
             };
         };
         if (selectedCategory) {
@@ -507,6 +520,8 @@ function Company() {
         setQuantity(event.target.value)
     };
 
+    const [from, setFrom] = useState(Number);
+    const [to, setTo] = useState(Number);
 
     useEffect(() => {
         const bring = async () => {
@@ -517,11 +532,11 @@ function Company() {
                 // console.error("Error: ", error);
             }
         };
-        bring();
+
+        if (selectedItem) {
+            bring();
+        }
     }, [selectedItem]);
-
-    const [takeInTotalIns, setTakeInTotalIns] = useState(Number);
-
 
     const handleIssue = async (ID) => {
 
@@ -551,7 +566,7 @@ function Company() {
 
                 socket.emit("Company Insert", (messageDatas));
                 console.log("Selected ItemID", selectedItem);
-            
+
                 const remaining = Number(Number(totalIn.totalIn) - Number(quantity));
 
                 console.log("Remaining To be inserted", totalIn.totalIn, quantity, remaining);
@@ -561,7 +576,7 @@ function Company() {
                 const retour = 'none'
 
                 const responsee = await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas).then(
-                await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${quantity}/${selectedSupervisor}/${status}/${retour}/${remaining}/${oneCompanyID}`)
+                    await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${quantity}/${selectedSupervisor}/${status}/${retour}/${remaining}/${oneCompanyID}`)
                 )
 
                 setInterval(() => {
@@ -638,6 +653,118 @@ function Company() {
         setLoad(false);
         console.log("RESET HIT: ", itemName, CompanyName, date, amount);
     };
+
+    const [firstParts, setFirstParts] = useState([]);
+
+    const [selectedFirstPart, setSelectedFirstPart] = useState('');
+
+    const handleFirstPartChange = (event) => {
+        const selectedValue = event.target.value;
+        setSelectedFirstPart(selectedValue);
+    };
+
+
+    useEffect(() => {
+        const handleSerialHunt = async (selectedItem) => {
+            try {
+                const response = await axios.get(`${url}/get-all-first-parts/${selectedItem}`);
+                console.log('Responsee of first parts: ', response.data)
+                setFirstParts(response.data);
+
+            } catch (error) {
+                console.error("Error: ", error);
+            };
+        }
+
+        if (selectedItem) {
+            handleSerialHunt(selectedItem);
+        };
+
+    }, [selectedItem]);
+
+    const bulkOutFunction = async () => {
+
+        if (from > to) {
+
+            try {
+                const numbers = [];
+                const wholeWordArray = [];
+
+                for (let i = from; i >= to; i--) {
+                    numbers.push(i);
+                }
+
+                numbers.forEach((number) => {
+                    const take = selectedFirstPart + ' ' + number;
+                    wholeWordArray.push(take);
+                })
+
+                console.log("WholeWordArray: ", wholeWordArray);
+
+                console.log("Numbers: ", numbers);
+
+                const realQuantity = Number(Number(from) - Number(to))
+
+                await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}`).then(
+                    await axios.put(`${url}/take-give-out-bulk/${selectedItem}/${wholeWordArray}/${oneCompanyID}`)
+                );
+
+                window.alert("Done!!!");
+
+            } catch (error) {
+                console.error("Error: ", error);
+            }
+        } else {
+            window.alert("Not following Input Rules");
+        }
+    };
+
+    const [serialMatch, setSerialMatch] = useState('');
+    const [allMatchingSerials, setAllMatchingSerials] = useState([]);
+
+    useEffect(() => {
+
+        const fetchSerialMatch = async (serialMatch) => {
+            try {
+                const response = await axios.get(`${url}/get-serial-match/${serialMatch}`);
+                console.log("Response: ", response.data)
+                setAllMatchingSerials(response.data);
+            } catch (error) {
+                console.error("Error: ", error)
+            }
+        }
+
+        if (serialMatch) {
+            fetchSerialMatch(serialMatch);
+        }
+
+    }, [serialMatch]);
+
+    const handleGiveOutOneSerialChoice = async (serialID) => {
+        try {
+
+            const realQuantity = 1;
+            const status = 'Out';
+            const retour = 'none';
+            const c = selectedItem;
+            const supervisor = selectedSupervisor
+            const remaining = Number(Number(totalIn.totalIn) - Number(1))
+
+            await axios.put(`${url}/give-out-one-serial-by-choice/${serialID}/${oneCompanyID}/${supervisor}`).then(
+                await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}`).then(
+                    await axios.post(`${url}/take-one-daily-transaction/${c}/${realQuantity}/${supervisor}/${status}/${retour}/${remaining}/${oneCompanyID}`)
+                ),
+            );
+
+            window.alert("Done");
+
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+
+    }
+
+
 
     return (
         <div>
@@ -738,7 +865,7 @@ function Company() {
                             ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh' }} />}
                         </div>
 
-                        <div style={{ width: '40%', height: '60%', display: 'flex', justifyContent: 'center', marginTop: '60px', gap: '12px', alignItems: 'center', flexDirection: 'column' }}>
+                        <div style={{ width: '30%', height: '60%', gap: '12px', alignItems: 'center', display: 'flex', marginTop: '60px', gap: '12px', flexDirection: 'column' }}>
                             <select onChange={handleCategoryChange} value={selectedCategory} style={Selects}>
                                 <option value='' disabled>Select Category</option>
                                 {category.map(categories => (
@@ -753,7 +880,7 @@ function Company() {
                                 ))}
                             </select>
 
-                            <input type='text' style={{ width: '45%', color: 'black', backgroundColor: 'white' }} placeholder='Quantity' name='quantity' onChange={handleQuantity} />
+                            <input type='text' style={{ width: '100%', color: 'black', backgroundColor: 'white' }} placeholder='Quantity' name='quantity' onChange={handleQuantity} />
 
                             <select onChange={handleSupervisorChange} value={selectedSupervisor} style={Selects}>
                                 <option value='' disabled>Select Issuer</option>
@@ -762,10 +889,47 @@ function Company() {
                                 ))}
                             </select>
 
-                            <button style={{ backgroundColor: 'white', width: '20%' }} onClick={() => openIssueLoader(oneCompanyID)}>Issue Out</button>
+                            <button style={{ backgroundColor: 'white', width: '40%' }} onClick={() => openIssueLoader(oneCompanyID)}>Issue Out</button>
                             {/* <button style={{ backgroundColor: 'white', width: '20%' }} onClick={() => openDeliveryNote()}>Issue Out</button> */}
 
                         </div>
+
+                        <div style={{ width: '50%', height: '100%', gap: '12px', display: 'flex', marginTop: '60px', flexDirection: 'inline' }} >
+                            <div style={{ width: '50%', height: '60%', gap: '9px', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                                {/* <button>Find Serials</button> */}
+                                <select onChange={handleFirstPartChange} value={selectedFirstPart} style={Selectx}>
+                                    <option value='' disabled>Select First Part</option>
+                                    {firstParts.map((first_part, index) => (
+                                        <option key={index} value={first_part} style={Option} >{first_part}</option>
+                                    ))}
+                                </select>
+                                <input type='text' placeholder='From (Bigger)' style={{ width: '100%', color: 'black', backgroundColor: 'white' }} onChange={(e) => setFrom(e.target.value)} />
+                                <input type='text' placeholder='To (Smaller)' style={{ width: '100%', color: 'black', backgroundColor: 'white' }} onChange={(e) => setTo(e.target.value)} />
+                                <button style={{ backgroundColor: 'white', width: '50%' }} onClick={() => bulkOutFunction()}>Bulk Out</button>
+                            </div>
+                            <div style={{ width: '50%', height: '60%', display: 'flex', flexDirection: 'column' }} >
+                                <input
+                                    type="text"
+                                    placeholder="Search Serial Number"
+                                    style={{ width: '100%', color: 'black', backgroundColor: 'white' }}
+                                    onChange={(e) => setSerialMatch(e.target.value)}
+                                />
+                                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                    {allMatchingSerials.map((serial) => (
+                                        <button
+                                            key={serial.id}
+                                            style={{ width: '100%', height: '30%', backgroundColor: 'white', color: 'black' }}
+                                            onClick={() => handleGiveOutOneSerialChoice(serial.id)}
+                                        >
+                                            {serial.serial_number}
+                                        </button>
+                                    ))}
+                                </div>
+
+                            </div>
+
+                        </div>
+
 
                     </div>
                     }
@@ -778,15 +942,32 @@ function Company() {
                             ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh' }} />}
                         </div>
 
-                        <div style={{ width: '80%', backgroundColor: 'rgb(163, 187, 197)', height: '80%', display: 'flex', borderRadius: '26px', justifyContent: 'center', alignItems: 'center', marginTop: '42px', marginLeft: '109px', flexDirection: 'column' }}>
-                            <div style={{ width: '100%', height: '100%', display: 'flex', overflow: 'scroll', scrollbarWidth: 'none', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgb(163, 187, 197)' }}>
+                        <div style={{ width: '90%', backgroundColor: 'rgb(163, 187, 197)', height: '80%', display: 'flex', borderRadius: '26px', justifyContent: 'center', alignItems: 'center', marginTop: '42px', marginLeft: '109px', flexDirection: 'column' }}>
+                            <div style={{ width: '100%', height: 'auto', display: 'flex', overflowY: 'scroll', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgb(163, 187, 197)', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                                <style> {`div::-webkit-scrollbar { display: none;}`}</style>
                                 <DataTable
                                     columns={column}
                                     data={data}
-                                    pagination
+                                // pagination
                                 ></DataTable>
+                                {/* <span>The standard Lorem Ipsum passage, used since the 1500s
+                                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+
+                                    Section 1.10.32 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC
+                                    "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
+
+                                    1914 translation by H. Rackham
+                                    "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?"
+
+                                    Section 1.10.33 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC
+                                    "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat."
+
+                                    1914 translation by H. Rackham
+                                    "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains."
+                                    </span> */}
                             </div>
                         </div>
+
 
                     </div>
                     }
@@ -794,7 +975,7 @@ function Company() {
             </Modal>
 
             <Modal isOpen={isIssueLoaderOpen} onRequestClose={closeIssueLoader} className={modal} >
-                <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', zIndex: '20', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
                     <SyncLoader color={'green'} loading={loading} size={19} />
                     <div style={{ fontFamily: 'sans-serif' }}>
                         <br />

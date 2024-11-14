@@ -1385,7 +1385,7 @@ function ItemsAdmin() {
           </Modal>
 
           <Modal isOpen={isDeletingOpen} onRequestClose={closeDeletingItem} className={modal}>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', zIndex: '20', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
               <HashLoader color={'red'} loading={loading} size={59} />
               <div>
                 <br />
@@ -1395,7 +1395,7 @@ function ItemsAdmin() {
           </Modal>
 
           <Modal isOpen={isUpdatedOpen} onRequestClose={closeUpdateItem} className={modal}>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', zIndex: '20', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
               <HashLoader color={'cyan'} loading={loading} size={59} />
               <div>
                 <br />
@@ -1426,7 +1426,7 @@ function ItemsAdmin() {
           </Modal>
 
           <Modal isOpen={isListLoaderOpen} onRequestClose={closeListLoader} className={modal} >
-            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', zIndex: '20', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
               <RiseLoader color={'#3444e5'} loading={loading} size={19} />
               <div style={{ fontFamily: 'sans-serif' }}>
                 <br />
@@ -1436,7 +1436,7 @@ function ItemsAdmin() {
           </Modal>
 
           <Modal isOpen={isSomeLoaderOpen} onRequestClose={closeSomeLoader} className={modal} >
-            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', zIndex: '20', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
               <FadeLoader color={'#1adf4f'} loading={loading} size={11} />
               <div style={{ fontFamily: 'sans-serif' }}>
                 <br />
