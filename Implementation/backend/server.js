@@ -532,8 +532,10 @@ app.post("/employee", (req, res) => {
   const departmentID = parseInt(department, 10);
   const roleID = parseInt(role, 10);
 
-  console.log("Department ID", department);
-  console.log("role ID", role);
+  // 
+
+
+
   const status = 'ACTIVE';
 
   const query = "INSERT INTO employees (username, password, phoneNumber, address, roleID, departmentID, status, email, date_of_employment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -607,19 +609,15 @@ app.post('/add-serial-holder/:itemID/:serials/:depreciation_rate_holder/:state_o
   const state_of_item_holder = req.params.state_of_item_holder;
   const status = 'In';
 
-  console.log("All ", itemID, depreciation_rate_holder, state_of_item_holder, status);
+  // console.log("All ", itemID, depreciation_rate_holder, state_of_item_holder, status);
 
 
   const sql = "INSERT INTO serial_number (serial_number, state_of_item, depreciation_rate, itemID, status, taker, quantity ) VALUES (?,?,?,?,?,NULL,1)";
 
   serials.forEach((serial) => {
     db.query(sql, [serial.trim(), state_of_item_holder, depreciation_rate_holder, itemID, status], (error, result) => {
-      if (error) {
-        console.error("Error in inserting serial holder", error);
-        res.status(500).send("Failed to insert serial number");
-      } else {
-        console.log("Result: ", result);
-        console.log(`Serial ${serial.trim()} ID ItemID ${itemID}`);
+      if (!result) {
+        console.error("Error: ", error);
       }
     });
   });
@@ -632,9 +630,10 @@ app.delete('/delete-serial-item/:id', (req, res) => {
   const sql = `DELETE FROM serial_number WHERE id = ?`;
 
   db.query(sql, [id], (error, result) => {
-    result ? res.json(result) : console.error("Error Deleting Serial Number");
+    if (!result) {
+      console.error("Error: ", error);
+    }
   })
-
 })
 
 app.put("/employee/:id", (req, res) => {
@@ -647,14 +646,14 @@ app.put("/employee/:id", (req, res) => {
   const status = req.body.status;
   const email = req.body.email;
 
-  console.log("FROM BODY: ", empID);
-  console.log("FROM BODY: ", roleName);
-  console.log("FROM BODY: ", departmentName);
-  console.log("FROM BODY: ", username);
-  console.log("FROM BODY: ", password);
-  console.log("FROM BODY: ", status);
-  console.log("FROM BODY: ", email);
-  console.log("FROM BODY: ", address);
+  // console.log("FROM BODY: ", empID);
+  // console.log("FROM BODY: ", roleName);
+  // console.log("FROM BODY: ", departmentName);
+  // console.log("FROM BODY: ", username);
+  // console.log("FROM BODY: ", password);
+  // console.log("FROM BODY: ", status);
+  // console.log("FROM BODY: ", email);
+  // console.log("FROM BODY: ", address);
 
   function getRoleId(role) {
     const q = 'SELECT role_name FROM role WHERE id = ?'
@@ -681,12 +680,9 @@ app.put("/employee/:id", (req, res) => {
     empID
   ];
   db.query(q, values, (err, data) => {
-    if (err) {
-      console.error("Error updating: ", err);
-      return res.status(500).json({ error: "Internal Server Error" })
-    };
-    console.log("Employee Update Successfully", data);
-    return res.json(data)
+    if (!result) {
+      console.error("Error")
+    }
   });
 });
 
