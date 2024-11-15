@@ -1192,7 +1192,8 @@ app.get('/get-total-number/:id', (req, res) => {
 app.put('/update-serial-status-return/:id/:status/:taker', (req, res) => {
   const id = req.params.id;
   const status = req.params.status;
-  const taker = req.params.taker;
+  // const taker = req.params.taker;
+  const taker = 0
   const amount_returned = 1;
   // console.log("Passed: ", id, status);
   const q = `UPDATE serial_number set status = ?, taker = ?, companyID = '0', returner = ?  WHERE id = ?`;

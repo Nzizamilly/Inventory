@@ -613,7 +613,7 @@ function Company() {
         },
         {
             name: 'Amount',
-            selector: row => row.amount
+            selector: row => Number(Number(row.amount) + Number(1))
         },
         {
             name: 'Status',

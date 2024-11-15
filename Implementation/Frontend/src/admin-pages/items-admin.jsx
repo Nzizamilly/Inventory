@@ -976,9 +976,6 @@ function ItemsAdmin() {
           window.alert("Error in Recording Action");
         }
 
-
-
-
       } catch (error) {
         console.error("Error", error);
       };
