@@ -372,16 +372,19 @@ function Company() {
         if (logo == null) return;
 
         try {
-            
-            const response = await axios.post(`${url}/add-company`, company);
-            
+
             const IdForQuotation = latestId + 1;
             console.log("ID FOR COMPANY PIC: ", IdForQuotation);
             const imageRef = ref(storage, `companyLogos/${logo.name, IdForQuotation}`);
             uploadBytes(imageRef, logo).then(() => {
             });
-            
-            closeAddModal();
+
+            const response = await axios.post(`${url}/add-company`, company);
+
+            setInterval(() => {
+                closeAddModal();
+            }, 2700);
+
         } catch (error) {
             console.error("Error: ", error);
         }
@@ -433,8 +436,8 @@ function Company() {
                         const imageURL = await getDownloadURL(imageRef);
                         return { [company.id]: imageURL };
                     } catch (error) {
-                        console.error(`Error fetching image for company ${company.id}: `, error);
-                        return { [company.id]: console.log("No Image") };
+                        // console.error(`Error fetching image for company ${company.id}: `, error);
+                        // return { [company.id]: console.log("No Image") };
                     }
                 });
 
