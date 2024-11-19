@@ -1343,6 +1343,15 @@ LEFT JOIN
   })
 })
 
+app.delete('/delete-company/:ID', (req, res) => {
+  const sql = `DELETE FROM company WHERE id = ? `;
+  db.query(sql, [req.params.ID], (error, result) => {
+    if (!result) {
+      console.error("Error", error);
+    }
+  })
+})
+
 app.post('/take-one-daily-transaction/:itemID/:amount/:requestor/:status/:retour/:remaining/:companyID', (req, res) => {
   const date = new Date();
   const action = ''

@@ -11,7 +11,7 @@ import SyncLoader from "react-spinners/SyncLoader";
 import axios from 'axios';
 import Keys from '../keys';
 import { storage } from '../firebase';
-import { ref, uploadBytes, getDownloadURL, getStorage, listAll } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, getStorage, listAll, deleteObject } from "firebase/storage";
 import DataTable from 'react-data-table-component';
 import Delivery from './deliveryFront';
 import RotateLoader from 'react-spinners/RotateLoader';
@@ -129,7 +129,7 @@ function Company() {
 
     const closeAddModal = () => {
         isAddModalOpen(false);
-        window.location.reload();
+        // window.location.reload();
     };
 
     const modal3 = {
@@ -307,10 +307,10 @@ function Company() {
         resetDeliveryNoteState();
     };
 
-    const openCompanyModal = (ID) => {
+    const openCompanyModal = (ID, CompanyName) => {
         isCompanyModalOpen(true);
         setOneCompanyID(ID);
-        fetchOneCompany(ID);
+        fetchOneCompany(ID, CompanyName);
 
     };
 
@@ -325,9 +325,9 @@ function Company() {
         isCompanyModalOpen(false);
     };
 
-    const fetchOneCompany = async (ID) => {
+    const fetchOneCompany = async (ID, CompanyName) => {
 
-        const imageRef = ref(storage, `companyLogos/${ID}`);
+        const imageRef = ref(storage, `companyLogos/${CompanyName}`);
         const imageURL = await getDownloadURL(imageRef);
         setImageForOneCompany(imageURL);
 
@@ -373,7 +373,7 @@ function Company() {
 
         try {
 
-            const IdForQuotation = latestId + 1;
+            const IdForQuotation = company.name;
             console.log("ID FOR COMPANY PIC: ", IdForQuotation);
             const imageRef = ref(storage, `companyLogos/${logo.name, IdForQuotation}`);
             uploadBytes(imageRef, logo).then(() => {
@@ -431,10 +431,10 @@ function Company() {
                 // Fetch images for each company
                 const storage = getStorage();
                 const imageFetches = response.data.map(async (company) => {
-                    const imageRef = ref(storage, `companyLogos/${company.id}`);
+                    const imageRef = ref(storage, `companyLogos/${company.CompanyName}`);
                     try {
                         const imageURL = await getDownloadURL(imageRef);
-                        return { [company.id]: imageURL };
+                        return { [company.CompanyName]: imageURL };
                     } catch (error) {
                         // console.error(`Error fetching image for company ${company.id}: `, error);
                         // return { [company.id]: console.log("No Image") };
@@ -763,9 +763,29 @@ function Company() {
 
         } catch (error) {
             console.error("Error: ", error);
-        }
+        };
+    };
 
-    }
+    const handleDelete = async (ID, CompanyName) => {
+        try {
+
+            const storage = getStorage();
+
+            const fileRef = ref(storage, `companyLogos/${CompanyName}`);
+
+            deleteObject(fileRef)
+                .then(() => {
+                    console.log("Company Deleted Well");
+                }).catch((error) => {
+                    console.error("Error:", error);
+                });
+
+            await axios.delete(`${url}/delete-company/${ID}`);
+
+        } catch (error) {
+            console.error("Error: ", error);
+        };
+    };
 
 
 
@@ -781,9 +801,9 @@ function Company() {
                 <div className="terms-admin">
                     {infoCompany.map(company => (
                         <button key={company.id} style={CompanyButton} onClick={() => openCompanyModal(company.id, company.CompanyName)}>
-                            {companyImages && companyImages[company.id] ? (
+                            {companyImages && companyImages[company.CompanyName] ? (
                                 <img
-                                    src={companyImages[company.id]}
+                                    src={companyImages[company.CompanyName]}
                                     alt={`${company.CompanyName} logo`}
                                     style={{ width: '45%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '60px' }}
                                 />
@@ -849,7 +869,7 @@ function Company() {
                                         <p>Number:{one.number}</p>
                                         <div style={{ width: '100%', height: '20%', display: 'flex', flexDirection: 'inline', gap: '12px' }}>
                                             <button style={{ borderRadius: '12px', width: '76%', backgroundColor: 'white' }}>Update</button>
-                                            <button style={{ borderRadius: '12px', width: '75%', backgroundColor: 'red' }}>Delete</button>
+                                            <button onClick={() => handleDelete(one.id, one.CompanyName)} style={{ borderRadius: '12px', width: '75%', backgroundColor: 'red' }}>Delete</button>
                                         </div>
                                     </div>
                                 ))}
