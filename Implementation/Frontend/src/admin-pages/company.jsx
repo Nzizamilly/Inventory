@@ -323,7 +323,7 @@ function Company() {
         setDate('');
         setAmount('');
         setPDF('');
-        setSerialMatch(''),
+        setSerialMatch('');
         isCompanyModalOpen(false);
     };
 
