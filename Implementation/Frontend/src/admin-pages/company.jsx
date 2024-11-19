@@ -437,7 +437,7 @@ function Company() {
                         const imageURL = await getDownloadURL(imageRef);
                         return { [company.CompanyName]: imageURL };
                     } catch (error) {
-                        console.error(`Error fetching image for company ${company.CompanyName}: `,);
+                        // console.error(`Error fetching image for company ${company.CompanyName}: `);
                         // return { [company.id]: console.log("No Image") };
                     }
                 });
@@ -450,11 +450,11 @@ function Company() {
             }
         };
 
-        if (url && infoCompany) {
+        if (url) {
             fetchCompanies();
         };
 
-    }, [url, infoCompany]);
+    }, [url]);
 
     useEffect(() => {
         const fetchCategory = async () => {
