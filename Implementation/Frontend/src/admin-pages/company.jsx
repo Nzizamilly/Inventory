@@ -328,25 +328,27 @@ function Company() {
 
     const fetchOneCompany = async (ID, CompanyName) => {
 
-        const imageRef = ref(storage, `companyLogos/${CompanyName}`);
-        const imageURL = await getDownloadURL(imageRef);
-        setImageForOneCompany(imageURL);
+        if (ID, CompanyName) {
+            const imageRef = ref(storage, `companyLogos/${CompanyName}`);
+            const imageURL = await getDownloadURL(imageRef);
+            setImageForOneCompany(imageURL);
 
-        try {
-            const responsee = await axios.get(`${url}/gets-one/${ID}`);
-            setData(responsee.data);
-        } catch (error) {
-            // console.error("Error", error);
+            try {
+                const responsee = await axios.get(`${url}/gets-one/${ID}`);
+                setData(responsee.data);
+            } catch (error) {
+                // console.error("Error", error);
+            };
+
+            try {
+                const response = await axios.get(`${url}/get-one-company/${ID}`);
+
+                setOneCompany(response.data);
+            } catch (error) {
+                // console.error("Error: ", error)
+            };
         };
-
-        try {
-            const response = await axios.get(`${url}/get-one-company/${ID}`);
-
-            setOneCompany(response.data);
-        } catch (error) {
-            // console.error("Error: ", error)
-        };
-    };
+    }
 
     const updateFileName = (event) => {
         const selectedLogo = event.target.files[0];
@@ -946,7 +948,7 @@ function Company() {
                                             style={{ width: '100%', height: '30%', display: 'flex', alignItems: 'center', justifyContent: 'left', backgroundColor: 'white', color: 'black' }}
                                             onClick={() => handleGiveOutOneSerialChoice(serial.id)}
                                         >
-                                            <p style ={{display: 'flex', marginLeft: '9px'}}>
+                                            <p style={{ display: 'flex', marginLeft: '9px' }}>
                                                 {serial.serial_number}
                                             </p>
                                         </button>
