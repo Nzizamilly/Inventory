@@ -6,7 +6,7 @@ import AddItem from '../images/addItem.svg'
 import Modal from 'react-modal';
 import Logo from '../images/logo.svg';
 import PuffLoader from "react-spinners/PuffLoader";
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 import SyncLoader from "react-spinners/SyncLoader";
 import axios from 'axios';
 import Keys from '../keys';
@@ -18,10 +18,10 @@ import RotateLoader from 'react-spinners/RotateLoader';
 
 function Company() {
 
-    const ioPort = Keys.REACT_APP_SOCKET_PORT;
+    // const ioPort = Keys.REACT_APP_SOCKET_PORT;
     const url = Keys.REACT_APP_BACKEND;
 
-    const socket = io.connect(`${ioPort}`);
+    // const socket = io.connect(`${ioPort}`);
 
     const Container = {
         width: '100%',
@@ -154,6 +154,7 @@ function Company() {
             width: '50%',
             height: '43%',
             display: 'flex',
+            fontFamily: 'Arial, sans-serif',
             border: 'none',
             gap: '12px',
             borderRadius: '12px',
@@ -324,10 +325,6 @@ function Company() {
         isCompanyModalOpen(false);
     };
 
-
-
-
-
     const fetchOneCompany = async (ID) => {
 
         const imageRef = ref(storage, `companyLogos/${ID}`);
@@ -373,18 +370,18 @@ function Company() {
     const handleMake = async () => {
 
         if (logo == null) return;
-        const IdForQuotation = latestId + 1;
-        console.log("ID FOR COMPANY PIC: ", IdForQuotation);
-        const imageRef = ref(storage, `companyLogos/${logo.name, IdForQuotation}`);
-        uploadBytes(imageRef, logo).then(() => {
-        });
 
         try {
+            
             const response = await axios.post(`${url}/add-company`, company);
-
-
+            
+            const IdForQuotation = latestId + 1;
+            console.log("ID FOR COMPANY PIC: ", IdForQuotation);
+            const imageRef = ref(storage, `companyLogos/${logo.name, IdForQuotation}`);
+            uploadBytes(imageRef, logo).then(() => {
+            });
+            
             closeAddModal();
-
         } catch (error) {
             console.error("Error: ", error);
         }
@@ -564,8 +561,11 @@ function Company() {
 
                 console.log("Passed: ", messageDatas);
 
-                socket.emit("Company Insert", (messageDatas));
-                console.log("Selected ItemID", selectedItem);
+                // socket.emit("Company Insert", (messageDatas));
+
+                await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${quantity}`);
+
+                // console.log("Selected ItemID", selectedItem);
 
                 const remaining = Number(Number(totalIn.totalIn) - Number(quantity));
 
@@ -575,7 +575,7 @@ function Company() {
                 const status = 'Out';
                 const retour = 'none'
 
-                const responsee = await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas).then(
+                await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas).then(
                     await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${quantity}/${selectedSupervisor}/${status}/${retour}/${remaining}/${oneCompanyID}`)
                 )
 
@@ -584,7 +584,7 @@ function Company() {
                 }, 2700);
 
             } else {
-                window.alert("Insufficient Amount...");
+                return window.alert("Insufficient Amount...");
             }
         } catch (error) {
             console.error("Error: ", error);
@@ -613,7 +613,7 @@ function Company() {
         },
         {
             name: 'Amount',
-            selector: row => Number(Number(row.amount) + Number(1))
+            selector: row => row.amount
         },
         {
             name: 'Status',
@@ -701,9 +701,9 @@ function Company() {
 
                 console.log("WholeWordArray: ", wholeWordArray);
 
-                console.log("Numbers: ", numbers);
+                console.log("Numbers: ", numbers.length);
 
-                const realQuantity = Number(Number(from) - Number(to))
+                const realQuantity = numbers.length;
 
                 await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}`).then(
                     await axios.put(`${url}/take-give-out-bulk/${selectedItem}/${wholeWordArray}/${oneCompanyID}`)
@@ -806,7 +806,7 @@ function Company() {
 
                     ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh' }} />}
 
-                    <strong>Logo</strong>
+                    <strong>Insert Logo</strong>
                 </label>
 
                 <div style={{ marginLeft: '50px', width: '40%', display: 'flex', gap: '20px', flexDirection: 'column' }}>

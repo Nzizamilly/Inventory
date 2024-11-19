@@ -47,6 +47,7 @@ import LeaveRequest from './employee-pages/leaveRequest';
 import LeaveNotificationsSupervisor from './supervisor-pages/leaveNotification';
 import LeaveNotificationsHR from './hr-pages/leaveNotificationHR';
 import LeaveNotificationEmployee from './employee-pages/leaveNotification';
+import Flush from './admin-pages/flush';
 
 const router = createBrowserRouter([
   {
@@ -225,6 +226,10 @@ const router = createBrowserRouter([
     path: 'leave-notification-employee',
     element: <LeaveNotificationEmployee />
   },
+  {
+    path: 'flush',
+    element: <Flush />
+  }
 
 ]);
 

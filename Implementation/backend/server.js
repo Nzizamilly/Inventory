@@ -214,7 +214,7 @@ ORDER BY
         if (error) {
           console.error("Error", error);
         } else {
-          console.log("Result: ", result);
+          // console.log("Result: ", result);
           socket.emit("give-some", result);
         }
 
@@ -1317,6 +1317,32 @@ ORDER BY
   });
 });
 
+app.get('/get-item-transactions', (req, res) => {
+
+  const sql = `SELECT 
+    item_transaction.id, 
+    item_transaction.date, 
+    item_transaction.action, 
+    item_transaction.amount, 
+    item_transaction.retour, 
+    item_transaction.remaining ,
+    company.CompanyName,
+    item.name, 
+    employees.username 
+FROM 
+    item_transaction
+JOIN 
+    item ON item_transaction.itemID = item.id
+LEFT JOIN 
+    employees ON item_transaction.requestor = employees.id
+LEFT JOIN 
+    company ON item_transaction.company = company.id `;
+
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+})
+
 app.post('/take-one-daily-transaction/:itemID/:amount/:requestor/:status/:retour/:remaining/:companyID', (req, res) => {
   const date = new Date();
   const action = ''
@@ -2238,7 +2264,7 @@ ORDER BY
   supervisor_hr_request.id DESC;
 `
   db.query(sql, (error, result) => {
-    console.log("TYPE OF RESULT: ", typeof result);
+    // console.log("TYPE OF RESULT: ", typeof result);
     result ? res.json(result) : console.error("Error: ", error);
   })
 });
@@ -2298,7 +2324,9 @@ app.post('/add-employee-supervisor-purchase', (req, res) => {
   ]
 
   db.query(q, values, (error, result) => {
-    result ? console.log("Result: ", result) : console.error("Error: ", error);
+    if (!result) {
+      console.error("Error: ", error);
+    }
   });
 });
 
@@ -2495,7 +2523,7 @@ app.get('/get-purchase-id', (req, res) => {
 });
 
 app.get('/get-company-id', (req, res) => {
-  const q = `SELECT id FROM company ORDER BY id DESC LIMIT 1;`;
+  const q = `SELECT id FROM company ORDER BY id DESC LIMIT 1`;
   db.query(q, (error, data) => {
     // console.log("Data: ", data);
     data ? res.json(data) : console.error("Error: ", error);
@@ -2653,7 +2681,7 @@ app.put('/change-status-from-notifications/:requestor/:item/:amount/:rowID', asy
           console.error("Error:", error);
           reject(error);
         } else {
-          console.log("Result:", result);
+          // console.log("Result:", result);
           // Ensure that result is an array and has at least one element
           if (Array.isArray(result) && result.length > 0) {
             // Resolve with the count value
@@ -2683,7 +2711,7 @@ app.put('/change-status-from-notifications/:requestor/:item/:amount/:rowID', asy
 
 app.put('/change-status-from-notifications-for-bulk/:employeeID/:item/:amount/:rowID', async (req, res) => {
 
-  console.log("HITTTT")
+  // console.log("HITTTT")
 
   const requestor = req.params.employeeID;
   const item = req.params.item;
@@ -2724,6 +2752,7 @@ app.put('/change-status-from-notifications-for-bulk/:employeeID/:item/:amount/:r
         AND status = 'In' 
         ORDER BY serial_number ASC
         LIMIT ?;`;
+
     const updateValues = [requestor, companyID, item, requiredAmount];
 
     db.query(updateQuery, updateValues, (error, result) => {
@@ -2776,7 +2805,7 @@ app.put('/change-status-from-notifications-for-bulkx', async (req, res) => {
         WHERE itemID = ? 
         AND status = 'In' 
         ORDER BY serial_number ASC
-        LIMIT ?;`;
+        LIMIT ?`;
     const updateValues = [requestor, companyID, item, requiredAmount];
 
     db.query(updateQuery, updateValues, (error, result) => {
@@ -2804,7 +2833,7 @@ app.put('/change-status-from-notifications-for-company/:requestor/:item/:amount/
           console.error("Error:", error);
           reject(error);
         } else {
-          console.log("Result:", result);
+          // console.log("Result:", result);
           // Ensure that result is an array and has at least one element
           if (Array.isArray(result) && result.length > 0) {
             // Resolve with the count value
@@ -3103,6 +3132,21 @@ app.get('/gets-one/:oneCompanyID', (req, res) => {
   });
 });
 
+app.get('/get-all-company-records', (req, res) => {
+
+  const sql = `
+   SELECT company_records.*, company.CompanyName, item.name, employees.username
+   FROM company_records
+   JOIN company ON company_records.companyID = company.id
+   JOIN item ON company_records.itemID = item.id
+   JOIN employees ON company_records.employeeID = employees.id
+  `;
+
+  db.query(sql, (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+})
+
 app.get('/get-one-company-for-delivery/:oneCompanyID/:ID', (req, res) => {
   const companyID = req.params.oneCompanyID;
   const ID = req.params.ID
@@ -3116,7 +3160,7 @@ app.get('/get-one-company-for-delivery/:oneCompanyID/:ID', (req, res) => {
      `;
   db.query(sql, [companyID, ID], (error, result) => {
     if (result) {
-      console.log("Result: ", result);
+      // console.log("Result: ", result);
       res.json(result);
     } else {
       console.error("Error: ", error);
@@ -3213,7 +3257,9 @@ app.post('/post-other-leave', (req, res) => {
 
   const sql = `INSERT INTO otherleaves (empID, name,	description, days_needed, startDate, endDate, year) VALUES ( ?, ?, ?, ?, ?, ?, ? )`;
   db.query(sql, [empID, name, description, days_needed, leaveStartDate, leaveEndDate, currentYear], (error, result) => {
-    result ? console.log('Result: ', result) : console.error("Error: ", error);
+    if (!result) {
+      console.error("Error: ", error);
+    }
   });
 });
 
@@ -3877,7 +3923,9 @@ app.post('/post-company-records/:selectedItem/:oneCompanyID/:selectedSupervisor/
 
   const sql = `INSERT INTO company_records (companyID,	itemID,	amount, employeeID,	status) VALUES (?, ?, ?, ?, ?)`;
   db.query(sql, [companyID, itemID, amount, requestor, status], (error, result) => {
-    // result ? console.log("Good: ", result) : console.error("Error: ", error);
+    if (!result) {
+      console.error("Error: ", error);
+    }
   });
 });
 
@@ -3885,16 +3933,36 @@ app.get('/get-serial-match/:serialMatch', (req, res) => {
   const serialMatch = `%${req.params.serialMatch}%`;
 
   const sql = `
-  SELECT id, serial_number 
-
-  FROM serial_number 
-  
-  WHERE serial_number LIKE ? AND status = 'In'`;
+    SELECT MIN(id) AS id, SUBSTRING_INDEX(serial_number, ' ', 1) AS first_part
+    FROM serial_number
+    WHERE serial_number LIKE ?
+    GROUP BY first_part`
+    ;
 
   db.query(sql, [serialMatch], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
   })
 })
+
+
+
+// app.get('/get-serial-match/:serialMatch', (req, res) => {
+//   const serialMatch = `%${req.params.serialMatch}%`;
+
+//   const sql = `
+//   SELECT id, serial_number, COUNT(*) 
+
+//   FROM serial_number 
+
+//   WHERE serial_number LIKE ? AND status = 'In'
+
+//   GROUP BY serial_number having COUNT(*) > 1
+//   `;
+
+//   db.query(sql, [serialMatch], (error, result) => {
+//     result ? res.json(result) : console.error("Error: ", error);
+//   })
+// })
 
 app.put('/give-out-one-serial-by-choice/:serialID/:oneCompanyID/:selectedSupervisor', (req, res) => {
 
@@ -3904,7 +3972,17 @@ app.put('/give-out-one-serial-by-choice/:serialID/:oneCompanyID/:selectedSupervi
       console.error("Error", error);
     }
   });
-})
+});
+
+
+app.delete('/delete-company-record/:id', (req, res) => {
+  const sql = `DELETE FROM company_records WHERE id = ?`;
+  db.query(sql, [req.params.id], (error, result) => {
+    if (!result) {
+      console.error("Error: ", error);
+    };
+  });
+});
 
 app.listen(port, () => {
   console.log("Connected to backend");

@@ -196,6 +196,24 @@
     background-color: rgb(94, 120, 138);
 }
 
+.flush {
+    gap: 15px;
+    width: 83%;
+    height: 49%;
+    border: none;
+    display: flex;
+    color: white;
+    text-align: left;
+    padding: 12px 0px;
+    margin-top: -178px;
+    margin-left: 220px;
+    padding-left: 12px;
+    border-radius: 12px;
+    flex-direction: inline;
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(200, 220, 235);
+}
+
 button {
     width: 55px;
     border: none;

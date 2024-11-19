@@ -83,6 +83,8 @@ function NavbarAdmin() {
         navigate('/action-transaction')
       } else if (transactionType === 'report') {
         navigate('/item-transactions')
+      } else if (transactionType === 'flush') {
+        navigate('/flush')
       };
     }
     changeTransaction(transactionType);
@@ -111,6 +113,7 @@ function NavbarAdmin() {
   ];
 
   const option = [
+    { value: 'flush', label: "Flush" },
     { value: 'item', label: "Item Transaction" },
     { value: 'action', label: "Action Transaction" },
     { value: 'report', label: "Item Transaction Report" },
