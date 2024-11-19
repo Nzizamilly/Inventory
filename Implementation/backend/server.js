@@ -3909,7 +3909,7 @@ app.put('/take-give-out-bulk/:itemID/:wholeWordArray/:companyID', (req, res) => 
   const itemID = req.params.itemID;
   const companyID = req.params.companyID
 
-  const sql = `UPDATE serial_number SET status = 'Out', companyID = ? WHERE itemID = ? AND serial_number = ?`;
+  const sql = `UPDATE serial_number SET status = 'Out', companyID = ? WHERE itemID = ? AND serial_number = ? AND status = 'In'`;
 
   serials.forEach((serial) => {
     db.query(sql, [companyID, itemID, serial.trim()], (error, result) => {

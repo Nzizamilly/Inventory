@@ -720,6 +720,7 @@ function Company() {
                 
 
             } catch (error) {
+                window.alert("Error In Giving Out Multiple Serial Numbers")
                 console.error("Error: ", error);
             }
         } else {
