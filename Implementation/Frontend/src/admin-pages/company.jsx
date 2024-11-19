@@ -705,17 +705,19 @@ function Company() {
                     wholeWordArray.push(take);
                 })
 
-                console.log("WholeWordArray: ", wholeWordArray);
+                // console.log("WholeWordArray: ", wholeWordArray);
 
-                console.log("Numbers: ", numbers.length);
+                // console.log("Numbers: ", numbers.length);
 
                 const realQuantity = numbers.length;
 
                 await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}`).then(
-                    await axios.put(`${url}/take-give-out-bulk/${selectedItem}/${wholeWordArray}/${oneCompanyID}`)
+                    await axios.put(`${url}/take-give-out-bulk/${selectedItem}/${wholeWordArray}/${oneCompanyID}`).then(
+                        window.alert(`Gave Out ${realQuantity} Serial Numbers ~~~ `)
+                    )
                 );
 
-                window.alert("Done!!!");
+                
 
             } catch (error) {
                 console.error("Error: ", error);
@@ -759,11 +761,14 @@ function Company() {
 
             await axios.put(`${url}/give-out-one-serial-by-choice/${serialID}/${oneCompanyID}/${supervisor}`).then(
                 await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}`).then(
-                    await axios.post(`${url}/take-one-daily-transaction/${c}/${realQuantity}/${supervisor}/${status}/${retour}/${remaining}/${oneCompanyID}`)
-                ),
-            );
+                    await axios.post(`${url}/take-one-daily-transaction/${c}/${realQuantity}/${supervisor}/${status}/${retour}/${remaining}/${oneCompanyID}`).then(
+                        setSerialMatch(''),
+                        window.alert("Serial Given OUT~~~~")
+                    )
+                )
+            )
 
-            window.alert("Done");
+            // window.alert("Done");
 
         } catch (error) {
             console.error("Error: ", error);
