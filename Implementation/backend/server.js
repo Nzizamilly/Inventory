@@ -3946,7 +3946,7 @@ app.get('/get-serial-match/:serialMatch', (req, res) => {
   const sql = `
     SELECT id, serial_number
     FROM serial_number
-    WHERE serial_number LIKE ?
+    WHERE status = 'In' AND serial_number LIKE ?
     `;
 
   db.query(sql, [serialMatch], (error, result) => {
