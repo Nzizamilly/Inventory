@@ -3941,12 +3941,13 @@ app.post('/post-company-records/:selectedItem/:oneCompanyID/:selectedSupervisor/
 app.get('/get-serial-match/:serialMatch', (req, res) => {
   const serialMatch = `%${req.params.serialMatch}%`;
 
+  // console.log("Match!!!", serialMatch);
+
   const sql = `
-    SELECT MIN(id) AS id, SUBSTRING_INDEX(serial_number, ' ', 1) AS first_part
+    SELECT id, serial_number
     FROM serial_number
     WHERE serial_number LIKE ?
-    GROUP BY first_part`
-    ;
+    `;
 
   db.query(sql, [serialMatch], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);

@@ -129,6 +129,7 @@ function Company() {
 
     const closeAddModal = () => {
         isAddModalOpen(false);
+        setLogo('');
         // window.location.reload();
     };
 
@@ -343,7 +344,7 @@ function Company() {
 
             setOneCompany(response.data);
         } catch (error) {
-            console.error("Error: ", error)
+            // console.error("Error: ", error)
         };
     };
 
@@ -436,7 +437,7 @@ function Company() {
                         const imageURL = await getDownloadURL(imageRef);
                         return { [company.CompanyName]: imageURL };
                     } catch (error) {
-                        // console.error(`Error fetching image for company ${company.id}: `, error);
+                        console.error(`Error fetching image for company ${company.CompanyName}: `,);
                         // return { [company.id]: console.log("No Image") };
                     }
                 });
@@ -642,7 +643,7 @@ function Company() {
             setTab(2);
             fetchOneCompany(ID);
         } catch (error) {
-            console.error("Error: ", error);
+            // console.error("Error: ", error);
         }
     }
 
@@ -723,6 +724,7 @@ function Company() {
     };
 
     const [serialMatch, setSerialMatch] = useState('');
+
     const [allMatchingSerials, setAllMatchingSerials] = useState([]);
 
     useEffect(() => {
@@ -941,10 +943,12 @@ function Company() {
                                     {allMatchingSerials.map((serial) => (
                                         <button
                                             key={serial.id}
-                                            style={{ width: '100%', height: '30%', backgroundColor: 'white', color: 'black' }}
+                                            style={{ width: '100%', height: '30%', display: 'flex', alignItems: 'center', justifyContent: 'left', backgroundColor: 'white', color: 'black' }}
                                             onClick={() => handleGiveOutOneSerialChoice(serial.id)}
                                         >
-                                            {serial.serial_number}
+                                            <p style ={{display: 'flex', marginLeft: '9px'}}>
+                                                {serial.serial_number}
+                                            </p>
                                         </button>
                                     ))}
                                 </div>
