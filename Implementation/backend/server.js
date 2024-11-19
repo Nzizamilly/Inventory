@@ -1336,7 +1336,9 @@ JOIN
 LEFT JOIN 
     employees ON item_transaction.requestor = employees.id
 LEFT JOIN 
-    company ON item_transaction.company = company.id `;
+    company ON item_transaction.company = company.id 
+ORDER BY item_transaction.id DESC
+     `;
 
   db.query(sql, (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
@@ -3149,6 +3151,7 @@ app.get('/get-all-company-records', (req, res) => {
    JOIN company ON company_records.companyID = company.id
    JOIN item ON company_records.itemID = item.id
    JOIN employees ON company_records.employeeID = employees.id
+   ORDER BY company_records.id DESC
   `;
 
   db.query(sql, (error, result) => {

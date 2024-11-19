@@ -40,7 +40,10 @@ const display = {
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: '92px'
+    // gap: '92px',
+    overflow: 'hidden',
+    maxHeight: '100%',
+    whiteSpace: 'nowrap',
 };
 
 const svgStyle = {
@@ -241,13 +244,17 @@ function Flush() {
 
                     <div style={display}>
 
-                        <h1>Company Records</h1>
-                        <DataTable
-                            data={allCompanyRecords}
-                            columns={CompanyColumn}
-                            selectableRows
-                            // pagination
-                        ></DataTable>
+                        <div style={{ width: '30%', height: '100%', display: 'flex', alignItems: 'center' }}>
+                            <h1>Company Records</h1>
+                        </div>
+                        <div style={{ display: 'flex', height: '90%', flexDirection: 'column', overflowY: 'auto', overflowX: 'hidden' }}>
+                            <DataTable
+                                data={allCompanyRecords}
+                                columns={CompanyColumn}
+                                selectableRows
+                                pagination
+                            ></DataTable>
+                        </div>
 
                     </div>
 
@@ -256,30 +263,18 @@ function Flush() {
                 <Modal isOpen={isItemTransactionModalOpen} onRequestClose={closeItemTransaction} style={modalStyles} >
                     <div style={display}>
 
-                        <h1>Item Transaction Records</h1>
+                        <div style={{ width: '25%', marginTop: '400px', height: '100%', alignItems: 'center' }}>
+                            <h1>Item Transaction  </h1>
+                            <h1>Records</h1>
 
-                        <DataTable
-                            data={ItemTransactionsRecords}
-                            columns={itemTransactionColumn}
-                            // pagination
-                        ></DataTable>
-
-                        {/* <DataTable data={ItemTransactionsRecords} className = 'display'>
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Item</th>
-                                    <th>In-Stock</th>
-                                    <th>Out-Stock</th>
-                                    <th>Requestor</th>
-                                    <th>Company</th>
-                                    <th>Return</th>
-                                    <th>Current Balance</th>
-                                </tr>
-                            </thead>
-
-                        </DataTable> */}
-
+                        </div>
+                        <div style={{ display: 'flex', height: '90%', flexDirection: 'column', overflowY: 'auto', overflowX: 'hidden' }}>
+                            <DataTable
+                                data={ItemTransactionsRecords}
+                                columns={itemTransactionColumn}
+                                pagination
+                            ></DataTable>
+                        </div>
                     </div>
                 </Modal>
 
