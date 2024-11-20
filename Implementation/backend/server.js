@@ -3137,6 +3137,7 @@ app.get('/gets-one/:oneCompanyID', (req, res) => {
    JOIN item ON company_records.itemID = item.id
    JOIN employees ON company_records.employeeID = employees.id
    WHERE companyID = ?
+   ORDER BY company_records.id DESC
      `;
   db.query(sql, [companyID], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);

@@ -247,12 +247,12 @@ function Flush() {
                         <div style={{ width: '30%', height: '100%', display: 'flex', alignItems: 'center' }}>
                             <h1>Company Records</h1>
                         </div>
-                        <div style={{ display: 'flex', height: '90%', flexDirection: 'column', overflowY: 'auto', overflowX: 'hidden' }}>
+                        <div style={{ display: 'flex', height: '100%', flexDirection: 'column', overflowY: 'auto', overflowX: 'hidden' }}>
                             <DataTable
                                 data={allCompanyRecords}
                                 columns={CompanyColumn}
                                 selectableRows
-                                pagination
+                                // pagination
                             ></DataTable>
                         </div>
 
