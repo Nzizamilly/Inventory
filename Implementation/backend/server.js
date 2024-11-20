@@ -3093,14 +3093,16 @@ app.post('/add-company', (req, res) => {
   const number = req.body.number;
   const email = req.body.email;
 
-  console.log("name: ", name);
-  console.log("number: ", number);
-  console.log("email: ", email);
+  // console.log("name: ", name);
+  // console.log("number: ", number);
+  // console.log("email: ", email);
 
   const sql = 'INSERT INTO company (CompanyName, number, email ) VALUES ( ?, ?, ? )';
 
   db.query(sql, [name, number, email], (error, result) => {
-    result ? console.log("INSERTED", result) : console.error("Error: ", error);
+if(!result){
+  console.error("Error: ", error);
+}
   });
 });
 
