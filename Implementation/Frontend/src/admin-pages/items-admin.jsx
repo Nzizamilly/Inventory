@@ -737,10 +737,6 @@ function ItemsAdmin() {
       const response = await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber).then(
         await axios.post(`${url}/take-one-daily-transaction/${selectedItemIDForMultipleCreation}/${amountReal}/${requestorNull}/${statusForMore}/${retour}/${remaining}/${companyID}`)
       )
-      // console.log("Response: ", response.data);
-
-      const updateByAdding = await axios.put(`${url}/update-total-number-of-serial/${takeItemID}`);
-      // console.log("Response: ", updateByAdding.data);
 
       setInterval(() => {
         setIsCreatingSerialNumberOpen(false);
