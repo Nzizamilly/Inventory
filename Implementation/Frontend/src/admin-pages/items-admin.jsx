@@ -734,15 +734,18 @@ function ItemsAdmin() {
       const amountReal = Number(1);
       const remaining = Number(Number(left) + Number(1));
 
-      const response = await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber).then(
+       await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber).then(
         await axios.post(`${url}/take-one-daily-transaction/${selectedItemIDForMultipleCreation}/${amountReal}/${requestorNull}/${statusForMore}/${retour}/${remaining}/${companyID}`)
+      ).then(
+        setInterval(() => {
+          closeCreatingSerialNumber();
+          setIsCreatingSerialNumberOpen(false);
+          
+        }, 2700),
+        closeSerialModal()
       )
 
-      setInterval(() => {
-        setIsCreatingSerialNumberOpen(false);
-      }, 2700);
-      
-      closeSerialModal();
+
 
     } catch (error) {
       console.error('Error adding serial number', error);
