@@ -760,7 +760,6 @@ function Company() {
         const fetchSerialMatch = async (serialMatch) => {
             try {
                 const response = await axios.get(`${url}/get-serial-match/${serialMatch}`);
-                console.log("Response: ", response.data)
                 setAllMatchingSerials(response.data);
             } catch (error) {
                 console.error("Error: ", error)
