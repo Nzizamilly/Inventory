@@ -3100,9 +3100,9 @@ app.post('/add-company', (req, res) => {
   const sql = 'INSERT INTO company (CompanyName, number, email ) VALUES ( ?, ?, ? )';
 
   db.query(sql, [name, number, email], (error, result) => {
-if(!result){
-  console.error("Error: ", error);
-}
+    if (!result) {
+      console.error("Error: ", error);
+    }
   });
 });
 
@@ -3725,6 +3725,92 @@ app.get('/get-unlocated', (req, res) => {
   });
 });
 
+app.get('/get-serial-id/:serialID/:id', (req, res) => {
+  const serialID = req.params.serialID;
+  const id = req.params.id;
+
+  const sql = `
+  
+  SELECT company_records.*, serial_number.serial_number
+  FROM
+  company_records
+  JOIN serial_number ON company_records.serialID = serial_number.id
+  WHERE company_records.id = ? AND company_records.serialID = ? 
+
+  `;
+  db.query(sql, [id, serialID], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.get('/get-multiple-taken/:startFrom/:endTo/:itemID/:oneCompanyID', (req, res) => {
+
+  const start = parseInt(req.params.startFrom, 10); // Bigger number
+  const end = parseInt(req.params.endTo, 10); // Smaller number
+  const itemID = req.params.itemID;
+  const oneCompanyID = req.params.oneCompanyID;
+
+  // Validate input
+  if (isNaN(start) || isNaN(end) || start < end) {
+    return res.status(400).json({ error: 'Invalid startFrom or endTo values. Ensure startFrom > endTo.' });
+  }
+
+  const sql = `
+    SELECT 
+        serial_number
+    FROM 
+        serial_number
+    WHERE 
+        itemID = ?
+        AND companyID = ?
+        AND CAST(SUBSTRING_INDEX(serial_number, ' ', -1) AS UNSIGNED) BETWEEN ? AND ?
+        AND SUBSTRING_INDEX(serial_number, ' ', 1) IN (
+            SELECT 
+                SUBSTRING_INDEX(serial_number, ' ', 1)
+            FROM 
+                serial_number
+            WHERE 
+                itemID = ?
+                AND companyID = ?
+                AND CAST(SUBSTRING_INDEX(serial_number, ' ', -1) AS UNSIGNED) = ?
+        )
+        AND SUBSTRING_INDEX(serial_number, ' ', 1) IN (
+            SELECT 
+                SUBSTRING_INDEX(serial_number, ' ', 1)
+            FROM 
+                serial_number
+            WHERE 
+                itemID = ?
+                AND companyID = ?
+                AND CAST(SUBSTRING_INDEX(serial_number, ' ', -1) AS UNSIGNED) = ?
+        )
+    ORDER BY 
+        CAST(SUBSTRING_INDEX(serial_number, ' ', -1) AS UNSIGNED);
+  `;
+
+  const params = [
+    itemID,
+    oneCompanyID,
+    end, // Smaller number
+    start, // Bigger number
+    itemID,
+    oneCompanyID,
+    end, // Ensure first part exists for this number
+    itemID,
+    oneCompanyID,
+    start // Ensure first part exists for this number
+  ];
+
+  db.query(sql, params, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Database query failed.' });
+    }
+    res.json(results);
+  });
+});
+
+
 app.delete('/delete-unlocated-serials', (req, res) => {
   const sql = `DELETE serial_number.*
     FROM serial_number
@@ -3924,7 +4010,7 @@ app.put('/take-give-out-bulk/:itemID/:wholeWordArray/:companyID', (req, res) => 
   });
 });
 
-app.post('/post-company-records/:selectedItem/:oneCompanyID/:selectedSupervisor/:realQuantity', (req, res) => {
+app.post('/post-company-records/:selectedItem/:oneCompanyID/:selectedSupervisor/:realQuantity/:dateOfRequisition/:serialID/:startFrom/:endTo/:selectedFirstPart', (req, res) => {
 
   const status = "Issued";
 
@@ -3932,12 +4018,14 @@ app.post('/post-company-records/:selectedItem/:oneCompanyID/:selectedSupervisor/
   const itemID = parseInt(req.params.selectedItem);
   const amount = req.params.realQuantity;
   const requestor = req.params.selectedSupervisor;
-  const date = new Date();
+  const date = req.params.dateOfRequisition;
+  const serialID = req.params.serialID;
+  const startFrom = req.params.startFrom;
+  const endTo = req.params.endTo
+  const selectedFirstPart = req.params.selectedFirstPart
 
-  // console.log("item ID is: ", itemID)
-
-  const sql = `INSERT INTO company_records (companyID,	itemID,	amount, employeeID,	status) VALUES (?, ?, ?, ?, ?)`;
-  db.query(sql, [companyID, itemID, amount, requestor, status], (error, result) => {
+  const sql = `INSERT INTO company_records (companyID,	itemID, date,	amount, employeeID,	status, serialID, startFrom, endTo, first_part) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  db.query(sql, [companyID, itemID, date, amount, requestor, status, serialID, startFrom, endTo, selectedFirstPart], (error, result) => {
     if (!result) {
       console.error("Error: ", error);
     }
@@ -3959,26 +4047,6 @@ app.get('/get-serial-match/:serialMatch', (req, res) => {
     result ? res.json(result) : console.error("Error: ", error);
   })
 })
-
-
-
-// app.get('/get-serial-match/:serialMatch', (req, res) => {
-//   const serialMatch = `%${req.params.serialMatch}%`;
-
-//   const sql = `
-//   SELECT id, serial_number, COUNT(*) 
-
-//   FROM serial_number 
-
-//   WHERE serial_number LIKE ? AND status = 'In'
-
-//   GROUP BY serial_number having COUNT(*) > 1
-//   `;
-
-//   db.query(sql, [serialMatch], (error, result) => {
-//     result ? res.json(result) : console.error("Error: ", error);
-//   })
-// })
 
 app.put('/give-out-one-serial-by-choice/:serialID/:oneCompanyID/:selectedSupervisor', (req, res) => {
 

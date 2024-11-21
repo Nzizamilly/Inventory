@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { React, useState, useEffect, useReducer } from 'react';
 import NavbarAdmin from './navbarAdmin';
-import AddItem from '../images/addItem.svg'
+import AddItem from '../images/addItem.svg';
+import CentrikaLogo from '../images/centrika-removebg.png'
 // import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import Modal from 'react-modal';
 import Logo from '../images/logo.svg';
@@ -155,7 +156,7 @@ function Company() {
 
     const companyModal = {
         content: {
-            width: '70%',
+            width: '80%',
             height: '90%',
             display: 'flex',
             flexDirection: 'column',
@@ -167,7 +168,7 @@ function Company() {
             overflowY: 'auto', // Enable scrolling for the modal content
             scrollbarWidth: 'thin', // Custom scrollbar width
             msOverflowStyle: 'none', // Hide default scrollbar for IE/Edge
-            marginLeft: '180px',
+            marginLeft: '160px',
             marginTop: '-33px',
         },
         overlay: {
@@ -178,7 +179,7 @@ function Company() {
             bottom: 0,
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 9999, // Bring the modal to the front
+            zIndex: 20, // Bring the modal to the front
             backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dim the background
             display: 'flex',
         },
@@ -201,6 +202,29 @@ function Company() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
+            alignItems: 'center',
+        },
+    };
+
+    const serialModal = {
+        overlay: {
+            zIndex: '20',
+            backgroundColor: 'rgba(0, 0, 0, 0.0)',
+        },
+        content: {
+            width: '55%',
+            marginLeft: '275px',
+            height: '76vh',
+            border: 'none',
+            borderRadius: '12px',
+            // backgroundColor: 'blue',
+            gap: '23px',
+            scrollbarWidth: 'none',
+            color: "black",
+            padding: '12px 0px',
+            display: 'flex',
+            flexDirection: 'column',
+            // justifyContent: 'center',
             alignItems: 'center',
         },
     }
@@ -279,8 +303,11 @@ function Company() {
     const [oneCompany, setOneCompany] = useState([]);
     const [imageForOneCompany, setImageForOneCompany] = useState('');
     const [category, setCategory] = useState([]);
-    const [selectedItem, setSelectedItem] = useState('');
+    const [dateOfRequisition, setDateOfRequisition] = useState('');
+    const [selectedItem, setSelectedItem] = useState(Number);
     const [tab, setTab] = useState(0);
+    const [firstParts, setFirstParts] = useState([]);
+    const [selectedFirstPart, setSelectedFirstPart] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [item, setItem] = useState([]);
     const [supervisor, setSupervisor] = useState([]);
@@ -291,12 +318,10 @@ function Company() {
     const [loading, setLoading] = useState(true);
     const [itemName, setItemName] = useState('');
     const [CompanyName, setCompanyName] = useState('');
-    const [date, setDate] = useState('');
-    const [amount, setAmount] = useState(Number)
-    const [pdf, setPDF] = useState('');
     const [quantity, setQuantity] = useState();
     const [totalIn, setTotalIn] = useState([]);
-    const [isIssueLoaderOpen, setIssueLoaderOpen] = useState(false)
+    const [isIssueLoaderOpen, setIssueLoaderOpen] = useState(false);
+    const [isSerialModalOpen, setIsSerialModalOpen] = useState(false);
 
 
     const openIssueLoader = (ID) => {
@@ -313,19 +338,10 @@ function Company() {
         handleDeliveryNoteForOneCompany(ID);
     };
 
-    const closeDeliveryNoteModal = () => {
-        // setItemName('');
-        // setCompanyName('');
-        // setDate('');
-        // setAmount('');
-
-        setIsDeliveryNoteOpen(false);
-        resetDeliveryNoteState();
-    };
-
     const openCompanyModal = (ID, CompanyName) => {
         isCompanyModalOpen(true);
         setOneCompanyID(ID);
+        setCompanyName(CompanyName)
         fetchOneCompany(ID, CompanyName);
 
     };
@@ -335,11 +351,19 @@ function Company() {
         setData('');
         setOneCompanyID('');
         setItemName('');
-        setDate('');
-        setAmount('');
-        setPDF('');
         setSerialMatch('');
         isCompanyModalOpen(false);
+    };
+
+    const openSerialModal = (ID, serialID, startFrom, endTo, itemID, date) => {
+        handleOpenSerialExpose(ID, serialID, startFrom, endTo, itemID, date);
+        setIsSerialModalOpen(true);
+    };
+
+    const closeSerialModal = () => {
+        setSerialShow('');
+        setDateExpose('');
+        setIsSerialModalOpen(false);
     };
 
     useEffect(() => {
@@ -426,25 +450,6 @@ function Company() {
         fetchIDs();
     }, []);
 
-
-    // useEffect(() => {
-    //     const fetch = async () => {
-    //         try {
-    //             const storage = getStorage();
-    //             const listRef = ref(storage, 'companyLogos/');
-    //             const res = await listAll(listRef);
-    //             // console.log("Files fetched: ", res.items);
-    //             const names = res.items.map((itemRef) => itemRef.name);
-    //             // console.log("File names: ", names);
-
-
-    //         } catch (error) {
-    //             console.error("Error: ", error);
-    //         };
-    //     }
-    //     fetch();
-    // }, []);
-
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
@@ -496,7 +501,30 @@ function Company() {
         setSelectedCategory(selectedValue);
     };
 
+    const [serialShow, setSerialShow] = useState([]);
+    const [dateExpose, setDateExpose] = useState('');
 
+    const handleOpenSerialExpose = async (ID, serialID, startFrom, endTo, itemID, date) => {
+        try {
+
+            console.log("SerialID: ", serialID);
+
+            if (serialID === 0) {
+                const responsee = await axios.get(`${url}/get-multiple-taken/${startFrom}/${endTo}/${itemID}/${oneCompanyID}`);
+                setSerialShow(responsee.data);
+                setDateExpose(date)
+            } else if (serialID >= 0 ) {
+                const response = await axios.get(`${url}/get-serial-id/${serialID}/${ID}`);
+                setDateExpose(date);
+                setSerialShow(response.data);
+
+                console.log("Reponsee: ", response.data);
+            };
+
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+    }
 
 
     useEffect(() => {
@@ -610,8 +638,6 @@ function Company() {
         };
     };
 
-
-
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
@@ -632,7 +658,9 @@ function Company() {
         },
         {
             name: 'Amount',
-            selector: row => row.amount
+            selector: row => (
+                <button onClick={() => { openSerialModal(row.id, row.serialID, row.startFrom, row.endTo, row.itemID, row.date) }} style={{ backgroundColor: 'white', color: 'blue4' }}>{row.amount}</button>
+            )
         },
         {
             name: 'Status',
@@ -646,8 +674,16 @@ function Company() {
         }
     ];
 
-    const [renHtml, setRenHtml] = useState('');
-    const [load, setLoad] = useState(false);
+    const columns = [
+        {
+            name: 'Date',
+            selector: row => dateExpose,
+        },
+        {
+            name: 'Serial Number',
+            selector: row => row.serial_number
+        }
+    ]
 
     const handleDeliveryNoteForOneCompany = async (IDForDeliveryUseEffect) => {
 
@@ -655,27 +691,12 @@ function Company() {
 
     const handleThis = (ID) => {
         try {
-            setTab(2);
             fetchOneCompany(ID);
+            setTab(2);
         } catch (error) {
             // console.error("Error: ", error);
         }
     }
-
-    const resetDeliveryNoteState = () => {
-        setItemName('');
-        setCompanyName('');
-        setDate('');
-        setAmount(0);
-        setRenHtml(null);
-        setIsDeliveryNoteOpen(false);
-        setLoad(false);
-        console.log("RESET HIT: ", itemName, CompanyName, date, amount);
-    };
-
-    const [firstParts, setFirstParts] = useState([]);
-
-    const [selectedFirstPart, setSelectedFirstPart] = useState('');
 
     const handleFirstPartChange = (event) => {
         const selectedValue = event.target.value;
@@ -710,22 +731,28 @@ function Company() {
 
                 for (let i = from; i >= to; i--) {
                     numbers.push(i);
-                }
+                };
 
                 numbers.forEach((number) => {
                     const take = selectedFirstPart + ' ' + number;
                     wholeWordArray.push(take);
-                })
+                });
 
                 const realQuantity = numbers.length;
+                const status = 'Out';
+                const retour = 'none';
+                const remaining = Number(Number(totalIn.totalIn) - Number(realQuantity));
+                const serialID = 0;
+                const startFrom = Number(from);
+                const endTo = Number(to);
 
-                await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}`).then(
+                await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}/${dateOfRequisition}/${serialID}/${startFrom}/${endTo}/${selectedFirstPart}`).then(
                     await axios.put(`${url}/take-give-out-bulk/${selectedItem}/${wholeWordArray}/${oneCompanyID}`).then(
+                        await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${realQuantity}/${supervisor}/${status}/${retour}/${remaining}/${oneCompanyID}`)
+                    ).then(
                         window.alert(`Gave Out ${realQuantity} Serial Numbers ~~~ `)
                     )
                 );
-
-
 
             } catch (error) {
                 window.alert("Error In Giving Out Multiple Serial Numbers")
@@ -751,7 +778,7 @@ function Company() {
 
         if (serialMatch) {
             fetchSerialMatch(serialMatch);
-        }
+        };
 
     }, [serialMatch]);
 
@@ -763,10 +790,13 @@ function Company() {
             const retour = 'none';
             const c = selectedItem;
             const supervisor = selectedSupervisor
-            const remaining = Number(Number(totalIn.totalIn) - Number(1))
+            const remaining = Number(Number(totalIn.totalIn) - Number(1));
+            const startFrom = 0;
+            const endTo = 0;
+            const first_part = 'none';
 
             await axios.put(`${url}/give-out-one-serial-by-choice/${serialID}/${oneCompanyID}/${supervisor}`).then(
-                await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}`).then(
+                await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}/${dateOfRequisition}/${serialID}/${startFrom}/${endTo}/${first_part}`).then(
                     await axios.post(`${url}/take-one-daily-transaction/${c}/${realQuantity}/${supervisor}/${status}/${retour}/${remaining}/${oneCompanyID}`).then(
                         setSerialMatch(''),
                         window.alert("Serial Given OUT~~~~")
@@ -917,6 +947,7 @@ function Company() {
                             </select>
 
                             <input type='text' style={{ width: '100%', color: 'black', backgroundColor: 'white' }} placeholder='Quantity' name='quantity' onChange={handleQuantity} />
+                            <input type='date' style={{ width: '100%', color: 'black', paddingLeft: '6px', backgroundColor: 'white', border: 'none', borderRadius: '12px' }} onChange={(e) => setDateOfRequisition(e.target.value)} />
 
                             <select onChange={handleSupervisorChange} value={selectedSupervisor} style={Selects}>
                                 <option value='' disabled>Select Issuer</option>
@@ -1000,6 +1031,23 @@ function Company() {
                     <SyncLoader color={'green'} loading={loading} size={19} />
                     <br />
                     <p>Please Wait...</p>
+                </div>
+            </Modal>
+
+            <Modal isOpen={isSerialModalOpen} onRequestClose={closeSerialModal} style={serialModal}>
+                <div style={{ width: '100%', left: '0px', display: 'flex', flexDirection: 'inline' }}>
+                    <img src={CentrikaLogo} style={{ width: '200px', height: '130px' }} />
+                    <p style={{ width: '60%', fontSize: '17px', marginTop: '57px', fontFamily: 'Arial, sans-serif', }}>List of Serial Numbers taken By {CompanyName} On {dateExpose} </p>
+                    <br />
+                    <p style={{ fontSize: '17px', marginTop: '57px', fontFamily: 'Arial, sans-serif', }}>Count {serialShow.length}</p>
+                </div>
+                <div style={{ width: '100%', fontFamily: 'Arial, sans-serif' }}>
+                    <DataTable
+                        data={serialShow}
+                        columns={columns}
+                    >
+                    </DataTable>
+
                 </div>
             </Modal>
 

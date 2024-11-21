@@ -1053,10 +1053,10 @@ li a:hover {
     border-radius: 12px;
     color: rgb(29, 27, 27);
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(90deg, rgb(105, 204, 118), rgb(75, 97, 226), rgb(164, 219, 151));
+    background: linear-gradient(90deg, rgb(42, 133, 54), rgb(36, 56, 165), rgb(42, 161, 177));
     background-size: 300% 300%; /* Controls the gradient's movement size */
     animation: moveGradient 6s infinite linear; /* Apply animation */
-};
+}
 
 /* Animation keyframes for the moving gradient */
 @keyframes moveGradient {
