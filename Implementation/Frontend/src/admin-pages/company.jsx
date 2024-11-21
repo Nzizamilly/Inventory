@@ -352,6 +352,7 @@ function Company() {
         setOneCompanyID('');
         setItemName('');
         setSerialMatch('');
+        setAllMatchingSerials([]);
         isCompanyModalOpen(false);
     };
 
@@ -976,11 +977,11 @@ function Company() {
                                 <input type='text' placeholder='To (Smaller)' style={{ width: '100%', color: 'black', backgroundColor: 'white' }} onChange={(e) => setTo(e.target.value)} />
                                 <button style={{ backgroundColor: 'white', width: '50%' }} onClick={() => bulkOutFunction()}>Bulk Out</button>
                             </div>
-                            <div style={{ width: '50%', height: '60%', display: 'flex', flexDirection: 'column' }} >
+                            <div style={{ width: '50%', height: '60%', display: 'flex', flexDirection: 'column',  marginRight: '9px' }} >
                                 <input
                                     type="text"
                                     placeholder="Search Serial Number"
-                                    style={{ width: '100%', color: 'black', backgroundColor: 'white' }}
+                                    style={{ width: '100%', color: 'black', backgroundColor: 'white', }}
                                     onChange={(e) => setSerialMatch(e.target.value)}
                                 />
                                 <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
