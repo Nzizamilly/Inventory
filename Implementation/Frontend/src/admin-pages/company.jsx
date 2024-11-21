@@ -509,13 +509,15 @@ function Company() {
 
             console.log("SerialID: ", serialID);
 
+            const dateFormatted = formatDate(date)
+
             if (serialID === 0) {
                 const responsee = await axios.get(`${url}/get-multiple-taken/${startFrom}/${endTo}/${itemID}/${oneCompanyID}`);
                 setSerialShow(responsee.data);
-                setDateExpose(date)
+                setDateExpose(dateFormatted)
             } else if (serialID >= 0 ) {
                 const response = await axios.get(`${url}/get-serial-id/${serialID}/${ID}`);
-                setDateExpose(date);
+                setDateExpose(dateFormatted);
                 setSerialShow(response.data);
 
                 console.log("Reponsee: ", response.data);
@@ -1039,7 +1041,7 @@ function Company() {
                     <img src={CentrikaLogo} style={{ width: '200px', height: '130px' }} />
                     <p style={{ width: '60%', fontSize: '17px', marginTop: '57px', fontFamily: 'Arial, sans-serif', }}>List of Serial Numbers taken By {CompanyName} On {dateExpose} </p>
                     <br />
-                    <p style={{ fontSize: '17px', marginTop: '57px', fontFamily: 'Arial, sans-serif', }}>Count {serialShow.length}</p>
+                    <p style={{ fontSize: '17px', marginTop: '57px', fontFamily: 'Arial, sans-serif', }}>Count: {serialShow.length}</p>
                 </div>
                 <div style={{ width: '100%', fontFamily: 'Arial, sans-serif' }}>
                     <DataTable
