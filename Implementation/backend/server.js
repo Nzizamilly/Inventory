@@ -8,6 +8,7 @@ const http = require("http");
 const nodemailer = require('nodemailer');
 const { EMAIL, PASSWORD } = require('./env.js');
 const util = require('util');
+const { error } = require("console");
 
 const port = process.env.PORT || 5500;
 
@@ -994,7 +995,6 @@ app.put('/supplier/:id', (req, res) => {
 app.post('/add-serial-number/:takeItemID', (req, res) => {
   const itemID = req.params.takeItemID;
   const status = 'In';
-  console.log("Status is: ", status);
   const q = "INSERT INTO serial_number (serial_number, state_of_item, depreciation_rate, itemID, status, taker, quantity ) VALUES (?,?,?,?,?,NULL,1)";
   const values = [
     req.body.serial_number,
@@ -1004,12 +1004,9 @@ app.post('/add-serial-number/:takeItemID', (req, res) => {
     status
   ];
   db.query(q, values, (err, data) => {
-    if (err) {
-      console.error("Error inserting", err);
-      return res.status(500).json({ error: "Internal Server Error" })
-    }
-    console.log("New Serial Inserted!");
-    return res.json(data)
+   if(!data){
+    console.error("Error Occured When Inserting A New Serial Number:", err);
+   }
   });
 });
 
