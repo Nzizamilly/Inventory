@@ -1013,18 +1013,6 @@ app.post('/add-serial-number/:takeItemID', (req, res) => {
   });
 });
 
-app.put('/update-total-number-of-serial/:itemID', (req, res) => {
-
-  const itemID = req.params.itemID;
-
-  const sql = `UPDATE serial_number SET daily_total = daily_total + 1 WHERE id = ?`
-  db.query(sql, itemID, (error, result) => {
-    result ? res.json("Daily Total Updated!!") : console.error("Error: ", error);
-  })
-})
-
-
-
 app.get('/get-serial-number/:itemID', (req, res) => {
   const itemID = req.params.itemID;
   // console.log("ItemID: ", itemID);

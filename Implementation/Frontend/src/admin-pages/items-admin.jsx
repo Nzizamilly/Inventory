@@ -741,6 +741,7 @@ function ItemsAdmin() {
       setInterval(() => {
         setIsCreatingSerialNumberOpen(false);
       }, 2700);
+      
       closeSerialModal();
 
     } catch (error) {
