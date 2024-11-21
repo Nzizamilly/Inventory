@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import { React, useState, useEffect, useReducer } from 'react';
+import { React, useState, useEffect } from 'react';
 import NavbarAdmin from './navbarAdmin';
 import AddItem from '../images/addItem.svg';
 import CentrikaLogo from '../images/centrika-removebg.png'
@@ -12,10 +11,9 @@ import SyncLoader from "react-spinners/SyncLoader";
 import axios from 'axios';
 import Keys from '../keys';
 import { storage } from '../firebase';
-import { ref, uploadBytes, getDownloadURL, getStorage, listAll, deleteObject } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, getStorage, deleteObject } from "firebase/storage";
 import DataTable from 'react-data-table-component';
-import Delivery from './deliveryFront';
-import RotateLoader from 'react-spinners/RotateLoader';
+
 
 function Company() {
 
@@ -26,14 +24,10 @@ function Company() {
 
     const Container = {
         width: '100%',
-
         display: 'flex',
-
-        backgroundColor: 'green',
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'center',
-
         backgroundColor: ' rgb(163, 187, 197)',
     };
 
@@ -42,7 +36,6 @@ function Company() {
         fontFamily: 'Arial, sans-serif',
         backgroundColor: 'rgb(163, 187, 197)',
         paddingTop: '70px',
-        display: 'flex',
         justifyContent: 'center',
         alignContent: 'center',
         color: 'black',
@@ -57,7 +50,6 @@ function Company() {
         color: 'black',
         cursor: 'pointer',
         padding: '12px 0px',
-        borderRadius: '1px',
         backgroundColor: 'rgb(163, 187, 197)'
     };
 
@@ -294,12 +286,10 @@ function Company() {
 
     const [AddModalOpen, isAddModalOpen] = useState(false);
     const [logo, setLogo] = useState('');
-    const [latestId, setLatestID] = useState('');
     const [infoCompany, setInfoCompany] = useState([]);
     const [companyImages, setCompanyImages] = useState({});
     const [companyModalOpen, isCompanyModalOpen] = useState(false);
     const [oneCompanyID, setOneCompanyID] = useState('');
-    const [isDeliveryNoteOpen, setIsDeliveryNoteOpen] = useState(false);
     const [oneCompany, setOneCompany] = useState([]);
     const [imageForOneCompany, setImageForOneCompany] = useState('');
     const [category, setCategory] = useState([]);
@@ -316,7 +306,6 @@ function Company() {
     const [serialMatch, setSerialMatch] = useState('');
     const [allMatchingSerials, setAllMatchingSerials] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [itemName, setItemName] = useState('');
     const [CompanyName, setCompanyName] = useState('');
     const [quantity, setQuantity] = useState();
     const [totalIn, setTotalIn] = useState([]);
@@ -350,7 +339,7 @@ function Company() {
         setImageForOneCompany('')
         setData('');
         setOneCompanyID('');
-        setItemName('');
+     
         setSerialMatch('');
         setAllMatchingSerials([]);
         isCompanyModalOpen(false);
@@ -373,7 +362,7 @@ function Company() {
 
     const fetchOneCompany = async (ID, CompanyName) => {
 
-        if (ID, CompanyName) {
+        if (ID && CompanyName) {
             const imageRef = ref(storage, `companyLogos/${CompanyName}`);
             const imageURL = await getDownloadURL(imageRef);
             setImageForOneCompany(imageURL);
@@ -438,18 +427,18 @@ function Company() {
         }
     };
 
-    useEffect(() => {
-        const fetchIDs = async () => {
-            try {
-                const response = await axios.get(`${url}/get-company-id`);
-                const latestID = response.data[0].id
-                setLatestID(latestID);
-            } catch (error) {
-                console.log("Error: ", error);
-            };
-        };
-        fetchIDs();
-    }, []);
+    // useEffect(() => {
+    //     const fetchIDs = async () => {
+    //         try {
+    //             const response = await axios.get(`${url}/get-company-id`);
+    //             const latestID = response.data[0].id
+    //             setLatestID(latestID);
+    //         } catch (error) {
+    //             console.log("Error: ", error);
+    //         };
+    //     };
+    //     fetchIDs();
+    // }, []);
 
     useEffect(() => {
         const fetchCompanies = async () => {
@@ -521,7 +510,6 @@ function Company() {
                 setDateExpose(dateFormatted);
                 setSerialShow(response.data);
 
-                console.log("Reponsee: ", response.data);
             };
 
         } catch (error) {
@@ -934,7 +922,7 @@ function Company() {
                             ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh' }} />}
                         </div>
 
-                        <div style={{ width: '30%', height: '60%', gap: '12px', alignItems: 'center', display: 'flex', marginTop: '60px', gap: '12px', flexDirection: 'column' }}>
+                        <div style={{ width: '30%', height: '60%', alignItems: 'center', display: 'flex', marginTop: '60px', gap: '12px', flexDirection: 'column' }}>
                             <select onChange={handleCategoryChange} value={selectedCategory} style={Selects}>
                                 <option value='' disabled>Select Category</option>
                                 {category.map(categories => (

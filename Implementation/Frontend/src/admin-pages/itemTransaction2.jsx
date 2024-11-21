@@ -285,7 +285,6 @@ function ItemTransactionsAdmin2() {
         const dates = async () => {
             try {
                 const responsee = await axios.get(`${url}/get-serial-number-in-different-time/${startSingleItem}/${endSingleItem}/${IDForDates}`);
-                console.log("Dates Response: ", responsee.data);
                 setSerialNumbersForSingleItem(responsee.data);
 
             } catch (error) {
