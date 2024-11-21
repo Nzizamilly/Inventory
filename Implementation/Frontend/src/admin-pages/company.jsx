@@ -621,7 +621,7 @@ function Company() {
                 const retour = 'none'
 
                 await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas).then(
-                    await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${quantity}/${selectedSupervisor}/${status}/${retour}/${remaining}/${oneCompanyID}`)
+                    await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${quantity}/${parseInt(selectedSupervisor)}/${status}/${retour}/${remaining}/${oneCompanyID}`)
                 );
 
                 setInterval(() => {
@@ -751,7 +751,7 @@ function Company() {
 
                 await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}/${dateOfRequisition}/${serialID}/${startFrom}/${endTo}/${selectedFirstPart}`).then(
                     await axios.put(`${url}/take-give-out-bulk/${selectedItem}/${wholeWordArray}/${oneCompanyID}`).then(
-                        await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${realQuantity}/${supervisor}/${status}/${retour}/${remaining}/${oneCompanyID}`)
+                        await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${realQuantity}/${(parseInt(selectedSupervisor))}/${status}/${retour}/${remaining}/${oneCompanyID}`)
                     ).then(
                         window.alert(`Gave Out ${realQuantity} Serial Numbers ~~~ `)
                     )
@@ -800,7 +800,7 @@ function Company() {
 
             await axios.put(`${url}/give-out-one-serial-by-choice/${serialID}/${oneCompanyID}/${supervisor}`).then(
                 await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}/${dateOfRequisition}/${serialID}/${startFrom}/${endTo}/${first_part}`).then(
-                    await axios.post(`${url}/take-one-daily-transaction/${c}/${realQuantity}/${supervisor}/${status}/${retour}/${remaining}/${oneCompanyID}`).then(
+                    await axios.post(`${url}/take-one-daily-transaction/${c}/${realQuantity}/${parseInt(supervisor)}/${status}/${retour}/${remaining}/${oneCompanyID}`).then(
                         setSerialMatch(''),
                         window.alert("Serial Given OUT~~~~")
                     )

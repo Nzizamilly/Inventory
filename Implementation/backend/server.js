@@ -3065,9 +3065,9 @@ app.get('/get-serial-number-in-different-time/:start/:end/:ID', (req, res) => {
   const end = req.params.end;
   const ID = req.params.ID;
 
-  console.log("End: ", end);
-  console.log("Start: ", start);
-  console.log("ID: ", ID);
+  // console.log("End: ", end);
+  // console.log("Start: ", start);
+  // console.log("ID: ", ID);
 
 
   const sql = "SELECT * FROM serial_number WHERE date BETWEEN ? AND ? AND itemID = ?";
