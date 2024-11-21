@@ -3974,7 +3974,7 @@ app.get('/get-all-first-parts/:itemID', (req, res) => {
   const itemID = req.params.itemID;
 
 
-  const sql = `SELECT 
+  const sql = `SELECT DISTINCT
     SUBSTRING_INDEX(serial_number, ' ', 1) AS first_part
 FROM 
     serial_number WHERE itemID = ?`;
@@ -4038,9 +4038,10 @@ app.get('/get-serial-match/:serialMatch', (req, res) => {
   // console.log("Match!!!", serialMatch);
 
   const sql = `
-    SELECT id, serial_number
-    FROM serial_number
-    WHERE status = 'In' AND serial_number LIKE ?
+   SELECT DISTINCT serial_number, id
+FROM serial_number
+WHERE status = 'In' AND serial_number LIKE ?
+
     `;
 
   db.query(sql, [serialMatch], (error, result) => {

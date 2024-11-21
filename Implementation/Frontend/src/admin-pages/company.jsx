@@ -756,21 +756,25 @@ function Company() {
 
 
     useEffect(() => {
-
         const fetchSerialMatch = async (serialMatch) => {
             try {
-                const response = await axios.get(`${url}/get-serial-match/${serialMatch}`);
-                setAllMatchingSerials(response.data);
+                try {
+                    const response = await axios.get(`${url}/get-serial-match/${serialMatch}`);
+                    setAllMatchingSerials(response.data);
+                } catch (error) {
+                    console.error("Error: ", error)
+                }
             } catch (error) {
-                console.error("Error: ", error)
+                console.error("Error: ", error);
             }
-        }
-
+        };
+    
         if (serialMatch) {
             fetchSerialMatch(serialMatch);
-        };
-
+        }
     }, [serialMatch]);
+    
+    
 
     const handleGiveOutOneSerialChoice = async (serialID) => {
         try {
