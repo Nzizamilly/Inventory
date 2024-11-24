@@ -211,6 +211,7 @@ function LeavePage() {
     const [leaveTakenThisYear, setLeaveTakenThisYear] = useState('')
     const [leaveBF, setLeaveBF] = useState(0);
     const [tab, setTab] = useState(0);
+    const [lastDifference, setLastDifference] = useState('')
     const [loading, setLoading] = useState(true);
     const [IDF, setIDF] = useState('');
     const [currentDate, setCurrentDate] = useState('');
@@ -485,7 +486,7 @@ function LeavePage() {
                     closeAppliedLeaveLoader();
                 }, 3700);
 
-                window.alert(`${oneEmployee[0].username} will be on leave of ${workingDays} Days`);
+                window.alert(`${oneEmployee[0].username} will be on leave fot ${workingDays} Days`);
             } else {
                 window.alert(`${oneEmployee[0].username} hasn't earned ${workingDays} days.`);
             }
@@ -539,7 +540,6 @@ function LeavePage() {
         func(oneEmployeeID);
     }, [oneEmployeeID]);
 
-    const [lastDifference, setLastDifference] = useState('')
     
     useEffect(() => {
         const func = (leaveBFI3, leaveAva3) => {

@@ -9,6 +9,7 @@ import PolicySVG from '../images/policySVG.svg';
 import Keys from '../keys';
 import ItemSVG from '../images/item_SVG.svg';
 import Coins from '../images/coins.svg';
+import Notifiaction from '../images/notificationSVGX.svg'
 import PalmTree from '../images/palm_tree.svg';
 
 function Navbar() {
@@ -86,9 +87,9 @@ function Navbar() {
   ];
 
   const options = [
-    { value: 'item', label: "Item Notifications" },
-    { value: 'purchase', label: "Purchase Notifications" },
-    { value: 'leave', label: "Leave Notifications" },
+    { value: 'item', label:  <><img src={Notifiaction} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Item Notifications </> },
+    { value: 'purchase', label:  <><img src={Notifiaction} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Purchase Notifications </> },
+    { value: 'leave', label:  <><img src={Notifiaction} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Leave Notifications </> },
   ];
 
   const customStyles = {
@@ -111,7 +112,7 @@ function Navbar() {
     }),
     singleValue: (provided) => ({
       ...provided,
-      width: '54px',
+      width: '100%',
       height: '24px',
       display: 'flex',
       alignItems: 'center',

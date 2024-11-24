@@ -1054,8 +1054,66 @@ li a:hover {
     color: rgb(29, 27, 27);
     font-family: 'Arial', sans-serif;
     background: linear-gradient(90deg, rgb(42, 133, 54), rgb(36, 56, 165), rgb(42, 161, 177));
-    background-size: 300% 300%; /* Controls the gradient's movement size */
-    animation: moveGradient 6s infinite linear; /* Apply animation */
+    background-size: 300% 300%;
+    /* Controls the gradient's movement size */
+    animation: moveGradient 6s infinite linear;
+    /* Apply animation */
+}
+
+.itemstyle {
+    width: 70%;
+    left: 50%;
+    gap: 18px;
+    margin-bottom: 990px;
+    border-radius: 12px;
+    flex-wrap: wrap;
+    display: flex;
+    padding: 12px 12px;
+    background: linear-gradient(90deg, rgb(42, 133, 54), rgb(36, 56, 165), rgb(42, 161, 177));
+    background-size: 300% 300%;
+    animation: moveGradient 6s infinite linear;
+}
+
+.leaveHeader {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    color: rgb(195, 241, 234);
+    background: linear-gradient(90deg, rgb(31, 168, 50), rgb(23, 49, 201), rgb(34, 184, 203));
+    background-size: 300% 300%;
+    animation: moveGradient 6s infinite linear;
+}
+
+.leaveFooter {
+
+    width: 100%;
+    display: flex;
+    flex-direction: inline;
+    gap: 12px;
+    justify-content: center;
+    background: linear-gradient(90deg, rgb(31, 168, 50), rgb(23, 49, 201), rgb(34, 184, 203));
+    background-size: 300% 300%;
+    animation: moveGradient 6s infinite linear;
+}
+
+.leaveLine {
+    width: 100%;
+    display: flex;
+    flex-direction: inline;
+    gap: 12px;
+    color: rgb(195, 241, 234);
+    justify-content: center;
+    background: linear-gradient(90deg, rgb(31, 168, 50), rgb(23, 49, 201), rgb(34, 184, 203));
+    background-size: 300% 300%;
+    animation: moveGradient 6s infinite linear;
+}
+
+.numbers {
+    width: 100%;
+    /* height: 10px; */
+    background: linear-gradient(90deg, rgb(31, 168, 50), rgb(23, 49, 201), rgb(34, 184, 203));
+    background-size: 300% 300%;
+    animation: moveGradient 6s infinite linear;
 }
 
 /* Animation keyframes for the moving gradient */
@@ -1063,13 +1121,17 @@ li a:hover {
     0% {
         background-position: 0% 50%;
     }
+
     50% {
         background-position: 100% 50%;
     }
+
     100% {
         background-position: 0% 50%;
     }
-};
+}
+
+;
 
 .termsx {
     gap: 15px;

@@ -17,7 +17,7 @@ import TermsAdmin from './admin-pages/terms.jsx';
 import TransactionAdmin from './admin-pages/transactions.jsx';
 import HomeAdmin from './admin-pages/home.jsx';
 import Departments_Roles from './admin-pages/department&roles.jsx';
-import NavbarSuperVisor from './supervisor-pages/NavbarSuperVisor.jsx'
+// import NavbarSuperVisor from './supervisor-pages/NavbarSuperVisor.jsx'
 import SupervisorNotifier from './supervisor-pages/SuperVisorNotifier.jsx';
 import NoPage from './employee-pages/NoPage.jsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -81,7 +81,7 @@ function App() {
         </Routes> */}
 
 
-        <NavbarSuperVisor />
+        {/* <NavbarSuperVisor /> */}
         <Routes>
           <Route path="/notifier-supervisor" element={<SupervisorNotifier />} />
         </Routes>

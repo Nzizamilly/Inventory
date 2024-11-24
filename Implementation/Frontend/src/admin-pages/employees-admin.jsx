@@ -205,7 +205,10 @@ function EmployeesAdmin() {
 
   }
 
-  const openInfoModal = (id) => {
+  const [placeholder, setPlaceholder] = useState([])
+
+  const openInfoModal = (id, row) => {
+    setPlaceholder(row)
     bringOneEmployee(id);
     fetchImageURL(id)
     setOneEmployee(true);
@@ -228,7 +231,7 @@ function EmployeesAdmin() {
     {
       name: 'View',
       cell: row => (
-        <button className='addItem-btn' onClick={() => openInfoModal(row.id)}><img src={Info} style={svgStyle} /></button>
+        <button className='addItem-btn' onClick={() => openInfoModal(row.id, row)}><img src={Info} style={svgStyle} /></button>
       )
     },
   ];
@@ -555,9 +558,9 @@ function EmployeesAdmin() {
 
                 <Modal isOpen={visible} onRequestClose={() => setVisible(false)} style={modalUpdate}>
                   <h1>Update</h1>
-                  <input type='text' placeholder='Username' name="username" onChange={handleChange} />
-                  <input type='text' placeholder='Password' name="password" onChange={handleChange} />
-                  <input type='text' placeholder='Address eg: Kigali - Kicukiro' name="address" onChange={handleChange} />
+                  <input type='text' placeholder={placeholder.username} name="username" onChange={handleChange} />
+                  <input type='text' placeholder={placeholder.password} name="password" onChange={handleChange} />
+                  <input type='text' placeholder={placeholder.address} name="address" onChange={handleChange} />
                   <select onChange={handleUpdateDepartmentChange} value={selectedUpdateDepartment} style={Select}>
                     <option value='' disabled >Select Department</option>
                     {department.map(departments => (
@@ -571,7 +574,7 @@ function EmployeesAdmin() {
                       <option key={roles.id} value={roles.id} style={OptionColor}>{roles.role_name}</option>
                     ))}
                   </select>
-                  <input type='email' placeholder='Work-related Email' name='email' onChange={handleChange} />
+                  <input type='email' placeholder={placeholder.email} name='email' onChange={handleChange} />
 
                   <div style={{ color: 'black', display: 'flex', flexDirection: 'inline', gap: '9px', justifyContent: 'center' }}>
                     <p>Attach New Picture ID (Not required)</p>

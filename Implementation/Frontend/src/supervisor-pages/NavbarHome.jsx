@@ -7,6 +7,10 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import Select from 'react-select';
 import Keys from '../keys';
+import ItemSVG from '../images/item_SVG.svg';
+import Coins from '../images/coins.svg';
+import Notifiaction from '../images/notificationSVGX.svg'
+import PalmTree from '../images/palm_tree.svg';
 
 function NavbarHome() {
 
@@ -114,13 +118,15 @@ function NavbarHome() {
     };
 
     const option = [
-        { value: 'item', label: "Item Request" },
-        { value: 'purchase', label: "Purchase Request" },
+        { value: 'item', label: <><img src={ItemSVG} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Item Request </> },
+        { value: 'purchase', label: <><img src={Coins} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Purchase Request </> },
+        { value: 'leave', label: <><img src={PalmTree} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Leave Request </> },
     ];
 
     const options = [
-        { value: 'item', label: "Item Notification" },
-        { value: 'purchase', label: "Purchase Notification" },
+        { value: 'item', label: <><img src={Notifiaction} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Item Notifications </> },
+        { value: 'purchase', label: <><img src={Notifiaction} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Purchase Notifications </> },
+        { value: 'leave', label: <><img src={Notifiaction} alt="Item" style={{ width: '25px', marginRight: '8px' }} /> Leave Notifications </> },
     ];
 
     const customStyles = {
@@ -167,6 +173,8 @@ function NavbarHome() {
                 navigate('/purchase-review-supervisor');
             } else if (selectedNotification === 'purchase') {
                 navigate('/purchase-notifications-supervisor');
+            } else if (selectedNotification === 'leave') {
+                navigate('/leave-notification-employee');
             };
         };
         changeNotifications(selectedNotification);
@@ -179,6 +187,8 @@ function NavbarHome() {
                 navigate('/request-supervisor');
             } else if (selectedRequest === 'purchase') {
                 navigate('/purchase-request-supervisor');
+            } else if (selectedRequest === 'leave') {
+                navigate('/employee-leave-request');
             };
         };
         changeRequest(selectedRequest);

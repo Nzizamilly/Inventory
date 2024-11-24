@@ -92,6 +92,8 @@ function ItemsAdmin() {
     },
   }
 
+  
+
   const itemstyle = {
     width: '70%',
     left: '50%',
@@ -734,13 +736,13 @@ function ItemsAdmin() {
       const amountReal = Number(1);
       const remaining = Number(Number(left) + Number(1));
 
-       await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber).then(
+      await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber).then(
         await axios.post(`${url}/take-one-daily-transaction/${selectedItemIDForMultipleCreation}/${amountReal}/${requestorNull}/${statusForMore}/${retour}/${remaining}/${companyID}`)
       ).then(
         setInterval(() => {
           closeCreatingSerialNumber();
           setIsCreatingSerialNumberOpen(false);
-          
+
         }, 2700),
         closeSerialModal()
       )
@@ -1218,7 +1220,7 @@ function ItemsAdmin() {
           <input type='text' placeholder='Search by Category...' onChange={handleFilter} />
         </div>
 
-        <div style={itemstyle}>
+        <div className='itemstyle'>
           {filteredCategories.map(category => (
             <button key={category.id} onClick={() => handleCategoryClick(category.id, category.category_name)} className='buttonStyle2'>{category.category_name}</button>
           ))}

@@ -1041,7 +1041,6 @@ function Company() {
                         columns={columns}
                     >
                     </DataTable>
-
                 </div>
             </Modal>
 

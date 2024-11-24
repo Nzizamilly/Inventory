@@ -1004,9 +1004,9 @@ app.post('/add-serial-number/:takeItemID', (req, res) => {
     status
   ];
   db.query(q, values, (err, data) => {
-   if(!data){
-    console.error("Error Occured When Inserting A New Serial Number:", err);
-   }
+    if (!data) {
+      console.error("Error Occured When Inserting A New Serial Number:", err);
+    }
   });
 });
 
@@ -3262,6 +3262,23 @@ app.post('/post-other-leave', (req, res) => {
     }
   });
 });
+
+app.get('/get-leave-history/:id', (req, res) => {
+
+  const sql = `
+  
+  SELECT leave_tracker.*,
+  FROM leave_tracker
+  JOIN
+  employees ON leave_tracker.empID = employees.id
+  WHERE 
+  leave_tracker.empID = ?
+
+  `;
+  db.query(sql, [req.params.id], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+})
 
 app.get('/get-other-leaves/:id', (req, res) => {
   const id = req.params.id;
