@@ -732,7 +732,7 @@ function Company() {
                 });
 
                 const checkIfOut = await axios.get(`${url}/serial-numbers-validation/${wholeWordArray}`);
-                console.log("Data: ", checkIfOut.data.message);
+
                 if (checkIfOut.data.message === 'All Good!!!') {
 
                     const realQuantity = numbers.length;
@@ -781,7 +781,7 @@ function Company() {
         if (serialMatch) {
             fetchSerialMatch(serialMatch);
         }
-    }, [serialMatch]);
+    }, [serialMatch, allMatchingSerials]);
 
 
 
