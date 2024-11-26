@@ -339,7 +339,7 @@ function Company() {
         setImageForOneCompany('')
         setData('');
         setOneCompanyID('');
-     
+
         setSerialMatch('');
         setAllMatchingSerials([]);
         isCompanyModalOpen(false);
@@ -505,7 +505,7 @@ function Company() {
                 const responsee = await axios.get(`${url}/get-multiple-taken/${startFrom}/${endTo}/${itemID}/${oneCompanyID}`);
                 setSerialShow(responsee.data);
                 setDateExpose(dateFormatted)
-            } else if (serialID >= 0 ) {
+            } else if (serialID >= 0) {
                 const response = await axios.get(`${url}/get-serial-id/${serialID}/${ID}`);
                 setDateExpose(dateFormatted);
                 setSerialShow(response.data);
@@ -716,6 +716,8 @@ function Company() {
 
         if (from > to) {
 
+
+
             try {
                 const numbers = [];
                 const wholeWordArray = [];
@@ -729,21 +731,28 @@ function Company() {
                     wholeWordArray.push(take);
                 });
 
-                const realQuantity = numbers.length;
-                const status = 'Out';
-                const retour = 'none';
-                const remaining = Number(Number(totalIn.totalIn) - Number(realQuantity));
-                const serialID = 0;
-                const startFrom = Number(from);
-                const endTo = Number(to);
+                const checkIfOut = await axios.get(`${url}/serial-numbers-validation/${wholeWordArray}`);
+                console.log("Data: ", checkIfOut.data.message);
+                if (checkIfOut.data.message === 'All Good!!!') {
 
-                await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}/${dateOfRequisition}/${serialID}/${startFrom}/${endTo}/${selectedFirstPart}`).then(
-                    await axios.put(`${url}/take-give-out-bulk/${selectedItem}/${wholeWordArray}/${oneCompanyID}`).then(
-                        await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${realQuantity}/${(parseInt(selectedSupervisor))}/${status}/${retour}/${remaining}/${oneCompanyID}`)
-                    ).then(
-                        window.alert(`Gave Out ${realQuantity} Serial Numbers ~~~ `)
-                    )
-                );
+                    const realQuantity = numbers.length;
+                    const status = 'Out';
+                    const retour = 'none';
+                    const remaining = Number(Number(totalIn.totalIn) - Number(realQuantity));
+                    const serialID = 0;
+                    const startFrom = Number(from);
+                    const endTo = Number(to);
+
+                    await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}/${dateOfRequisition}/${serialID}/${startFrom}/${endTo}/${selectedFirstPart}`).then(
+                        await axios.put(`${url}/take-give-out-bulk/${selectedItem}/${wholeWordArray}/${oneCompanyID}`).then(
+                            await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${realQuantity}/${(parseInt(selectedSupervisor))}/${status}/${retour}/${remaining}/${oneCompanyID}`)
+                        ).then(
+                            window.alert(`Gave Out ${realQuantity} Serial Numbers ~~~ `)
+                        )
+                    );
+                } else {
+                    window.alert("Some Of Serial Numbers Were Given Out!");
+                }
 
             } catch (error) {
                 window.alert("Error In Giving Out Multiple Serial Numbers")
@@ -768,13 +777,13 @@ function Company() {
                 console.error("Error: ", error);
             }
         };
-    
+
         if (serialMatch) {
             fetchSerialMatch(serialMatch);
         }
     }, [serialMatch]);
-    
-    
+
+
 
     const handleGiveOutOneSerialChoice = async (serialID) => {
         try {
@@ -968,7 +977,7 @@ function Company() {
                                 <input type='text' placeholder='To (Smaller)' style={{ width: '100%', color: 'black', backgroundColor: 'white' }} onChange={(e) => setTo(e.target.value)} />
                                 <button style={{ backgroundColor: 'white', width: '50%' }} onClick={() => bulkOutFunction()}>Bulk Out</button>
                             </div>
-                            <div style={{ width: '50%', height: '60%', display: 'flex', flexDirection: 'column',  marginRight: '9px' }} >
+                            <div style={{ width: '50%', height: '60%', display: 'flex', flexDirection: 'column', marginRight: '9px' }} >
                                 <input
                                     type="text"
                                     placeholder="Search Serial Number"

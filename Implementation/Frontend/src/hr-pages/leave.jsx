@@ -115,13 +115,12 @@ function LeavePage() {
             // alignItems: 'center',
         },
     };
-    
+
     const buttons = {
         borderRadius: '62px',
         width: '76%',
         color: 'black',
         cursor: 'pointer',
-        borderRadius: '1px',
         backgroundColor: 'rgb(163, 187, 197)'
     };
 
@@ -231,6 +230,9 @@ function LeavePage() {
         {
             name: 'New Years Day',
             date: '1/1/0000'
+        }, {
+            name: 'Day After New Years Day',
+            date: '2/1/0000'
         }, {
             name: 'National Heroes Day',
             date: '1/2/0000'
@@ -395,9 +397,25 @@ function LeavePage() {
                     console.log("Last Year: ", lastYear);
                     const get = (Number(lastYear) - Number(DOEYear)) * Number(18);
                     console.log(`${lastYear} - ${DOEYear} * 18 = ${get}`);
-                    const leaveBF = get - response.data.total_leave_taken_past_years;
-                    console.log(`${get} - ${response.data.total_leave_taken_past_years} = ${leaveBF}`)
-                    setLeaveBF(leaveBF);
+
+                    if (lastYear === DOEYear) {
+                        const actual = lastYear + Number(1);
+                        const get = (Number(actual) - Number(DOEYear)) * Number(18);
+
+                        console.log(`12 - ${DOEMonth} * 1.5 + 1.5 = ${Number(Number(12) - Number(DOEMonth)) * Number(1.5) + Number(1.5)}`)
+                        const remove = Number(Number(12) - Number(DOEMonth)) * Number(1.5) + Number(1.5);
+                        const leaveBF = get - response.data.total_leave_taken_past_years;
+                        console.log(`${actual} - ${DOEYear} * 18 = ${get}`);
+                        // setLeaveBF(leaveBF - Number(remove));
+                        setLeaveBF(remove);
+
+                    } else {
+                        const remove = Number(Number(12) - Number(DOEMonth)) * Number(1.5);
+                        const leaveBF = get - response.data.total_leave_taken_past_years + Number(remove);
+
+                        console.log(`12 - ${DOEMonth} * 1.5 + ${leaveBF}`)
+                        setLeaveBF(leaveBF);
+                    }
                 };
             } catch (error) {
                 console.error("Error :", error);
@@ -475,7 +493,7 @@ function LeavePage() {
             const applyingYear = leaveEndDate.getFullYear();
 
             const data = {
-                workingDays: workingDays,
+                workingDays: workingDays + Number(1),
                 empID: oneEmployeeID,
                 applyingYear: applyingYear
             };
@@ -540,7 +558,7 @@ function LeavePage() {
         func(oneEmployeeID);
     }, [oneEmployeeID]);
 
-    
+
     useEffect(() => {
         const func = (leaveBFI3, leaveAva3) => {
             try {
@@ -760,7 +778,7 @@ function LeavePage() {
                                         <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', width: '100%' }}>
                                             <p> From: </p> <input type='date' name='leave_start_date' id='smallDate' style={{ width: '20%', borderRadius: '20px', display: 'flex', justifyContent: 'center', border: 'none' }} onChange={handleStartDate} />
                                             <p>To: </p> <input input type='date' name='leave_end_date' id='smallDate' style={{ width: '20%', borderRadius: '20px', display: 'flex', justifyContent: 'center', border: 'none' }} onChange={handleEndDate} />
-                                            <p>Total Days: {workingDays}</p>
+                                            <p>Total Days: {workingDays + Number(1)}</p>
                                         </div>
                                     </div>
 
@@ -828,7 +846,7 @@ function LeavePage() {
                             <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
                                 <ClipLoader color={'green'} loading={loading} size={89} />
                                 <div>
-                                    <p>Issuing {workingDays} days of applied leave to {employeeName} </p>
+                                    <p>Issuing {workingDays + Number(1)} days of applied leave to {employeeName} </p>
                                 </div>
                             </div>
 
@@ -847,7 +865,7 @@ function LeavePage() {
 
                                 <div style={{ width: '100%', marginTop: '15px', marginLeft: '12px', backgroundColor: 'rgb(163, 187, 197)', display: 'flex', gap: '12px', flexDirection: 'inline', flexWrap: 'wrap' }}>
 
-                                    <button onClick={() => openAnnualLeave(IDF)} style={buttonx}>Annual Leave</button>
+                                    <button onClick={() => openAnnualLeave(IDF)} className='buttonx'>Annual Leave</button>
                                     {leavesTypes.map(leave => (
                                         <button style={button} key={leave.id} onClick={() => openOtherLeaveModal(leave.id)} >{leave.name}</button>
                                     ))}

@@ -3941,7 +3941,14 @@ app.post('/insert-employee-leave-into-hr', (req, res) => {
 
 app.get('/get-leave-notifications-employee/:id', (req, res) => {
 
-  const sql = `SELECT * FROM employee_leave_request WHERE empID = ?`;
+  console.log("Hit~~~~~");
+
+  const sql = `
+  SELECT employee_leave_request.*,
+employees.username
+   FROM employee_leave_request
+   JOIN employees ON employee_leave_request.empID = employees.id
+   WHERE empID = ?`;
   db.query(sql, [req.params.id], (error, result) => {
     result ? res.json(result) : console.error("Error: ", error);
   });
@@ -4068,6 +4075,31 @@ app.delete('/delete-company-record/:id', (req, res) => {
     if (!result) {
       console.error("Error: ", error);
     };
+  });
+});
+
+app.get('/serial-numbers-validation/:wholeWordArray', (req, res) => {
+  const wholeWordArray = req.params.wholeWordArray;
+  const wordArray = wholeWordArray.split(',');
+
+  // Query to find serial numbers with status "Out"
+  const sql = `SELECT serial_number 
+               FROM serial_number
+               WHERE serial_number IN (?) AND status = 'Out'`;
+
+  db.query(sql, [wordArray], (error, results) => {
+    if (error) {
+      console.error('Database query error:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    if (results.length > 0) {
+      // Some serial numbers are "Out"
+      return res.json({ message: 'Given Out', serials: results });
+    } else {
+      // All serial numbers are good
+      return res.json({ message: 'All Good!!!' });
+    }
   });
 });
 

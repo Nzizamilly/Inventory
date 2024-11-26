@@ -622,22 +622,26 @@ function LeaveRequest() {
 
 
     useEffect(() => {
-        const func = async (leavetype) => {
+        const func = async (oneEmployeeID) => {
             try {
 
-                if (leavetype === 0) {
-                    const response = await axios.get(`${url}/get-leave-history/${oneEmployeeID}`);
-                    setLeaveHistory(response.data);
-                }
+                // if (leavetype === 0) {
+                const response = await axios.get(`${url}/get-leave-notifications-employee/${oneEmployeeID}`);
+                setLeaveHistory(response.data);
+                // }
+                console.log("Response: ", response.data);
 
             } catch (error) {
                 console.error("Error", error);
             }
         }
-        if (leavetype) {
-            func(leavetype);
+        if (oneEmployeeID) {
+            func(oneEmployeeID);
         };
-    }, [leavetype,]);
+      
+    }, [oneEmployeeID]);
+
+    
 
     const columns = [
         {
@@ -646,17 +650,17 @@ function LeaveRequest() {
         },
         {
             name: 'Days Taken',
-            selector: row => row.username
+            selector: row => row.daysRequired
         },
         {
             name: 'From',
-            selector: row => row.from
+            selector: row => formatDate(row.startDate)
         },
         {
             name: 'To',
-            selector: row => row.to
+            selector: row => formatDate(row.endDate)
         }
-    
+
     ]
 
     return (
@@ -798,8 +802,8 @@ function LeaveRequest() {
                                 </div>
                                 <div>
                                     <DataTable
-                                    data = {leaveHistory}
-                                    columns={columns}
+                                        data={leaveHistory}
+                                        columns={columns}
 
                                     ></DataTable>
 
