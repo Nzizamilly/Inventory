@@ -765,25 +765,27 @@ function Company() {
 
 
     useEffect(() => {
+        let isMounted = true; // To track if the component is still mounted
         const fetchSerialMatch = async (serialMatch) => {
             try {
-                try {
-                    const response = await axios.get(`${url}/get-serial-match/${serialMatch}`);
+                const response = await axios.get(`${url}/get-serial-match/${serialMatch}`);
+                if (isMounted) {
                     setAllMatchingSerials(response.data);
-                } catch (error) {
-                    console.error("Error: ", error)
                 }
             } catch (error) {
-                console.error("Error: ", error);
+                console.error("Error fetching serial match: ", error);
             }
         };
-
+    
         if (serialMatch) {
             fetchSerialMatch(serialMatch);
         }
-    }, [serialMatch, allMatchingSerials]);
-
-
+    
+        return () => {
+            isMounted = false; // Cleanup on component unmount or dependency change
+        };
+    }, [serialMatch]); // Only re-run when `serialMatch` changes
+    
 
     const handleGiveOutOneSerialChoice = async (serialID) => {
         try {
