@@ -4103,6 +4103,16 @@ app.get('/serial-numbers-validation/:wholeWordArray', (req, res) => {
   });
 });
 
+app.delete('/delete-item-transaction/:id', (req, res) => {
+  const sql = `DELETE FROM item_transaction WHERE id = ?`;
+  db.query(sql, [req.params.id], (error, result) => {
+    if(!result){
+      console.error("Error: ", error);
+    };
+  });
+});
+
+
 app.listen(port, () => {
   console.log("Connected to backend");
 });
