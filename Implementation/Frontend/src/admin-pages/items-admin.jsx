@@ -15,6 +15,7 @@ import io from 'socket.io-client';
 import RiseLoader from "react-spinners/RiseLoader";
 import FadeLoader from "react-spinners/FadeLoader";
 import Keys from '../keys';
+import Cross from '../images/cross.svg'
 import Left from '../images/left-arrow.svg';
 import Right from '../images/right-arrow.svg';
 
@@ -92,7 +93,7 @@ function ItemsAdmin() {
     },
   }
 
-  
+
 
   const itemstyle = {
     width: '70%',
@@ -211,6 +212,33 @@ function ItemsAdmin() {
       alignItems: 'center',
       zIndex: '20',
       justifyContent: 'center',
+    },
+  };
+
+  const modalAlert = {
+    overlay: {
+      display: 'flex',
+      justifyContent: 'center',
+      zIndex: '20',
+      // alignItems: 'center',
+      // opacity: 0, // Ensures overlay is present but transparent
+      background: 'transparent',
+    },
+    content: {
+      zIndex: '20',
+      width: '25%',
+      marginLeft: '495px',
+      border: 'none',
+      height: '100%',
+      borderRadius: '12px',
+      background: 'transparent',
+      gap: '23px',
+      marginTop: '-19px',
+      padding: '12px 0px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      // alignItems: 'center',
     },
   };
 
@@ -598,10 +626,24 @@ function ItemsAdmin() {
           const responsee = await axios.put(`${url}/change-request-stockStatus/${employeeID}`);
 
         } else {
-          window.alert("Insuffiencient Amount To Give Out");
+
+          // window.alert("Insuffiencient Amount To Give Out");
+
+          setInsuffiencient(true);
+
+          setInterval(() => {
+            setInsuffiencient(false);
+          }, 2700);
+
         };
       } else {
-        window.alert("Error in Recording Action");
+
+        // window.alert("Error in Recording Action");
+
+        setErrorInRecording(true);
+        setInterval(() => {
+          setErrorInRecording(false);
+        }, 2700);
       }
 
 
@@ -617,6 +659,9 @@ function ItemsAdmin() {
     };
   }
 
+  const [Insuffiencient, setInsuffiencient] = useState(false);
+  const [errorInRecording, setErrorInRecording] = useState(false);
+  const [duplicateDetected, setDuplicated] = useState(false);
 
   const handleSendMultipleSerials = async () => {
     try {
@@ -639,8 +684,14 @@ function ItemsAdmin() {
         const duplicateExists = serialArray.includes(take) || serialArray.includes(takeWithNoSpace);
 
         if (duplicateExists) {
-          window.alert("Duplicate serial number detected!");
-          return;
+          // window.alert("Duplicate serial number detected!");
+          setDuplicated(true);
+
+          setInterval(() => {
+            setDuplicated(false);
+          }, 2700);
+
+          // return;
         } else {
           wholeWordArray.push(take);
         }
@@ -724,7 +775,14 @@ function ItemsAdmin() {
       // console.log('Duplicates:', duplicateExists);
 
       if (duplicateExists) {
-        window.alert("Duplicate serial number detected!");
+
+        setDuplicated(true);
+        // setIsCreatingSerialNumberOpen(false);
+
+        setInterval(() => {
+          setDuplicated(false);
+        }, 2700);
+
         return;
       }
 
@@ -740,6 +798,7 @@ function ItemsAdmin() {
         await axios.post(`${url}/take-one-daily-transaction/${selectedItemIDForMultipleCreation}/${amountReal}/${requestorNull}/${statusForMore}/${retour}/${remaining}/${companyID}`)
       ).then(
         setInterval(() => {
+
           closeCreatingSerialNumber();
           setIsCreatingSerialNumberOpen(false);
 
@@ -1470,9 +1529,38 @@ function ItemsAdmin() {
               </div>
             </div>
           ))}
-
         </Modal>
+
       </div>
+
+      <Modal isOpen={Insuffiencient} style={modalAlert} >
+        <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', fontFamily: 'Arial, sans-serif', height: '99%', width: '90%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
+            <img src={Cross} style={svgStyle} />
+            <p style={{ color: 'white' }}>Insuffiencient Amount To Give Out.</p>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={errorInRecording} style={modalAlert} >
+        <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', fontFamily: 'Arial, sans-serif', height: '99%', width: '70%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
+            <img src={Cross} style={svgStyle} />
+            <p style={{ color: 'white' }}>Error In Recording.</p>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={duplicateDetected} style={modalAlert} >
+        <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', fontFamily: 'Arial, sans-serif', height: '99%', width: '70%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
+            <img src={Cross} style={svgStyle} />
+            <p style={{ color: 'white' }}>Error In Recording.</p>
+          </div>
+        </div>
+      </Modal>
+
+
     </div>
   );
 }

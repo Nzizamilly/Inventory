@@ -189,7 +189,7 @@ function Login() {
 
             <Modal isOpen={userNotFoundModal} onRequestClose={closeUserNotFoundModal} style={modal} >
                 <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
-                    <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '70%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '70%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
                         <img src={Cross} style={svgStyle} />
                         <p style={{ color: 'white' }}>User Not Found.</p>
                     </div>

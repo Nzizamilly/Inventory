@@ -10,6 +10,7 @@ import Motherhood from '../images/motherhood.svg'
 import io from 'socket.io-client';
 import Sick from '../images/sick.svg'
 import Select from 'react-select';
+import Cross from '../images/cross.svg';
 import Keys from '../keys';
 import axios from 'axios';
 import Left from '../images/left-arrow.svg';
@@ -44,6 +45,7 @@ function LeaveRequest() {
     const [DOE, setDOE] = useState({});
     const [leavetype, setLeavetype] = useState(Number)
     const [leaveHistory, setLeaveHistory] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const leaveDiv = {
         width: '80%',
@@ -52,6 +54,33 @@ function LeaveRequest() {
         marginTop: '10px',
         marginLeft: '230px',
         borderRadius: '15px'
+    };
+
+    const modalAlert = {
+        overlay: {
+            display: 'flex',
+            justifyContent: 'center',
+            zIndex: '20',
+            // alignItems: 'center',
+            // opacity: 0, // Ensures overlay is present but transparent
+            background: 'transparent',
+        },
+        content: {
+            zIndex: '20',
+            width: '25%',
+            marginLeft: '495px',
+            border: 'none',
+            height: '100%',
+            borderRadius: '12px',
+            background: 'transparent',
+            gap: '23px',
+            marginTop: '-19px',
+            padding: '12px 0px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            // alignItems: 'center',
+        },
     };
 
     const holder = {
@@ -353,6 +382,9 @@ function LeaveRequest() {
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
+    const [notEarnedAlert, setNotEarnedAlert] = useState(false);
+
+
     useEffect(() => {
         if (leaveStartDate && leaveEndDate) {
             console.log("leaveStartDate: ", leaveStartDate, "leaveEndDate: ", leaveEndDate); // Debugging
@@ -402,11 +434,28 @@ function LeaveRequest() {
             socket.emit("Employee_Leave_Message_Supervisor(1)", message);
 
         } else {
-            return window.alert(`You haven't Earned ${workingDays}.`)
+            // window.alert(`You haven't Earned ${workingDays}.`)
+
+            setNotEarnedAlert(true);
+
+            setInterval(() => {
+                setNotEarnedAlert(false);
+            }, 2700);
         }
 
 
     };
+
+    const svgStyle = {
+        width: '30px',
+        height: '30px',
+        borderRadius: '14px',
+    }
+
+
+    const closeAlert = () => {
+
+    }
 
     const applyMaternityLeave = () => {
         const empID = localStorage.getItem('userID');
@@ -638,10 +687,10 @@ function LeaveRequest() {
         if (oneEmployeeID) {
             func(oneEmployeeID);
         };
-      
+
     }, [oneEmployeeID]);
 
-    
+
 
     const columns = [
         {
@@ -907,6 +956,16 @@ function LeaveRequest() {
                         </div>
                     </div>
                 </Modal>
+
+                <Modal isOpen={notEarnedAlert} onRequestClose={closeAlert} style={modalAlert} >
+                    <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+                        <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '70%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
+                            <img src={Cross} style={svgStyle} />
+                            <p style={{ color: 'white' }}>You haven't Earned {workingDays}.</p>
+                        </div>
+                    </div>
+                </Modal>
+
 
             </div>
         </div>
