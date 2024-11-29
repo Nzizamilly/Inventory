@@ -4,6 +4,7 @@ import Modal from 'react-modal'
 import NavbarAdmin from './navbarAdmin';
 import Addy from '../images/addItem.svg'
 import Info from '../images/info.svg'
+import Tick from '../images/approve.png'
 import axios from 'axios';
 import Keys from '../keys';
 
@@ -20,13 +21,15 @@ function Departments_Roles() {
     const [viewRole, setViewRole] = useState([]);
     const [roleName, setRoleName] = useState('');
     const [status, setStatus] = useState('');
+    const [roleAddedWell, setRoleAddedWell] = useState(false);
+
 
     const [department, setDepartment] = useState({
         department_name: '',
         status: '',
     });
 
-    const modal = {
+    const modalDeny = {
         overlay: {
             display: 'flex',
             justifyContent: 'center',
@@ -47,7 +50,34 @@ function Departments_Roles() {
             justifyContent: 'center',
             alignItems: 'center',
         },
-    }
+    };
+
+    const modal = {
+        overlay: {
+            display: 'flex',
+            justifyContent: 'center',
+            zIndex: '20',
+            // alignItems: 'center',
+            // opacity: 0, // Ensures overlay is present but transparent
+            background: 'transparent',
+        },
+        content: {
+            zIndex: '20',
+            width: '25%',
+            marginLeft: '495px',
+            border: 'none',
+            height: '100%',
+            borderRadius: '12px',
+            background: 'transparent',
+            gap: '23px',
+            marginTop: '-19px',
+            padding: '12px 0px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            // alignItems: 'center',
+        },
+    };
     const svgStyle = {
         width: '30px',
         height: '30px',
@@ -81,6 +111,10 @@ function Departments_Roles() {
     };
     const openDepartmentView = () => {
         setIsDepartmentViewOpen(true);
+    }
+
+    const closeAddedWellModal = () => {
+        
     }
 
     const openRoleViewModal = (row) => {
@@ -154,8 +188,13 @@ function Departments_Roles() {
             }
             const response = await axios.post(`${url}/add-role/${takenDeptID}`, all);
             console.log("response", response);
-            window.alert("Role Added Well");
+            // window.alert("Role Added Well");
+            setRoleAddedWell(true);
             closeAddRoleModal();
+
+            setInterval(() => {
+                setRoleAddedWell(false);
+            }, 2700);
 
         } catch (error) {
             console.error("Error", error)
@@ -263,6 +302,18 @@ function Departments_Roles() {
                     >
                     </DataTable>
                 </Modal>
+
+                
+            <Modal isOpen={roleAddedWell} onRequestClose={closeAddedWellModal} style={modal} >
+                <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '70%', backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center' }}>
+                        <img src={Tick} style={svgStyle} />
+                        <p style={{ color: 'white' }}>Role Added Well.</p>
+                    </div>
+                </div>
+            </Modal>
+
+
             </div>
         </div>
     );
