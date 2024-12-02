@@ -147,6 +147,17 @@ function ItemsAdmin() {
     borderRadius: '21px'
   };
 
+  const SelectForOneSelect = {
+    width: '65%',
+    height: '25%',
+    color: 'black',
+    padding: '12px 12px',
+    border: 'none',
+    backgroundColor: 'black',
+    color: 'white',
+    borderRadius: '21px'
+  };
+
   const OptionColor = {
     width: '39%',
     height: '55%',
@@ -677,57 +688,76 @@ function ItemsAdmin() {
       const response = await axios.get(`${url}/check-serial-number-names/${addSelectedID}`);
       const serialArray = response.data.map(item => item.serial_number);
 
-      console.log("Selected ItemID: ", addSelectedID);
-      console.log("SerialArray: ", serialArray);
+      // console.log("Selected ItemID: ", addSelectedID);
+      // console.log("SerialArray: ", serialArray);
 
       numbers.forEach((number) => {
         const take = serialHolder + ' ' + number;
         const takeWithNoSpace = serialHolder + number;
         const duplicateExists = serialArray.includes(take) || serialArray.includes(takeWithNoSpace);
-    
+
         if (duplicateExists) {
-            setDuplicated(true);
-    
-            // Reset duplicated state after 2700ms
-            setTimeout(() => {
-                setDuplicated(false);
-            }, 2700);
-    
-            return; // Skip this number if it's a duplicate
+          setDuplicated(true);
+
+          // Reset duplicated state after 2700ms
+          setTimeout(() => {
+            setDuplicated(false);
+          }, 2700);
+
+          return; // Skip this number if it's a duplicate
         }
-    
+
         // Push the valid serial number into the array
         wholeWordArray.push(take);
-    });
-    
-    // Ensure that you only proceed if `wholeWordArray` is not empty
-    if (wholeWordArray.length > 0) {
+      });
+
+      // Ensure that you only proceed if `wholeWordArray` is not empty
+      if (wholeWordArray.length > 0) {
         const requestorNull = 'none';
         const statusForMore = 'In';
         const retour = 'none';
         const companyID = 0;
-    
+
         try {
-            const totalResponse = await axios.get(`${url}/get-Total-Number-Of-Serials-For-single/${selectedItemID}`);
-            setTotalSerialsInByOneItem(totalResponse.data);
-    
-            const amountReal = Number(serialHolderTo) - Number(serialHolderFrom) + 1;
-            const remaining = Number(takeInTotalIns) + amountReal;
-    
+          const totalResponse = await axios.get(`${url}/get-Total-Number-Of-Serials-For-single/${selectedItemID}`);
+          setTotalSerialsInByOneItem(totalResponse.data);
+
+          const amountReal = wholeWordArray.length;
+          const remaining = Number(takeInTotalIns) + amountReal;
+
+          console.log("Total Number In: ",takeInTotalIns)
+
+
+          if (Number(takeInTotalIns) === 0) {
+
+            const remaining = amountReal;
+
             await axios.post(`${url}/add-serial-holder/${selectedItemIDForMultipleCreation}/${wholeWordArray}/${depreciation_rate_holder}/${state_of_item_holder}`);
             await axios.post(`${url}/take-one-daily-transaction/${selectedItemIDForMultipleCreation}/${amountReal}/${requestorNull}/${statusForMore}/${retour}/${remaining}/${companyID}`);
-    
+
             setDone(true);
             setTimeout(() => {
-                setDone(false);
+              setDone(false);
             }, 2700);
+
+          } else if (Number(takeInTotalIns) > 0) {
+
+            await axios.post(`${url}/add-serial-holder/${selectedItemIDForMultipleCreation}/${wholeWordArray}/${depreciation_rate_holder}/${state_of_item_holder}`);
+            await axios.post(`${url}/take-one-daily-transaction/${selectedItemIDForMultipleCreation}/${amountReal}/${requestorNull}/${statusForMore}/${retour}/${remaining}/${companyID}`);
+
+            setDone(true);
+            setTimeout(() => {
+              setDone(false);
+            }, 2700);
+          }
+
         } catch (error) {
-            console.error("Error in API calls:", error);
+          console.error("Error in API calls:", error);
         }
-    } else {
+      } else {
         console.warn("No valid serials to process.");
-    }
-    
+      }
+
 
     } catch (error) {
       console.error("Error", error);
@@ -1368,7 +1398,7 @@ function ItemsAdmin() {
             <h1>Create A New Item</h1>
             <input placeholder='Name' name='name' type='text' value={newItem.name} onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} />
             <br />
-            <select onChange={handleSupplierChange} value={selectedSupplier} style={Select}>
+            <select onChange={handleSupplierChange} value={selectedSupplier} style={SelectForOneSelect}>
               <option value='' disabled>Select Supplier </option>
               {supplier.map(suppliers => (
                 <option key={suppliers.id} value={suppliers.id} style={OptionColor}>{suppliers.first_name}</option>

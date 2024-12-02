@@ -2,13 +2,14 @@ import { React, useState, useEffect } from 'react';
 import NavbarAdmin from './navbarAdmin';
 import AddItem from '../images/addItem.svg';
 import CentrikaLogo from '../images/centrika-removebg.png'
-// import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import Modal from 'react-modal';
 import Logo from '../images/logo.svg';
 import PuffLoader from "react-spinners/PuffLoader";
-// import { io } from 'socket.io-client';
 import SyncLoader from "react-spinners/SyncLoader";
+import Tick from '../images/tick.svg'
+import Cross from '../images/cross.svg'
 import axios from 'axios';
+import Caution from '../images/caution.svg'
 import Keys from '../keys';
 import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL, getStorage, deleteObject } from "firebase/storage";
@@ -198,6 +199,33 @@ function Company() {
         },
     };
 
+    const modalx = {
+        overlay: {
+            display: 'flex',
+            justifyContent: 'center',
+            zIndex: '20',
+            // alignItems: 'center',
+            // opacity: 0, // Ensures overlay is present but transparent
+            background: 'transparent',
+        },
+        content: {
+            zIndex: '20',
+            width: '25%',
+            marginLeft: '495px',
+            border: 'none',
+            height: '100%',
+            borderRadius: '12px',
+            background: 'transparent',
+            gap: '23px',
+            marginTop: '-19px',
+            padding: '12px 0px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            // alignItems: 'center',
+        },
+    };
+
     const serialModal = {
         overlay: {
             zIndex: '20',
@@ -309,18 +337,18 @@ function Company() {
     const [CompanyName, setCompanyName] = useState('');
     const [quantity, setQuantity] = useState();
     const [totalIn, setTotalIn] = useState([]);
-    const [isIssueLoaderOpen, setIssueLoaderOpen] = useState(false);
+    // const [isIssueLoaderOpen, setIssueLoaderOpen] = useState(false);
     const [isSerialModalOpen, setIsSerialModalOpen] = useState(false);
 
 
-    const openIssueLoader = (ID) => {
-        setIssueLoaderOpen(true);
-        handleIssue(ID);
-    }
+    // const openIssueLoader = (ID) => {
+    //     setIssueLoaderOpen(true);
+    //     handleIssue(ID);
+    // }
 
-    const closeIssueLoader = () => {
-        setIssueLoaderOpen(false);
-    }
+    // const closeIssueLoader = () => {
+    //     setIssueLoaderOpen(false);
+    // }
 
 
     const openDeliveryNote = (ID) => {
@@ -580,54 +608,54 @@ function Company() {
         }
     }, [selectedItem]);
 
-    const handleIssue = async (ID) => {
+    // const handleIssue = async (ID) => {
 
-        try {
+    //     try {
 
-            if (totalIn.totalIn >= quantity) {
+    //         if (totalIn.totalIn >= quantity) {
 
-                const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${ID}`);
+    //             const response = await axios.get(`${url}/get-one-company-for-delivery/${oneCompanyID}/${ID}`);
 
-                const data = (response.data);
+    //             const data = (response.data);
 
 
-                const date = new Date();
+    //             const date = new Date();
 
-                const messageDatas = {
-                    itemID: selectedItem,
-                    company: oneCompanyID,
-                    requestor: selectedSupervisor,
-                    date: date,
-                    amount: quantity,
-                };
+    //             const messageDatas = {
+    //                 itemID: selectedItem,
+    //                 company: oneCompanyID,
+    //                 requestor: selectedSupervisor,
+    //                 date: date,
+    //                 amount: quantity,
+    //             };
 
-                // await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${quantity}`);
+    //             // await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${quantity}`);
 
-                const remaining = Number(Number(totalIn.totalIn) - Number(quantity));
+    //             const remaining = Number(Number(totalIn.totalIn) - Number(quantity));
 
-                const status = 'Out';
-                const retour = 'none'
+    //             const status = 'Out';
+    //             const retour = 'none'
 
-                await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas).then(
-                    await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${quantity}/${parseInt(selectedSupervisor)}/${status}/${retour}/${remaining}/${oneCompanyID}`)
-                );
+    //             await axios.put(`${url}/change-status-from-notifications-for-bulkx`, messageDatas).then(
+    //                 await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${quantity}/${parseInt(selectedSupervisor)}/${status}/${retour}/${remaining}/${oneCompanyID}`)
+    //             );
 
-                setInterval(() => {
-                    setIssueLoaderOpen(false);
-                }, 2700);
+    //             setInterval(() => {
+    //                 setIssueLoaderOpen(false);
+    //             }, 2700);
 
-            } else {
-                setInterval(() => {
-                    setIssueLoaderOpen(false);
-                }, 2700);
+    //         } else {
+    //             setInterval(() => {
+    //                 setIssueLoaderOpen(false);
+    //             }, 2700);
 
-                return window.alert("Insufficient Amount...");
-            }
+    //             return window.alert("Insufficient Amount...");
+    //         }
 
-        } catch (error) {
-            console.error("Error: ", error);
-        };
-    };
+    //     } catch (error) {
+    //         console.error("Error: ", error);
+    //     };
+    // };
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -712,11 +740,14 @@ function Company() {
 
     }, [selectedItem]);
 
+    const [realQuantityForLoader, setRealQuantityForLoader] = useState('');
+    const [gaveOut, setGaveOut] = useState(false);
+    const [someSerialsOut, setSomeSerialsOut] = useState(false);
+    const [errorInGiving, setErrorInGiving] = useState(false);
+    const [inputValidation, setInputValidation] = useState(false);
     const bulkOutFunction = async () => {
 
         if (from > to) {
-
-
 
             try {
                 const numbers = [];
@@ -736,6 +767,7 @@ function Company() {
                 if (checkIfOut.data.message === 'All Good!!!') {
 
                     const realQuantity = numbers.length;
+                    setRealQuantityForLoader(realQuantity);
                     const status = 'Out';
                     const retour = 'none';
                     const remaining = Number(Number(totalIn.totalIn) - Number(realQuantity));
@@ -747,19 +779,41 @@ function Company() {
                         await axios.put(`${url}/take-give-out-bulk/${selectedItem}/${wholeWordArray}/${oneCompanyID}`).then(
                             await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${realQuantity}/${(parseInt(selectedSupervisor))}/${status}/${retour}/${remaining}/${oneCompanyID}`)
                         ).then(
-                            window.alert(`Gave Out ${realQuantity} Serial Numbers ~~~ `)
+                            // window.alert(`Gave Out ${realQuantity} Serial Numbers ~~~ `)
+                            setGaveOut(true),
+
+                            setInterval(() => {
+                                setGaveOut(false)
+                            }, 2700),
                         )
                     );
                 } else {
-                    window.alert("Some Of Serial Numbers Were Given Out!");
+                    // window.alert("Some Of Serial Numbers Were Given Out!");
+                    setSomeSerialsOut(true);
+
+                    setInterval(() => {
+                        setSomeSerialsOut(false);
+                    }, 2700)
                 }
 
             } catch (error) {
-                window.alert("Error In Giving Out Multiple Serial Numbers")
+                // window.alert("Error In Giving Out Multiple Serial Numbers")
+                setErrorInGiving(true);
+
+                setInterval(() => {
+                    setErrorInGiving(false)
+                }, 2700);
+
                 console.error("Error: ", error);
+
             }
         } else {
-            window.alert("Not following Input Rules");
+            // window.alert("Not following Input Rules");
+            setInputValidation(true);
+
+            setInterval(() => {
+                setInputValidation(false);
+            }, 2700);
         }
     };
 
@@ -776,16 +830,17 @@ function Company() {
                 console.error("Error fetching serial match: ", error);
             }
         };
-    
+
         if (serialMatch) {
             fetchSerialMatch(serialMatch);
         }
-    
+
         return () => {
             isMounted = false; // Cleanup on component unmount or dependency change
         };
     }, [serialMatch]); // Only re-run when `serialMatch` changes
-    
+
+    const [gaveOutOne, setGaveOutOne] = useState(false);
 
     const handleGiveOutOneSerialChoice = async (serialID) => {
         try {
@@ -804,7 +859,14 @@ function Company() {
                 await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}/${dateOfRequisition}/${serialID}/${startFrom}/${endTo}/${first_part}`).then(
                     await axios.post(`${url}/take-one-daily-transaction/${c}/${realQuantity}/${parseInt(supervisor)}/${status}/${retour}/${remaining}/${oneCompanyID}`).then(
                         setSerialMatch(''),
-                        window.alert("Serial Given OUT~~~~")
+                        setAllMatchingSerials([]),
+                        // window.alert("Serial Given OUT~~~~")
+                        setGaveOutOne(true),
+
+                        setInterval(() => {
+                            setGaveOutOne(false)
+                        }, 2700),
+
                     )
                 )
             )
@@ -1031,13 +1093,13 @@ function Company() {
                 </div>
             </Modal>
 
-            <Modal isOpen={isIssueLoaderOpen} onRequestClose={closeIssueLoader} style={modal} >
+            {/* <Modal isOpen={isIssueLoaderOpen} onRequestClose={closeIssueLoader} style={modal} >
                 <div style={{ display: 'flex', flexDirection: 'column', zIndex: '20', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
                     <SyncLoader color={'green'} loading={loading} size={19} />
                     <br />
                     <p>Please Wait...</p>
                 </div>
-            </Modal>
+            </Modal> */}
 
             <Modal isOpen={isSerialModalOpen} onRequestClose={closeSerialModal} style={serialModal}>
                 <div style={{ width: '100%', left: '0px', display: 'flex', flexDirection: 'inline' }}>
@@ -1054,6 +1116,52 @@ function Company() {
                     </DataTable>
                 </div>
             </Modal>
+
+            <Modal isOpen={gaveOut} style={modalx} >
+                <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '70%', backgroundColor: 'green', justifyContent: 'center', alignItems: 'center' }}>
+                        <img src={Tick} style={svgStyle} />
+                        <p style={{ color: 'white' }}>Gave Out {realQuantityForLoader} Serial Numbers.</p>
+                    </div>
+                </div>
+            </Modal>
+
+            <Modal isOpen={gaveOutOne} style={modalx} >
+                <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '90%', backgroundColor: 'green', justifyContent: 'center', alignItems: 'center' }}>
+                        <img src={Tick} style={svgStyle} />
+                        <p style={{ color: 'white' }}>Serial Number Went Out Sucessfully.</p>
+                    </div>
+                </div>
+            </Modal>
+
+            <Modal isOpen={someSerialsOut} style={modalx} >
+                <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '90%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
+                        <img src={Cross} style={svgStyle} />
+                        <p style={{ color: 'white' }}>Some Serial Numbers Were Given Out.</p>
+                    </div>
+                </div>
+            </Modal>
+
+            <Modal isOpen={errorInGiving} style={modalx} >
+                <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '90%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
+                        <img src={Cross} style={svgStyle} />
+                        <p style={{ color: 'white' }}>Error In Giving Out Multiple Serial Numbers.</p>
+                    </div>
+                </div>
+            </Modal>
+
+            <Modal isOpen={inputValidation} style={modalx} >
+                <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '90%', backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center' }}>
+                        <img src={Caution} style={svgStyle} />
+                        <p style={{ color: 'white' }}>Not Following Input Rules.</p>
+                    </div>
+                </div>
+            </Modal>
+
 
         </div>
     );

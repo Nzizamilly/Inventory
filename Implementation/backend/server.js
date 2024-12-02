@@ -575,13 +575,13 @@ app.post('/add-items', (req, res) => {
 
   const categoryId = req.body.category;
 
-  console.log("Category", categoryId);
+  // console.log("Category", categoryId);
 
   const supplierId = req.body.supplier;
 
   const intValue = parseInt(supplierId, 10);
 
-  console.log("Supplier", supplierId);
+  // console.log("Supplier", supplierId);
 
   const insertQuery = 'INSERT INTO item (name, supplierID, categoryID) VALUES (?, ?, ?)';
 
@@ -591,7 +591,7 @@ app.post('/add-items', (req, res) => {
     categoryId || null,
   ];
 
-  console.log("VALUES: ", insertValues)
+  // console.log("VALUES: ", insertValues)
 
   db.query(insertQuery, insertValues, (insertError, result) => {
     if (insertError) {
@@ -936,7 +936,7 @@ app.post('/category', (req, res) => {
       console.error("Error Inserting", err);
       return res.status(500).json({ error: "internal server error" })
     } else {
-      console.log("Supplier added well", data);
+      // console.log("Supplier added well", data);
       return res.json(data)
     }
   })
@@ -989,7 +989,7 @@ app.put('/supplier/:id', (req, res) => {
     req.body.status,
     id
   ];
-  console.log("Values: ", values);
+  // console.log("Values: ", values);
 })
 
 app.post('/add-serial-number/:takeItemID', (req, res) => {
