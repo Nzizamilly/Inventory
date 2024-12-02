@@ -1061,10 +1061,6 @@ app.put('/update-item/:itemID', (req, res) => {
   const newCategoryID = req.body.newCategoryID;
   const employeeUpdateName = req.body.employeeUpdateName;
 
-  console.log("Sum", newItemName);
-  console.log("Sum", newSupplierID);
-  console.log("Sum", newCategoryID);
-
   const date = new Date();
 
   const currentTimeString = date.toLocaleDateString();
@@ -1093,7 +1089,7 @@ app.delete('/delete-item/:itemID', (req, res) => {
 
 app.put('/update-serial-item/:id', (req, res) => {
   const id = req.params.id;
-  console.log("ID: ", id);
+  // console.log("ID: ", id);
   const q = `UPDATE serial_number SET serial_number = ?, state_of_item = ?, depreciation_rate = ? WHERE id = ?`;
   const values = [
     req.body.serial_number,
@@ -1103,11 +1099,8 @@ app.put('/update-serial-item/:id', (req, res) => {
   ];
 
   db.query(q, values, (error, result) => {
-    if (error) {
-      console.error("Error :", error);
-    } else {
-      // console.log("Done right")
-      return result
+    if (!result) {
+      console.error("Error: ", error);
     }
   });
 });
@@ -4109,7 +4102,7 @@ app.get('/serial-numbers-validation/:wholeWordArray', (req, res) => {
 app.delete('/delete-item-transaction/:id', (req, res) => {
   const sql = `DELETE FROM item_transaction WHERE id = ?`;
   db.query(sql, [req.params.id], (error, result) => {
-    if(!result){
+    if (!result) {
       console.error("Error: ", error);
     };
   });

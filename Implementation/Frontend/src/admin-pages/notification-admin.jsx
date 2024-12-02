@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import NavbarAdmin from './navbarAdmin';
 import io from 'socket.io-client';
 import axios from 'axios';
+import Caution from '../images/caution.svg'
 import Modal from 'react-modal';
 import RiseLoader from "react-spinners/RiseLoader";
 import DataTable from 'react-data-table-component';
@@ -14,12 +15,13 @@ function NotificationAdmin() {
 
   const socket = io.connect(`${ioPort}`);
 
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isGivingOutModalOpen, setIsGivingOutModalOpen] = useState(false);
   const [name, setName] = useState('');
   const [item, setItem] = useState('');
   const [amount, setAmount] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+  const [Insuffiencient, setInsuffiencient] = useState(false);
+  const [isGivingOutModalOpen, setIsGivingOutModalOpen] = useState(false);
 
   const openGvingOutModal = (row) => {
     setIsGivingOutModalOpen(true);
@@ -100,11 +102,16 @@ function NotificationAdmin() {
         console.log("Responsee: ", responsee.data);
 
       } else {
-        window.alert("Insuffiencient Amount To Give Out");
-      }
 
+        setInsuffiencient(true);
+
+      }
       setInterval(() => {
         setIsGivingOutModalOpen(false);
+      }, 10);
+      
+      setInterval(() => {
+        setInsuffiencient(false);
       }, 2700);
 
     } catch (error) {
@@ -134,11 +141,45 @@ function NotificationAdmin() {
     },
   };
 
+  const svgStyle = {
+    width: '30px',
+    height: '30px',
+    borderRadius: '14px',
+  }
+
   const smaller = {
     display: 'flex',
     flexDirection: 'inline',
     gap: '2px'
-  }
+  };
+
+  const modalAlert = {
+    overlay: {
+      display: 'flex',
+      justifyContent: 'center',
+      zIndex: '20',
+      // alignItems: 'center',
+      // opacity: 0, // Ensures overlay is present but transparent
+      background: 'transparent',
+    },
+    content: {
+      zIndex: '20',
+      width: '25%',
+      marginLeft: '495px',
+      border: 'none',
+      height: '100%',
+      borderRadius: '12px',
+      background: 'transparent',
+      gap: '23px',
+      marginTop: '-19px',
+      padding: '12px 0px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      // alignItems: 'center',
+    },
+  };
+
   const buttons = {
     width: '65px',
     color: 'black',
@@ -169,7 +210,7 @@ function NotificationAdmin() {
       <div className="random-container">
         <div style={{ width: '84%', marginLeft: '193px' }}>
           <h1 style={{ color: 'white' }}>Notifications</h1>
-          
+
           <div style={smaller}>
             <button style={buttons} onClick={handlePending}>Pending</button>
             <button style={buttons} onClick={handleApprovedRequest}>Issued</button>
@@ -189,6 +230,15 @@ function NotificationAdmin() {
               <div style={{ fontFamily: 'sans-serif' }}>
                 <br />
                 <p>Issuing {amount} {item} to {name}</p>
+              </div>
+            </div>
+          </Modal>
+
+          <Modal isOpen={Insuffiencient} style={modalAlert} >
+            <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', fontFamily: 'Arial, sans-serif', height: '99%', width: '90%', backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center' }}>
+                <img src={Caution} style={svgStyle} />
+                <p style={{ color: 'white' }}>Insuffiencient Amount To Give Out.</p>
               </div>
             </div>
           </Modal>

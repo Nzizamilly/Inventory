@@ -17,6 +17,10 @@ import FadeLoader from "react-spinners/FadeLoader";
 import Keys from '../keys';
 import Cross from '../images/cross.svg'
 import Caution from '../images/caution.svg'
+<<<<<<< HEAD
+=======
+import Tick from '../images/tick.svg'
+>>>>>>> e8241ffa91ee16dd6b2379c1d61b773068d3fb26
 import Left from '../images/left-arrow.svg';
 import Right from '../images/right-arrow.svg';
 
@@ -683,44 +687,57 @@ function ItemsAdmin() {
         const take = serialHolder + ' ' + number;
         const takeWithNoSpace = serialHolder + number;
         const duplicateExists = serialArray.includes(take) || serialArray.includes(takeWithNoSpace);
-
+    
         if (duplicateExists) {
-          // window.alert("Duplicate serial number detected!");
-          setDuplicated(true);
-
-          setInterval(() => {
-            setDuplicated(false);
-          }, 2700);
-
-          // return;
-        } else {
-          wholeWordArray.push(take);
+            setDuplicated(true);
+    
+            // Reset duplicated state after 2700ms
+            setTimeout(() => {
+                setDuplicated(false);
+            }, 2700);
+    
+            return; // Skip this number if it's a duplicate
         }
-      });
+    
+        // Push the valid serial number into the array
+        wholeWordArray.push(take);
+    });
+    
+    // Ensure that you only proceed if `wholeWordArray` is not empty
+    if (wholeWordArray.length > 0) {
+        const requestorNull = 'none';
+        const statusForMore = 'In';
+        const retour = 'none';
+        const companyID = 0;
+    
+        try {
+            const totalResponse = await axios.get(`${url}/get-Total-Number-Of-Serials-For-single/${selectedItemID}`);
+            setTotalSerialsInByOneItem(totalResponse.data);
+    
+            const amountReal = Number(serialHolderTo) - Number(serialHolderFrom) + 1;
+            const remaining = Number(takeInTotalIns) + amountReal;
+    
+            await axios.post(`${url}/add-serial-holder/${selectedItemIDForMultipleCreation}/${wholeWordArray}/${depreciation_rate_holder}/${state_of_item_holder}`);
+            await axios.post(`${url}/take-one-daily-transaction/${selectedItemIDForMultipleCreation}/${amountReal}/${requestorNull}/${statusForMore}/${retour}/${remaining}/${companyID}`);
+    
+            setDone(true);
+            setTimeout(() => {
+                setDone(false);
+            }, 2700);
+        } catch (error) {
+            console.error("Error in API calls:", error);
+        }
+    } else {
+        console.warn("No valid serials to process.");
+    }
+    
 
-      const requestorNull = 'none';
-      const statusForMore = 'In';
-      const retour = 'none';
-      const companyID = 0;
-
-      const responseE = await axios.get(`${url}/get-Total-Number-Of-Serials-For-single/${selectedItemID}`);
-      console.log("Response about remaining: ", responseE.data);
-      setTotalSerialsInByOneItem(response.data)
-
-      const amountReal = Number(serialHolderFrom) - Number(serialHolderTo);
-
-      const remaining = Number(Number(takeInTotalIns) + Number(amountReal) + Number(1));
-
-      await axios.post(`${url}/add-serial-holder/${selectedItemIDForMultipleCreation}/${wholeWordArray}/${depreciation_rate_holder}/${state_of_item_holder}`).then(
-        await axios.post(`${url}/take-one-daily-transaction/${selectedItemIDForMultipleCreation}/${amountReal}/${requestorNull}/${statusForMore}/${retour}/${remaining}/${companyID}`)
-      )
-
-      window.alert("Done!!");
     } catch (error) {
       console.error("Error", error);
     }
   };
 
+  const [done, setDone] = useState(false);
 
   // console.log("Whole Word: ", wholeWord);
 
@@ -777,16 +794,22 @@ function ItemsAdmin() {
       // console.log('Duplicates:', duplicateExists);
 
       if (duplicateExists) {
-
         setDuplicated(true);
-        // setIsCreatingSerialNumberOpen(false);
 
-        setInterval(() => {
+        setTimeout(() => {
           setDuplicated(false);
         }, 2700);
 
+        setTimeout(() => {
+          closeCreatingSerialNumber();
+          setIsCreatingSerialNumberOpen(false);
+        }, 700);
+
+        closeSerialModal();
+
         return;
       }
+
 
       const requestorNull = 'none';
       const statusForMore = 'In';
@@ -899,7 +922,7 @@ function ItemsAdmin() {
 
 
   const openUpdateItem = (itemID) => {
-    setIsUpdatedOpen(true);
+    // setIsUpdatedOpen(true);
     handleUpdateClick(itemID);
   };
 
@@ -907,19 +930,29 @@ function ItemsAdmin() {
     setIsUpdatedOpen(false);
   }
 
+  const [updatedSuccess, setUpdateSuccess] = useState(false);
+
   const handleUpdateClick = async (itemID) => {
     try {
-      console.log("Updaties:", update);
-      const response = await axios.put(`${url}/update-item/${itemID}`, update);
-      console.log(response);
-      const employeeID = localStorage.getItem('userID')
-      const responsee = await axios.post(`${url}/insert-doer/${itemID}/${employeeID}`);
-      console.log("The post responsee was made", responsee);
-      closeUpdateModal();
+      const employeeID = localStorage.getItem('userID');
 
-      setInterval(() => {
-        closeUpdateItem();
-      }, 2700);
+      await axios.put(`${url}/update-item/${itemID}`, update).then(
+        await axios.post(`${url}/insert-doer/${itemID}/${employeeID}`).then(
+
+          setUpdateSuccess(true),
+
+          setInterval(() => {
+            setUpdateSuccess(false)
+          }, 2700),
+
+          closeUpdateModal()
+        ))
+
+      // setInterval(() => {
+      //   closeUpdateItem();
+      //   setIsUpdatedOpen(false);
+
+      // }, 2700);
 
     } catch (error) {
       console.error('Error fetching items: ', error);
@@ -969,7 +1002,14 @@ function ItemsAdmin() {
         openInfoModal(selectedItemID, selectedItemName);
       };
     } else {
-      window.alert("Error in Recording Action");
+      // window.alert("Error in Recording Action");
+
+
+      setErrorInRecording(true);
+      setInterval(() => {
+        setErrorInRecording(false);
+      }, 2700);
+
     }
 
     setInterval(() => {
@@ -1033,7 +1073,10 @@ function ItemsAdmin() {
           }
 
         } else {
-          window.alert("Error in Recording Action");
+          setErrorInRecording(true);
+          setInterval(() => {
+            setErrorInRecording(false);
+          }, 2700);
         }
 
       } catch (error) {
@@ -1156,8 +1199,8 @@ function ItemsAdmin() {
   const handleSerialUpdate = async (getUpdateSerialID) => {
     try {
       const response = await axios.put(`${url}/update-serial-item/${getUpdateSerialID}`, serialUpdateData);
-      window.alert("Updated successfully");
-      console.log(response);
+      // window.alert("Updated successfully");
+
       closeUpdateSerialModal();
     } catch (error) {
       console.error('Error fetching updating: ', error);
@@ -1431,6 +1474,7 @@ function ItemsAdmin() {
               </div>
             </div>
           </Modal>
+
           <Modal isOpen={isCreatingSerialNumberOpen} onRequestClose={closeCreatingSerialNumber} style={modal}>
             <div style={{ display: 'flex', flexDirection: 'column', zIndex: '20', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'tranparent' }}>
               <HashLoader color={'blue'} loading={loading} size={59} />
@@ -1452,7 +1496,7 @@ function ItemsAdmin() {
           </Modal>
 
           <Modal isOpen={isUpdatedOpen} onRequestClose={closeUpdateItem} className={modal}>
-            <div style={{ display: 'flex', flexDirection: 'column', zIndex: '20', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'none' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', zIndex: '20', height: '96vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'tranparent' }}>
               <HashLoader color={'cyan'} loading={loading} size={59} />
               <div>
                 <br />
@@ -1552,9 +1596,33 @@ function ItemsAdmin() {
 
       <Modal isOpen={duplicateDetected} style={modalAlert} >
         <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+<<<<<<< HEAD
           <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', fontFamily: 'Arial, sans-serif', height: '99%', width: '70%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
             <img src={Caution} style={svgStyle} />
             <p style={{ color: 'white' }}>Error In Recording.</p>
+=======
+          <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', fontFamily: 'Arial, sans-serif', height: '99%', width: '70%', backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center' }}>
+            <img src={Caution} style={svgStyle} />
+            <p style={{ color: 'white' }}>Duplicate Detected.</p>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={updatedSuccess} style={modalAlert} >
+        <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', fontFamily: 'Arial, sans-serif', height: '99%', width: '70%', backgroundColor: 'green', justifyContent: 'center', alignItems: 'center' }}>
+            <img src={Tick} style={svgStyle} />
+            <p style={{ color: 'white' }}>Updated Successfully.</p>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={done} style={modalAlert} >
+        <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', fontFamily: 'Arial, sans-serif', height: '99%', width: '70%', backgroundColor: 'green', justifyContent: 'center', alignItems: 'center' }}>
+            <img src={Tick} style={svgStyle} />
+            <p style={{ color: 'white' }}>Done Successfully.</p>
+>>>>>>> e8241ffa91ee16dd6b2379c1d61b773068d3fb26
           </div>
         </div>
       </Modal>
