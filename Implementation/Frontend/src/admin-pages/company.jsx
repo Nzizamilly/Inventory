@@ -81,7 +81,7 @@ function Company() {
 
     const Selects = {
         width: '100%',
-        height: '222px',
+        height: '52px',
         color: 'black',
         border: 'none',
         borderRadius: '21px'
@@ -951,8 +951,8 @@ function Company() {
                                 ))}
                             </select>
 
-                            <input type='text' style={{ width: '100%', color: 'black', backgroundColor: 'white' }} placeholder='Quantity' name='quantity' onChange={handleQuantity} />
-                            <input type='date' style={{ width: '100%', color: 'black', paddingLeft: '6px', backgroundColor: 'white', border: 'none', borderRadius: '12px' }} onChange={(e) => setDateOfRequisition(e.target.value)} />
+                            {/* <input type='text' style={{ width: '100%', color: 'black', backgroundColor: 'white' }} placeholder='Quantity' name='quantity' onChange={handleQuantity} /> */}
+                            <input type='date' style={{ width: '100%', height: '52px', color: 'black', paddingLeft: '6px', backgroundColor: 'white', border: 'none', borderRadius: '12px' }} onChange={(e) => setDateOfRequisition(e.target.value)} />
 
                             <select onChange={handleSupervisorChange} value={selectedSupervisor} style={Selects}>
                                 <option value='' disabled>Select Issuer</option>
@@ -961,7 +961,7 @@ function Company() {
                                 ))}
                             </select>
 
-                            <button style={{ backgroundColor: 'white', width: '40%' }} onClick={() => openIssueLoader(oneCompanyID)}>Issue Out</button>
+                            {/* <button style={{ backgroundColor: 'white', width: '40%' }} onClick={() => openIssueLoader(oneCompanyID)}>Issue Out</button> */}
                             {/* <button style={{ backgroundColor: 'white', width: '20%' }} onClick={() => openDeliveryNote()}>Issue Out</button> */}
 
                         </div>
