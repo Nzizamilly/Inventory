@@ -1000,9 +1000,12 @@ app.post('/add-serial-number/:takeItemID', (req, res) => {
     req.body.serial_number,
     req.body.state_of_item,
     req.body.depreciation_rate,
-    itemID,
+    req.params.takeItemID,
     status
   ];
+
+  // console.log("Data: ", values);
+
   db.query(q, values, (err, data) => {
     if (!data) {
       console.error("Error Occured When Inserting A New Serial Number:", err);

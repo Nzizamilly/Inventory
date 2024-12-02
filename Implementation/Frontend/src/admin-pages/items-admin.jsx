@@ -16,6 +16,7 @@ import RiseLoader from "react-spinners/RiseLoader";
 import FadeLoader from "react-spinners/FadeLoader";
 import Keys from '../keys';
 import Cross from '../images/cross.svg'
+import Caution from '../images/caution.svg'
 import Left from '../images/left-arrow.svg';
 import Right from '../images/right-arrow.svg';
 
@@ -759,6 +760,7 @@ function ItemsAdmin() {
     const serialArray = response.data.map(item => item.serial_number);
 
     const takeItemID = selectedItemID;
+
     setTakenItemId(takeItemID);
     setSerialNumber(takeItemID);
     setIsSerialModalOpen(true);
@@ -794,7 +796,7 @@ function ItemsAdmin() {
       const amountReal = Number(1);
       const remaining = Number(Number(left) + Number(1));
 
-      await axios.post(`${url}/add-serial-number/${takeItemID}`, serialNumber).then(
+      await axios.post(`${url}/add-serial-number/${addSelectedID}`, serialNumber).then(
         await axios.post(`${url}/take-one-daily-transaction/${selectedItemIDForMultipleCreation}/${amountReal}/${requestorNull}/${statusForMore}/${retour}/${remaining}/${companyID}`)
       ).then(
         setInterval(() => {
@@ -805,9 +807,6 @@ function ItemsAdmin() {
         }, 2700),
         closeSerialModal()
       )
-
-
-
     } catch (error) {
       console.error('Error adding serial number', error);
     };
@@ -1554,7 +1553,7 @@ function ItemsAdmin() {
       <Modal isOpen={duplicateDetected} style={modalAlert} >
         <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
           <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', fontFamily: 'Arial, sans-serif', height: '99%', width: '70%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
-            <img src={Cross} style={svgStyle} />
+            <img src={Caution} style={svgStyle} />
             <p style={{ color: 'white' }}>Error In Recording.</p>
           </div>
         </div>
