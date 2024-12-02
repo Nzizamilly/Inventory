@@ -17,10 +17,7 @@ import FadeLoader from "react-spinners/FadeLoader";
 import Keys from '../keys';
 import Cross from '../images/cross.svg'
 import Caution from '../images/caution.svg'
-<<<<<<< HEAD
-=======
 import Tick from '../images/tick.svg'
->>>>>>> e8241ffa91ee16dd6b2379c1d61b773068d3fb26
 import Left from '../images/left-arrow.svg';
 import Right from '../images/right-arrow.svg';
 
@@ -1596,11 +1593,6 @@ function ItemsAdmin() {
 
       <Modal isOpen={duplicateDetected} style={modalAlert} >
         <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
-<<<<<<< HEAD
-          <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', fontFamily: 'Arial, sans-serif', height: '99%', width: '70%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
-            <img src={Caution} style={svgStyle} />
-            <p style={{ color: 'white' }}>Error In Recording.</p>
-=======
           <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', fontFamily: 'Arial, sans-serif', height: '99%', width: '70%', backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center' }}>
             <img src={Caution} style={svgStyle} />
             <p style={{ color: 'white' }}>Duplicate Detected.</p>
@@ -1622,7 +1614,6 @@ function ItemsAdmin() {
           <div style={{ display: 'flex', zIndex: '20', border: 'none', gap: '12px', flexDirection: 'inline', borderRadius: '20px', fontFamily: 'Arial, sans-serif', height: '99%', width: '70%', backgroundColor: 'green', justifyContent: 'center', alignItems: 'center' }}>
             <img src={Tick} style={svgStyle} />
             <p style={{ color: 'white' }}>Done Successfully.</p>
->>>>>>> e8241ffa91ee16dd6b2379c1d61b773068d3fb26
           </div>
         </div>
       </Modal>
