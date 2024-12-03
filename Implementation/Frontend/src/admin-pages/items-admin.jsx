@@ -373,8 +373,10 @@ function ItemsAdmin() {
   const [serialHolder, setSerialHolder] = useState('');
   const [depreciation_rate_holder, setDepreciation_rate_holder] = useState('')
   const [tab, setTab] = useState(1);
+  const [addSelectedID, setAddSelectedID] = useState(Number);
   const [requiredAmountBulk, setRequiredAmountBulk] = useState('');
   const [requestorBulk, setRequestorBulk] = useState('')
+  const [selectedItemName, setSeletectedItemName] = useState('')
   const [serialHolderFrom, setSerialHolderFrom] = useState('')
   const [serialHolderTo, setSerialHolderTo] = useState('');
   const [isSomeLoaderOpen, setIsSomeLoaderOpen] = useState(false);
@@ -421,8 +423,6 @@ function ItemsAdmin() {
     setIsDeletingOpen(false);
   };
 
-
-
   const openCreatingSerialNumber = (takenItemId) => {
     setIsCreatingSerialNumberOpen(true);
     handleAddSerialNumberClick(takenItemId)
@@ -457,8 +457,6 @@ function ItemsAdmin() {
     setIsWarningModalOpen(false)
   };
 
-  const [addSelectedID, setAddSelectedID] = useState(Number);
-
   const openSerialModal = (itemId) => {
     setAddSelectedID(itemId)
     setSelectedItemIDForMultipleCreation(itemId);
@@ -487,8 +485,6 @@ function ItemsAdmin() {
   const closeUpdateSerialModal = () => {
     setIsUpdateSerial(false);
   }
-
-  const [selectedItemName, setSeletectedItemName] = useState('')
 
   const openInfoModal = async (itemId, name) => {
     try {
@@ -725,7 +721,7 @@ function ItemsAdmin() {
           const amountReal = wholeWordArray.length;
           const remaining = Number(takeInTotalIns) + amountReal;
 
-          console.log("Total Number In: ",takeInTotalIns)
+          console.log("Total Number In: ", takeInTotalIns)
 
 
           if (Number(takeInTotalIns) === 0) {
@@ -1161,7 +1157,17 @@ function ItemsAdmin() {
     {
       name: 'Take Out or In',
       cell: row => (
-        <button className={`status-btn ${row.status === 'In' ? 'green-btn' : 'red-btn'}`} onClick={() => handleSerialStatus(row.id, row.status, row)} >{row.status}</button>
+        <button
+          className={`status-btn ${row.status === 'In'
+              ? 'green-btn'
+              : row.status === 'Out'
+                ? 'red-btn'
+                : 'mouve-btn'
+            }`}
+          onClick={() => handleSerialStatus(row.id, row.status, row)}
+        >
+          {/* {row.status} */}
+        </button>
       )
     },
   ];

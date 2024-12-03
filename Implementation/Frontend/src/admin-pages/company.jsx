@@ -54,6 +54,15 @@ function Company() {
         backgroundColor: 'rgb(163, 187, 197)'
     };
 
+    const buttonsReplace = {
+        borderRadius: '12px',
+        width: '96px',
+        color: 'black',
+        cursor: 'pointer',
+        padding: '12px 0px',
+        backgroundColor: 'rgb(163, 187, 197)'
+    };
+
     const CompanyButton = {
         height: '148px',
         width: '32%',
@@ -64,13 +73,14 @@ function Company() {
 
 
     const smaller = {
-        width: '20%',
+        width: '40%',
         height: '15%',
         display: 'flex',
+        // backgroundColor: 'green',
         flexDirection: 'inline',
         gap: '9px',
         alignItems: 'center',
-        justifyContent: 'center'
+        // justifyContent: 'center'
     };
 
     const allDiv = {
@@ -253,6 +263,7 @@ function Company() {
     const info = {
         width: '100%',
         height: '100%',
+        borderRadius: '12px',
         backgroundColor: 'rgb(163, 187, 197)',
         display: 'flex',
         flexDirection: 'inline'
@@ -271,6 +282,7 @@ function Company() {
     const report = {
         width: '100%',
         height: '100%',
+        borderRadius: '12px',
         backgroundColor: 'rgb(163, 187, 197)',
         display: 'flex',
         flexDirection: 'inline'
@@ -339,6 +351,16 @@ function Company() {
     const [totalIn, setTotalIn] = useState([]);
     // const [isIssueLoaderOpen, setIssueLoaderOpen] = useState(false);
     const [isSerialModalOpen, setIsSerialModalOpen] = useState(false);
+    const [realQuantityForLoader, setRealQuantityForLoader] = useState('');
+    const [gaveOut, setGaveOut] = useState(false);
+    const [someSerialsOut, setSomeSerialsOut] = useState(false);
+    const [errorInGiving, setErrorInGiving] = useState(false);
+    const [inputValidation, setInputValidation] = useState(false);
+    const [serialShow, setSerialShow] = useState([]);
+    const [dateExpose, setDateExpose] = useState('');
+    const [gaveOutOne, setGaveOutOne] = useState(false);
+    const [replace, setReplace] = useState('');
+    const [takenSerials, setTakenSerials] = useState([]);
 
 
     // const openIssueLoader = (ID) => {
@@ -519,9 +541,6 @@ function Company() {
         setSelectedCategory(selectedValue);
     };
 
-    const [serialShow, setSerialShow] = useState([]);
-    const [dateExpose, setDateExpose] = useState('');
-
     const handleOpenSerialExpose = async (ID, serialID, startFrom, endTo, itemID, date) => {
         try {
 
@@ -586,9 +605,9 @@ function Company() {
     };
 
 
-    const handleQuantity = (event) => {
-        setQuantity(event.target.value)
-    };
+    // const handleQuantity = (event) => {
+    //     setQuantity(event.target.value)
+    // };
 
     const [from, setFrom] = useState(Number);
     const [to, setTo] = useState(Number);
@@ -678,7 +697,7 @@ function Company() {
         {
             name: 'Amount',
             selector: row => (
-                <button onClick={() => { openSerialModal(row.id, row.serialID, row.startFrom, row.endTo, row.itemID, row.date) }} style={{ backgroundColor: 'white', color: 'blue4' }}>{row.amount}</button>
+                <button onClick={() => { openSerialModal(row.id, row.serialID, row.startFrom, row.endTo, row.itemID, row.date) }} style={{ backgroundColor: 'white', color: 'blue' }}>{row.amount}</button>
             )
         },
         {
@@ -740,11 +759,6 @@ function Company() {
 
     }, [selectedItem]);
 
-    const [realQuantityForLoader, setRealQuantityForLoader] = useState('');
-    const [gaveOut, setGaveOut] = useState(false);
-    const [someSerialsOut, setSomeSerialsOut] = useState(false);
-    const [errorInGiving, setErrorInGiving] = useState(false);
-    const [inputValidation, setInputValidation] = useState(false);
     const bulkOutFunction = async () => {
 
         if (from > to) {
@@ -840,8 +854,6 @@ function Company() {
         };
     }, [serialMatch]); // Only re-run when `serialMatch` changes
 
-    const [gaveOutOne, setGaveOutOne] = useState(false);
-
     const handleGiveOutOneSerialChoice = async (serialID) => {
         try {
 
@@ -897,6 +909,100 @@ function Company() {
         };
     };
 
+    useEffect(() => {
+        let isMounted = true;
+        const func = async (replace) => {
+            try {
+                const response = await axios.get(`${url}/get-taken-serials/${replace}`);
+                setTakenSerials(response.data);
+            } catch (error) {
+                console.error("Error: ", error);
+            }
+        }
+        if (replace) {
+            func(replace);
+        }
+
+        return () => {
+            isMounted = false;
+        };
+
+    }, [replace]);
+
+    const handleThisToo = async (ID) => {
+        try {
+            fetchOneCompany(ID);
+            setTab(3);
+        } catch (error) {
+            // console.error("Error: ", error);
+        };
+    };
+
+
+    const [deliveryID, setDeliveryID] = useState(Number);
+    const [replaceID, setReplaceID] = useState(Number);
+
+    const handleDelivered = async (id, serial_number) => {
+        try {
+            setAllMatchingSerials([]);
+            setSerialMatch(serial_number);
+            setDeliveryID(id)
+
+            setTimeout(() => {
+                setAllMatchingSerials([]);
+            }, 100)
+
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+    };
+
+
+    const handleReplace = async (id, serial_number) => {
+        try {
+            setTakenSerials([]);
+            setReplace(serial_number);
+            setReplaceID(id)
+
+            setTimeout(() => {
+                setTakenSerials([]);
+            }, 100)
+
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+    };
+
+    const [replaceSmall, setReplaceSmall] = useState(false)
+
+    const handleReplacement = async () => {
+        try {
+
+            const realQuantity = 1;
+            const status = 'Out';
+            const retour = 'none';
+            const c = selectedItem;
+            const remaining = Number(Number(totalIn.totalIn) - Number(1));
+            const startFrom = 0;
+            const endTo = 0;
+            const first_part = 'none';
+
+
+            await axios.put(`${url}/change-delivery-status/${deliveryID}/${oneCompanyID}`).then(
+                await axios.put(`${url}/change-replace-status/${replaceID}`).then(
+                    await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}/${dateOfRequisition}/${deliveryID}/${startFrom}/${endTo}/${first_part}`).then(
+                        setReplaceSmall(true),
+                        setInterval(() => {
+                            setReplaceSmall(false)
+                        }, 2700),
+                    )
+                )
+            )
+
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+    }
 
 
     return (
@@ -955,8 +1061,9 @@ function Company() {
             <Modal isOpen={companyModalOpen} onRequestClose={closeCompanyModal} style={companyModal}>
                 <div style={smaller}>
                     <button style={buttons} onClick={() => setTab(0)}>Info</button>
-                    <button style={buttons} onClick={() => setTab(1)}>Issue</button>
+                    <button className='buttonx' onClick={() => setTab(1)}>Issue</button>
                     <button style={buttons} onClick={() => handleThis(oneCompanyID)}>Report</button>
+                    <button style={buttonsReplace} onClick={() => handleThisToo(oneCompanyID)}>Replacement</button>
                 </div>
 
                 <div style={allDiv}>
@@ -1090,6 +1197,124 @@ function Company() {
                         </div>
                     </div>
                     }
+                    {tab === 3 && <div style={report} >
+                        <div style={{ width: '25%', display: 'flex', marginLeft: '12px', alignItems: 'center' }}>
+                            {imageForOneCompany ? (
+                                <img src={imageForOneCompany} style={{ maxWidth: '90%', objectFit: 'cover', maxHeight: '20vh', borderRadius: '20px' }} />
+
+                            ) : <img src={Logo} style={{ maxWidth: '90%', maxHeight: '15vh' }} />}
+                        </div>
+
+                        <div style={{ width: '28%', position: 'relative', overflow: 'hidden', padding: '10px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '20px', }}>
+                            <input type="text" placeholder="Delivered..." style={{ width: '100%', height: '12%', backgroundColor: 'white', color: 'black', }} value={serialMatch} onChange={(e) => setSerialMatch(e.target.value)} />
+
+                            {serialMatch && (
+                                <div
+                                    style={{
+                                        width: '100%',
+                                        position: 'absolute',
+                                        zIndex: 10,
+                                        maxHeight: '150px',
+                                        overflowY: 'auto',
+                                        scrollbarWidth: 'none',
+                                        marginTop: '50px',
+                                        borderRadius: '12px',
+                                        backgroundColor: 'white',
+                                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                                    }}
+                                >
+                                    {allMatchingSerials.map((serial) => (
+                                        <button
+                                            key={serial.id}
+                                            style={{
+                                                width: '100%',
+                                                height: '40px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'left',
+                                                backgroundColor: 'white',
+                                                color: 'black',
+                                                borderBottom: '1px solid #ddd',
+                                            }}
+                                            onClick={() => handleDelivered(serial.id, serial.serial_number)}
+                                        >
+                                            <p
+                                                style={{
+                                                    display: 'flex',
+                                                    marginLeft: '9px',
+                                                }}
+                                            >
+                                                {serial.serial_number}
+                                            </p>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+
+                            <input type="text" placeholder="Replaced..." style={{ width: '100%', height: '12%', backgroundColor: 'white', color: 'black' }} value={replace} onChange={(e) => setReplace(e.target.value)} />
+                            {replace && (
+                                <div
+                                    style={{
+                                        width: '93%',
+                                        position: 'absolute',
+                                        zIndex: 10,
+                                        maxHeight: '150px',
+                                        overflowY: 'auto',
+                                        scrollbarWidth: 'none',
+                                        marginTop: '200px',
+                                        borderRadius: '12px',
+                                        backgroundColor: 'white',
+                                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                                    }}
+                                >
+                                    {takenSerials.map((serial) => (
+                                        <button
+                                            key={serial.id}
+                                            style={{
+                                                width: '100%',
+                                                height: '40px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'left',
+                                                backgroundColor: 'white',
+                                                color: 'black',
+                                                borderBottom: '1px solid #ddd',
+                                            }}
+                                            onClick={() => handleReplace(serial.id, serial.serial_number)}
+                                        >
+                                            <p
+                                                style={{
+                                                    display: 'flex',
+                                                    marginLeft: '9px',
+                                                }}
+                                            >
+                                                {serial.serial_number}
+                                            </p>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+                            <button
+                                style={{
+                                    backgroundColor: 'black',
+                                    color: 'white',
+                                    width: '42%',
+                                }}
+
+                                onClick={() => handleReplacement()}
+                            >
+                                Replace
+                            </button>
+                        </div>
+
+
+
+
+                    </div>
+
+                    }
                 </div>
             </Modal>
 
@@ -1158,6 +1383,15 @@ function Company() {
                     <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '90%', backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center' }}>
                         <img src={Caution} style={svgStyle} />
                         <p style={{ color: 'white' }}>Not Following Input Rules.</p>
+                    </div>
+                </div>
+            </Modal>
+
+            <Modal isOpen={replaceSmall} style={modalx} >
+                <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '70%', backgroundColor: 'green', justifyContent: 'center', alignItems: 'center' }}>
+                        <img src={Tick} style={svgStyle} />
+                        <p style={{ color: 'white' }}>Replaced Successfully.</p>
                     </div>
                 </div>
             </Modal>

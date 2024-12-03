@@ -1026,6 +1026,11 @@ li a:hover {
     background-color: red;
 }
 
+.mouve-btn {
+    color: #9f08f7;
+    background-color: #9f08f7;
+}
+
 .bigger {
     gap: 12px;
     width: 42%;

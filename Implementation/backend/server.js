@@ -4108,6 +4108,37 @@ app.delete('/delete-item-transaction/:id', (req, res) => {
   });
 });
 
+app.get('/get-taken-serials/:replace', (req, res) => {
+  const word = `%${req.params.replace}%`;
+
+  const sql = `  SELECT DISTINCT serial_number, id
+FROM serial_number
+WHERE status = 'Out' AND serial_number LIKE ?
+`;
+
+  db.query(sql, [word], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  });
+});
+
+app.put('/change-delivery-status/:deliveryID/:oneCompanyID', (req, res) => {
+  const sql = `UPDATE serial_number SET status = 'Out', taker = 0, companyID = ? WHERE id = ?`;
+  db.query(sql, [req.params.deliveryID, req.params.oneCompanyID], (error, result) => {
+    if (!result) {
+      console.error("Error: ", error);
+    };
+  });
+});
+
+app.put('/change-replace-status/:replaceID', (req, res) => {
+  const sql = `UPDATE serial_number SET status = 'Replaced', state_of_item = 'Wrapped Up' WHERE id = ?`;
+  db.query(sql, [req.params.replaceID], (error, result) => {
+    if (!result) {
+      console.error("Error: ", error);
+    };
+  });
+});
+
 
 app.listen(port, () => {
   console.log("Connected to backend");
