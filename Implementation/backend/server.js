@@ -40,7 +40,7 @@ const db = mysql.createPool({
   port: 3306,
   user: "root",
   password: "",
-  database: "inventorynew_test",
+  database: "inventorynew",
 });
 
 const query = util.promisify(db.query).bind(db);

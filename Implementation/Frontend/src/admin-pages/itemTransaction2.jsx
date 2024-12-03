@@ -324,7 +324,7 @@ function ItemTransactionsAdmin2() {
 
     const handleClear = async () => {
         try {
-            const response = await axios.delete(`${url}/delete-unlocated-serials`);
+            await axios.delete(`${url}/delete-unlocated-serials`);
         } catch (error) {
             console.error("Error: ", error);
         }
@@ -340,7 +340,7 @@ function ItemTransactionsAdmin2() {
 
                 <div style={itemstyle}>
                     <div style={{ width: '95%', height: '25%', gap: '12px', display: 'flex', justifyContent: 'center', float: 'right' }}>
-                        <input type='text' placeholder='Search For A Specific Item....' onChange={handleFilter}  />
+                        <input type='text' placeholder='Search For A Specific Item....' onChange={handleFilter} />
                         <p style={{ marginTop: '12px' }}>Total Items: {count}</p>
                         <p style={{ marginTop: '12px' }}>Unlocated Serial Numbers: {unlocated.length}</p>
                         <button style={{ backgroundColor: 'rgb(199, 49, 12)', color: 'white' }} onClick={() => handleClear()}>Clear</button>

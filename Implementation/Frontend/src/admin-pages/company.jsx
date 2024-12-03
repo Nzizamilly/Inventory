@@ -73,7 +73,7 @@ function Company() {
 
 
     const smaller = {
-        width: '40%',
+        width: '60%',
         height: '15%',
         display: 'flex',
         // backgroundColor: 'green',
@@ -1105,6 +1105,7 @@ function Company() {
                     <button className='buttonx' onClick={() => setTab(1)}>Issue</button>
                     <button style={buttons} onClick={() => handleThis(oneCompanyID)}>Report</button>
                     <button style={buttonsReplace} onClick={() => handleThisToo(oneCompanyID)}>Replacement</button>
+                    <p>Total Items Taken By This Company: {data.length}</p>
                 </div>
 
                 <div style={allDiv}>
