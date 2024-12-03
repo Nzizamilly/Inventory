@@ -988,13 +988,15 @@ function Company() {
             const first_part = 'none';
 
 
-            await axios.put(`${url}/change-delivery-status/${deliveryID}/${oneCompanyID}`).then(
-                await axios.put(`${url}/change-replace-status/${replaceID}`).then(
-                    await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}/${dateOfRequisition}/${deliveryID}/${startFrom}/${endTo}/${first_part}`).then(
-                        setReplaceSmall(true),
-                        setInterval(() => {
-                            setReplaceSmall(false)
-                        }, 2700),
+            await axios.post(`${url}/post-replacement/${replaceID}/${deliveryID}/${oneCompanyID}`).then(
+                await axios.put(`${url}/change-delivery-status/${deliveryID}/${oneCompanyID}`).then(
+                    await axios.put(`${url}/change-replace-status/${replaceID}`).then(
+                        await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}/${dateOfRequisition}/${deliveryID}/${startFrom}/${endTo}/${first_part}`).then(
+                            setReplaceSmall(true),
+                            setInterval(() => {
+                                setReplaceSmall(false)
+                            }, 2700),
+                        )
                     )
                 )
             )
@@ -1002,8 +1004,47 @@ function Company() {
         } catch (error) {
             console.error("Error: ", error);
         }
-    }
+    };
 
+    const [replacementData, setReplacementData] = useState([]);
+
+    useEffect(() => {
+        const func = async (oneCompanyID) => {
+            try {
+                const response = await axios.get(`${url}/get-replacement-data/${oneCompanyID}`);
+                setReplacementData(response.data);
+
+            } catch (error) {
+                console.error("Error: ", error);
+            }
+        }
+        if (oneCompanyID) {
+            func(oneCompanyID)
+        }
+    }, [oneCompanyID, replacementData]);
+
+    const columnx = [
+        {
+            name: 'Date',
+            selector: row => formatDate(row.date)
+        },
+        {
+            name: 'Delivered',
+            selector: row => row.deliverySerial
+        },
+        {
+            name: 'Item',
+            selector: row => row.deliveryItemName
+        },
+        {
+            name: 'Replacement',
+            selector: row => row.replacementSerial
+        },
+        {
+            name: 'Item',
+            selector: row => row.replacementItemName
+        }
+    ];
 
     return (
         <div>
@@ -1308,12 +1349,16 @@ function Company() {
                                 Replace
                             </button>
                         </div>
+                        <div style={{ backgroundColor: 'white', marginRight: '9px', width: '50%', height: '100%' }}>
+                            <DataTable
+                                columns={columnx}
+                                data={replacementData}
+                            >
+                            </DataTable>
 
-
-
+                        </div>
 
                     </div>
-
                     }
                 </div>
             </Modal>

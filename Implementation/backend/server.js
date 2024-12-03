@@ -40,7 +40,7 @@ const db = mysql.createPool({
   port: 3306,
   user: "root",
   password: "",
-  database: "inventorynew",
+  database: "inventorynew_test",
 });
 
 const query = util.promisify(db.query).bind(db);
@@ -2635,7 +2635,7 @@ app.put('/change-status-from-notifications/:requestor/:item/:amount/:rowID', asy
           console.error("error", error);
           reject(error);
         } else {
-          console.log("Result", result);
+          // console.log("Result", result);
           resolve(result[0].id);
         }
       });
@@ -2652,7 +2652,7 @@ app.put('/change-status-from-notifications/:requestor/:item/:amount/:rowID', asy
           console.error("error", error);
           reject(error);
         } else {
-          console.log("Result", result);
+          // console.log("Result", result);
           resolve(result[0].id);
         }
       });
@@ -2673,7 +2673,7 @@ app.put('/change-status-from-notifications/:requestor/:item/:amount/:rowID', asy
           console.error("Error:", error);
           reject(error);
         } else {
-          // console.log("Result:", result);
+          // console.log("", result);
           // Ensure that result is an array and has at least one element
           if (Array.isArray(result) && result.length > 0) {
             // Resolve with the count value
@@ -2721,7 +2721,7 @@ app.put('/change-status-from-notifications-for-bulk/:employeeID/:item/:amount/:r
           console.error("Error:", error);
           reject(error);
         } else {
-          console.log("Result", result);
+          // console.log("Result", result);
           // Ensure that result is an array and has at least one element
           if (Array.isArray(result) && result.length > 0) {
             // Resolve with the count value
@@ -4138,6 +4138,52 @@ app.put('/change-replace-status/:replaceID', (req, res) => {
     };
   });
 });
+
+app.post('/post-replacement/:replaceID/:deliveryID/:companyID', (req, res) => {
+  const date = new Date();
+  const sql = `INSERT INTO replacement_table (deliveryID, replacementID, date, companyID) VALUES (?, ?, ?, ?)`;
+  db.query(sql, [req.params.deliveryID, req.params.replaceID, date, req.params.companyID], (error, result) => {
+    if (!result) {
+      console.error("Error: ", error);
+    };
+  });
+});
+
+app.get('/get-replacement-data/:oneCompanyID', (req, res) => {
+  const sql = ` 
+  SELECT 
+  replacement_table.date,
+  delivery.itemID AS deliveryItemID,
+    delivery.serial_number AS deliverySerial,
+    delivery_item.name AS deliveryItemName,
+    replacement.itemID AS replacementItemID,
+    replacement_item.name AS replacementItemName,
+    replacement.serial_number AS replacementSerial,
+    replacement_table.companyID
+FROM 
+    replacement_table
+JOIN 
+    serial_number AS delivery 
+ON 
+    replacement_table.deliveryID = delivery.id
+JOIN 
+    item AS delivery_item 
+ON 
+    delivery.itemID = delivery_item.id
+JOIN 
+    serial_number AS replacement 
+ON 
+    replacement_table.replacementID = replacement.id
+JOIN 
+    item AS replacement_item 
+ON 
+    replacement.itemID = replacement_item.id
+WHERE replacement_table.companyID = ?; 
+  `;
+  db.query(sql, [req.params.oneCompanyID], (error, result) => {
+    result ? res.json(result) : console.error("Error: ", error);
+  })
+})
 
 
 app.listen(port, () => {
