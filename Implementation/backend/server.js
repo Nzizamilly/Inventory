@@ -507,7 +507,7 @@ ORDER BY
       subject: 'Leave You Requested Was Approved',
       text: `Hello,
 
-      Administration just approved leave of ${days_required} days. 
+      Administration just approved leave of ${messageData.days_required} days. 
 
       Thank You
       `
