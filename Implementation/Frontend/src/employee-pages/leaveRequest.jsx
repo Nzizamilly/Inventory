@@ -568,6 +568,7 @@ function LeaveRequest() {
         func(oneEmployeeID);
     }, [oneEmployeeID]);
 
+    console.log("Real DOE: ", DOE);
 
     useEffect(() => {
         const Dday = new Date().getDate()
@@ -599,9 +600,25 @@ function LeaveRequest() {
                     console.log("Last Year: ", lastYear);
                     const get = (Number(lastYear) - Number(DOEYear)) * Number(18);
                     console.log(`${lastYear} - ${DOEYear} * 18 = ${get}`);
-                    const leaveBF = get - response.data.total_leave_taken_past_years;
-                    console.log(`${get} - ${response.data.total_leave_taken_past_years} = ${leaveBF}`)
-                    setLeaveBF(leaveBF);
+
+                    if (lastYear === DOEYear) {
+                        const actual = lastYear + Number(1);
+                        const get = (Number(actual) - Number(DOEYear)) * Number(18);
+
+                        console.log(`12 - ${DOEMonth} * 1.5 + 1.5 = ${Number(Number(12) - Number(DOEMonth)) * Number(1.5) + Number(1.5)}`)
+                        const remove = Number(Number(12) - Number(DOEMonth)) * Number(1.5) + Number(1.5);
+                        const leaveBF = get - response.data.total_leave_taken_past_years;
+                        console.log(`${actual} - ${DOEYear} * 18 = ${get}`);
+                        // setLeaveBF(leaveBF - Number(remove));
+                        setLeaveBF(remove);
+
+                    } else {
+                        const remove = Number(Number(12) - Number(DOEMonth)) * Number(1.5);
+                        const leaveBF = get - response.data.total_leave_taken_past_years + Number(remove);
+
+                        console.log(`12 - ${DOEMonth} * 1.5 + ${leaveBF}`)
+                        setLeaveBF(leaveBF);
+                    }
                 };
             } catch (error) {
                 console.error("Error :", error);
@@ -614,7 +631,6 @@ function LeaveRequest() {
         differenceInMonth(DOEMonth, DOEYear)
 
     }, [DOE, oneEmployeeID, leaveAvailable]);
-
 
     useEffect(() => {
         if (leaveStartDate && leaveEndDate) {
@@ -857,10 +873,8 @@ function LeaveRequest() {
                                     ></DataTable>
 
                                 </div>
-
                             </div>
                         }
-
 
                     </div>
                     <div style={{ width: '100%', height: '10%', display: 'flex', marginBottom: '9px', flexDirection: 'inline', gap: '12px' }}>
