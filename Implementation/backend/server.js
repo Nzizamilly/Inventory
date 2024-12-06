@@ -3062,6 +3062,33 @@ app.get('/get-serial-number-in-different-time/:start/:end/:ID', (req, res) => {
   });
 });
 
+app.get('/get-serial-number-in-different-time-company/:start/:end/:oneCompanyID', (req, res) => {
+  const start = req.params.start;
+  const end = req.params.end;
+  const ID = req.params.oneCompanyID;
+
+  // console.log("End: ", end);
+  // console.log("Start: ", start);
+  // console.log("ID: ", ID);
+
+  const sql = `
+  SELECT serial_number.*, employees.username
+  
+  FROM serial_number
+
+  JOIN employees ON serial_number.taker = employees.id
+  
+  WHERE date BETWEEN ? AND ? AND companyID = ?`;
+
+  db.query(sql, [start, end, ID], (error, result) => {
+    if (result) {
+      res.json(result);
+    } else {
+      console.error("Error: ", error);
+    };
+  });
+});
+
 app.get('/pending-numbers', (req, res) => {
   const sql = `SELECT COUNT(*) AS pending_count FROM hr_admin_request WHERE stockStatus = '' OR stockStatus = 'Not Issued'`;
   db.query(sql, (error, result) => {
@@ -3113,17 +3140,39 @@ app.get('/get-total-in/:itemID', (req, res) => {
 
 app.get('/gets-one/:oneCompanyID', (req, res) => {
   const companyID = req.params.oneCompanyID;
+
   const sql = `
-   SELECT company_records.*, company.CompanyName, item.name, employees.username
-   FROM company_records
-   JOIN company ON company_records.companyID = company.id
-   JOIN item ON company_records.itemID = item.id
-   JOIN employees ON company_records.employeeID = employees.id
-   WHERE companyID = ?
-   ORDER BY company_records.id DESC
-     `;
-  db.query(sql, [companyID], (error, result) => {
-    result ? res.json(result) : console.error("Error: ", error);
+    SELECT company_records.*, company.CompanyName, item.name AS itemName, employees.username AS employeeName
+    FROM company_records
+    JOIN company ON company_records.companyID = company.id
+    JOIN item ON company_records.itemID = item.id
+    JOIN employees ON company_records.employeeID = employees.id
+    WHERE company_records.companyID = ?
+    ORDER BY company_records.id DESC
+  `;
+
+  db.query(sql, [companyID], (error, recordsResult) => {
+    if (error) {
+      console.error("Error fetching company records:", error);
+      res.status(500).json({ error: "Error fetching company records" });
+      return;
+    }
+
+    const sqli = `SELECT SUM(amount) AS totalAmount FROM company_records WHERE companyID = ?`;
+
+    db.query(sqli, [companyID], (error, amountResult) => {
+      if (error) {
+        console.error("Error calculating total amount:", error);
+        res.status(500).json({ error: "Error calculating total amount" });
+        return;
+      }
+
+      // Combine the two results into one response
+      res.json({
+        records: recordsResult,
+        totalAmount: amountResult[0]?.totalAmount || 0, // Safely handle empty results
+      });
+    });
   });
 });
 
@@ -3997,12 +4046,52 @@ FROM
   });
 })
 
+app.get('/check/:wholeWordArray', (req, res) => {
+  const wholeWordArrayString = req.params.wholeWordArray;
+
+  // Split the string into an actual array of serial numbers
+  const wholeWordArray = wholeWordArrayString.split(',');
+
+  if (!Array.isArray(wholeWordArray) || wholeWordArray.length === 0) {
+    return res.status(400).json({ error: 'Invalid or empty serial numbers array' });
+  }
+
+  // Construct placeholders for the query based on the number of serial numbers
+  const placeholders = wholeWordArray.map(() => '?').join(',');
+
+  const sql = `
+    SELECT serial_number
+    FROM serial_number 
+    WHERE serial_number IN (${placeholders})
+  `;
+
+  db.query(sql, wholeWordArray, (error, result) => {
+    if (error) {
+      console.error("Error checking serial numbers:", error);
+      return res.status(500).json({ error: "Database query failed" });
+    }
+
+    const existingSerials = result.map(row => row.serial_number);
+
+    // Check if every serial in wholeWordArray is present in the database result
+    const allExist = wholeWordArray.every(serial => existingSerials.includes(serial));
+
+    if (allExist) {
+      res.json("All serial_numbers exist");
+    } else {
+      res.json("Serials don't exist");
+    }
+  });
+});
+
+
+
+
 app.put('/take-give-out-bulk/:itemID/:wholeWordArray/:companyID', (req, res) => {
 
   // console.log("Hittttttttttttt");
 
   const serials = req.params.wholeWordArray.split(',');
-  // console.log("Serials: ", serials);
   const itemID = req.params.itemID;
   const companyID = req.params.companyID
 
@@ -4010,7 +4099,9 @@ app.put('/take-give-out-bulk/:itemID/:wholeWordArray/:companyID', (req, res) => 
 
   serials.forEach((serial) => {
     db.query(sql, [companyID, itemID, serial.trim()], (error, result) => {
-      // result ? console.log('Result: ', result) : console.error("Error: ", error);
+      if (!result) {
+        console.error("Error: ", error);
+      }
     });
   });
 });

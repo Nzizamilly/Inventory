@@ -1131,6 +1131,19 @@ li a:hover {
     animation: moveGradient 6s infinite linear;
 }
 
+.buttony {
+    border-radius: 62px;
+    width: 5%;
+    color: white;
+    cursor: pointer;
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgb(31, 168, 50), rgb(23, 49, 201), rgb(34, 184, 203));
+    background-size: 300% 300%;
+    animation: moveGradient 6s infinite linear;
+}
+
+
+
 /* Animation keyframes for the moving gradient */
 @keyframes moveGradient {
     0% {

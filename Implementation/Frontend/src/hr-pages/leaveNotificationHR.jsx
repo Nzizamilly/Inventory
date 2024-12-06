@@ -120,7 +120,9 @@ function LeaveNotificationsHR() {
             setIsSendModalOpen(false);
         }, 2600);
 
-        const response = await axios.put(`${url}/change-employee-leave-status-hr/${row.id}`).then(await axios.put(`${url}/approve-employee-leave-hr-table/${row.id}`));
+         await axios.put(`${url}/change-employee-leave-status-hr/${row.id}`).then(
+            await axios.put(`${url}/approve-employee-leave-hr-table/${row.id}`)
+        );
 
 
     };

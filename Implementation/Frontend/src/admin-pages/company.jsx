@@ -73,7 +73,7 @@ function Company() {
 
 
     const smaller = {
-        width: '60%',
+        width: '100%',
         height: '15%',
         display: 'flex',
         // backgroundColor: 'green',
@@ -159,7 +159,7 @@ function Company() {
 
     const companyModal = {
         content: {
-            width: '80%',
+            width: '84%',
             height: '90%',
             display: 'flex',
             flexDirection: 'column',
@@ -338,9 +338,11 @@ function Company() {
     const [tab, setTab] = useState(0);
     const [firstParts, setFirstParts] = useState([]);
     const [selectedFirstPart, setSelectedFirstPart] = useState('');
+    const [serialDontExist, setSerialDontExist] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [item, setItem] = useState([]);
     const [supervisor, setSupervisor] = useState([]);
+    const [totalAmount, setTotalAmount] = useState('');
     const [selectedSupervisor, setSelectedSupervisor] = useState('');
     const [data, setData] = useState([]);
     const [serialMatch, setSerialMatch] = useState('');
@@ -361,8 +363,9 @@ function Company() {
     const [gaveOutOne, setGaveOutOne] = useState(false);
     const [replace, setReplace] = useState('');
     const [takenSerials, setTakenSerials] = useState([]);
-
-
+    const [startSingleItem, setStartSingleItem] = useState('');
+    const [endSingleItem, setEndSingleItem] = useState('');
+    const [isMonthlyReportOpen, setIsMonthlyReportOpen] = useState(false);
     // const openIssueLoader = (ID) => {
     //     setIssueLoaderOpen(true);
     //     handleIssue(ID);
@@ -376,6 +379,10 @@ function Company() {
     const openDeliveryNote = (ID) => {
         handleDeliveryNoteForOneCompany(ID);
     };
+
+    const closeMonthlyReport = () => {
+        setIsMonthlyReportOpen(false)
+    }
 
     const openCompanyModal = (ID, CompanyName) => {
         isCompanyModalOpen(true);
@@ -410,29 +417,39 @@ function Company() {
         setLogo(Logo);
     }, []);
 
-    const fetchOneCompany = async (ID, CompanyName) => {
 
-        if (ID && CompanyName) {
+    const fetchOneCompany = async (ID, CompanyName) => {
+        if (!ID || !CompanyName) return;
+
+        try {
             const imageRef = ref(storage, `companyLogos/${CompanyName}`);
             const imageURL = await getDownloadURL(imageRef);
             setImageForOneCompany(imageURL);
+        } catch (error) {
+            console.error("Error fetching company logo: ", error);
+            setImageForOneCompany(null); // Optional: Fallback image
+        }
 
-            try {
-                const responsee = await axios.get(`${url}/gets-one/${ID}`);
-                setData(responsee.data);
-            } catch (error) {
-                // console.error("Error", error);
-            };
+        try {
+            const responsee = await axios.get(`${url}/gets-one/${ID}`);
+            setData(responsee.data.records);
+            // console.log('@Reponse Data amount: ', responsee.data);
 
-            try {
-                const response = await axios.get(`${url}/get-one-company/${ID}`);
+            // console.log("Total Taken", responsee.data.totalAmount);
+            setTotalAmount(responsee.data.totalAmount);
 
-                setOneCompany(response.data);
-            } catch (error) {
-                // console.error("Error: ", error)
-            };
-        };
-    }
+        } catch (error) {
+            console.error("Error fetching data for ID: ", error);
+        }
+
+        try {
+            const response = await axios.get(`${url}/get-one-company/${ID}`);
+            setOneCompany(response.data);
+        } catch (error) {
+            console.error("Error fetching company details: ", error);
+        }
+    };
+
 
     const updateFileName = (event) => {
         const selectedLogo = event.target.files[0];
@@ -684,11 +701,11 @@ function Company() {
     const column = [
         {
             name: 'Item',
-            selector: row => row.name
+            selector: row => row.itemName
         },
         {
             name: 'Issuer',
-            selector: row => row.username
+            selector: row => row.employeeName
         },
         {
             name: 'Date',
@@ -777,30 +794,44 @@ function Company() {
                 });
 
                 const checkIfOut = await axios.get(`${url}/serial-numbers-validation/${wholeWordArray}`);
+                const check = await axios.get(`${url}/check/${wholeWordArray}`);
 
                 if (checkIfOut.data.message === 'All Good!!!') {
+                    if (check.data === 'All serial_numbers exist') {
 
-                    const realQuantity = numbers.length;
-                    setRealQuantityForLoader(realQuantity);
-                    const status = 'Out';
-                    const retour = 'none';
-                    const remaining = Number(Number(totalIn.totalIn) - Number(realQuantity));
-                    const serialID = 0;
-                    const startFrom = Number(from);
-                    const endTo = Number(to);
+                        const realQuantity = numbers.length;
+                        setRealQuantityForLoader(realQuantity);
+                        const status = 'Out';
+                        const retour = 'none';
+                        const remaining = Number(Number(totalIn.totalIn) - Number(realQuantity));
+                        const serialID = 0;
+                        const startFrom = Number(from);
+                        const endTo = Number(to);
 
-                    await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}/${dateOfRequisition}/${serialID}/${startFrom}/${endTo}/${selectedFirstPart}`).then(
-                        await axios.put(`${url}/take-give-out-bulk/${selectedItem}/${wholeWordArray}/${oneCompanyID}`).then(
-                            await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${realQuantity}/${(parseInt(selectedSupervisor))}/${status}/${retour}/${remaining}/${oneCompanyID}`)
-                        ).then(
-                            // window.alert(`Gave Out ${realQuantity} Serial Numbers ~~~ `)
-                            setGaveOut(true),
 
-                            setInterval(() => {
-                                setGaveOut(false)
-                            }, 2700),
-                        )
-                    );
+
+                        await axios.post(`${url}/post-company-records/${selectedItem}/${oneCompanyID}/${selectedSupervisor}/${realQuantity}/${dateOfRequisition}/${serialID}/${startFrom}/${endTo}/${selectedFirstPart}`).then(
+                            await axios.put(`${url}/take-give-out-bulk/${selectedItem}/${wholeWordArray}/${oneCompanyID}/${selectedSupervisor}`).then(
+                                await axios.post(`${url}/take-one-daily-transaction/${selectedItem}/${realQuantity}/${(parseInt(selectedSupervisor))}/${status}/${retour}/${remaining}/${oneCompanyID}`)
+                            ).then(
+                                // window.alert(`Gave Out ${realQuantity} Serial Numbers ~~~ `)
+                                setGaveOut(true),
+
+                                setInterval(() => {
+                                    setGaveOut(false)
+                                }, 2700),
+                            )
+                        );
+                    } else {
+                        // window.alert("Required Serials Dont Exist");
+                        setSerialDontExist(true);
+
+                        setInterval(() => {
+                            setSerialDontExist(false);
+
+                        }, 2700);
+                    }
+
                 } else {
                     // window.alert("Some Of Serial Numbers Were Given Out!");
                     setSomeSerialsOut(true);
@@ -830,7 +861,6 @@ function Company() {
             }, 2700);
         }
     };
-
 
     useEffect(() => {
         let isMounted = true; // To track if the component is still mounted
@@ -1046,6 +1076,41 @@ function Company() {
         }
     ];
 
+    const handleMonthlyReport = () => {
+        setIsMonthlyReportOpen(true)
+        MonthlyReport();
+    }
+
+    const [serialNumbersForSingleCompany, setSerialNumbersForSingleCompany] = useState([]);
+
+    const MonthlyReport = async () => {
+        try {
+            const responsee = await axios.get(`${url}/get-serial-number-in-different-time-company/${startSingleItem}/${endSingleItem}/${oneCompanyID}`);
+            setSerialNumbersForSingleCompany(responsee.data);
+        } catch (error) {
+            console.error("Error: ", error);
+        };
+    };
+
+    const columnz = [
+        {
+            name: 'Serial Number',
+            selector: row => row.serial_number
+        },
+        {
+            name: 'State Of Item',
+            selector: row => row.state_of_item
+        },
+        {
+            name: 'Date',
+            selector: row => formatDate(row.date)
+        },
+        {
+            name: 'Issuer',
+            selector: row => row.username
+        }
+    ]
+
     return (
         <div>
             <NavbarAdmin></NavbarAdmin>
@@ -1102,10 +1167,13 @@ function Company() {
             <Modal isOpen={companyModalOpen} onRequestClose={closeCompanyModal} style={companyModal}>
                 <div style={smaller}>
                     <button style={buttons} onClick={() => setTab(0)}>Info</button>
-                    <button className='buttonx' onClick={() => setTab(1)}>Issue</button>
+                    <button className='buttony' onClick={() => setTab(1)}>Issue</button>
                     <button style={buttons} onClick={() => handleThis(oneCompanyID)}>Report</button>
                     <button style={buttonsReplace} onClick={() => handleThisToo(oneCompanyID)}>Replacement</button>
-                    <p>Total Items Taken By This Company: {data.length}</p>
+                    <p>Total Items Taken By This Company: {totalAmount}</p>
+                    <p>From: </p><input type='date' style={{ width: '10%', display: 'flex', justifyContent: 'center', border: 'none' }} onChange={(e) => setStartSingleItem(e.target.value)} />
+                    <p>To: </p><input type='date' style={{ width: '10%', display: 'flex', justifyContent: 'center', border: 'none' }} onChange={(e) => setEndSingleItem(e.target.value)} />
+                    <button style={buttons} onClick={() => handleMonthlyReport()}>Generate</button>
                 </div>
 
                 <div style={allDiv}>
@@ -1388,6 +1456,22 @@ function Company() {
                 </div>
             </Modal>
 
+            <Modal isOpen={isMonthlyReportOpen} onRequestClose={closeMonthlyReport} style={serialModal}>
+                <div style={{ width: '100%', left: '0px', display: 'flex', flexDirection: 'inline' }}>
+                    <img src={CentrikaLogo} style={{ width: '200px', height: '130px' }} />
+                    <p style={{ width: '60%', fontSize: '17px', marginTop: '57px', fontFamily: 'Arial, sans-serif', }}>List of Serial Numbers taken By {CompanyName} </p>
+                    <br />
+                    <p style={{ fontSize: '17px', marginTop: '57px', fontFamily: 'Arial, sans-serif', }}>Count: {serialNumbersForSingleCompany.length}</p>
+                </div>
+                <div style={{ width: '100%', fontFamily: 'Arial, sans-serif' }}>
+                    <DataTable
+                        data={serialNumbersForSingleCompany}
+                        columns={columnz}
+                    >
+                    </DataTable>
+                </div>
+            </Modal>
+
             <Modal isOpen={gaveOut} style={modalx} >
                 <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
                     <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '70%', backgroundColor: 'green', justifyContent: 'center', alignItems: 'center' }}>
@@ -1438,6 +1522,15 @@ function Company() {
                     <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '70%', backgroundColor: 'green', justifyContent: 'center', alignItems: 'center' }}>
                         <img src={Tick} style={svgStyle} />
                         <p style={{ color: 'white' }}>Replaced Successfully.</p>
+                    </div>
+                </div>
+            </Modal>
+
+            <Modal isOpen={serialDontExist} style={modalx} >
+                <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '100%', backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center' }}>
+                        <img src={Caution} style={svgStyle} />
+                        <p style={{ color: 'white' }}>Serial Numbers Entered Don't Exist In Inventory.</p>
                     </div>
                 </div>
             </Modal>
