@@ -4,6 +4,7 @@ import Annual_Leave from '../images/annual_leave.jpg';
 import Maternity_leave from '../images/maternity_leave.jpg';
 import Sick_Leave from '../images/sick_leave.jpg';
 import Incidental_leave from '../images/incidental_leave.jpg';
+import Tick from '../images/tick.svg'
 import Modal from 'react-modal';
 import Waves from '../images/waves.svg'
 import Motherhood from '../images/motherhood.svg'
@@ -26,6 +27,7 @@ function LeaveRequest() {
     const socket = io.connect(`${ioPort}`);
 
     const [isAnnualLeaveOpen, setIsAnnualLeaveOpen] = useState(false);
+    const [applicationSent, setApplicationSent] = useState(false);
     const [isMaternityLeaveOpen, setIsMaternityLeaveOpen] = useState(false);
     const [isSickLeaveModalOpen, setIsSetLeaveModalOpen] = useState(false);
     const [isIncidentalLeaveModal, setIsIncidentalModalOpen] = useState(false);
@@ -431,7 +433,12 @@ function LeaveRequest() {
         };
 
         if (lastDifference >= workingDays) {
+            setApplicationSent(true);
+
             socket.emit("Employee_Leave_Message_Supervisor(1)", message);
+            setInterval(() => {
+                setApplicationSent(false);
+            }, 2700)
 
         } else {
             // window.alert(`You haven't Earned ${workingDays}.`)
@@ -442,8 +449,6 @@ function LeaveRequest() {
                 setNotEarnedAlert(false);
             }, 2700);
         }
-
-
     };
 
     const svgStyle = {
@@ -453,9 +458,6 @@ function LeaveRequest() {
     }
 
 
-    const closeAlert = () => {
-
-    }
 
     const applyMaternityLeave = () => {
         const empID = localStorage.getItem('userID');
@@ -971,11 +973,20 @@ function LeaveRequest() {
                     </div>
                 </Modal>
 
-                <Modal isOpen={notEarnedAlert} onRequestClose={closeAlert} style={modalAlert} >
+                <Modal isOpen={notEarnedAlert} style={modalAlert} >
                     <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
                         <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '70%', backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
                             <img src={Cross} style={svgStyle} />
                             <p style={{ color: 'white' }}>You haven't Earned {workingDays}.</p>
+                        </div>
+                    </div>
+                </Modal>
+
+                <Modal isOpen={applicationSent} style={modalAlert} >
+                    <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-484px', height: '6vh', justifyContent: 'center' }}>
+                        <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '70%', backgroundColor: 'green', justifyContent: 'center', alignItems: 'center' }}>
+                            <img src={Tick} style={svgStyle} />
+                            <p style={{ color: 'white' }}>Application Sent.</p>
                         </div>
                     </div>
                 </Modal>

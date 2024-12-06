@@ -371,7 +371,7 @@ ORDER BY
   });
 
   socket.on("change-status-deny-for-employee", (messageData) => {
-    console.log("~~~~~Change for employee Hit~~~~~");
+    // console.log("~~~~~Change for employee Hit~~~~~");
 
     const id = messageData.id;
     const status = "Denied";
@@ -1800,7 +1800,7 @@ app.get('/get-supervisor', (req, res) => {
 
 app.post('/post-by-hr', async (req, res) => {
 
-  console.log("Endpoint hit~~~!!!");
+  // console.log("Endpoint hit~~~!!!");
 
   const getEmployeeID = (employeeName) => {
     return new Promise((resolve, reject) => {
@@ -1892,7 +1892,7 @@ app.post('/post-by-hr', async (req, res) => {
 })
 
 app.post('/insert-doer/:itemID/:employeeID', (req, res) => {
-  console.log("Endpoint hit~~~~~");
+  // console.log("Endpoint hit~~~~~");
   const itemID = req.params.itemID;
   const employeeID = req.params.employeeID;
   const action = "Updated";
@@ -1909,7 +1909,7 @@ app.post('/insert-doer/:itemID/:employeeID', (req, res) => {
 })
 
 app.post('/insert-deletion-doer/:itemID/:employeeID', (req, res) => {
-  console.log("Endpoint hit~~~~~");
+  // console.log("Endpoint hit~~~~~");
   const itemID = req.params.itemID;
   const employeeID = req.params.employeeID;
   const action = "Deleted";
@@ -3986,7 +3986,7 @@ app.post('/insert-employee-leave-into-hr', (req, res) => {
 
 app.get('/get-leave-notifications-employee/:id', (req, res) => {
 
-  console.log("Hit~~~~~");
+  // console.log("Hit~~~~~");
 
   const sql = `
   SELECT employee_leave_request.*,
