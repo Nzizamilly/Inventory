@@ -777,10 +777,10 @@ li a:hover {
 }
 
 .employee {
-    gap: 4px;
+    gap: 9px;
     padding: 8px;
-    width: 290px;
-    height: 298px;
+    width: 80%;
+    height: auto;
     display: flex;
     color: black;
     /* margin-left: 15px; */

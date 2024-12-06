@@ -29,6 +29,7 @@ function EmployeesAdmin() {
       zIndex: '20',
       justifyContent: 'center',
       alignItems: 'center',
+      zIndex: '20'
     },
     content: {
       // margin: '0px',
@@ -42,6 +43,34 @@ function EmployeesAdmin() {
       gap: '20px',
       color: "black",
       padding: '12px 0px',
+      fontFamily: 'Arial, sans- serif',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  }
+
+  const modalEmployee = {
+    overlay: {
+      display: 'flex',
+      zIndex: '20',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: '20'
+    },
+    content: {
+      // margin: '0px',
+      width: '33%',
+      marginLeft: '495px',
+      marginTop: '-20px',
+      height: '79%',
+      backgroundColor: 'rgb(206, 206, 236)',
+      border: 'none',
+      borderRadius: '12px',
+      gap: '20px',
+      color: "black",
+      padding: '2px 0px',
       fontFamily: 'Arial, sans- serif',
       display: 'flex',
       flexDirection: 'column',
@@ -533,7 +562,7 @@ function EmployeesAdmin() {
             <button className='buttonStyle2' onClick={openCreateModal}>Submit</button>
           </Model >
 
-          <Modal isOpen={oneEmployee} onRequestClose={closeInfoModal} style={modal}>
+          <Modal isOpen={oneEmployee} onRequestClose={closeInfoModal} style={modalEmployee}>
             {sumOne.map((emp) => (
               <div key={emp.id} className="employee">
                 <h1>{emp.username}</h1>
@@ -590,7 +619,7 @@ function EmployeesAdmin() {
           </Modal>
 
           <Modal isOpen={createModal} onRequestClose={closeCreateModal} className={modal}>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ display: 'flex', zIndex: '20', flexDirection: 'column', height: '96vh', justifyContent: 'center', alignItems: 'center' }}>
               <ClipLoader color={'green'} loading={loading} size={89} />
               <div>
                 <p>Creating An Employee...</p>
