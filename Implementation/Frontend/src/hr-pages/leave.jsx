@@ -3,7 +3,10 @@ import React, { useState, useEffect } from 'react';
 import NavbarMain from './navbarMain';
 import Keys from '../keys';
 import Modal from 'react-modal';
+import Caution from '../images/caution.svg'
 import ClipLoader from "react-spinners/ClipLoader";
+import Tick from '../images/tick.svg'
+import Cross from '../images/cross.svg'
 import axios from 'axios';
 import ProfilePicture from '../images/centrika-removebg.png';
 import { ref, getDownloadURL, getStorage, } from "firebase/storage";
@@ -161,6 +164,40 @@ function LeavePage() {
         borderRadius: '5px',
         backgroundColor: 'rgb(163, 187, 197)',
     }
+
+
+    const svgStyle = {
+        width: '30px',
+        height: '30px',
+        borderRadius: '14px',
+    }
+
+    const modalSmall = {
+        overlay: {
+            display: 'flex',
+            justifyContent: 'center',
+            zIndex: '20',
+            // alignItems: 'center',
+            // opacity: 0, // Ensures overlay is present but transparent
+            background: 'transparent',
+        },
+        content: {
+            zIndex: '20',
+            width: '25%',
+            marginLeft: '495px',
+            border: 'none',
+            height: '100%',
+            borderRadius: '12px',
+            background: 'transparent',
+            gap: '23px',
+            marginTop: '-19px',
+            padding: '12px 0px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            // alignItems: 'center',
+        },
+    };
 
     const leaves = {
         width: '90%',
@@ -486,6 +523,8 @@ function LeavePage() {
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
+    const [leaving, setLeaving] = useState(false);
+    const [notLeaving, setNotLeaving] = useState(false);
 
     const applyLeaveI = async () => {
         try {
@@ -499,15 +538,38 @@ function LeavePage() {
             };
 
             if (lastDifference >= workingDays) {
-                const response = await axios.post(`${url}/take-needed-days`, data);
+                await axios.post(`${url}/take-needed-days`, data).then(
+
+                    setInterval(() => {
+                        closeAppliedLeaveLoader();
+                        setCreateAppliedLeaveModal(false);
+
+                    }, 2700),
+                ).then(
+
+                    // window.alert(`${oneEmployee[0].username} will be on leave fot ${workingDays} Days`)
+                    setLeaving(true),
+
+                    setInterval(() => {
+                        setLeaving(false)
+                    }, 3700)
+                )
+
+            } else {
+                // window.alert(`${oneEmployee[0].username} hasn't earned ${workingDays} days.`);
                 setInterval(() => {
                     closeAppliedLeaveLoader();
-                }, 3700);
+                    setCreateAppliedLeaveModal(false);
 
-                window.alert(`${oneEmployee[0].username} will be on leave fot ${workingDays} Days`);
-            } else {
-                window.alert(`${oneEmployee[0].username} hasn't earned ${workingDays} days.`);
+                }, 700);
+
+                setNotLeaving(true);
+
+                setInterval(() => {
+                    setNotLeaving(false)
+                }, 2700);
             }
+
 
         } catch (error) {
             console.error("Error", error)
@@ -941,6 +1003,24 @@ function LeavePage() {
                             ))}
                         </Modal>
 
+                    </Modal>
+
+                    <Modal isOpen={leaving} style={modalSmall} >
+                        <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+                            <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '80%', backgroundColor: 'green', justifyContent: 'center', alignItems: 'center' }}>
+                                <img src={Tick} style={svgStyle} />
+                                <p style={{ color: 'white' }}>{employeeName} will be on leave for {workingDays} Days.</p>
+                            </div>
+                        </div>
+                    </Modal>
+
+                    <Modal isOpen={notLeaving} style={modalSmall} >
+                        <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
+                            <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '99%', backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center' }}>
+                                <img src={Caution} style={svgStyle} />
+                                <p style={{ color: 'white' }}>{employeeName} hasn't earned {workingDays} days...</p>
+                            </div>
+                        </div>
                     </Modal>
 
                 </div>
