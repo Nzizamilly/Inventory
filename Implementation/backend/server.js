@@ -492,6 +492,36 @@ ORDER BY
     })
   })
 
+  socket.on("Approve Leave Requested", (messageData) => {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: EMAIL,
+        pass: PASSWORD
+      }
+    });
+
+    const mailOption = {
+      from: 'Centrika Inventory System',
+      to: messageData.email,
+      subject: 'Leave You Requested Was Approved',
+      text: `Hello,
+
+      Administration just approved leave of ${days_required} days. 
+
+      Thank You
+      `
+    };
+    transporter.sendMail(mailOption, function (error, info) {
+      if (error) {
+        console.error("Error: ", error)
+      } else {
+        const response = info;
+      }
+    })
+
+  })
+
   socket.on("disconnect", () => {
   });
 

@@ -120,11 +120,11 @@ function LeaveNotificationsHR() {
             setIsSendModalOpen(false);
         }, 2600);
 
-         await axios.put(`${url}/change-employee-leave-status-hr/${row.id}`).then(
-            await axios.put(`${url}/approve-employee-leave-hr-table/${row.id}`)
+        await axios.put(`${url}/change-employee-leave-status-hr/${row.id}`).then(
+            await axios.put(`${url}/approve-employee-leave-hr-table/${row.id}`).then(
+                socket.emit('Approve Leave Requested', row)
+            )
         );
-
-
     };
 
     const handleDeny = async (rowID) => {
