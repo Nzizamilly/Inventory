@@ -496,7 +496,7 @@ function LeavePage() {
                         const imageURL = await getDownloadURL(imageRef);
                         return { [employee.id]: imageURL };
                     } catch (error) {
-                        return { [employee.id]: console.log("No Image") };
+                        // return { [employee.id]: console.log("No Image") };
                     }
                 });
 

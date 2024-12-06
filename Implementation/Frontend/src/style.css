@@ -783,7 +783,6 @@ li a:hover {
     height: auto;
     display: flex;
     color: black;
-    /* margin-left: 15px; */
     align-items: center;
     border-radius: 15px;
     flex-direction: column;
