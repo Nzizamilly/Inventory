@@ -3249,12 +3249,12 @@ app.post('/take-needed-days', (req, res) => {
   const empID = req.body.empID;
   const workingDays = req.body.workingDays;
   const applyingYear = req.body.applyingYear;
-
+  const leave_BF = 0;
   //  const remain = Number(18) - workingDays;
 
-  const sql = `INSERT INTO leave_tracker (empID, days_needed, dateStamp, leave_taken) VALUES (?, ?, ?,?)`;
+  const sql = `INSERT INTO leave_tracker (empID, leave_BF, days_needed, dateStamp, leave_taken) VALUES (?, ?, ?, ?, ?)`;
 
-  db.query(sql, [empID, workingDays, applyingYear, workingDays], (error, result) => {
+  db.query(sql, [empID, leave_BF, workingDays, applyingYear, workingDays], (error, result) => {
     if (result) {
       console.log("Successfully Took Days: ", error)
 
