@@ -1005,9 +1005,9 @@ function LeavePage() {
 
                     <Modal isOpen={leaving} style={modalSmall} >
                         <div style={{ display: 'flex', zIndex: '20', border: 'none', flexDirection: 'inline', marginTop: '-574px', height: '6vh', justifyContent: 'center' }}>
-                            <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '80%', backgroundColor: 'green', justifyContent: 'center', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', zIndex: '20', border: 'none', fontFamily: 'Arial, sans-serif', gap: '12px', flexDirection: 'inline', borderRadius: '20px', height: '99%', width: '97%', backgroundColor: 'green', justifyContent: 'center', alignItems: 'center' }}>
                                 <img src={Tick} style={svgStyle} />
-                                <p style={{ color: 'white' }}>{employeeName} will be on leave for {workingDays} Days.</p>
+                                <p style={{ color: 'white' }}>{employeeName} will be on leave for {workingDays + Number(1)} Days.</p>
                             </div>
                         </div>
                     </Modal>
