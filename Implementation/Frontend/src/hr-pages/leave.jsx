@@ -461,7 +461,7 @@ function LeavePage() {
                         console.log(`12 - ${DOEMonth} * 1.5 + ${leaveBF}`);
                         console.log(`${getThis} + ${get} = ${Number(getThis) + Number(get)}`);
                         // setLeaveBF(leaveBF);
-                        setLeaveBF(Number(getThis) + Number(get))
+                        setLeaveBF(Number(getThis) + Number(get) - response.data.total_leave_taken_past_years)
                     }
                 };
 
