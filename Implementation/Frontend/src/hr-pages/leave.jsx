@@ -534,7 +534,9 @@ function LeavePage() {
             const data = {
                 workingDays: workingDays + Number(1),
                 empID: oneEmployeeID,
-                applyingYear: applyingYear
+                applyingYear: applyingYear,
+                from: leaveStartDate,
+                to: leaveEndDate
             };
 
             if (lastDifference >= workingDays) {

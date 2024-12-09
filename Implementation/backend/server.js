@@ -3249,11 +3249,13 @@ app.post('/take-needed-days', (req, res) => {
   const workingDays = req.body.workingDays;
   const applyingYear = req.body.applyingYear;
   const leave_BF = 0;
+  const from = req.body.from;
+  const to = req.body.to
   //  const remain = Number(18) - workingDays;
 
-  const sql = `INSERT INTO leave_tracker (empID, leave_BF, days_needed, dateStamp, leave_taken) VALUES (?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO leave_tracker (empID, leave_BF, days_needed, dateStamp, leave_taken, fromx, tox) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
-  db.query(sql, [empID, leave_BF, workingDays, applyingYear, workingDays], (error, result) => {
+  db.query(sql, [empID, leave_BF, workingDays, applyingYear, workingDays, from, to], (error, result) => {
     if (!result) {
       console.error("Error: ", error);
     }
