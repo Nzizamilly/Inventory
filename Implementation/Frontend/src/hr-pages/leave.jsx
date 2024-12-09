@@ -539,7 +539,7 @@ function LeavePage() {
 
             if (lastDifference >= workingDays) {
                 await axios.post(`${url}/take-needed-days`, data).then(
-
+                    console.log("EndPoint Hit~~~~~~~",data),
                     setInterval(() => {
                         closeAppliedLeaveLoader();
                         setCreateAppliedLeaveModal(false);

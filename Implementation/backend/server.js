@@ -3245,6 +3245,7 @@ app.get('/get-one-company-for-delivery/:oneCompanyID/:ID', (req, res) => {
 });
 
 app.post('/take-needed-days', (req, res) => {
+  console.log("Hitt~~~~~~~~Take Days")
   const empID = req.body.empID;
   const workingDays = req.body.workingDays;
   const applyingYear = req.body.applyingYear;
@@ -3254,9 +3255,11 @@ app.post('/take-needed-days', (req, res) => {
   const sql = `INSERT INTO leave_tracker (empID, days_needed, dateStamp, leave_taken) VALUES (?, ?, ?,?)`;
 
   db.query(sql, [empID, workingDays, applyingYear, workingDays], (error, result) => {
-    if (!result) {
-      console.error("Error: ", error)
-      res.json(result);
+    if (result) {
+      console.log("Successfully Took Days: ", error)
+
+    } else {
+      console.error("Error: ", error);
     }
   })
 });
