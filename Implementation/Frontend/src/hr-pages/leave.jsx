@@ -444,7 +444,7 @@ function LeavePage() {
                         const leaveBF = get - response.data.total_leave_taken_past_years;
                         console.log(`${actual} - ${DOEYear} * 18 = ${get}`);
                         // setLeaveBF(leaveBF - Number(remove));
-                        setLeaveBF(remove);
+                        setLeaveBF(remove - response.data.total_leave_taken_past_years);
 
                     } else {
                         const remove = Number(Number(12) - Number(DOEMonth)) * Number(1.5);
@@ -546,15 +546,12 @@ function LeavePage() {
 
                     }, 2700),
                 ).then(
-
                     // window.alert(`${oneEmployee[0].username} will be on leave fot ${workingDays} Days`)
                     setLeaving(true),
-
                     setInterval(() => {
                         setLeaving(false)
                     }, 3700)
                 )
-
             } else {
                 // window.alert(`${oneEmployee[0].username} hasn't earned ${workingDays} days.`);
                 setInterval(() => {

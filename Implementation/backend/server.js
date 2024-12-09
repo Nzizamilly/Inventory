@@ -505,11 +505,12 @@ ORDER BY
       from: 'Centrika Inventory System',
       to: messageData.email,
       subject: 'Leave You Requested Was Approved',
-      text: `Hello,
+      text: `
+      Hello,
 
-      Administration just approved leave of ${messageData.days_required} days. 
+      Administration just approved your leave request of ${messageData.days_required} days. 
 
-      Thank You
+      Thank You.
       `
     };
     transporter.sendMail(mailOption, function (error, info) {
@@ -3253,7 +3254,10 @@ app.post('/take-needed-days', (req, res) => {
   const sql = `INSERT INTO leave_tracker (empID, days_needed, dateStamp, leave_taken) VALUES (?, ?, ?,?)`;
 
   db.query(sql, [empID, workingDays, applyingYear, workingDays], (error, result) => {
-    // result ? console.log("Success: ", result) : console.error("Error: ", error);
+    if (!result) {
+      console.error("Error: ", error)
+      res.json(result);
+    }
   })
 });
 
@@ -3299,7 +3303,7 @@ app.get('/get-leave-bf/:ID/:DOEYear/:currentYear', (req, res) => {
   const DOEYear = req.params.DOEYear;
   const currentYear = req.params.currentYear - Number(1);
 
-  const sql = `SELECT SUM(days_needed) AS total_leave_taken_past_years FROM leave_tracker WHERE empID = ? AND dateStamp BETWEEN ? AND ?;`;
+  const sql = `SELECT SUM(days_needed) AS total_leave_taken_past_years FROM leave_tracker WHERE empID = ? AND dateStamp BETWEEN ? AND ?`;
 
   db.query(sql, [id, DOEYear, currentYear], (error, result) => {
     result ? res.json(result[0]) : console.error("Error: ", error);
