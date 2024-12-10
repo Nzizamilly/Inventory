@@ -449,7 +449,7 @@ function LeavePage() {
                         } else {
                             console.log(`2023: ${actual} - ${DOEYear} * 18 = ${get}`);
                             // setLeaveBF(leaveBF - Number(remove));
-                            // setLeaveBF(remove - response.data.total_leave_taken_past_years);
+                            console.log(`remove - days taken = ${remove} - ${response.data.total_leave_taken_past_years} = ${Number(remove) - Number(response.data.total_leave_taken_past_years)}`)
                             setLeaveBF(remove - response.data.total_leave_taken_past_years);
                         }
 
