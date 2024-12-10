@@ -445,11 +445,11 @@ function LeavePage() {
                         const leaveBroughtForward = get - response.data.total_leave_taken_past_years;
                         if (DOEMonth === 1) {
                             console.log("DOE: ", DOE)
-                            return setLeaveBF(18);
+                            return setLeaveBF(18 - Number(response.data.total_leave_taken_past_years));
                         } else {
                             console.log(`2023: ${actual} - ${DOEYear} * 18 = ${get}`);
                             // setLeaveBF(leaveBF - Number(remove));
-                            console.log(`remove - days taken = ${remove} - ${response.data.total_leave_taken_past_years} = ${Number(remove) - Number(response.data.total_leave_taken_past_years)}`)
+                            // console.log(`remove - days taken = ${remove} - ${response.data.total_leave_taken_past_years} = ${Number(remove) - Number(response.data.total_leave_taken_past_years)}`)
                             setLeaveBF(remove - response.data.total_leave_taken_past_years);
                         }
 
