@@ -184,7 +184,7 @@ function LeavePage() {
         content: {
             zIndex: '20',
             width: '35%',
-            marginLeft: '495px',
+            marginLeft: '395px',
             border: 'none',
             height: '100%',
             borderRadius: '12px',
